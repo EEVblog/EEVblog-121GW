@@ -191,7 +191,6 @@ namespace App_112GW
 			eMultiMeterMode2 = 1
 		}
 
-
 		public static readonly BindableProperty PrimaryValueProperty = BindableProperty.Create(propertyName: "PrimaryValue", returnType: typeof(double), declaringType: typeof(double), defaultValue: 0.0);
 		public static readonly BindableProperty SecondaryValueProperty = BindableProperty.Create(propertyName: "SecondaryValue", returnType: typeof(double), declaringType: typeof(double), defaultValue: 0.0);
 		public static readonly BindableProperty BarValueProperty = BindableProperty.Create(propertyName: "BarValue", returnType: typeof(int), declaringType: typeof(int), defaultValue: 0);
