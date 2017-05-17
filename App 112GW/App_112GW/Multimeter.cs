@@ -100,7 +100,6 @@ namespace App_112GW
 				case '7': return (int)SevenSegmentLetters.e7;
 				case '8': return (int)SevenSegmentLetters.e8;
 				case '9': return (int)SevenSegmentLetters.e9;
-
 				case 'a': return (int)SevenSegmentLetters.ea;
 				case 'b': return (int)SevenSegmentLetters.eb;
 				case 'c': return (int)SevenSegmentLetters.ec;
