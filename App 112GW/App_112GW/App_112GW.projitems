@@ -1,0 +1,137 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>42703b07-6599-410f-af0d-7097e5a63b1c</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>App_112GW</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)App.xaml.cs">
+      <DependentUpon>App.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)LayeredImages.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ImageLayer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MainPage.xaml.cs">
+      <DependentUpon>MainPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Multimeter.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)MainPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)App.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="$(MSBuildThisFileDirectory)Layers\bar01.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Layers\bar02.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Layers\bar03.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Layers\bar04.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Layers\bar05.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Layers\bar06.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Layers\bar07.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Layers\bar08.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Layers\bar09.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Layers\bar10.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Layers\bar11.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Layers\bar12.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Layers\bar13.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Layers\bar14.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Layers\bar15.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Layers\bar16.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Layers\bar17.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Layers\bar18.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Layers\bar19.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Layers\bar20.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Layers\bar21.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Layers\bar22.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Layers\bar23.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Layers\bar24.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Layers\bar25.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Layers\bar26.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Layers\seg1a.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Layers\seg1b.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Layers\seg1c.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Layers\seg1d.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Layers\seg1dp.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Layers\seg1e.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Layers\seg1f.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Layers\seg1g.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Layers\seg2a.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Layers\seg2b.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Layers\seg2c.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Layers\seg2d.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Layers\seg2dp.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Layers\seg2e.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Layers\seg2f.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Layers\seg2g.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Layers\seg3a.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Layers\seg3b.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Layers\seg3c.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Layers\seg3d.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Layers\seg3dp.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Layers\seg3e.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Layers\seg3f.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Layers\seg3g.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Layers\seg4a.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Layers\seg4b.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Layers\seg4c.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Layers\seg4d.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Layers\seg4e.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Layers\seg4f.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Layers\seg4g.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Layers\seg5a.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Layers\seg5b.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Layers\seg5c.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Layers\seg5d.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Layers\seg5e.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Layers\seg5f.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Layers\seg5g.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Layers\sub1a.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Layers\sub1b.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Layers\sub1c.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Layers\sub1d.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Layers\sub1dp.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Layers\sub1e.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Layers\sub1f.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Layers\sub1g.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Layers\sub2a.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Layers\sub2b.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Layers\sub2c.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Layers\sub2d.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Layers\sub2dp.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Layers\sub2e.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Layers\sub2f.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Layers\sub2g.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Layers\sub3a.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Layers\sub3b.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Layers\sub3c.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Layers\sub3d.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Layers\sub3dp.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Layers\sub3e.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Layers\sub3f.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Layers\sub3g.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Layers\sub4a.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Layers\sub4b.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Layers\sub4c.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Layers\sub4d.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Layers\sub4dp.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Layers\sub4e.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Layers\sub4f.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Layers\sub4g.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Layers\sub5a.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Layers\sub5b.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Layers\sub5c.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Layers\sub5d.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Layers\sub5e.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Layers\sub5f.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Layers\sub5g.png" />
+  </ItemGroup>
+</Project>
