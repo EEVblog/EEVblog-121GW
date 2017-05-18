@@ -12,12 +12,14 @@
     <Compile Include="$(MSBuildThisFileDirectory)App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)EnhancedTimer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LayeredImages.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ImageLayer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Multimeter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MultimeterScreen.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)MainPage.xaml">
