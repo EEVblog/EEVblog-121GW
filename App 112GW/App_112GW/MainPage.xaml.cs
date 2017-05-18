@@ -9,28 +9,46 @@ using SkiaSharp.Views.Forms;
 
 namespace App_112GW
 {
+    public class Globals
+    {
+        public static Color BackgroundColor = Color.FromRgb(0, 0, 0);
+        public static Color ColorText = Color.FromRgb(0xAA, 0xAA, 0xAA);
+        public static Color BorderColor = Color.FromRgb(0x33, 0x33, 0x33);
+        public static Style ButtonStyle = new Style(typeof(Button))
+        {
+            Setters =
+            {
+                new Setter{ Property = Button.TextColorProperty, Value = ColorText},
+                new Setter{ Property = Button.BorderColorProperty, Value = BorderColor},
+                new Setter{ Property = Button.FontSizeProperty, Value = Device.GetNamedSize(NamedSize.Medium, typeof(Button))}
+            }
+        };
+        public static Style LabelStyle = new Style(typeof(Label))
+        {
+            Setters =
+            {
+                new Setter{ Property = Label.TextColorProperty, Value = ColorText},
+                new Setter{ Property = Label.FontSizeProperty, Value = Device.GetNamedSize(NamedSize.Medium, typeof(Label))}
+            }
+        };
+        public static Style PickerStyle = new Style(typeof(Picker))
+        {
+            Setters =
+            {
+                new Setter{ Property = Picker.TextColorProperty, Value = Color.White }
+            }
+        };
+    }
+
 	public partial class MainPage : ContentPage
 	{
 		SKSize dimen;
 		float aspect;
 		float padding = 20;
 		Random randy = new Random();
-		const string MultimeterLayer = "./Layers";
 
-		private static Color ColorText		= Color.FromRgb(0xAA, 0xAA, 0xAA);
-		private static Color BorderColor	= Color.FromRgb(0x33, 0x33, 0x33);
-		private static double FontSize		= Device.GetNamedSize(NamedSize.Medium, typeof(Button));
-		private static Style ButtonStyle	= new Style(typeof(Button))
-		{
-			Setters =
-			{
-				new Setter{ Property = Button.TextColorProperty, Value = ColorText},
-				new Setter{ Property = Button.BorderColorProperty, Value = BorderColor},
-				new Setter{ Property = Button.FontSizeProperty, Value = FontSize}
-			}
-		};
-		private Button		ButtonAddDevice		= new Button { Text = "Add Device", Style = ButtonStyle};
-		private Button		ButtonStartLogging	= new Button { Text = "Start Logging", Style = ButtonStyle };
+		private Button		ButtonAddDevice		= new Button { Text = "Add Device", Style = Globals.ButtonStyle};
+		private Button		ButtonStartLogging	= new Button { Text = "Start Logging", Style = Globals.ButtonStyle };
 		private Grid		UserGrid			= new Grid {HorizontalOptions=LayoutOptions.Fill, VerticalOptions = LayoutOptions.Fill, RowSpacing = 1, ColumnSpacing = 1, Padding = 1};
 
 		void InitSurface()
@@ -42,7 +60,9 @@ namespace App_112GW
 			UserGrid.ColumnDefinitions.Add(	new ColumnDefinition	{ Width		= new GridLength(1, GridUnitType.Star)		});
 
             TimeSpan DefTim = new TimeSpan(0, 0, 3);
-            MultimeterScreen Temp = new MultimeterScreen(MultimeterLayer, DefTim);
+            // MultimeterScreen Temp = new MultimeterScreen(MultimeterLayer, DefTim);
+
+            Multimeter Temp = new Multimeter();
 
             UserGrid.Children.Add	(Temp);
 			Grid.SetRow				(Temp, 0);

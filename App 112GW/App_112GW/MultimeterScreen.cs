@@ -356,17 +356,6 @@ namespace App_112GW
         private void        Render(SKCanvas pSurface)
 		{
             SKRect pRectangle = pSurface.ClipBounds;
-
-            //Add render on change
-            for (int i = 0; i < mSegments.Count; i++)
-				mSegments[i].Render(ref pSurface, ref pRectangle);
-
-			for (int i = 0; i < mSegments.Count; i++)
-				mSubSegments[i].Render(ref pSurface, ref pRectangle);
-			
-			mBargraph.Render(ref pSurface, ref pRectangle);
-			mOther.Render(ref pSurface, ref pRectangle);
-
 			switch (mFocusState)
 			{
 				case eFocusState.eFocused:
@@ -375,7 +364,16 @@ namespace App_112GW
 					pSurface.DrawRect(pRectangle, mClickedPaint);
 					break;
 				case eFocusState.eNormal:
-					break;
+                    //Add render on change
+                    for (int i = 0; i < mSegments.Count; i++)
+                        mSegments[i].Render(ref pSurface, ref pRectangle);
+
+                    for (int i = 0; i < mSegments.Count; i++)
+                        mSubSegments[i].Render(ref pSurface, ref pRectangle);
+
+                    mBargraph.Render(ref pSurface, ref pRectangle);
+                    mOther.Render(ref pSurface, ref pRectangle);
+                    break;
 			}
 		}
 
@@ -430,19 +428,6 @@ namespace App_112GW
             Invalidate();
         }
 
-        bool mDimUninit = true;
-		Size mDimensions; 
-		public Size Dimensions()
-		{
-			if (mDimUninit)
-				if (mSegments.Count > 0)
-				{
-					mDimensions = new Size(mSegments[0].Width, mSegments[0].Height);
-					mDimUninit = false;
-				}
-			return mDimensions;
-		}
-        
 #if __ANDROID__
         protected override void OnPaintSurface(SKPaintGLSurfaceEventArgs e)
 #elif __IOS__

@@ -12,6 +12,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Checkbox.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EnhancedTimer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LayeredImages.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ImageLayer.cs" />
