@@ -8,18 +8,18 @@ namespace App_112GW
 {
     public class ImageLayers
     {
-		public List<ImageLayer>	mLayers;
-		public float			Width, Height;
-		private bool			mActive;
-		private string			mName;
+		public  List<ImageLayer>	mLayers;
+		public  float			    Width, Height;
+		private bool			    mActive;
+		private string			    mName;
 
-		public ImageLayers(string pName = "", bool pActive = true)
+		public ImageLayers(string pName = "")
 		{
 			mLayers = new List<ImageLayer>();
 			mName = pName;
-			mActive = pActive;
+			mActive = false;
 			mLayers.Clear();
-		}
+        }
 		public void Set(bool pState)
 		{
 			mActive = pState;
@@ -44,40 +44,57 @@ namespace App_112GW
 			output = output.Remove(output.Length - 2) + "}";
 			return output;
 		}
-		public void Render(ref SKCanvas pSurface, ref SKRect pRectangle)
+        public (int, int) GetResultSize()
+        {
+            int x = 0;
+            int y = 0;
+
+            foreach (ImageLayer Layer in mLayers)
+            {
+                if (Layer.mImage.Width > x)
+                    x = Layer.mImage.Width;
+                if (Layer.mImage.Height > y)
+                    y = Layer.mImage.Height;
+            }
+            return (x, y);
+        }
+        public void Render(ref SKCanvas pSurface)
 		{
-			if (mActive)
-				foreach (ImageLayer Layer in mLayers)
-					Layer.Render(ref pSurface, ref pRectangle);
-		}
-		
+            if (mActive)
+                foreach (ImageLayer Layer in mLayers)
+                    Layer.Render(ref pSurface);
+        }
 		public void AddLayer(ImageLayer pInput)
 		{
-			mLayers.Add(pInput);
+            if (mLayers.Count == 0)
+                mActive = true;
 
-			if (pInput.mBitmap.Width > Width)
-				Width = pInput.mBitmap.Width;
+            mLayers.Add(pInput);
 
-			if (pInput.mBitmap.Height > Height)
-				Height = pInput.mBitmap.Height;
+			if (pInput.mImage.Width > Width)
+				Width = pInput.mImage.Width;
+
+			if (pInput.mImage.Height > Height)
+				Height = pInput.mImage.Height;
 		}
-		public void AddLayer(string pFilename, bool pActive = true)
+		public void AddLayer(SKImage pImage, string pName, bool pActive = true)
 		{
-			var temp = new ImageLayer(pFilename, pActive);
+            if (mLayers.Count == 0)
+                mActive = true;
 
+            var temp = new ImageLayer(pImage, pName, pActive);
 			mLayers.Add(temp);
 
-			if (temp.mBitmap.Width > Width)
-				Width = temp.mBitmap.Width;
+			if (temp.mImage.Width > Width)
+				Width = temp.mImage.Width;
 
-			if (temp.mBitmap.Height > Height)
-				Height = temp.mBitmap.Height;
+			if (temp.mImage.Height > Height)
+				Height = temp.mImage.Height;
 		}
 		public void Sort()
 		{
 			mLayers.Sort(new ImageCompare());
 		}
-		
 		public bool Group(string pInput, out ImageLayers pReturn)
 		{
 			ImageLayers temp = new ImageLayers(mName + " " + pInput);

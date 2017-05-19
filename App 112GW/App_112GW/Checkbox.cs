@@ -18,13 +18,23 @@ namespace App_112GW
         SKCanvasView
 #endif
     {
+        public event EventHandler Changed;
+        protected virtual void OnChanged(EventArgs e)
+        {
+            EventHandler handler = Changed;
+            if (handler != null)
+            {
+                handler(this, e);
+            }
+        }
+
         public bool                     Checked;
         public int                      CornerRadius;
         public Color                    BorderColor;
         public Color                    TextColor;
 
         private SKPaint                 mPaintStyle;
-        private SKPaint                 mFillStyle;
+        private SKPaint mClearStyle;
         private TapGestureRecognizer    mTapRecogniser;
 
         public CheckboxRenderer()
@@ -42,22 +52,17 @@ namespace App_112GW
             TextColor = Globals.ColorText;
             BackgroundColor = Globals.BackgroundColor;
             CornerRadius = 0;
-
             mPaintStyle = new SKPaint()
             {
                 Color = TextColor.ToSKColor(),
                 Style = SKPaintStyle.Stroke
-            };
-            mFillStyle = new SKPaint()
-            {
-                Color = BackgroundColor.ToSKColor(),
-                Style = SKPaintStyle.Fill
             };
         }
 
         private void TapCallback(object sender, EventArgs args)
         {
             Checked = !Checked;
+            OnChanged(EventArgs.Empty);
             InvalidateSurface();
         }
 
@@ -69,7 +74,6 @@ namespace App_112GW
         protected override void OnPaintSurface(SKPaintSurfaceEventArgs e)
 #endif
         {
-            
             using (var can = e.Surface.Canvas)
             {
                 SKRect temp = can.ClipBounds;
@@ -83,20 +87,19 @@ namespace App_112GW
                 temp.Right -= mPaintStyle.StrokeWidth;
                 temp.Bottom -= mPaintStyle.StrokeWidth;
 
-                can.DrawRect(temp, mFillStyle);
+                can.Clear(BackgroundColor.ToSKColor());
                 can.DrawRect(temp, mPaintStyle);
-
-                var Pah = new SKPath();
-                SKPoint[] Pts = new SKPoint[]
-                    {
-                        new SKPoint((float)(Width * 330/1332), (float)(Height * 600/1332)),
-                        new SKPoint((float)(Width * 600/1332), (float)(Height * 863/1332)),
-                        new SKPoint((float)(Width * 1070/1332), (float)(Height * 390/1332))
-                    };
-
-                Pah.AddPoly(Pts, false);
+                
                 if (Checked)
                 {
+                    var Pah = new SKPath();
+                    SKPoint[] Pts = new SKPoint[]
+                        {
+                            new SKPoint((float)(Width * 330/1332), (float)(Height * 600/1332)),
+                            new SKPoint((float)(Width * 600/1332), (float)(Height * 863/1332)),
+                            new SKPoint((float)(Width * 1070/1332), (float)(Height * 390/1332))
+                        };
+                    Pah.AddPoly(Pts, false);
                     can.DrawPath(Pah, mPaintStyle);
                 }
             }
@@ -105,6 +108,16 @@ namespace App_112GW
 
     class Checkbox : Grid
     {
+        public event EventHandler Changed;
+        protected virtual void OnChanged(object o, EventArgs e)
+        {
+            EventHandler handler = Changed;
+            if (handler != null)
+            {
+                handler(this, e);
+            }
+        }
+
         private CheckboxRenderer    mRenderer;
         private Label               mLabel;
 
@@ -117,7 +130,6 @@ namespace App_112GW
             SetColumnSpan(pInput, pXSpan);
             SetRowSpan(pInput, pYSpan);
         }
-
         public Checkbox(string pLabel)
         {
             mLabel = new Label(){
@@ -130,7 +142,7 @@ namespace App_112GW
             };
 
             mRenderer = new CheckboxRenderer();
-
+            mRenderer.Changed += OnChanged;
             //
             ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
             ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Auto) });

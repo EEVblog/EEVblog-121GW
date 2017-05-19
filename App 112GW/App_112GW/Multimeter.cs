@@ -10,98 +10,73 @@ using System.Runtime.CompilerServices;
 
 namespace App_112GW
 {
-    class Multimeter : Grid
+    class Multimeter : ContentView
     {
-        const string MultimeterLayer = "./Layers";
-        TimeSpan MenuTimeout = new TimeSpan(0, 0, 3);
-        
-        private MultimeterScreen    mScreen;
-        private Button              mHold;
-        private Button              mRelative;
-        private Label               mSerialNumber;
-        private Picker              mRange;
-        private Picker              mMode;
-        private Checkbox            mPlotCheck;
-        private Checkbox            mAutorangeCheck;
-
-        private void AddView(View pInput, int pX, int pY, int pXSpan = 1, int pYSpan = 1)
+        private enum ShowItem
         {
-            Children.Add(pInput);
-            SetColumn(pInput, pX);
-            SetRow(pInput, pY);
+            eMenu,
+            eScreen
+        };
+        public          MultimeterScreen Screen;
+        public          MultimeterMenu   Menu;
 
-            SetColumnSpan(pInput, pXSpan);
-            SetRowSpan(pInput, pYSpan);
+        ShowItem                         mItem;
+        TapGestureRecognizer             mTapRecogniser;
+
+        private void    SetView(ShowItem pItem)
+        {
+            mItem = pItem;
+            SetView();
+        }
+        private void    SetView()
+        {
+            switch (mItem)
+            {
+                case ShowItem.eScreen:
+                    Content = Screen;
+                    break;
+                case ShowItem.eMenu:
+                    Content = Menu;
+                    break;
+                default:
+                    break;
+            }
+        }
+        private void    ToggleView()
+        {
+            if (mItem == ShowItem.eScreen)
+                mItem = ShowItem.eMenu;
+            else if (mItem == ShowItem.eMenu)
+                mItem = ShowItem.eScreen;
+
+            SetView();
         }
 
-        public Multimeter(string pSerialNumber = "SN0000")
+        public          Multimeter(string pSerialNumber = "SN0000")
         {
-            //The grid is currently 2x5
-            //Setup Grid rows
-            for (int a = 0; a < 5; a++)
-                RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Auto) });
-
-            //Setup Grid columns
-            ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Auto) });
-            ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
-
             //Add the multimeter screen
-            mScreen = new MultimeterScreen(MultimeterLayer, MenuTimeout);
-            AddView(mScreen, 0, 0, 2, 5);
+            Screen  = new MultimeterScreen();
+            Screen.Clicked += Clicked;
 
-            //Add the multimeter memu
+            //Add the multimeter menu
+            Menu    = new MultimeterMenu();
 
-            //Add Hold Button
-            mHold = new Button()
-            {
-                Text = "Hold",
-                Style = Globals.ButtonStyle
-            };
-            AddView(mHold, 0, 0);
+            //Show multimeter screen by default
+            SetView(ShowItem.eMenu);
 
-            //Add Relative Button
-            mRelative = new Button()
-            {
-                Text = "Relative",
-                Style = Globals.ButtonStyle
-            };
-            AddView(mRelative, 0, 1);
+            //Setup responses to gestures
+            mTapRecogniser = new TapGestureRecognizer();
+            mTapRecogniser.Tapped += TapCallback;
+            GestureRecognizers.Add(mTapRecogniser);
+        }
 
-            //Add Plot checkbox
-            mPlotCheck = new Checkbox("Plot");
-            AddView(mPlotCheck, 1, 0);
-
-            //Add Autorange checkboxs
-            mAutorangeCheck = new Checkbox("Autorange");
-            AddView(mAutorangeCheck, 1, 1);
-
-            //Add range dropdown
-            mRange = new Picker()
-            {
-                Title = "Select Range"
-            };
-            mRange.Items.Add("V");
-            mRange.Items.Add("mV");
-            mRange.Items.Add("uV");
-            mRange.Items.Add("nV");
-            AddView(mRange, 1, 2);
-
-            //Add Mode dropdown
-            mMode = new Picker()
-            {
-                Title = "Select Mode"
-            };
-            mMode.Items.Add("DC");
-            mMode.Items.Add("AC");
-            AddView(mMode, 1, 3);
-
-            //Add Serial number
-            mSerialNumber = new Label()
-            {
-                Text = pSerialNumber,
-                Style = Globals.LabelStyle
-            };
-            AddView(mSerialNumber, 1, 4);
+        public void     Clicked(object sender, EventArgs e)
+        {
+            ToggleView();
+        }
+        private void    TapCallback(object sender, EventArgs args)
+        {
+            Clicked(this, EventArgs.Empty);
         }
     }
 }

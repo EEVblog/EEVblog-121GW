@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Text;
 using Xamarin.Forms;
+using System.Reflection;
+using System.Resources;
 
 using SkiaSharp;
 using SkiaSharp.Views.Forms;
@@ -188,8 +190,6 @@ namespace App_112GW
 		}
 	}
 
-    
-
     public class MultimeterScreen :
 #if __ANDROID__
         SKGLView
@@ -199,27 +199,26 @@ namespace App_112GW
         SKCanvasView
 #endif
     {
-        public enum MultimeterMode
-		{
-			eMultiMeterMode1 = 0,
-			eMultiMeterMode2 = 1
-		}
-		private enum eFocusState
-		{
-			eFocused,
-			eClicked,
-			eNormal
-		};
-	
-		eFocusState			    mFocusState;
-		List<ImageLayers>	    mSegments;
+        public event EventHandler Clicked;
+        protected virtual void OnClicked(EventArgs e)
+        {
+            EventHandler handler = Clicked;
+            if (handler != null)
+            {
+                handler(this, e);
+            }
+        }
+
+        List<ImageLayers>	    mSegments;
 		List<ImageLayers>	    mSubSegments;
 		ImageLayers			    mBargraph;
 		ImageLayers			    mOther;
-		SKPaint				    mClickedPaint;
-        TapGestureRecognizer    mTapRecogniser;
-        EnhancedTimer           mMenuTimer;
 
+        private SKPaint         mDrawPaint;
+        private SKBitmap        mResult;
+        private SKCanvas        mResultCanvas;
+
+        TapGestureRecognizer mTapRecogniser;
         private void        SetLargeSegments(string pInput)
         {
             if (pInput.Length > mSegments.Count)
@@ -234,7 +233,7 @@ namespace App_112GW
 
             SetSegments(pInput.PadLeft(mSubSegments.Count, ' '), ref mSubSegments);
         }
-        private void        SetBargraph(int pInput)
+        private void        SetBargraph     (int pInput)
         {
             foreach (ImageLayer Layer in mBargraph.mLayers)
                 Layer.Off();
@@ -242,6 +241,7 @@ namespace App_112GW
             for (int i = 0; i < mBargraph.mLayers.Count; i++)
                 mBargraph.mLayers[i].Set(pInput >= i);
         }
+
         public float        LargeSegments
         {
             set
@@ -256,6 +256,7 @@ namespace App_112GW
                 SetSmallSegments(value.ToString());
             }
         }
+
         public int          Bargraph
         {
             set
@@ -266,6 +267,7 @@ namespace App_112GW
                     throw (new Exception("Bargraph value too high."));
             }
         }
+
         public string       LargeSegmentsWord
         {
             set
@@ -281,46 +283,32 @@ namespace App_112GW
             }
         }
 
+        ImageLayers         segments        = new ImageLayers("mSegments");
+        ImageLayers         subsegments     = new ImageLayers("mSubsegments");
 
-        public              MultimeterScreen(string pLayerPath, TimeSpan pMenuTime)
+        bool                ProcessImage    (string filename, SKImage Image)
+        {
+            if (filename.Contains("seg"))
+                segments.AddLayer(Image, filename);
+            else if (filename.Contains("sub"))
+                subsegments.AddLayer(Image, filename);
+            else if (filename.Contains("bar"))
+                mBargraph.AddLayer(Image, filename);
+            else
+                mOther.AddLayer(Image, filename);
+
+            return true;
+        }
+        public              MultimeterScreen()
 		{
-			ImageLayers segments = new ImageLayers("mSegments");
-			ImageLayers subsegments = new ImageLayers("mSubsegments");
-
-			mFocusState         = eFocusState.eNormal;
-			mClickedPaint       = new SKPaint();
-			mClickedPaint.Color = new SKColor(0,0,0,200);
-
-            //Setup menu timer
-            mMenuTimer = new EnhancedTimer(pMenuTime, Deselect);
-
-            //Setup responses to gestures
-            mTapRecogniser = new TapGestureRecognizer();
-            mTapRecogniser.Tapped += TapCallback;
-            GestureRecognizers.Add(mTapRecogniser);
-
             //New layer images
-            mSegments		= new List<ImageLayers>();
-			mSubSegments	= new List<ImageLayers>();
-			mBargraph		= new ImageLayers("mBargraph");
-			mOther			= new ImageLayers("mOther");
+            mSegments		= new List<ImageLayers> ();
+			mSubSegments	= new List<ImageLayers> ();
+			mBargraph		= new ImageLayers       ("mBargraph");
+			mOther			= new ImageLayers       ("mOther");
 
-			//Sort images into appropreate layered images
-			string[] files = System.IO.Directory.GetFiles(pLayerPath);
-			foreach (string filename in files)
-			{
-				if		(filename.Contains("seg"))
-					segments.AddLayer(filename);
-
-				else if (filename.Contains("sub"))
-					subsegments.AddLayer(filename);
-
-				else if (filename.Contains("bar"))
-					mBargraph.AddLayer(filename);
-
-				else
-					mOther.AddLayer(filename);
-			}
+            //Sort images into appropreate layered images
+            var Loader = new ImageLoader(ProcessImage);
 
 			//Sort Images alphabetically within layered images
 			subsegments.Sort();
@@ -328,8 +316,11 @@ namespace App_112GW
 			segments.Sort();
 			mOther.Sort();
 
-			//Sort segments and subsegments into seperate digits
-			ImageLayers returned;
+            //Setups minimums
+            (WidthRequest, HeightRequest) = GetResultSize();
+
+            //Sort segments and subsegments into seperate digits
+            ImageLayers returned;
 			int i;
 
 			//Setup the different segments
@@ -348,35 +339,60 @@ namespace App_112GW
 
 			foreach (ImageLayers temp in mSubSegments)
 				temp.ToBottom("dp");
-		}
-        private void        Invalidate()
+
+
+            //Setup responses to gestures
+            mTapRecogniser = new TapGestureRecognizer();
+            mTapRecogniser.Tapped += TapCallback;
+            GestureRecognizers.Add(mTapRecogniser);
+        }
+        private void        Invalidate      ()
         {
             InvalidateSurface();
         }
+        public (int, int)   GetResultSize   ()
+        {
+            return (mBargraph.GetResultSize());
+        }
         private void        Render(SKCanvas pSurface)
 		{
+            if (mResult == null)
+            {
+                (int x, int y) = GetResultSize();
+                mResult         = new SKBitmap(x, y, SKImageInfo.PlatformColorType, SKAlphaType.Premul);
+                mResultCanvas   = new SKCanvas(mResult);
+            }
+
             SKRect pRectangle = pSurface.ClipBounds;
-			switch (mFocusState)
-			{
-				case eFocusState.eFocused:
-					break;
-				case eFocusState.eClicked:
-					pSurface.DrawRect(pRectangle, mClickedPaint);
-					break;
-				case eFocusState.eNormal:
-                    //Add render on change
-                    for (int i = 0; i < mSegments.Count; i++)
-                        mSegments[i].Render(ref pSurface, ref pRectangle);
 
-                    for (int i = 0; i < mSegments.Count; i++)
-                        mSubSegments[i].Render(ref pSurface, ref pRectangle);
+            //Add render on change
+            for (int i = 0; i < mSegments.Count; i++)
+                mSegments[i].Render(ref mResultCanvas);
 
-                    mBargraph.Render(ref pSurface, ref pRectangle);
-                    mOther.Render(ref pSurface, ref pRectangle);
-                    break;
-			}
-		}
+            for (int i = 0; i < mSegments.Count; i++)
+                mSubSegments[i].Render(ref mResultCanvas);
 
+            mBargraph.Render(ref mResultCanvas);
+            mOther.Render(ref mResultCanvas);
+
+            var w = mResult.Width;
+            var h = mResult.Height;
+
+            if (w < (int)pRectangle.Width && h < (int)pRectangle.Height)
+            {
+                var frame = new SKRect(0, 0, w, h);
+
+                var dx = (int)pRectangle.Width - mResult.Width;
+                var dy = (int)pRectangle.Height - mResult.Height;
+                dx /= 2;
+                dy /= 2;
+                frame.Offset(dx, dy);
+                pRectangle = frame;
+            }
+
+            pSurface.Clear();
+            pSurface.DrawBitmap(mResult, pRectangle);
+        }
 		static private void SetSegment(char pInput, ImageLayers pSegment)
 		{
 			SevenSegment.SetSegment(pInput, ref pSegment);
@@ -394,38 +410,12 @@ namespace App_112GW
 				char cur = pInput[i];
 				SetSegment(cur, pSegments[i]);
 			}
+            Invalidate();
 		}
 
-		public void         Select()
-		{
-			mFocusState = eFocusState.eFocused;
-		}
-		public void         Deselect()
-		{
-			mFocusState = eFocusState.eNormal;
-            Invalidate();
-		}
-		public void         Clicked()
-		{
-            mFocusState = eFocusState.eClicked;
-            mMenuTimer.Start();
-            Invalidate();
-        }
         private void        TapCallback(object sender, EventArgs args)
         {
-            switch (mFocusState)
-            {
-                case eFocusState.eClicked:
-                    
-
-                    Deselect();
-                    mMenuTimer.Stop();
-                    break;
-                case eFocusState.eNormal:
-                    Clicked();
-                    break;
-            };
-            Invalidate();
+            OnClicked(EventArgs.Empty);
         }
 
 #if __ANDROID__

@@ -9,67 +9,62 @@ namespace App_112GW
 {
 	public class ImageLayer
 	{
+		private bool                     mActive;
+        private VariableMonitor<bool>    mChanged;
 
-		private bool mChanged;
-		private bool mActive;
-		public SKBitmap mBitmap;
-		private SKStream mFile;
-		public string mName;
+		public SKImage  mImage;
+		public string   mName;
 
-		SKPaint paint;
+		SKPaint         mDrawPaint;
+        SKPaint         mUndrawPaint;
 
-		public ImageLayer(string pFilename, bool pActive = true)
-		{
-			mActive = pActive;
-			mName = System.IO.Path.GetFileName(pFilename);
+        public ImageLayer(SKImage pImage, string pName, bool pActive = true)
+        {
+            mActive = pActive;
+            mChanged = new VariableMonitor<bool>();
 
-			//Open the defined image
-			mFile = new SKFileStream(pFilename);
-			mBitmap = new SKBitmap();
-			mBitmap = SKBitmap.Decode(mFile);
+            mName = pName;
 
-			paint = new SKPaint();
-			var transparency = SKColors.Black; // 127 => 50%
-			paint.BlendMode = SKBlendMode.Plus;
-			var cf = SKColorFilter.CreateBlendMode(transparency, SKBlendMode.DstIn);
-			paint.ColorFilter = cf;
-		}
-		private void Changed()
-		{
-			mChanged = true;
-		}
+            //Open the defined image
+            mImage = pImage;
+
+            var transparency = Color.FromRgba(0, 0, 0, 0).ToSKColor();
+
+            mDrawPaint = new SKPaint();
+            mDrawPaint.BlendMode = SKBlendMode.SrcOver;
+            mDrawPaint.ColorFilter = SKColorFilter.CreateBlendMode(transparency, SKBlendMode.DstOver);
+
+            mUndrawPaint = new SKPaint();
+            mUndrawPaint.BlendMode      = SKBlendMode.DstOut;
+            mUndrawPaint.ColorFilter    = SKColorFilter.CreateBlendMode(transparency, SKBlendMode.DstOver);
+        }
 		public void Set(bool pState)
 		{
 			bool temp = mActive;
 			mActive = pState;
-
-			if (temp != mActive)
-				Changed();
 		}
 		public void On()
 		{
-			if (mActive == false)
-				Changed();
-
 			Set(true);
 		}
 		public void Off()
 		{
-			if (mActive == true)
-				Changed();
-
 			Set(false);
 		}
 		public override string ToString()
 		{
 			return mName;
 		}
-		public void Render(ref SKCanvas pSurface, ref SKRect pRectangle)
-		{
-			if (mActive)
-				pSurface.DrawBitmap(mBitmap, pRectangle, paint);
-			
-			mChanged = false;
+
+        public void Render(ref SKCanvas pSurface)
+        {
+            if (mChanged.Update(ref mActive))
+            {
+                if (mActive)
+                    pSurface.DrawImage(mImage, 0, 0, mDrawPaint);
+                else
+                    pSurface.DrawImage(mImage, 0, 0, mUndrawPaint);
+            }
 		}
 	}
 
