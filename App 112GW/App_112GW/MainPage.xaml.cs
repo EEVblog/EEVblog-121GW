@@ -72,7 +72,6 @@ namespace App_112GW
         void StartLogging(object sender, EventArgs args)
         {
             Devices.Last().Clicked(sender, args);
-            Devices.Last().Style.BasedOn = UserGrid.Style;
         }
 	}
 }
