@@ -54,7 +54,7 @@ namespace App_112GW
 
 		void AddDevice (object sender, EventArgs args)
 		{
-            MultimeterThemed Temp = new MultimeterThemed(Color.White, Color.Black);
+            MultimeterThemed Temp = new MultimeterThemed((Color)Application.Current.Resources["BackgroundColor"]);
 
             Devices.Add(Temp);
             DeviceLayout.Children.Add   (Temp);

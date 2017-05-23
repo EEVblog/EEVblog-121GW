@@ -13,9 +13,32 @@
             <Color x:Key="BackgroundColor"> #3b3a30</Color>
 
             <!-- DEFINE GLOBAL STYLES -->
+            <Style TargetType="Grid">
+                <Setter Property="BackgroundColor"          Value="{ StaticResource BackgroundColor }" />
+            </Style>
+            
             <Style TargetType="Button">
+                <Setter Property="BackgroundColor"          Value="{ StaticResource BackgroundColor }" />
+                <Setter Property="TextColor"                Value="{ StaticResource TextColor }" />
+                <Setter Property="BorderColor"              Value="{ StaticResource BorderColor }" />
+                <Setter Property="BorderRadius"             Value="5" />
+                <Setter Property="BorderWidth"              Value="2" />
+            </Style>
+            
+            <Style TargetType="Picker">
+                <Setter Property="BackgroundColor"          Value="{ StaticResource BackgroundColor }" />
+                <Setter Property="TextColor"                Value="{ StaticResource TextColor }" />
+            </Style>
+
+            <Style TargetType="Label">
+                <Setter Property="TextColor"                Value="{ StaticResource TextColor }" />
+            </Style>
+
+            <Style TargetType="ContentView">
                 <Setter Property="BackgroundColor"  Value="{ StaticResource BackgroundColor }" />
-                <Setter Property="TextColor"        Value="{ StaticResource TextColor }" />
+            </Style>
+            <Style TargetType="ContentPage">
+                <Setter Property="BackgroundColor"  Value="{ StaticResource BackgroundColor }" />
             </Style>
             <Style TargetType="View">
                 <Setter Property="BackgroundColor"  Value="{ StaticResource BackgroundColor }" />

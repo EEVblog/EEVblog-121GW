@@ -221,9 +221,7 @@ namespace App_112GW
         List<ImageLayers>	    mSegments;
 		List<ImageLayers>	    mSubSegments;
 		ImageLayers			    mBargraph;
-		ImageLayers			    mOther;
-
-        private SKPaint         mDrawPaint;
+		//ImageLayers			    mOther;
 
         private void            SetLargeSegments(string pInput)
         {
@@ -300,8 +298,8 @@ namespace App_112GW
                 subsegments.AddLayer(Image, filename);
             else if (filename.Contains("bar"))
                 mBargraph.AddLayer(Image, filename);
-            else
-                mOther.AddLayer(Image, filename);
+            //else
+                //mOther.AddLayer(Image, filename);
 
             return true;
         }
@@ -311,7 +309,7 @@ namespace App_112GW
             mSegments		= new List<ImageLayers> ();
 			mSubSegments	= new List<ImageLayers> ();
 			mBargraph		= new ImageLayers       ("mBargraph");
-			mOther			= new ImageLayers       ("mOther");
+			//mOther			= new ImageLayers       ("mOther");
 
             //Sort images into appropreate layered images
             var Loader = new ImageLoader(ProcessImage);
@@ -320,7 +318,7 @@ namespace App_112GW
 			subsegments.Sort();
 			mBargraph.Sort();
 			segments.Sort();
-			mOther.Sort();
+			//mOther.Sort();
 
             //Setups minimums
             (WidthRequest, HeightRequest) = GetResultSize();
@@ -373,7 +371,7 @@ namespace App_112GW
                 mSubSegments[i].Render(ref pSurface);
 
             mBargraph.Render(ref pSurface);
-            mOther.Render(ref pSurface);
+            //mOther.Render(ref pSurface);
         }
 		static private void     SetSegment(char pInput, ImageLayers pSegment)
 		{

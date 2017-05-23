@@ -87,9 +87,9 @@ namespace App_112GW
             AddView(mRelative, 0, 1);
 
             //Add Plot checkbox
-            mPlotCheck = new Checkbox("Plot");
-            mPlotCheck.Changed += CheckboxChange_Plot;
-            AddView(mPlotCheck, 0, 2);
+            //mPlotCheck = new Checkbox("Plot");
+            //mPlotCheck.Changed += CheckboxChange_Plot;
+            //AddView(mPlotCheck, 0, 2);
 
             //Add Serial number
             mSerialNumber = new Label()

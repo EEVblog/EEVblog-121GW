@@ -9,29 +9,29 @@ using Xamarin.Forms;
 namespace App_112GW
 {
 	public partial class MultimeterThemed : ContentView
-	{
-		public MultimeterThemed (Color BackColor, Color ForeColor)
+    {
+        MultimeterScreen Screen;
+        MultimeterMenu Menu;
+        bool Item = true;
+
+        public MultimeterThemed (Color BackColor)
 		{
 			InitializeComponent ();
 
             Screen = new MultimeterScreen() { };
-            Screen.BackgroundColor = BackgroundColor;
+            Screen.BackgroundColor = BackColor;
             Screen.Clicked += Clicked;
 
             Menu = new MultimeterMenu();
-            Menu.BackgroundColor = BackgroundColor;
+            Menu.BackgroundColor = BackColor;
             Menu.Clicked += Clicked;
 
             SetView();
         }
 
-        MultimeterScreen Screen;
-        MultimeterMenu Menu;
-
-        bool mItem = true;
         private void SetView()
         {
-            switch (mItem)
+            switch (Item)
             {
                 case true:
                     Content = Screen;
@@ -42,7 +42,7 @@ namespace App_112GW
                 default:
                     break;
             }
-            mItem = !mItem;
+            Item = !Item;
         }
 
         public void Clicked(object sender, EventArgs e)
