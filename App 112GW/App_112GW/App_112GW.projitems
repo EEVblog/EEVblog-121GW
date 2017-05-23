@@ -13,17 +13,19 @@
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)MultimeterMenu.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)VariableMonitor.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MultimeterThemed.xaml.cs">
+      <DependentUpon>MultimeterThemed.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Checkbox.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)EnhancedTimer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ResourceLoader.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LayeredImages.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ImageLayer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="$(MSBuildThisFileDirectory)Multimeter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MultimeterScreen.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)VariableMonitor.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)MainPage.xaml">
@@ -139,5 +141,11 @@
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Layers\sub5e.png" />
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Layers\sub5f.png" />
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Layers\sub5g.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)MultimeterThemed.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
   </ItemGroup>
 </Project>

@@ -4,4 +4,6 @@
              xmlns:local="clr-namespace:App_112GW"
 			 xmlns:views="clr-namespace:SkiaSharp.Views.Forms;assembly=SkiaSharp.Views.Forms"
              x:Class="App_112GW.MainPage">
+
+        
 </ContentPage>

@@ -1,11 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Reflection;
-using System.Text;
+﻿using System.Reflection;
 using System.IO;
 using SkiaSharp;
-using SkiaSharp.Views;
+using System.Xml;
+
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.Reflection;
+using System.Text.RegularExpressions;
+using System.Xml;
+
 using Xamarin.Forms;
+using Xamarin.Forms.Internals;
+using Xamarin.Forms.Xaml.Internals;
 
 namespace App_112GW
 {
@@ -13,8 +21,8 @@ namespace App_112GW
     {
         public delegate bool ProcessFile(string Filename);
 
-        private ProcessFile _FileFunction;
-        protected ProcessFile FileFunction
+        private     ProcessFile _FileFunction;
+        protected   ProcessFile FileFunction
         {
             get
             {
@@ -83,6 +91,33 @@ namespace App_112GW
         {
             mImageFunction = pLoaderFunction;
             FileFunction = CheckImage;
+        }
+    }
+
+    class XAMLLoader : ResourceLoader
+    {
+        public delegate bool ProcessXAML(string Name, string Xaml);
+        private ProcessXAML mImageFunction;
+        private bool HasXamlExtension(string source)
+        {
+            return source.EndsWith(".xaml");
+        }
+
+        bool CheckXaml(string Path)
+        {
+            if (HasXamlExtension(Path))
+            {
+                //Is an XAML file
+                var Name = GetFilename(Path);
+
+            }
+            return true;
+        }
+
+        public XAMLLoader(ProcessXAML pLoaderFunction)
+        {
+            mImageFunction = pLoaderFunction;
+            FileFunction = CheckXaml;
         }
     }
 }

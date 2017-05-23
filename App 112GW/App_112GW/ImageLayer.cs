@@ -30,11 +30,11 @@ namespace App_112GW
 
             var transparency = Color.FromRgba(0, 0, 0, 0).ToSKColor();
 
-            mDrawPaint = new SKPaint();
-            mDrawPaint.BlendMode = SKBlendMode.SrcOver;
-            mDrawPaint.ColorFilter = SKColorFilter.CreateBlendMode(transparency, SKBlendMode.DstOver);
+            mDrawPaint                  = new SKPaint();
+            mDrawPaint.BlendMode        = SKBlendMode.SrcOver;
+            mDrawPaint.ColorFilter      = SKColorFilter.CreateBlendMode(transparency, SKBlendMode.DstOver);
 
-            mUndrawPaint = new SKPaint();
+            mUndrawPaint                = new SKPaint();
             mUndrawPaint.BlendMode      = SKBlendMode.DstOut;
             mUndrawPaint.ColorFilter    = SKColorFilter.CreateBlendMode(transparency, SKBlendMode.DstOver);
         }

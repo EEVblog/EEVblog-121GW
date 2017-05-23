@@ -5,4 +5,7 @@
     xmlns:local="using:App_112GW.UWP"
     RequestedTheme="Light">
 
+    <Application.Resources>
+
+    </Application.Resources>
 </Application>

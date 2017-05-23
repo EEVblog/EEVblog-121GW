@@ -1,10 +1,25 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <Application xmlns="http://xamarin.com/schemas/2014/forms"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                 xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="App_112GW.App">
-	<Application.Resources>
+    <Application.Resources>
+        <!--<ResourceDictionary MergedWith="dark:DarkThemeResources" />-->
 
-		<!-- Application resource dictionary -->
+        <ResourceDictionary>
+            <!-- DEFINE ANY CONSTANTS -->
+            <Color x:Key="HighlightColor">  #eaece5</Color>
+            <Color x:Key="TextColor">       #b2c2bf</Color>
+            <Color x:Key="BorderColor">     #c0ded9</Color>
+            <Color x:Key="BackgroundColor"> #3b3a30</Color>
 
-	</Application.Resources>
+            <!-- DEFINE GLOBAL STYLES -->
+            <Style TargetType="Button">
+                <Setter Property="BackgroundColor"  Value="{ StaticResource BackgroundColor }" />
+                <Setter Property="TextColor"        Value="{ StaticResource TextColor }" />
+            </Style>
+            <Style TargetType="View">
+                <Setter Property="BackgroundColor"  Value="{ StaticResource BackgroundColor }" />
+            </Style>
+        </ResourceDictionary>
+    </Application.Resources>
 </Application>

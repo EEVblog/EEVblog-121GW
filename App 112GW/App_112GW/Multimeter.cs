@@ -10,73 +10,38 @@ using System.Runtime.CompilerServices;
 
 namespace App_112GW
 {
-    class Multimeter : ContentView
+    class Multimeter : Frame
     {
-        private enum ShowItem
-        {
-            eMenu,
-            eScreen
-        };
-        public          MultimeterScreen Screen;
-        public          MultimeterMenu   Menu;
+        public          MultimeterScreen    Screen;
+        public          MultimeterMenu      Menu;
+        bool                                mItem = true;
 
-        ShowItem                         mItem;
-        TapGestureRecognizer             mTapRecogniser;
-
-        private void    SetView(ShowItem pItem)
-        {
-            mItem = pItem;
-            SetView();
-        }
-        private void    SetView()
+        private void SetView()
         {
             switch (mItem)
             {
-                case ShowItem.eScreen:
-                    Content = Screen;
+                case true:
+                    Content = new MultimeterScreen();
+                    (Content as MultimeterScreen).Clicked += Clicked;
                     break;
-                case ShowItem.eMenu:
-                    Content = Menu;
+                case false:
+                    Content = new MultimeterMenu();
+                    (Content as MultimeterMenu).Clicked += Clicked;
                     break;
                 default:
                     break;
             }
+
+            mItem = !mItem;
         }
-        private void    ToggleView()
+        public          Multimeter (string pSerialNumber = "SN0000")
         {
-            if (mItem == ShowItem.eScreen)
-                mItem = ShowItem.eMenu;
-            else if (mItem == ShowItem.eMenu)
-                mItem = ShowItem.eScreen;
-
-            SetView();
-        }
-
-        public          Multimeter(string pSerialNumber = "SN0000")
-        {
-            //Add the multimeter screen
-            Screen  = new MultimeterScreen();
-            Screen.Clicked += Clicked;
-
-            //Add the multimeter menu
-            Menu    = new MultimeterMenu();
-
-            //Show multimeter screen by default
-            SetView(ShowItem.eMenu);
-
-            //Setup responses to gestures
-            mTapRecogniser = new TapGestureRecognizer();
-            mTapRecogniser.Tapped += TapCallback;
-            GestureRecognizers.Add(mTapRecogniser);
+            SetView ();
         }
 
         public void     Clicked(object sender, EventArgs e)
         {
-            ToggleView();
-        }
-        private void    TapCallback(object sender, EventArgs args)
-        {
-            Clicked(this, EventArgs.Empty);
+            SetView();
         }
     }
 }

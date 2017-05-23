@@ -7,7 +7,9 @@ using Xamarin.Forms;
 using SkiaSharp;
 using SkiaSharp.Views.Forms;
 using System.Runtime.CompilerServices;
-namespace App_112GW
+using App_112GW;
+
+namespace rMultiplatform
 {
     class CheckboxRenderer:
 #if __ANDROID__
@@ -34,38 +36,83 @@ namespace App_112GW
         public Color                    TextColor;
 
         private SKPaint                 mPaintStyle;
-        private SKPaint mClearStyle;
-        private TapGestureRecognizer    mTapRecogniser;
+        private SKPaint                 mClearStyle;
+
+        //rMultiplatform.Touch mTouch;
+        TapGestureRecognizer mTapRecogniser;
 
         public CheckboxRenderer()
         {
             HorizontalOptions = LayoutOptions.End;
             VerticalOptions = LayoutOptions.Fill;
-                        
+
             //Setup responses to gestures
             mTapRecogniser = new TapGestureRecognizer();
             mTapRecogniser.Tapped += TapCallback;
             GestureRecognizers.Add(mTapRecogniser);
-           
+
             //Setup defaults
             Checked = false;
-            TextColor = Globals.ColorText;
-            BackgroundColor = Globals.BackgroundColor;
+
+            var temp = new Label();
+            temp.BackgroundColor = Color.Default;
+            temp.TextColor = Color.Default;
+
+            TextColor = Color.Transparent;
+            BackgroundColor = Color.FromRgb(127,127,127);
+
             CornerRadius = 0;
             mPaintStyle = new SKPaint()
             {
                 Color = TextColor.ToSKColor(),
                 Style = SKPaintStyle.Stroke
             };
-        }
 
+            VerticalOptions = LayoutOptions.Fill;
+            HorizontalOptions = LayoutOptions.End;
+
+            
+        }
+        protected override SizeRequest OnMeasure(double width, double height)
+        {
+            return new SizeRequest(new Size(10, 10));
+        }
         private void TapCallback(object sender, EventArgs args)
         {
             Checked = !Checked;
             OnChanged(EventArgs.Empty);
             InvalidateSurface();
         }
+        private double Larger(double v1, double v2)
+        {
+            if (v1 > v2) return v1;
+            if (v2 > v1) return v2;
+            return v1;
+        }
+        private float Larger(float v1, float v2)
+        {
+            if (v1 > v2) return v1;
+            if (v2 > v1) return v2;
+            return v1;
+        }
+        private float Larger(SKRect pInput)
+        {
+            return Larger(pInput.Size.Width, pInput.Size.Height);
+        }
+        private float Larger(SKSize pInput)
+        {
+            return Larger(pInput.Width, pInput.Height);
+        }
+        bool IsSquare(SKRect pInput)
+        {
+            return pInput.Width == pInput.Height;
+        }
+        bool IsSquare(SKSize pInput)
+        {
+            return pInput.Width == pInput.Height;
+        }
 
+        bool CheckSquareOnce = true;
 #if __ANDROID__
         protected override void OnPaintSurface(SKPaintGLSurfaceEventArgs e)
 #elif __IOS__
@@ -76,10 +123,15 @@ namespace App_112GW
         {
             using (var can = e.Surface.Canvas)
             {
-                SKRect temp = can.ClipBounds;
-                WidthRequest = temp.Size.Height;
-                HorizontalOptions = LayoutOptions.End;
+                if (!IsSquare(CanvasSize) && CheckSquareOnce)
+                {
+                    double larger = Larger(CanvasSize);
+                    HeightRequest = larger;
+                    WidthRequest = larger;
+                    CheckSquareOnce = false;
+                }
 
+                SKRect temp = can.ClipBounds;
                 mPaintStyle.StrokeWidth = (float)WidthRequest / 16.0f;
 
                 temp.Left += mPaintStyle.StrokeWidth;
@@ -134,7 +186,6 @@ namespace App_112GW
         {
             mLabel = new Label(){
                 Text = pLabel,
-                Style = Globals.LabelStyle,
                 HorizontalTextAlignment = TextAlignment.End,
                 HorizontalOptions = LayoutOptions.Fill,
                 VerticalTextAlignment = TextAlignment.Center,
