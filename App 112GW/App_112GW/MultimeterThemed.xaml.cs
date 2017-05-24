@@ -17,6 +17,7 @@ namespace App_112GW
         public MultimeterThemed (Color BackColor)
 		{
 			InitializeComponent ();
+            //HorizontalOptions = new LayoutOptions(LayoutAlignment.Start, true);
 
             Screen = new MultimeterScreen() { };
             Screen.BackgroundColor = BackColor;
@@ -26,8 +27,13 @@ namespace App_112GW
             Menu.BackgroundColor = BackColor;
             Menu.Clicked += Clicked;
 
+            var ScreenSize = Screen.GetResultSize(Width);
+            Menu.HeightRequest = ScreenSize.height - Menu.Padding.Top - Menu.Padding.Bottom;
+
             SetView();
         }
+
+
 
         private void SetView()
         {

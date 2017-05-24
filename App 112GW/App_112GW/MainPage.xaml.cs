@@ -12,15 +12,15 @@ namespace App_112GW
 {
 	public partial class MainPage : ContentPage
 	{
-		Random              randy               = new Random();
-        private Button      ButtonAddDevice		= new Button {  Text = "Add Device" };
-		private Button		ButtonStartLogging	= new Button {  Text = "Start Logging" };
-		private Grid		UserGrid			= new Grid   {  HorizontalOptions=LayoutOptions.Fill, VerticalOptions = LayoutOptions.Fill, RowSpacing = 1, ColumnSpacing = 1, Padding = 1};
+        List<MultimeterThemed> Devices = new List<MultimeterThemed> ( );
 
-        List<MultimeterThemed>    Devices       = new List<MultimeterThemed>();
-        private ScrollView  DeviceView          = new ScrollView { HorizontalOptions = LayoutOptions.Fill, VerticalOptions = LayoutOptions.Fill };
-        private StackLayout DeviceLayout        = new StackLayout { HorizontalOptions = LayoutOptions.Fill, VerticalOptions = LayoutOptions.StartAndExpand };
-		void InitSurface()
+        private Button          ButtonAddDevice		= new Button        {  Text = "Add Device"      };
+		private Button		    ButtonStartLogging	= new Button        {  Text = "Start Logging"   };
+		private Grid		    UserGrid			= new Grid          {  HorizontalOptions=LayoutOptions.Fill, VerticalOptions = LayoutOptions.Fill, RowSpacing = 1, ColumnSpacing = 1, Padding = 1};
+        private ScrollView      DeviceView          = new ScrollView    { HorizontalOptions = LayoutOptions.Fill, VerticalOptions = LayoutOptions.Fill };
+        private StackLayout     DeviceLayout        = new StackLayout   { HorizontalOptions = LayoutOptions.Fill, VerticalOptions = LayoutOptions.StartAndExpand };
+
+        void InitSurface()
 		{
 			UserGrid.RowDefinitions.Add(	new RowDefinition		{ Height	= new GridLength(1, GridUnitType.Star)});
 			UserGrid.RowDefinitions.Add(	new RowDefinition		{ Height	= new GridLength(50, GridUnitType.Absolute)	});
@@ -48,13 +48,12 @@ namespace App_112GW
 		public MainPage ()
 		{
 			InitializeComponent();
-
 			InitSurface();
 		}
 
 		void AddDevice (object sender, EventArgs args)
 		{
-            MultimeterThemed Temp = new MultimeterThemed((Color)Application.Current.Resources["BackgroundColor"]);
+            MultimeterThemed Temp = new MultimeterThemed ((Color)Application.Current.Resources["BackgroundColor"]);
 
             Devices.Add(Temp);
             DeviceLayout.Children.Add   (Temp);
@@ -69,9 +68,8 @@ namespace App_112GW
             Grid.SetColumnSpan          (ButtonStartLogging,    1);
         }
 
-        void StartLogging(object sender, EventArgs args)
+        void StartLogging (object sender, EventArgs args)
         {
-            Devices.Last().Clicked(sender, args);
         }
 	}
 }

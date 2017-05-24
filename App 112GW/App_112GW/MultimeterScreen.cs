@@ -199,12 +199,9 @@ namespace App_112GW
         SKCanvasView
 #endif
     {
-        //private rMultiplatform.Touch mTouch;
-        private TapGestureRecognizer mTouch;
-
-
-        public event EventHandler Clicked;
-        protected virtual void OnClicked(EventArgs e)
+        private TapGestureRecognizer    mTouch;
+        public event EventHandler       Clicked;
+        protected virtual   void        OnClicked   (EventArgs e)
         {
             EventHandler handler = Clicked;
             if (handler != null)
@@ -212,32 +209,36 @@ namespace App_112GW
                 handler(this, e);
             }
         }
-
-        private void TapCallback(object sender, EventArgs args)
+        private             void        TapCallback (object sender, EventArgs args)
         {
             OnClicked(EventArgs.Empty);
         }
 
+        SKBitmap                mLayer;
+        SKCanvas                mCanvas;
+        SKRect                  mImageRectangle;
+
+
         List<ImageLayers>	    mSegments;
 		List<ImageLayers>	    mSubSegments;
 		ImageLayers			    mBargraph;
-		//ImageLayers			    mOther;
+		//ImageLayers			mOther;
 
-        private void            SetLargeSegments(string pInput)
+        private void            SetLargeSegments    (string pInput)
         {
             if (pInput.Length > mSegments.Count)
                 throw (new Exception("Large segment value too many decimal places."));
 
             SetSegments(pInput.PadLeft(mSegments.Count, ' '), ref mSegments);
         }
-        private void            SetSmallSegments(string pInput)
+        private void            SetSmallSegments    (string pInput)
         {
             if (pInput.Length > mSubSegments.Count)
                 throw (new Exception("Small segment value too many decimal places."));
 
             SetSegments(pInput.PadLeft(mSubSegments.Count, ' '), ref mSubSegments);
         }
-        private void            SetBargraph     (int pInput)
+        private void            SetBargraph         (int pInput)
         {
             foreach (ImageLayer Layer in mBargraph.mLayers)
                 Layer.Off();
@@ -245,7 +246,6 @@ namespace App_112GW
             for (int i = 0; i < mBargraph.mLayers.Count; i++)
                 mBargraph.mLayers[i].Set(pInput >= i);
         }
-
         public float            LargeSegments
         {
             set
@@ -260,7 +260,6 @@ namespace App_112GW
                 SetSmallSegments(value.ToString());
             }
         }
-
         public int              Bargraph
         {
             set
@@ -271,7 +270,6 @@ namespace App_112GW
                     throw (new Exception("Bargraph value too high."));
             }
         }
-
         public string           LargeSegmentsWord
         {
             set
@@ -319,10 +317,7 @@ namespace App_112GW
 			mBargraph.Sort();
 			segments.Sort();
 			//mOther.Sort();
-
-            //Setups minimums
-            (WidthRequest, HeightRequest) = GetResultSize();
-
+           
             //Sort segments and subsegments into seperate digits
             ImageLayers returned;
 			int i;
@@ -344,34 +339,66 @@ namespace App_112GW
 			foreach (ImageLayers temp in mSubSegments)
 				temp.ToBottom("dp");
 
+            //Add the gesture recognizer 
             mTouch = new TapGestureRecognizer();
             mTouch.Tapped += TapCallback;
             GestureRecognizers.Add(mTouch);
+
+            //Setup the buffer layer
+            (double aspect, double x, double y) = GetResultSize();
+            mLayer  =   new SKBitmap((int)x, (int)y, SKImageInfo.PlatformColorType, SKAlphaType.Premul);
+            mCanvas =   new SKCanvas(mLayer);
         }
         private void            Invalidate      ()
         {
             InvalidateSurface();
         }
-        public (int, int)       GetResultSize   ()
+
+
+        public (double aspect, double width, double height)       GetResultSize   (double Width = 0)
         {
-            return (mBargraph.GetResultSize());
+            if (Width != 0)
+                WidthRequest = Width;
+
+            (double x, double y) = mBargraph.GetResultSize();
+            return ((y / x), x, y);
         }
 
 
+
+        protected override void OnSizeAllocated(double width, double height)
+        {
+            base.OnSizeAllocated(width, height);
+
+            (double aspect, double x, double y) = GetResultSize();
+
+            mImageRectangle.Top = 0;
+            mImageRectangle.Left = 0;
+            mImageRectangle.Right = (float)((width > x) ? x : width);
+            mImageRectangle.Bottom = (float)(aspect * mImageRectangle.Right);
+
+            if (mImageRectangle.Height > height)
+                HeightRequest = mImageRectangle.Height;
+
+            float dx = (float)(width - x);
+            dx /= 2;
+
+            mImageRectangle.Offset(dx, 0);
+        }
         private void            Render(SKCanvas pSurface)
 		{
-            SKRect pRectangle = pSurface.ClipBounds;
-            pSurface.Clear(BackgroundColor.ToSKColor());
-
             //Add render on change
             for (int i = 0; i < mSegments.Count; i++)
-                mSegments[i].Render(ref pSurface);
+                mSegments[i].Render(ref mCanvas);
 
             for (int i = 0; i < mSegments.Count; i++)
-                mSubSegments[i].Render(ref pSurface);
+                mSubSegments[i].Render(ref mCanvas);
 
-            mBargraph.Render(ref pSurface);
+            mBargraph.Render(ref mCanvas);
             //mOther.Render(ref pSurface);
+
+            //Add render on change
+            pSurface.DrawBitmap(mLayer, mImageRectangle);
         }
 		static private void     SetSegment(char pInput, ImageLayers pSegment)
 		{

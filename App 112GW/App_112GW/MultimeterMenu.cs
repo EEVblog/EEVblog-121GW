@@ -25,15 +25,25 @@ namespace App_112GW
             }
         }
 
+        static bool SameType(object A, Type B)
+        {
+            return Object.ReferenceEquals(A.GetType(), B);
+        }
+
         private void TapCallback(object sender, EventArgs args)
         //private void TapCallback(object sender, rMultiplatform.TouchActionEventArgs args)
         {
-            bool child = true;
             foreach (View Child in Children)
-                child &= !Child.IsFocused;
+            {
+                if (Child.IsFocused)
+                {
+                    if (SameType(Child, typeof(Button)))
+                        Child.Unfocus();
 
-            if (child)
-                OnClicked(EventArgs.Empty);
+                    return;
+                }
+            }
+            OnClicked(EventArgs.Empty);
         }
 
         private Button mHold;
@@ -42,7 +52,6 @@ namespace App_112GW
         private Picker mRange;
         private Picker mMode;
         private Checkbox mPlotCheck;
-
 
         private void AddView(View pInput, int pX, int pY, int pXSpan = 1, int pYSpan = 1)
         {
@@ -53,22 +62,22 @@ namespace App_112GW
             SetColumnSpan(pInput, pXSpan);
             SetRowSpan(pInput, pYSpan);
         }
+
         public MultimeterMenu(string pSerialNumber = "SN0000")
         {
-
             Padding = 10;
 
+            VerticalOptions = LayoutOptions.Center;
+
             //The grid is currently 2x5
             //Setup Grid rows
-            for (int a = 0; a < 3; a++)
-                RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Auto) });
+            RowDefinitions.Add(new RowDefinition { Height = new GridLength (1, GridUnitType.Star) });
+            RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Star) });
+            RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Auto) });
 
             //Setup Grid columns
-            ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
-            ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
-
-            //The grid is currently 2x5
-            //Setup Grid rows
+            ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength (1, GridUnitType.Star) });
+            ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength (1, GridUnitType.Star) });
 
             //Add Hold Button
             mHold = new Button()
@@ -116,11 +125,14 @@ namespace App_112GW
             {
                 Title = "Select Mode"
             };
+
+            //
             mMode.Items.Add("DC");
             mMode.Items.Add("AC");
             mMode.SelectedIndexChanged += PickerChange_Mode;
             AddView(mMode, 1, 1);
 
+            //
             mTouch = new TapGestureRecognizer();
             mTouch.Tapped += TapCallback;
             GestureRecognizers.Add(mTouch);
@@ -129,23 +141,18 @@ namespace App_112GW
         //The reactions to picker, checkbox, buttons events
         private void ButtonPress_Hold       (object sender, EventArgs e)
         {
-            (sender as Button).Unfocus();
         }
         private void ButtonPress_Relative   (object sender, EventArgs e)
         {
-            (sender as Button).Unfocus();
         }
         private void CheckboxChange_Plot    (object sender, EventArgs e)
         {
-            (sender as rMultiplatform.Checkbox).Unfocus();
         }
         private void PickerChange_Range     (object sender, EventArgs e)
         {
-            (sender as Picker).Unfocus();
         }
         private void PickerChange_Mode      (object sender, EventArgs e)
         {
-            (sender as Picker).Unfocus();
         }
     }
 }
