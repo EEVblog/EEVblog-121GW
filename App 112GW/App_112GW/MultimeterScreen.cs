@@ -303,6 +303,8 @@ namespace App_112GW
         }
         public                  MultimeterScreen()
 		{
+            HorizontalOptions = LayoutOptions.Fill;
+
             //New layer images
             mSegments		= new List<ImageLayers> ();
 			mSubSegments	= new List<ImageLayers> ();
@@ -344,6 +346,8 @@ namespace App_112GW
             mTouch.Tapped += TapCallback;
             GestureRecognizers.Add(mTouch);
 
+            
+
             //Setup the buffer layer
             (double aspect, double x, double y) = GetResultSize();
             mLayer  =   new SKBitmap((int)x, (int)y, SKImageInfo.PlatformColorType, SKAlphaType.Premul);
@@ -354,7 +358,6 @@ namespace App_112GW
             InvalidateSurface();
         }
 
-
         public (double aspect, double width, double height)       GetResultSize   (double Width = 0)
         {
             if (Width != 0)
@@ -364,27 +367,40 @@ namespace App_112GW
             return ((y / x), x, y);
         }
 
-
+        private float ConvertWidthToPixel(float value)
+        {
+            return (CanvasSize.Width * value / (float)Width);
+        }
+        private float ConvertHeightToPixel(float value)
+        {
+            return (CanvasSize.Height * value / (float)Height);
+        }
 
         protected override void OnSizeAllocated(double width, double height)
         {
             base.OnSizeAllocated(width, height);
 
             (double aspect, double x, double y) = GetResultSize();
+            float w = ((float)width);
+            float h = ((float)height);
 
             mImageRectangle.Top = 0;
             mImageRectangle.Left = 0;
-            mImageRectangle.Right = (float)((width > x) ? x : width);
+            mImageRectangle.Right = (float)((w > x) ? x : w);
             mImageRectangle.Bottom = (float)(aspect * mImageRectangle.Right);
 
-            if (mImageRectangle.Height > height)
+            if (mImageRectangle.Height > h)
                 HeightRequest = mImageRectangle.Height;
 
-            float dx = (float)(width - x);
-            dx /= 2;
-
-            mImageRectangle.Offset(dx, 0);
+            float dx = (float)(w - x);
+            if (dx > 0)
+            {
+                dx /= 2;
+                mImageRectangle.Offset(dx, 0);
+            }
+            mCanvas.Clear(BackgroundColor.ToSKColor());
         }
+
         private void            Render(SKCanvas pSurface)
 		{
             //Add render on change
@@ -398,6 +414,8 @@ namespace App_112GW
             //mOther.Render(ref pSurface);
 
             //Add render on change
+            pSurface.Scale(CanvasSize.Width/(float)Width);
+            pSurface.Clear(BackgroundColor.ToSKColor());
             pSurface.DrawBitmap(mLayer, mImageRectangle);
         }
 		static private void     SetSegment(char pInput, ImageLayers pSegment)
@@ -420,7 +438,6 @@ namespace App_112GW
             Invalidate();
 		}
 
-       
 #if __ANDROID__
         protected override void OnPaintSurface(SKPaintGLSurfaceEventArgs e)
 #elif __IOS__

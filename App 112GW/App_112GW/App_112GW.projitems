@@ -12,6 +12,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)BackButton.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MultimeterMenu.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MultimeterThemed.xaml.cs">
       <DependentUpon>MultimeterThemed.xaml</DependentUpon>
@@ -25,6 +26,7 @@
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)MultimeterScreen.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Touch.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)VariableMonitor.cs" />
   </ItemGroup>
   <ItemGroup>

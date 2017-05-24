@@ -55,7 +55,6 @@ namespace App_112GW
 		{
 			return mName;
 		}
-
         public void Render(ref SKCanvas pSurface)
         {
             if (mChanged.Update(ref mActive))

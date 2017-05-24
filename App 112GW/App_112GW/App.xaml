@@ -7,10 +7,11 @@
 
         <ResourceDictionary>
             <!-- DEFINE ANY CONSTANTS -->
-            <Color x:Key="HighlightColor">  #eaece5</Color>
-            <Color x:Key="TextColor">       #b2c2bf</Color>
-            <Color x:Key="BorderColor">     #c0ded9</Color>
-            <Color x:Key="BackgroundColor"> #3b3a30</Color>
+            <x:Double x:Key="BorderWidth">  3       </x:Double>
+            <Color x:Key="HighlightColor">  #eaece5 </Color>
+            <Color x:Key="TextColor">       #b2c2bf </Color>
+            <Color x:Key="BorderColor">     #c0ded9 </Color>
+            <Color x:Key="BackgroundColor"> #3b3a30 </Color>
 
             <!-- DEFINE GLOBAL STYLES -->
             <Style TargetType="Grid">
@@ -22,7 +23,7 @@
                 <Setter Property="TextColor"                Value="{ StaticResource TextColor }" />
                 <Setter Property="BorderColor"              Value="{ StaticResource BorderColor }" />
                 <Setter Property="BorderRadius"             Value="5" />
-                <Setter Property="BorderWidth"              Value="2" />
+                <Setter Property="BorderWidth"              Value="{ StaticResource BorderWidth }" />
             </Style>
 
             <Style TargetType="Picker">

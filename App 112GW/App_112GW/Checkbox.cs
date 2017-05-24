@@ -32,51 +32,26 @@ namespace rMultiplatform
 
         public bool                     Checked;
         public int                      CornerRadius;
-        public Color                    BorderColor;
-        public Color                    TextColor;
-
         private SKPaint                 mPaintStyle;
-        private SKPaint                 mClearStyle;
-
-        //rMultiplatform.Touch mTouch;
-        TapGestureRecognizer mTapRecogniser;
 
         public CheckboxRenderer()
         {
             HorizontalOptions = LayoutOptions.End;
             VerticalOptions = LayoutOptions.Fill;
 
-            //Setup responses to gestures
-            mTapRecogniser = new TapGestureRecognizer();
-            mTapRecogniser.Tapped += TapCallback;
-            GestureRecognizers.Add(mTapRecogniser);
-
             //Setup defaults
             Checked = false;
-
-            var temp = new Label();
-            temp.BackgroundColor = Color.Default;
-            temp.TextColor = Color.Default;
-
-            TextColor = Color.Transparent;
-            BackgroundColor = Color.FromRgb(127,127,127);
-
             CornerRadius = 0;
             mPaintStyle = new SKPaint()
             {
-                Color = TextColor.ToSKColor(),
+                Color = SKColors.Blue,
                 Style = SKPaintStyle.Stroke
             };
 
             VerticalOptions = LayoutOptions.Fill;
             HorizontalOptions = LayoutOptions.End;
+        }
 
-            
-        }
-        protected override SizeRequest OnMeasure(double width, double height)
-        {
-            return new SizeRequest(new Size(10, 10));
-        }
         private void TapCallback(object sender, EventArgs args)
         {
             Checked = !Checked;
@@ -184,7 +159,9 @@ namespace rMultiplatform
         }
         public Checkbox(string pLabel)
         {
-            mLabel = new Label(){
+            mLabel = new Label ()
+            {
+                InputTransparent = true,
                 Text = pLabel,
                 HorizontalTextAlignment = TextAlignment.End,
                 HorizontalOptions = LayoutOptions.Fill,
@@ -194,14 +171,21 @@ namespace rMultiplatform
 
             mRenderer = new CheckboxRenderer();
             mRenderer.Changed += OnChanged;
-            //
-            ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
-            ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Auto) });
 
-            RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Star) });
+
+            //
+            ColumnDefinitions.Add   (new ColumnDefinition   { Width = new GridLength(1, GridUnitType.Star)  });
+            ColumnDefinitions.Add   (new ColumnDefinition   { Width = new GridLength(1, GridUnitType.Auto)  });
+            RowDefinitions.Add      (new RowDefinition      { Height = new GridLength(1, GridUnitType.Star) });
 
             AddView(mLabel, 0, 0);
             AddView(mRenderer, 1, 0);
+        }
+
+        protected override void OnSizeAllocated(double width, double height)
+        {
+            base.OnSizeAllocated(width, height);
+            WidthRequest = height;
         }
     }
 }

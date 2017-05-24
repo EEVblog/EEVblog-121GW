@@ -13,45 +13,46 @@ namespace App_112GW
     class MultimeterMenu: Grid
     {
         //private rMultiplatform.Touch mTouch;
-        private TapGestureRecognizer mTouch;
-
+        //private TapGestureRecognizer mTouch;
+        //protected virtual void OnClicked(EventArgs e)
+        //{
+        //    EventHandler handler = Clicked;
+        //    if (handler != null)
+        //    {
+        //        handler(this, e);
+        //    }
+        //}
+        //private void TapCallback(object sender, EventArgs args)
+        ////private void TapCallback(object sender, rMultiplatform.TouchActionEventArgs args)
+        //{
+        //    foreach (View Child in Children)
+        //    {
+        //        if (Child.IsFocused)
+        //        {
+        //            if (SameType(Child, typeof(Button)))
+        //                Child.Unfocus();
+        //            return;
+        //        }
+        //    }
+        //    OnClicked(EventArgs.Empty);
+        //}
         public event EventHandler Clicked;
-        protected virtual void OnClicked(EventArgs e)
-        {
-            EventHandler handler = Clicked;
-            if (handler != null)
-            {
-                handler(this, e);
-            }
-        }
+
 
         static bool SameType(object A, Type B)
         {
             return Object.ReferenceEquals(A.GetType(), B);
         }
 
-        private void TapCallback(object sender, EventArgs args)
-        //private void TapCallback(object sender, rMultiplatform.TouchActionEventArgs args)
-        {
-            foreach (View Child in Children)
-            {
-                if (Child.IsFocused)
-                {
-                    if (SameType(Child, typeof(Button)))
-                        Child.Unfocus();
 
-                    return;
-                }
-            }
-            OnClicked(EventArgs.Empty);
-        }
 
-        private Button mHold;
-        private Button mRelative;
-        private Label mSerialNumber;
-        private Picker mRange;
-        private Picker mMode;
-        private Checkbox mPlotCheck;
+        private Button      mHold;
+        private Button      mRelative;
+        private Label       mSerialNumber;
+        private Picker      mRange;
+        private Picker      mMode;
+        private Checkbox    mPlotCheck;
+        private BackButton  mBack;
 
         private void AddView(View pInput, int pX, int pY, int pXSpan = 1, int pYSpan = 1)
         {
@@ -65,8 +66,7 @@ namespace App_112GW
 
         public MultimeterMenu(string pSerialNumber = "SN0000")
         {
-            Padding = 10;
-
+            Padding = 20;
             VerticalOptions = LayoutOptions.Center;
 
             //The grid is currently 2x5
@@ -95,7 +95,18 @@ namespace App_112GW
             mRelative.Clicked += ButtonPress_Relative;
             AddView(mRelative, 0, 1);
 
-            //Add Plot checkbox
+            //Add Relative Button
+            mBack = new BackButton()
+            {
+                BorderWidth     = Globals.BorderWidth,
+                BackgroundColor = Globals.BackgroundColor,
+                PressColor      = Globals.HighlightColor,
+                IdleColor       = Globals.TextColor
+            };
+            mBack.Clicked += ButtonPress_Back;
+            AddView(mBack, 0, 2);
+
+            ////Add Plot checkbox
             //mPlotCheck = new Checkbox("Plot");
             //mPlotCheck.Changed += CheckboxChange_Plot;
             //AddView(mPlotCheck, 0, 2);
@@ -112,6 +123,7 @@ namespace App_112GW
             {
                 Title = "Select Range"
             };
+
             mRange.Items.Add("V");
             mRange.Items.Add("mV");
             mRange.Items.Add("uV");
@@ -133,9 +145,9 @@ namespace App_112GW
             AddView(mMode, 1, 1);
 
             //
-            mTouch = new TapGestureRecognizer();
-            mTouch.Tapped += TapCallback;
-            GestureRecognizers.Add(mTouch);
+            //mTouch = new TapGestureRecognizer();
+            //mTouch.Tapped += TapCallback;
+            //GestureRecognizers.Add(mTouch);
         }
 
         //The reactions to picker, checkbox, buttons events
@@ -144,6 +156,10 @@ namespace App_112GW
         }
         private void ButtonPress_Relative   (object sender, EventArgs e)
         {
+        }
+        private void ButtonPress_Back       (object sender, EventArgs e)
+        {
+            Clicked(sender, e);
         }
         private void CheckboxChange_Plot    (object sender, EventArgs e)
         {
