@@ -1,5 +1,7 @@
 Linegraph library.
-Get scaling issues sorted.
-Get stability on android fixed.
+
+DONE Get scaling issues sorted.
+DONE Get stability on android fixed.
+
 Minimise size of images by cropping and encoding position in each image.
 Get BLE working to talk to multimeter.
