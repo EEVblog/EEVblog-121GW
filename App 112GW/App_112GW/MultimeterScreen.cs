@@ -370,8 +370,11 @@ namespace App_112GW
             mLayer  =   new SKBitmap((int)x, (int)y, SKImageInfo.PlatformColorType, SKAlphaType.Premul);
             mCanvas =   new SKCanvas(mLayer);
 
+
+            var transparency = SKColors.Transparent;
             mDrawPaint = new SKPaint();
-            mDrawPaint.BlendMode = SKBlendMode.Src;
+            mDrawPaint.BlendMode = SKBlendMode.SrcOver;
+            mDrawPaint.ColorFilter = SKColorFilter.CreateBlendMode(transparency, SKBlendMode.DstOver);
         }
         private void            Invalidate()
         {
@@ -431,6 +434,7 @@ namespace App_112GW
 
             //Add render on change
             pSurface.Scale(CanvasSize.Width/(float)Width);
+            pSurface.Clear(Globals.BackgroundColor.ToSKColor());
             pSurface.DrawBitmap(mLayer, mImageRectangle, mDrawPaint);
         }
 		static private void     SetSegment(char pInput, ImageLayers pSegment)

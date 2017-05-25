@@ -68,10 +68,27 @@ namespace App_112GW
             Grid.SetColumnSpan          (ButtonStartLogging,    1);
         }
 
+        int vals = 0;
+        bool UpdateValue()
+        {
+            vals += 1;
+            if (vals >= 99999) vals = 0;
+
+            foreach (MultimeterThemed temp in Devices)
+            {
+                temp.Screen.LargeSegments = (float)vals;
+                temp.Screen.SmallSegments = 99999 - vals;
+                temp.Screen.Bargraph = (vals % 20);
+            }
+
+            return true;
+        }
+
         void StartLogging (object sender, EventArgs args)
         {
-            foreach (MultimeterThemed temp in Devices)
-                temp.Screen.LargeSegmentsWord = "Hello";
+            Device.StartTimer(new TimeSpan(0,0,0,0,50), UpdateValue); 
+
+            UpdateValue();
         }
 	}
 }
