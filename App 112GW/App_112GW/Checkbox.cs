@@ -120,7 +120,7 @@ namespace rMultiplatform
                 if (Checked)
                 {
                     var Pah = new SKPath();
-                    SKPoint[] Pts = new SKPoint[]
+                    var Pts = new SKPoint[]
                         {
                             new SKPoint((float)(Width * 330/1332), (float)(Height * 600/1332)),
                             new SKPoint((float)(Width * 600/1332), (float)(Height * 863/1332)),

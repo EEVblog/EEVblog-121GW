@@ -13,6 +13,10 @@
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)BackButton.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ChartSource\Chart.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ChartSource\ChartAxis.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ChartSource\ChartGrid.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ChartSource\Range.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MultimeterMenu.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MultimeterThemed.xaml.cs">
       <DependentUpon>MultimeterThemed.xaml</DependentUpon>
