@@ -9,11 +9,19 @@ namespace App_112GW
         private T OldValue;
 
         private bool _Changed = true;
+        public event EventHandler OnChanged;
         public bool Changed
         {
             get
             {
                 return _Changed;
+            }
+            private set
+            {
+                _Changed = value;
+                if (_Changed)
+                    if (OnChanged != null)
+                        OnChanged(this, EventArgs.Empty);
             }
         }
 
@@ -22,15 +30,12 @@ namespace App_112GW
         {
             //Initialise system
             if (OldValue == null)
-            {
-                OldValue = pValue;
-                _Changed = true;
-            }
-            else
-                //Detect change
-                _Changed = true;
+                Changed = true;
+            else //Detect change
+                Changed = !OldValue.Equals(pValue);
 
-            return _Changed;
+            OldValue = pValue;
+            return Changed;
         }
     }
 }

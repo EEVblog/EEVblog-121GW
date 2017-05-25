@@ -214,15 +214,21 @@ namespace App_112GW
             OnClicked(EventArgs.Empty);
         }
 
+        SKPaint                 mDrawPaint;
         SKBitmap                mLayer;
         SKCanvas                mCanvas;
         SKRect                  mImageRectangle;
 
-
         List<ImageLayers>	    mSegments;
 		List<ImageLayers>	    mSubSegments;
 		ImageLayers			    mBargraph;
-		//ImageLayers			mOther;
+        //ImageLayers			mOther;
+
+        protected virtual void LayerChange(object o, EventArgs e)
+        {
+            //mCanvas.Clear(BackgroundColor.ToSKColor());
+            InvalidateSurface();
+        }
 
         private void            SetLargeSegments    (string pInput)
         {
@@ -336,24 +342,38 @@ namespace App_112GW
 
 			//Move decimal point to the end
 			foreach (ImageLayers temp in mSegments)
-				temp.ToBottom("dp");
+            {
+                temp.ToBottom("dp");
+                temp.OnChanged += LayerChange;
+            }
 
-			foreach (ImageLayers temp in mSubSegments)
+            foreach (ImageLayers temp in mSubSegments)
+            {
 				temp.ToBottom("dp");
+                temp.OnChanged += LayerChange;
+            }
+
+            //foreach (ImageLayers temp in mOther)
+            //{
+            //    temp.OnChanged += LayerChange;
+            //}
+
+            mBargraph.OnChanged += LayerChange;
 
             //Add the gesture recognizer 
             mTouch = new TapGestureRecognizer();
             mTouch.Tapped += TapCallback;
             GestureRecognizers.Add(mTouch);
 
-            
-
             //Setup the buffer layer
             (double aspect, double x, double y) = GetResultSize();
             mLayer  =   new SKBitmap((int)x, (int)y, SKImageInfo.PlatformColorType, SKAlphaType.Premul);
             mCanvas =   new SKCanvas(mLayer);
+
+            mDrawPaint = new SKPaint();
+            mDrawPaint.BlendMode = SKBlendMode.Src;
         }
-        private void            Invalidate      ()
+        private void            Invalidate()
         {
             InvalidateSurface();
         }
@@ -366,16 +386,14 @@ namespace App_112GW
             (double x, double y) = mBargraph.GetResultSize();
             return ((y / x), x, y);
         }
-
-        private float ConvertWidthToPixel(float value)
+        private float           ConvertWidthToPixel(float value)
         {
             return (CanvasSize.Width * value / (float)Width);
         }
-        private float ConvertHeightToPixel(float value)
+        private float           ConvertHeightToPixel(float value)
         {
             return (CanvasSize.Height * value / (float)Height);
         }
-
         protected override void OnSizeAllocated(double width, double height)
         {
             base.OnSizeAllocated(width, height);
@@ -398,9 +416,7 @@ namespace App_112GW
                 dx /= 2;
                 mImageRectangle.Offset(dx, 0);
             }
-            mCanvas.Clear(BackgroundColor.ToSKColor());
         }
-
         private void            Render(SKCanvas pSurface)
 		{
             //Add render on change
@@ -415,8 +431,7 @@ namespace App_112GW
 
             //Add render on change
             pSurface.Scale(CanvasSize.Width/(float)Width);
-            pSurface.Clear(BackgroundColor.ToSKColor());
-            pSurface.DrawBitmap(mLayer, mImageRectangle);
+            pSurface.DrawBitmap(mLayer, mImageRectangle, mDrawPaint);
         }
 		static private void     SetSegment(char pInput, ImageLayers pSegment)
 		{

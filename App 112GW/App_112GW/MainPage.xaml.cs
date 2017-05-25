@@ -12,7 +12,7 @@ namespace App_112GW
 {
 	public partial class MainPage : ContentPage
 	{
-        List<MultimeterThemed> Devices = new List<MultimeterThemed> ( );
+        public List<MultimeterThemed> Devices = new List<MultimeterThemed> ( );
 
         private Button          ButtonAddDevice		= new Button        {  Text = "Add Device"      };
 		private Button		    ButtonStartLogging	= new Button        {  Text = "Start Logging"   };
@@ -22,10 +22,10 @@ namespace App_112GW
 
         void InitSurface()
 		{
-			UserGrid.RowDefinitions.Add(	new RowDefinition		{ Height	= new GridLength(1, GridUnitType.Star)});
-			UserGrid.RowDefinitions.Add(	new RowDefinition		{ Height	= new GridLength(50, GridUnitType.Absolute)	});
-			UserGrid.ColumnDefinitions.Add(	new ColumnDefinition	{ Width		= new GridLength(1, GridUnitType.Star)		});
-			UserGrid.ColumnDefinitions.Add(	new ColumnDefinition	{ Width		= new GridLength(1, GridUnitType.Star)		});
+			UserGrid.RowDefinitions.Add(	new RowDefinition		{ Height	= new GridLength(1,     GridUnitType.Star)      });
+			UserGrid.RowDefinitions.Add(	new RowDefinition		{ Height	= new GridLength(50,    GridUnitType.Absolute)	});
+			UserGrid.ColumnDefinitions.Add(	new ColumnDefinition	{ Width		= new GridLength(1,     GridUnitType.Star)		});
+			UserGrid.ColumnDefinitions.Add(	new ColumnDefinition	{ Width		= new GridLength(1,     GridUnitType.Star)		});
 
             DeviceView.Content = DeviceLayout;
             UserGrid.Children.Add	(DeviceView);
@@ -53,7 +53,7 @@ namespace App_112GW
 
 		void AddDevice (object sender, EventArgs args)
 		{
-            MultimeterThemed Temp = new MultimeterThemed ((Color)Application.Current.Resources["BackgroundColor"]);
+            MultimeterThemed Temp = new MultimeterThemed (Globals.BackgroundColor);
 
             Devices.Add(Temp);
             DeviceLayout.Children.Add   (Temp);
@@ -70,6 +70,8 @@ namespace App_112GW
 
         void StartLogging (object sender, EventArgs args)
         {
+            foreach (MultimeterThemed temp in Devices)
+                temp.Screen.LargeSegmentsWord = "Hello";
         }
 	}
 }

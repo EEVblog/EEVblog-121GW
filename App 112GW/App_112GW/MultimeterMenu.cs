@@ -10,51 +10,23 @@ using System.Runtime.CompilerServices;
 
 namespace App_112GW
 {
-    class MultimeterMenu: Grid
+    public class MultimeterMenu: Grid
     {
-        //private rMultiplatform.Touch mTouch;
-        //private TapGestureRecognizer mTouch;
-        //protected virtual void OnClicked(EventArgs e)
-        //{
-        //    EventHandler handler = Clicked;
-        //    if (handler != null)
-        //    {
-        //        handler(this, e);
-        //    }
-        //}
-        //private void TapCallback(object sender, EventArgs args)
-        ////private void TapCallback(object sender, rMultiplatform.TouchActionEventArgs args)
-        //{
-        //    foreach (View Child in Children)
-        //    {
-        //        if (Child.IsFocused)
-        //        {
-        //            if (SameType(Child, typeof(Button)))
-        //                Child.Unfocus();
-        //            return;
-        //        }
-        //    }
-        //    OnClicked(EventArgs.Empty);
-        //}
-        public event EventHandler Clicked;
-
-
-        static bool SameType(object A, Type B)
+        public event EventHandler   Clicked;
+        static bool                 SameType(object A, Type B)
         {
             return Object.ReferenceEquals(A.GetType(), B);
         }
 
+        private Button              mHold;
+        private Button              mRelative;
+        private Label               mSerialNumber;
+        private Picker              mRange;
+        private Picker              mMode;
+        private Checkbox            mPlotCheck;
+        private BackButton          mBack;
 
-
-        private Button      mHold;
-        private Button      mRelative;
-        private Label       mSerialNumber;
-        private Picker      mRange;
-        private Picker      mMode;
-        private Checkbox    mPlotCheck;
-        private BackButton  mBack;
-
-        private void AddView(View pInput, int pX, int pY, int pXSpan = 1, int pYSpan = 1)
+        private void    AddView    (View pInput, int pX, int pY, int pXSpan = 1, int pYSpan = 1)
         {
             Children.Add(pInput);
             SetColumn(pInput, pX);
@@ -63,8 +35,7 @@ namespace App_112GW
             SetColumnSpan(pInput, pXSpan);
             SetRowSpan(pInput, pYSpan);
         }
-
-        public MultimeterMenu(string pSerialNumber = "SN0000")
+        public          MultimeterMenu   (string pSerialNumber = "SN0000")
         {
             Padding = 20;
             VerticalOptions = LayoutOptions.Center;
@@ -151,23 +122,23 @@ namespace App_112GW
         }
 
         //The reactions to picker, checkbox, buttons events
-        private void ButtonPress_Hold       (object sender, EventArgs e)
+        private void    ButtonPress_Hold       (object sender, EventArgs e)
         {
         }
-        private void ButtonPress_Relative   (object sender, EventArgs e)
+        private void    ButtonPress_Relative   (object sender, EventArgs e)
         {
         }
-        private void ButtonPress_Back       (object sender, EventArgs e)
+        private void    ButtonPress_Back       (object sender, EventArgs e)
         {
             Clicked(sender, e);
         }
-        private void CheckboxChange_Plot    (object sender, EventArgs e)
+        private void    CheckboxChange_Plot    (object sender, EventArgs e)
         {
         }
-        private void PickerChange_Range     (object sender, EventArgs e)
+        private void    PickerChange_Range     (object sender, EventArgs e)
         {
         }
-        private void PickerChange_Mode      (object sender, EventArgs e)
+        private void    PickerChange_Mode      (object sender, EventArgs e)
         {
         }
     }

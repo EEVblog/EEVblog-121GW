@@ -9,10 +9,23 @@ namespace App_112GW
 {
 	public class ImageLayer
 	{
-		private bool                     mActive;
-        private VariableMonitor<bool>    mChanged;
 
-		public SKImage  mImage;
+        private bool                    mActive;
+        private VariableMonitor<bool>   _Changed;
+        public event EventHandler       OnChanged
+        {
+            add
+            {
+                _Changed.OnChanged += value;
+            }
+            remove
+            {
+                _Changed.OnChanged -= value;
+            }
+        }
+
+
+        public SKImage  mImage;
 		public string   mName;
 
 		SKPaint         mDrawPaint;
@@ -20,15 +33,16 @@ namespace App_112GW
 
         public ImageLayer(SKImage pImage, string pName, bool pActive = true)
         {
-            mActive = pActive;
-            mChanged = new VariableMonitor<bool>();
-
-            mName = pName;
+            _Changed = new VariableMonitor<bool>();
+            _RenderChanged = new VariableMonitor<bool>();
 
             //Open the defined image
+            mActive = pActive;
             mImage = pImage;
+            mName = pName;
 
-            var transparency = Color.FromRgba(0, 0, 0, 0).ToSKColor();
+            //
+            var transparency            = Color.FromRgba(0, 0, 0, 0).ToSKColor();
 
             mDrawPaint                  = new SKPaint();
             mDrawPaint.BlendMode        = SKBlendMode.SrcOver;
@@ -42,7 +56,8 @@ namespace App_112GW
 		{
 			bool temp = mActive;
 			mActive = pState;
-		}
+            _Changed.Update(ref mActive);
+        }
 		public void On()
 		{
 			Set(true);
@@ -55,9 +70,12 @@ namespace App_112GW
 		{
 			return mName;
 		}
+
+        private VariableMonitor<bool> _RenderChanged;
         public void Render(ref SKCanvas pSurface)
         {
-            if (mChanged.Update(ref mActive))
+            //This is render changed variable, don't move it to set, that is wrong
+            if (_RenderChanged.Update(ref mActive))
             {
                 if (mActive)
                     pSurface.DrawImage(mImage, 0, 0, mDrawPaint);

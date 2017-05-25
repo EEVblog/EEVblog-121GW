@@ -10,13 +10,13 @@ namespace App_112GW
 {
 	public partial class MultimeterThemed : ContentView
     {
-        MultimeterScreen Screen;
-        MultimeterMenu Menu;
+        public MultimeterScreen Screen;
+        public MultimeterMenu   Menu;
         bool Item = true;
 
         public MultimeterThemed (Color BackColor)
 		{
-			InitializeComponent ();
+            InitializeComponent ();
             HorizontalOptions = LayoutOptions.Fill;
 
             Screen = new MultimeterScreen() { };
@@ -36,7 +36,7 @@ namespace App_112GW
             var ScreenSize = Screen.GetResultSize(Width);
             Menu.HeightRequest = ScreenSize.height - Menu.Padding.Top - Menu.Padding.Bottom;
         }
-        private void SetView()
+        private void            SetView()
         {
             switch (Item)
             {
@@ -51,8 +51,7 @@ namespace App_112GW
             }
             Item = !Item;
         }
-
-        public void Clicked(object sender, EventArgs e)
+        public void             Clicked(object sender, EventArgs e)
         {
             SetView();
         }
