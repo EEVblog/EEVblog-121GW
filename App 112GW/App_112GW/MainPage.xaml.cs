@@ -76,6 +76,7 @@ namespace App_112GW
             Grid.SetColumnSpan          (ButtonStartLogging,    1);
         }
 
+        bool rtn = false;
         int vals = 0;
         bool UpdateValue()
         {
@@ -89,12 +90,20 @@ namespace App_112GW
                 temp.Screen.Bargraph = (vals % 20);
             }
 
-            return true;
+            return rtn;
         }
 
         void StartLogging (object sender, EventArgs args)
         {
-            Device.StartTimer(new TimeSpan(0,0,0,0,50), UpdateValue); 
+            if (rtn)
+            {
+                rtn = false;
+            }
+            else
+            {
+                rtn = true;
+                Device.StartTimer(new TimeSpan(0, 0, 0, 0, 500), UpdateValue);
+            }
 
             UpdateValue();
         }

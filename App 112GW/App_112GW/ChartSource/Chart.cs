@@ -12,12 +12,13 @@ namespace rMultiplatform
 {
     interface IChartRenderer
     {
+        bool            Register(Object o);
+        List<Type>      RequireRegistration();
+
         //Return true when redraw is required
-        bool Draw(SKCanvas c);
-
-        void SetParentSize(double w, double h);
+        bool Draw           (SKCanvas c);
+        void SetParentSize  (double w, double h);
     }
-
 
     public class Chart :
 #if __ANDROID__
@@ -28,17 +29,26 @@ namespace rMultiplatform
         SKCanvasView
 #endif
     {
-        double Aspect;
+        SKPaint     mDrawPaint;
+        double      Aspect;
+
         List<IChartRenderer> ChartElements;
         public Chart ()
         {
             ChartElements = new List<IChartRenderer>();
-            ChartElements.Add(new ChartAxis(10, 10, 20, 100, Height));
+            ChartElements.Add(new ChartAxis(10, 10, 0, 40) { Label = "time ( s )",    Orientation = ChartAxis.AxisOrientation.Horizontal, Direction = ChartAxis.AxisDirection.Standard, AxisLocation = 0.5, AxisStart = 0.1, AxisEnd = 0.05});
+            ChartElements.Add(new ChartAxis(10, 10, -20, 20) { Label = "volts ( V )",   Orientation = ChartAxis.AxisOrientation.Vertical,   Direction = ChartAxis.AxisDirection.Standard, AxisLocation = 0.1, AxisStart = 0.05, AxisEnd = 0.05 });
+            ChartElements.Add(new ChartGrid() { });
 
-            VerticalOptions     = LayoutOptions.Fill;
+            VerticalOptions = LayoutOptions.Fill;
             HorizontalOptions   = LayoutOptions.Fill;
 
-            Aspect = 2;
+            Aspect = 3;
+
+            var transparency = SKColors.Transparent;
+            mDrawPaint = new SKPaint();
+            mDrawPaint.BlendMode = SKBlendMode.SrcOver;
+            mDrawPaint.ColorFilter = SKColorFilter.CreateBlendMode(transparency, SKBlendMode.DstOver);
         }
 
         protected override void OnSizeAllocated(double width, double height)
@@ -52,6 +62,33 @@ namespace rMultiplatform
                 Element.SetParentSize(Width, Height);
         }
 
+        bool RequireRegister = true;
+        protected void Register()
+        {
+            //Register all elements
+            foreach (var Element in ChartElements)
+            {
+                //Get list of types to register
+                var Types = Element.RequireRegistration();
+                if (Types == null)
+                    continue;
+
+                foreach (var SubElement in ChartElements)
+                {
+                    //Skip self registration
+                    if (Element.Equals(SubElement))
+                        continue;
+
+                    //Register if it is a required type
+                    foreach (var RegType in Types)
+                        if (RegType == SubElement.GetType())
+                            Element.Register(SubElement);
+                }
+            }
+
+            RequireRegister = false;
+        }
+
 #if __ANDROID__
         protected override void OnPaintSurface(SKPaintGLSurfaceEventArgs e)
 #elif __IOS__
@@ -60,17 +97,20 @@ namespace rMultiplatform
         protected override void OnPaintSurface(SKPaintSurfaceEventArgs e)
 #endif
         {
-            var canvas = e.Surface.Canvas;
+            if (RequireRegister)
+                Register();
 
-            canvas.Clear(SKColors.Red);
-            foreach (IChartRenderer Element in ChartElements)
+            var canvas = e.Surface.Canvas;
+            canvas.Scale(CanvasSize.Width / (float)Width);
+            canvas.Clear(App_112GW.Globals.BackgroundColor.ToSKColor());
+            foreach ( var Element in ChartElements )
             {
                 //This allows controls to rescale retrospectively
-                canvas.Save();
+                var can_id = canvas.SaveLayer(null);
                 while (Element.Draw(canvas))
                 {
-                    canvas.Restore();
-                    canvas.Save();
+                    canvas.RestoreToCount(can_id);
+                    can_id = canvas.SaveLayer(null);
                 }
             }
         }

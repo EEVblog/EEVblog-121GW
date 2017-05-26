@@ -20,8 +20,8 @@ namespace rMultiplatform
         SKCanvasView
 #endif
     {
-        public event EventHandler Changed;
-        protected virtual void OnChanged(EventArgs e)
+        public event EventHandler       Changed;
+        protected virtual void          OnChanged(EventArgs e)
         {
             EventHandler handler = Changed;
             if (handler != null)
