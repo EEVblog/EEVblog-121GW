@@ -45,7 +45,7 @@ namespace rMultiplatform
             EventType = Typ;
         } 
     }
-    public class ChartAxis: Range, IChartRenderer
+    public class ChartAxis : Range, IChartRenderer
     {
         public delegate bool ChartAxisEvent(Object o);
         List<ChartAxisEvent> Registrants;
@@ -62,52 +62,65 @@ namespace rMultiplatform
         {
             var rangesize = Distance;
             var viewsize = AxisSize;
-
             var scale = viewsize / rangesize;
 
-            MainTickDrawDistance = _MainTick * scale;
-            MinorTickDrawDistance = _MinorTickDistance * scale;
+            //
+            _MainTickDistance = Distance / _MainTicks;
+            _MinorTickDistance = MainTickDistance / _MinorTicks;
 
-            AxisStart = _AxisStartScaler;
-            AxisEnd = _AxisEndScaler;
-            AxisLocation = _AxisLocationScaler;
+            MainTickDrawDistance = Math.Abs(_MainTickDistance) * scale;
+            MinorTickDrawDistance = Math.Abs(_MinorTickDistance) * scale;
+
+            //
+            AxisStart       = _AxisStartScaler;
+            AxisEnd         = _AxisEndScaler;
+            AxisLocation    = _AxisLocationScaler;
         }
 
         //Properties
-        public string   _Label;
+        private string  _Units;
+        public string   Units
+        {
+            get { return _Units; }
+        }
+
+        private string  _Label;
         public string   Label
         {
             get
             {
-                return _Label;
+                return _Label + " ( " + _Units + " )";
             }
             set
             {
-                _Label = value;
+                var scts = value.Split('(', ')');
+                var txt = scts[0];
+
+                if (scts.Length == 1)
+                    throw (new Exception("Must contain units in the following format 'Label(units)'."));
+
+                var units = scts[1].Replace(" ", "");
+
+                if (units.Length == 0)
+                    throw (new Exception("Must contain units in the following format 'Label(units)'."));
+
+                _Units = units;
+                _Label = txt;
             }
         }
-        
-        private double  _MainTick;
-        public double   MainTick
+
+        private double  _MainTickDistance;
+        private double   MainTickDistance
         {
             get
             {
-                return _MainTick;
-            }
-            set
-            {
-                _MainTick = value;
-                CalculateScales();
+                return _MainTickDistance;
             }
         }
 
         private double  _MinorTickDistance;
-        public double   MinorTickDistance
+        private double   MinorTickDistance
         {
-            set
-            {
-                _MinorTickDistance = value;
-            }
             get
             {
                 if (Orientation == AxisOrientation.Vertical)
@@ -124,18 +137,32 @@ namespace rMultiplatform
                     else
                         return -_MinorTickDistance;
                 }
-
             }
         }
+
+        private double  _MinorTicks;
         public double   MinorTicks
         {
             get
             {
-                return (double)(MainTick/_MinorTickDistance);
+                return _MinorTicks;
             }
             set
             {
-                MinorTickDistance = MainTick / (double)value;
+                _MinorTicks = value;
+                CalculateScales();
+            }
+        }
+        private double _MainTicks;
+        public double MainTicks
+        {
+            get
+            {
+                return _MainTicks;
+            }
+            set
+            {
+                _MainTicks = value;
                 CalculateScales();
             }
         }
@@ -146,9 +173,9 @@ namespace rMultiplatform
             Standard,
             Inverted
         }
-        public      AxisDirection Direction
+        public AxisDirection    Direction
         {
-            get;set;
+            get; set;
         }
 
         public enum AxisOrientation
@@ -156,13 +183,13 @@ namespace rMultiplatform
             Vertical,
             Horizontal
         }
-        public AxisOrientation Orientation
+        public AxisOrientation  Orientation
         {
             get;
             set;
         }
 
-        private double VisualScale
+        private double  VisualScale
         {
             get
             {
@@ -176,7 +203,7 @@ namespace rMultiplatform
                 }
             }
         }
-        private double AltVisualScale
+        private double  AltVisualScale
         {
             get
             {
@@ -191,17 +218,17 @@ namespace rMultiplatform
             }
         }
 
-        private double AxisSize
+        private double  AxisSize
         {
             get
             {
-                return VisualScale * ( 1.0 - ( _AxisStartScaler + _AxisEndScaler ) );
+                return VisualScale * (1.0 - (_AxisStartScaler + _AxisEndScaler));
             }
         }
 
-        private double _AxisStartScaler;
-        private float _AxisStart;
-        public double AxisStart
+        private double  _AxisStartScaler;
+        private float   _AxisStart;
+        public double   AxisStart
         {
             set
             {
@@ -213,10 +240,10 @@ namespace rMultiplatform
                 return _AxisStart;
             }
         }
-        
-        private double _AxisEndScaler;
-        private float _AxisEnd;
-        public double AxisEnd
+
+        private double  _AxisEndScaler;
+        private float   _AxisEnd;
+        public double   AxisEnd
         {
             set
             {
@@ -229,9 +256,9 @@ namespace rMultiplatform
             }
         }
 
-        private double _AxisLocationScaler;
-        private float _AxisLocation;
-        public double AxisLocation
+        private double  _AxisLocationScaler;
+        private float   _AxisLocation;
+        public double   AxisLocation
         {
             set
             {
@@ -244,7 +271,7 @@ namespace rMultiplatform
             }
         }
 
-        private double StartPoint
+        private double  StartPoint
         {
             get
             {
@@ -254,17 +281,45 @@ namespace rMultiplatform
                     return Minimum;
             }
         }
+        private double EndPoint
+        {
+            get
+            {
+                if (MinorTickDistance < 0)
+                    return Minimum;
+                else
+                    return Maximum;
+            }
+        }
 
-        public ChartAxis (double MainTick, double MinorTicks, double Minimum, double Maximum) 
+        private bool Inverting
+        {
+            get
+            {
+                if (Orientation == AxisOrientation.Vertical)
+                {
+                    if (Direction == AxisDirection.Standard)
+                        return true;
+                    else
+                        return false;
+                }
+                else
+                {
+                    if (Direction == AxisDirection.Standard)
+                        return false;
+                    else
+                        return true;
+                }
+            }
+        }
+   
+
+        public          ChartAxis(double MainTicks, double MinorTicks, double Minimum, double Maximum)
             : base(Minimum, Maximum)
         {
             //Setup divisions
-            this.MainTick = MainTick;
+            this.MainTicks = MainTicks;
             this.MinorTicks = MinorTicks;
-
-            //Handle range error
-            if (MainTick >= Distance)
-                throw (new Exception("Cannot have ticks larger than the full range (Maximum - Minimum)"));
 
             //
             MinorPaint = new SKPaint();
@@ -288,15 +343,42 @@ namespace rMultiplatform
             //
             Registrants = new List<ChartAxisEvent>();
         }
-
-        void SendEvent(ref SKCanvas Can, SKColor Col, float Pos, ChartAxisEventArgs.ChartAxisEventType EventType)
+        void            SendEvent(ref SKCanvas Can, SKColor Col, float Pos, ChartAxisEventArgs.ChartAxisEventType EventType)
         {
             var args = new ChartAxisEventArgs(Can, Col, Pos, MinorTickDistance, Orientation, EventType);
             foreach (var registrant in Registrants)
                 if (registrant(args))
                     break;
         }
+        public          ChartDataEventReturn    ChartDataEvent(ChartDataEventArgs e)
+        {
+            if (e.Orientation == Orientation)
+            {
+                Minimum = e.NewRange.Minimum;
+                Maximum = e.NewRange.Maximum;
+                CalculateScales();
 
+                return new ChartDataEventReturn(GetCoordinate);
+            }
+            return null;
+        }
+        public double   GetCoordinate(double Value)
+        {
+            var scale = (AxisSize / Distance);
+
+            //Handle axis inversion
+            if (Inverting)
+                scale = -scale;
+            Value -= StartPoint;
+
+            //Value now represents the full scale
+            Value *= scale;
+
+            //Offset from the base
+            Value += AxisStart;
+            
+            return Value;
+        }
         //Draws horozontal and vertical tick labels centred about the axis position
         void DrawTick       (ref SKCanvas c, float Position, float length, SKPaint TickPaint)
         {
@@ -336,7 +418,7 @@ namespace rMultiplatform
         void DrawTickLabel  (ref SKCanvas c, double Value, float Position, float length, SKPaint TickPaint)
         {
             var hei = MajorPaint.TextSize /2;
-            var txt = Convert.ToString(Value);
+            var txt = String.Format("{0:0.00}", Value);
             var wid = MajorPaint.MeasureText(txt) + SpaceWidth;
             var pth = new SKPath();
             SKPoint pt1, pt2;
@@ -397,13 +479,15 @@ namespace rMultiplatform
             c.DrawTextOnPath(txt, pth, 0, 0, MajorPaint);
         }
 
-        bool IChartRenderer.Draw(SKCanvas c)
+        //
+        bool IChartRenderer.Draw (SKCanvas c)
         {
             var redraw      = false;
             var NextMain    = AxisStart;
             var ercor       = MinorTickDrawDistance / 2;
             var cur         = StartPoint;
 
+            //
             if (Label.Length > 0)
                 DrawLabel(ref c, 20);
 
@@ -431,7 +515,7 @@ namespace rMultiplatform
             }
             return redraw;
         }
-        void IChartRenderer.SetParentSize(double w, double h)
+        void IChartRenderer.SetParentSize (double w, double h)
         {
             ParentWidth = w;
             ParentHeight = h;
@@ -439,6 +523,7 @@ namespace rMultiplatform
             CalculateScales();
         }
 
+        //
         public bool Register(Object o)
         {
             if (o.GetType() != typeof(ChartAxisEvent))

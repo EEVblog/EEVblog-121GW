@@ -18,7 +18,7 @@ namespace rMultiplatform
         //Return true when redraw is required
         bool Draw           (SKCanvas c);
         void SetParentSize  (double w, double h);
-    }
+    };
 
     public class Chart :
 #if __ANDROID__
@@ -29,15 +29,27 @@ namespace rMultiplatform
         SKCanvasView
 #endif
     {
+        Random random = new Random();
+        private float RandBetween(float min, float max)
+        {
+            var output = (float)random.NextDouble() * (max - min) + min;
+            return output;
+        }
+
         SKPaint     mDrawPaint;
         double      Aspect;
-
+        public ChartData ChartData = new ChartData(ChartData.ChartDataMode.eRolling, "time(s)", "volts(V)", 0.1f, 10f);
         List<IChartRenderer> ChartElements;
         public Chart ()
         {
             ChartElements = new List<IChartRenderer>();
-            ChartElements.Add(new ChartAxis(10, 10, 0, 40) { Label = "time ( s )",    Orientation = ChartAxis.AxisOrientation.Horizontal, Direction = ChartAxis.AxisDirection.Standard, AxisLocation = 0.5, AxisStart = 0.1, AxisEnd = 0.05});
-            ChartElements.Add(new ChartAxis(10, 10, -20, 20) { Label = "volts ( V )",   Orientation = ChartAxis.AxisOrientation.Vertical,   Direction = ChartAxis.AxisDirection.Standard, AxisLocation = 0.1, AxisStart = 0.05, AxisEnd = 0.05 });
+            ChartElements.Add(new ChartAxis(10, 5, 0, 40) { Label = "time(s)",    Orientation = ChartAxis.AxisOrientation.Horizontal, Direction = ChartAxis.AxisDirection.Standard, AxisLocation = 0.5, AxisStart = 0.1, AxisEnd = 0.05});
+            ChartElements.Add(new ChartAxis(10, 5, -20, 20) { Label = "volts(V)",   Orientation = ChartAxis.AxisOrientation.Vertical,   Direction = ChartAxis.AxisDirection.Standard, AxisLocation = 0.1, AxisStart = 0.05, AxisEnd = 0.05 });
+
+            
+            ChartElements.Add(ChartData);
+            ChartData.Sample(0);
+
             ChartElements.Add(new ChartGrid() { });
 
             VerticalOptions = LayoutOptions.Fill;
@@ -49,6 +61,12 @@ namespace rMultiplatform
             mDrawPaint = new SKPaint();
             mDrawPaint.BlendMode = SKBlendMode.SrcOver;
             mDrawPaint.ColorFilter = SKColorFilter.CreateBlendMode(transparency, SKBlendMode.DstOver);
+        }
+
+        public void Sample(float Value)
+        {
+            ChartData.Sample(Value);
+            InvalidateSurface();
         }
 
         protected override void OnSizeAllocated(double width, double height)

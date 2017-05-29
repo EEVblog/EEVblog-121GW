@@ -12,11 +12,12 @@ namespace App_112GW
 {
 	public partial class MainPage : ContentPage
 	{
-        public List<MultimeterThemed> Devices = new List<MultimeterThemed> ( );
+        public List<MultimeterThemed> Devices = new List<MultimeterThemed>();
+        public List<Chart> Charts = new List<Chart>();
 
-        private Button          ButtonAddDevice		= new Button        {  Text = "Add Device"      };
-		private Button		    ButtonStartLogging	= new Button        {  Text = "Start Logging"   };
-		private Grid		    UserGrid			= new Grid          {  HorizontalOptions=LayoutOptions.Fill, VerticalOptions = LayoutOptions.Fill, RowSpacing = 1, ColumnSpacing = 1, Padding = 1};
+        private Button          ButtonAddDevice		= new Button        { Text = "Add Device"      };
+		private Button		    ButtonStartLogging	= new Button        { Text = "Start Logging"   };
+		private Grid		    UserGrid			= new Grid          { HorizontalOptions=LayoutOptions.Fill, VerticalOptions = LayoutOptions.Fill, RowSpacing = 1, ColumnSpacing = 1, Padding = 1};
         private ScrollView      DeviceView          = new ScrollView    { HorizontalOptions = LayoutOptions.Fill, VerticalOptions = LayoutOptions.Fill };
         private StackLayout     DeviceLayout        = new StackLayout   { HorizontalOptions = LayoutOptions.Fill, VerticalOptions = LayoutOptions.StartAndExpand };
 
@@ -53,16 +54,17 @@ namespace App_112GW
 
 		void AddDevice (object sender, EventArgs args)
 		{
-            var Temp1 = new MultimeterThemed (Globals.BackgroundColor);
+            var Temp1 = new MultimeterThemed(Globals.BackgroundColor);
 
             Devices.Add(Temp1);
-            DeviceLayout.Children.Add   (Temp1);
-            Grid.SetRow                 (Temp1, 0);
-            Grid.SetColumn              (Temp1, 0);
-            Grid.SetRowSpan             (Temp1, 1);
-            Grid.SetColumnSpan          (Temp1, 2);
+            DeviceLayout.Children.Add(Temp1);
+            Grid.SetRow(Temp1, 0);
+            Grid.SetColumn(Temp1, 0);
+            Grid.SetRowSpan(Temp1, 1);
+            Grid.SetColumnSpan(Temp1, 2);
 
             var Temp2 = new Chart();
+            Charts.Add(Temp2);
             DeviceLayout.Children.Add(Temp2);
             Grid.SetRow(Temp2, 0);
             Grid.SetColumn(Temp2, 0);
@@ -89,7 +91,10 @@ namespace App_112GW
                 temp.Screen.SmallSegments = 99999 - vals;
                 temp.Screen.Bargraph = (vals % 20);
             }
-
+            foreach(Chart temp in Charts)
+            {
+                temp.Sample((float)Math.Sin((float)vals / 10));
+            }
             return rtn;
         }
 
@@ -102,7 +107,7 @@ namespace App_112GW
             else
             {
                 rtn = true;
-                Device.StartTimer(new TimeSpan(0, 0, 0, 0, 500), UpdateValue);
+                Device.StartTimer(new TimeSpan(0, 0, 0, 0, 1), UpdateValue);
             }
 
             UpdateValue();

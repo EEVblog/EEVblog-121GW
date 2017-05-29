@@ -18,8 +18,8 @@ namespace rMultiplatform
         public bool         EnableMajorLines;
         public bool         EnableMinorLines;
 
-        public SKPaint MajorPaint;
-        public SKPaint MinorPaint;
+        public SKPaint      MajorPaint;
+        public SKPaint      MinorPaint;
 
         public              ChartGrid()
         {
