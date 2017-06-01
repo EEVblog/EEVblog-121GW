@@ -19,7 +19,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)ChartSource\ChartData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ChartSource\ChartGrid.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ChartSource\Gridline.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Padding.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ChartSource\ChartPadding.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Range.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MultimeterMenu.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MultimeterThemed.xaml.cs">

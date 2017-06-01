@@ -1,5 +1,9 @@
 ﻿using System;
+
+using Xamarin.Forms;
 using SkiaSharp;
+using SkiaSharp.Views;
+using SkiaSharp.Views.Forms;
 using System.Collections.Generic;
 using System.Text;
 
@@ -114,6 +118,7 @@ namespace rMultiplatform
         public SKColor  LineColor
         {
             set { DrawPaint.Color = value; }
+            get { return DrawPaint.Color; }
         }
 
         //
@@ -178,13 +183,14 @@ namespace rMultiplatform
             //
             HorizontalLabel = pHorzLabel;
             VerticalLabel = pVertLabel;
-            //
 
+            //
             Data = new List<SKPoint>();
             Registrants = new List<ChartDataEvent>();
 
             //
-            DrawPaint = new SKPaint() { Color = SKColors.Red, IsStroke = true, StrokeWidth = 2 };
+            var col = App_112GW.Globals.UniqueColor;
+            DrawPaint = new SKPaint() { Color = col.ToSKColor(), IsStroke = true, StrokeWidth = 2 };
 
             //
             HorozontalSpan = new Range(0, pTimeSpan);

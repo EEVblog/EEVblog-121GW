@@ -30,6 +30,14 @@ namespace rMultiplatform
         SKPoint Point2;
         SKPaint Paint;
 
+        public Color Color
+        {
+            set
+            {
+                Paint.Color = value.ToSKColor();
+            }
+        }
+
         public int Layer
         {
             get

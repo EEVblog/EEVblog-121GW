@@ -17,7 +17,7 @@ namespace App_112GW
 
         private Button          ButtonAddDevice		= new Button        { Text = "Add Device"      };
 		private Button		    ButtonStartLogging	= new Button        { Text = "Start Logging"   };
-		private Grid		    UserGrid			= new Grid          { HorizontalOptions = LayoutOptions.Fill,     VerticalOptions = LayoutOptions.Fill, RowSpacing = 1, ColumnSpacing = 1, Padding = 1};
+		private Grid		    UserGrid			= new Grid          { HorizontalOptions = LayoutOptions.Fill,   VerticalOptions = LayoutOptions.Fill, RowSpacing = 1, ColumnSpacing = 1, Padding = 1};
         private ScrollView      DeviceView          = new ScrollView    { HorizontalOptions = LayoutOptions.Fill,   VerticalOptions = LayoutOptions.Fill };
         private StackLayout     DeviceLayout        = new StackLayout   { HorizontalOptions = LayoutOptions.Fill,   VerticalOptions = LayoutOptions.StartAndExpand };
 
@@ -51,14 +51,13 @@ namespace App_112GW
 			InitSurface();
 		}
 
-        ChartData Data0 = new ChartData(ChartData.ChartDataMode.eRescaling, "Time (s)", "Volts (V)", 0.1f, 10.0f) { LineColor = SKColors.Gold };
-        ChartData Data1 = new ChartData(ChartData.ChartDataMode.eRolling, "Time (s)", "Volts (V)", 0.1f, 10.0f) { LineColor = SKColors.Aqua };
-        ChartData Data2 = new ChartData(ChartData.ChartDataMode.eScreen, "Time (s)", "Volts (V)", 0.1f, 10.0f) { LineColor = SKColors.Red };
-        ChartData Data3 = new ChartData(ChartData.ChartDataMode.eRescaling, "Time (s)", "BLOB (V)", 0.1f, 10.0f) { LineColor = SKColors.Green };
+        ChartData Data0 = new ChartData(ChartData.ChartDataMode.eRolling,   "Time (s)", "Volts (V)",    0.1f,     10.0f);
+        ChartData Data1 = new ChartData(ChartData.ChartDataMode.eRolling,   "Time (s)", "Volts (V)",    0.1f,     10.0f);
+        ChartData Data2 = new ChartData(ChartData.ChartDataMode.eRolling,   "Time (s)", "Volts (V)",    0.1f,     10.0f);
+
         void AddDevice (object sender, EventArgs args)
 		{
             var Temp1 = new MultimeterThemed(Globals.BackgroundColor);
-
             Devices.Add(Temp1);
             DeviceLayout.Children.Add(Temp1);
             Grid.SetRow(Temp1, 0);
@@ -66,16 +65,14 @@ namespace App_112GW
             Grid.SetRowSpan(Temp1, 1);
             Grid.SetColumnSpan(Temp1, 2);
 
-            var Temp2 = new Chart();
+            var Temp2 = new Chart() { Padding = new rMultiplatform.ChartPadding(0.1) };
             Temp2.AddGrid(new ChartGrid());
-            Temp2.AddAxis(new ChartAxis(5, 5, 0, 20)    {Label = "Time (s)",   Orientation = ChartAxis.AxisOrientation.Horizontal, AxisLocation = 0.9, AxisStart = 0.1, AxisEnd = 0.1});
-            Temp2.AddAxis(new ChartAxis(5, 5, 0, 0)     {Label = "Volts (V)",  Orientation = ChartAxis.AxisOrientation.Vertical,   AxisLocation = 0.1, AxisStart = 0.1, AxisEnd = 0.1});
-            Temp2.AddAxis(new ChartAxis(5, 5, 0, 0)     {Label = "BLOB (V)",   Orientation = ChartAxis.AxisOrientation.Vertical,   AxisLocation = 0.9, AxisStart = 0.1, AxisEnd = 0.1 });
+            Temp2.AddAxis(new ChartAxis(5, 5, 0, 20)    {Label = "Time (s)",   Orientation = ChartAxis.AxisOrientation.Horizontal, AxisLocation = 0.9, LockToAxisLabel = "Volts (V)",   LockAlignment = ChartAxis.AxisLock.eEnd     });
+            Temp2.AddAxis(new ChartAxis(5, 5, 0, 0)     {Label = "Volts (V)",  Orientation = ChartAxis.AxisOrientation.Vertical,   AxisLocation = 0.1, LockToAxisLabel = "Time (s)" ,   LockAlignment = ChartAxis.AxisLock.eStart   });
 
             Temp2.AddData(Data0);
             Temp2.AddData(Data1);
             Temp2.AddData(Data2);
-            Temp2.AddData(Data3);
 
             Charts.Add(Temp2);
             DeviceLayout.Children.Add(Temp2);
@@ -107,7 +104,6 @@ namespace App_112GW
             Data0.Sample(Globals.RandBetween(1, 2));
             Data1.Sample(Globals.RandBetween(0, 1));
             Data2.Sample(Globals.RandBetween(-1, 0));
-            Data3.Sample(Globals.RandBetween(-2, -1));
             return rtn;
         }
 

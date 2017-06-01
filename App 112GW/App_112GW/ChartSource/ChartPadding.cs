@@ -5,7 +5,7 @@ using SkiaSharp;
 
 namespace rMultiplatform
 {
-    public class Padding : rMultiplatform.IChartRenderer
+    public class ChartPadding : IChartRenderer
     {
         //Inherited parent properties
         float ParentWidth;
@@ -63,6 +63,20 @@ namespace rMultiplatform
                 return OtherSide(mBottom) * ParentHeight;
             }
         }
+        public float PaddedWidth
+        {
+            get
+            {
+                return ParentWidth * (1 - mLeft - mRight);
+            }
+        }
+        public float PaddedHeigth
+        {
+            get
+            {
+                return ParentHeight * (1 - mTop - mBottom);
+            }
+        }
 
         //Returns the positions of all of the lines
         public float L
@@ -93,9 +107,36 @@ namespace rMultiplatform
                 return GetBottomPosition;
             }
         }
+        public float W
+        {
+            get
+            {
+                return PaddedWidth;
+            }
+        }
+        public float H
+        {
+            get
+            {
+                return PaddedHeigth;
+            }
+        }
 
         //0'th priority
         public int Layer { get { return 0; } }
+        private bool _DrawBoundary;
+        public bool DrawBoundary
+        {
+            get
+            {
+                return _DrawBoundary;
+            }
+            set
+            {
+                DrawBoundary = value;
+                InvalidateParent();
+            }
+        }
 
         //This returns the paddnig rectangle
         public SKRect Rectangle
@@ -149,7 +190,8 @@ namespace rMultiplatform
         }
         public bool Draw(SKCanvas c)
         {
-            c.DrawRect(Rectangle, new SKPaint() {Color = SKColors.White});
+            if (DrawBoundary)
+                c.DrawRect(Rectangle, new SKPaint() {StrokeWidth = 2, IsStroke = true, Color = SKColors.White});
             return false;
         }
         public void SetParentSize(double w, double h)
@@ -157,17 +199,22 @@ namespace rMultiplatform
             ParentWidth = (float)w;
             ParentHeight = (float)h;
         }
+
+        private Chart Parent;
         public bool RegisterParent(object c)
         {
+            Parent = c as Chart;
             return false;
         }
         public void InvalidateParent()
-        {}
-        public int CompareTo(object obj)
+        {
+            Parent.InvalidateSurface();
+        }
+        public int  CompareTo(object obj)
         { return 0; }
 
-        //Initialise the class
-        public Padding(float V)
+        //Padding constructors
+        public ChartPadding(float V)
         {
             if (V < 0)
                 throw (new Exception("Padding cannot be negative"));
@@ -177,7 +224,7 @@ namespace rMultiplatform
             mTop = V;
             mBottom = V;
         }
-        public Padding(float L, float R, float T, float B)
+        public ChartPadding(float L, float R, float T, float B)
         {
             if (L < 0 || R < 0 || T < 0 || B < 0)
                 throw (new Exception("Padding cannot be negative"));
@@ -186,6 +233,28 @@ namespace rMultiplatform
             mRight = R;
             mTop = T;
             mBottom = B;
+        }
+
+        //To simplify code
+        public ChartPadding(double V)
+        {
+            if (V < 0)
+                throw (new Exception("Padding cannot be negative"));
+
+            mLeft = (float)V;
+            mRight = (float)V;
+            mTop = (float)V;
+            mBottom = (float)V;
+        }
+        public ChartPadding(double L, double R, double T, double B)
+        {
+            if (L < 0 || R < 0 || T < 0 || B < 0)
+                throw (new Exception("Padding cannot be negative"));
+
+            mLeft = (float)L;
+            mRight = (float)R;
+            mTop = (float)T;
+            mBottom = (float)B;
         }
     }
 }

@@ -41,13 +41,13 @@ namespace rMultiplatform
         private SKPaint     mDrawPaint;
         private SKBitmap    mBitmap;
         private SKCanvas    mCanvas;
-
-        private double _Aspect;
-        public double Aspect
+        private double      _Aspect;
+        public double       Aspect
         {
             set
             {
                 _Aspect = value;
+                InvalidateMeasure();
             }
             get
             {
@@ -56,17 +56,28 @@ namespace rMultiplatform
         }
 
         //Defines the padding around the boarder of the control
-        private Padding _Padding;
-        public Padding Padding
+        public ChartPadding Padding
         {
             set
             {
-                _Padding = value;
-                InvalidateSurface();
+                for (var i = 0; i < ChartElements.Count; i++)
+                {
+                    if (ChartElements[i].GetType() == typeof(ChartPadding))
+                    {
+                        ChartElements[i] =  value;
+                        InvalidateSurface();
+                    }
+                }
+
             }
             get
             {
-                return _Padding;
+                for (var a = 0; a < ChartElements.Count; a++)
+                    if (a.GetType() == typeof(ChartPadding))
+                    {
+                        return ChartElements[a] as ChartPadding;
+                    }
+                return null;
             }
         }
 
@@ -74,25 +85,26 @@ namespace rMultiplatform
         private List<IChartRenderer> ChartElements;
 
         //Wrappers for the supported chart elements
-        private void AddElement(IChartRenderer pInput)
+        private void    AddElement(IChartRenderer pInput)
         {
             ChartElements.Add(pInput);
             ChartElements.Sort();
         }
-        public void AddAxis(ChartAxis pInput)
+        public void     AddAxis(ChartAxis pInput)
         {
             AddElement(pInput as IChartRenderer);
         }
-        public void AddData(ChartData pInput)
+        public void     AddData(ChartData pInput)
         {
             AddElement(pInput as IChartRenderer);
         }
-        public void AddGrid(ChartGrid pInput)
+        public void     AddGrid(ChartGrid pInput)
         {
             AddElement(pInput as IChartRenderer);
         }
 
         //Resizes the control and registers resize with parents
+        bool Rescale = true;
         protected override void OnSizeAllocated(double width, double height)
         {
             base.OnSizeAllocated(width, height);
@@ -105,6 +117,13 @@ namespace rMultiplatform
             mBitmap = null;
             mCanvas?.Dispose();
             mCanvas = null;
+
+            //
+            Rescale = true;
+
+            //As base class initialises first the onSizeAllocated can be triggered before padding is intiialised
+            if (Padding != null)
+                Padding.SetParentSize(Width, Height);
 
             foreach (IChartRenderer Element in ChartElements)
                 Element.SetParentSize(Width, Height);
@@ -152,11 +171,12 @@ namespace rMultiplatform
             var canvas = e.Surface.Canvas;
 
             //Reinitialise the buffer canvas if it is undefined at all.
-            if (mBitmap == null || mCanvas == null)
+            if (mBitmap == null || mCanvas == null | Rescale)
             {
-                mBitmap = new SKBitmap((int)CanvasSize.Width, (int)CanvasSize.Height);
+                mBitmap = new SKBitmap((int)Width, (int)Height);
                 mCanvas = new SKCanvas(mBitmap);
                 mCanvas.Clear();
+                Rescale = false;
             }
             canvas.Scale(CanvasSize.Width / (float)Width);
 
@@ -178,16 +198,19 @@ namespace rMultiplatform
             }
 
             //Draw to canvas
-            canvas.Clear(App_112GW.Globals.BackgroundColor.ToSKColor());
+            canvas.Clear();
             canvas.DrawBitmap(mBitmap, 0, 0, mDrawPaint);
             mCanvas.Clear(App_112GW.Globals.BackgroundColor.ToSKColor());
         }
 
         //Initialises the object
-        public Chart()
+        public Chart() : base()
         {
             //Setup chart elements
             ChartElements = new List<IChartRenderer>();
+
+            //Setup the padding object
+            ChartElements.Add(new ChartPadding(0));
 
             //Must always fill parent container
             VerticalOptions = LayoutOptions.Fill;
@@ -201,11 +224,6 @@ namespace rMultiplatform
             mDrawPaint = new SKPaint();
             mDrawPaint.BlendMode = SKBlendMode.SrcOver;
             mDrawPaint.ColorFilter = SKColorFilter.CreateBlendMode(transparency, SKBlendMode.DstOver);
-
-            //Setup the padding object
-            Padding = new Padding(0.1f);
-            ChartElements.Add(Padding);
         }
-
     }
 }

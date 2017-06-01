@@ -6,6 +6,14 @@ namespace rMultiplatform
 {
     public class AxisLabel
     {
+        private string _Label;
+        public string Label
+        {
+            get
+            {
+                return _Label;
+            }
+        }
         private string _Units;
         public string Units
         {
@@ -14,9 +22,7 @@ namespace rMultiplatform
                 return _Units;
             }
         }
-
-        private string _Label;
-        public string Label
+        public string Text
         {
             get
             {
@@ -39,11 +45,10 @@ namespace rMultiplatform
                 _Label = txt;
             }
         }
-
-
-        public AxisLabel()
+        
+        public AxisLabel(string Label)
         {
-
+            this.Text = Label;
         }
     };
 }
