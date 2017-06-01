@@ -17,9 +17,9 @@ namespace App_112GW
 
         private Button          ButtonAddDevice		= new Button        { Text = "Add Device"      };
 		private Button		    ButtonStartLogging	= new Button        { Text = "Start Logging"   };
-		private Grid		    UserGrid			= new Grid          { HorizontalOptions=LayoutOptions.Fill, VerticalOptions = LayoutOptions.Fill, RowSpacing = 1, ColumnSpacing = 1, Padding = 1};
-        private ScrollView      DeviceView          = new ScrollView    { HorizontalOptions = LayoutOptions.Fill, VerticalOptions = LayoutOptions.Fill };
-        private StackLayout     DeviceLayout        = new StackLayout   { HorizontalOptions = LayoutOptions.Fill, VerticalOptions = LayoutOptions.StartAndExpand };
+		private Grid		    UserGrid			= new Grid          { HorizontalOptions = LayoutOptions.Fill,     VerticalOptions = LayoutOptions.Fill, RowSpacing = 1, ColumnSpacing = 1, Padding = 1};
+        private ScrollView      DeviceView          = new ScrollView    { HorizontalOptions = LayoutOptions.Fill,   VerticalOptions = LayoutOptions.Fill };
+        private StackLayout     DeviceLayout        = new StackLayout   { HorizontalOptions = LayoutOptions.Fill,   VerticalOptions = LayoutOptions.StartAndExpand };
 
         void InitSurface()
 		{
@@ -45,14 +45,17 @@ namespace App_112GW
 
 			Content = UserGrid;
 		}
-
 		public MainPage ()
 		{
 			InitializeComponent();
 			InitSurface();
 		}
 
-		void AddDevice (object sender, EventArgs args)
+        ChartData Data0 = new ChartData(ChartData.ChartDataMode.eRescaling, "Time (s)", "Volts (V)", 0.1f, 10.0f) { LineColor = SKColors.Gold };
+        ChartData Data1 = new ChartData(ChartData.ChartDataMode.eRolling, "Time (s)", "Volts (V)", 0.1f, 10.0f) { LineColor = SKColors.Aqua };
+        ChartData Data2 = new ChartData(ChartData.ChartDataMode.eScreen, "Time (s)", "Volts (V)", 0.1f, 10.0f) { LineColor = SKColors.Red };
+        ChartData Data3 = new ChartData(ChartData.ChartDataMode.eRescaling, "Time (s)", "BLOB (V)", 0.1f, 10.0f) { LineColor = SKColors.Green };
+        void AddDevice (object sender, EventArgs args)
 		{
             var Temp1 = new MultimeterThemed(Globals.BackgroundColor);
 
@@ -64,13 +67,22 @@ namespace App_112GW
             Grid.SetColumnSpan(Temp1, 2);
 
             var Temp2 = new Chart();
+            Temp2.AddGrid(new ChartGrid());
+            Temp2.AddAxis(new ChartAxis(5, 5, 0, 20)    {Label = "Time (s)",   Orientation = ChartAxis.AxisOrientation.Horizontal, AxisLocation = 0.9, AxisStart = 0.1, AxisEnd = 0.1});
+            Temp2.AddAxis(new ChartAxis(5, 5, 0, 0)     {Label = "Volts (V)",  Orientation = ChartAxis.AxisOrientation.Vertical,   AxisLocation = 0.1, AxisStart = 0.1, AxisEnd = 0.1});
+            Temp2.AddAxis(new ChartAxis(5, 5, 0, 0)     {Label = "BLOB (V)",   Orientation = ChartAxis.AxisOrientation.Vertical,   AxisLocation = 0.9, AxisStart = 0.1, AxisEnd = 0.1 });
+
+            Temp2.AddData(Data0);
+            Temp2.AddData(Data1);
+            Temp2.AddData(Data2);
+            Temp2.AddData(Data3);
+
             Charts.Add(Temp2);
             DeviceLayout.Children.Add(Temp2);
             Grid.SetRow(Temp2, 0);
             Grid.SetColumn(Temp2, 0);
             Grid.SetRowSpan(Temp2, 1);
             Grid.SetColumnSpan(Temp2, 2);
-
 
             UserGrid.Children.Add       (ButtonAddDevice,       0, 1);
             UserGrid.Children.Add       (ButtonStartLogging,    1, 1);
@@ -91,10 +103,11 @@ namespace App_112GW
                 temp.Screen.SmallSegments = 99999 - vals;
                 temp.Screen.Bargraph = (vals % 20);
             }
-            foreach(Chart temp in Charts)
-            {
-                temp.Sample((float)Math.Sin((float)vals / 10));
-            }
+
+            Data0.Sample(Globals.RandBetween(1, 2));
+            Data1.Sample(Globals.RandBetween(0, 1));
+            Data2.Sample(Globals.RandBetween(-1, 0));
+            Data3.Sample(Globals.RandBetween(-2, -1));
             return rtn;
         }
 
@@ -107,7 +120,7 @@ namespace App_112GW
             else
             {
                 rtn = true;
-                Device.StartTimer(new TimeSpan(0, 0, 0, 0, 1), UpdateValue);
+                Device.StartTimer(new TimeSpan(0, 0, 0, 0, 100), UpdateValue);
             }
 
             UpdateValue();

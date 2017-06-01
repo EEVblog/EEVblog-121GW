@@ -30,7 +30,7 @@ namespace App_112GW
                 InvalidateSurface();
             }
         }
-
+        
         private SKPaint     _IdleStyle;
         public  SKPaint      IdleStyle
         {
@@ -44,6 +44,7 @@ namespace App_112GW
                 InvalidateSurface();
             }
         }
+
         private SKPaint     _PressStyle;
         public  SKPaint      PressStyle
         {
@@ -57,6 +58,7 @@ namespace App_112GW
                 InvalidateSurface();
             }
         }
+
         public  new SKColor BackgroundColor
         {
             set
@@ -176,43 +178,43 @@ namespace App_112GW
     }
     class BackButton : ContentView
     {
-        /*
-        private TapGestureRecognizer mTouch;
-        private void TapCallback(object sender, EventArgs args)
-        {
-            OnClicked(this, EventArgs.Empty);
-        }
-        private void SetupTouch()
-        {
-            //Add the gesture recognizer 
-            mTouch = new TapGestureRecognizer();
-            mTouch.Tapped += TapCallback;
-            GestureRecognizers.Add(mTouch);
-        }
-        */
-
         private rMultiplatform.Touch mTouch;
+
+        private enum eControlInputState
+        {
+            eNone,
+            ePressed,
+            eHover
+        }
+        private eControlInputState InputState = eControlInputState.eNone;
+
         private void MTouch_Press(object sender, rMultiplatform.TouchActionEventArgs args)
         {
             mRenderer.Pressed = true;
+            InputState = eControlInputState.ePressed;
         }
         private void MTouch_Hover(object sender, rMultiplatform.TouchActionEventArgs args)
         {
-            //mRenderer.Pressed = true;
+            mRenderer.Pressed = true;
+            InputState = eControlInputState.eHover;
         }
         private void MTouch_Release(object sender, rMultiplatform.TouchActionEventArgs args)
         {
             mRenderer.Pressed = false;
-            OnClicked(this, EventArgs.Empty);
+
+            if (InputState == eControlInputState.ePressed)
+                OnClicked(this, EventArgs.Empty);
+
+            InputState = eControlInputState.eNone;
         }
 
         private void SetupTouch()
         {
             //Add the gesture recognizer 
             mTouch = new rMultiplatform.Touch();
-            mTouch.Press    += MTouch_Press;
-            mTouch.Hover    += MTouch_Hover;
-            mTouch.Release  += MTouch_Release;
+            mTouch.Pressed += MTouch_Press;
+            mTouch.Hover += MTouch_Hover;
+            mTouch.Released += MTouch_Release;
             Effects.Add(mTouch);
         }
 
@@ -275,14 +277,16 @@ namespace App_112GW
         }
 
         public event EventHandler   Clicked;
+        private async void          OnClickedAsync()
+        {
+            mRenderer.Pressed = false;
+            await System.Threading.Tasks.Task.Delay(100);
+            if (Clicked != null)
+                Clicked(this, EventArgs.Empty);
+        }
         protected virtual void      OnClicked(object o, EventArgs e)
         {
-            EventHandler handler = Clicked;
-            if (handler != null)
-            {
-                mRenderer.Pressed = !mRenderer.Pressed;
-                handler(this, e);
-            }
+            OnClickedAsync();
         }
         public BackButton           ()
         {

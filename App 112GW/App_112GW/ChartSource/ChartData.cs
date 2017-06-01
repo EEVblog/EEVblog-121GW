@@ -1,7 +1,7 @@
 ﻿using System;
+using SkiaSharp;
 using System.Collections.Generic;
 using System.Text;
-using SkiaSharp;
 
 namespace rMultiplatform
 {
@@ -27,9 +27,17 @@ namespace rMultiplatform
     public class ChartData : IChartRenderer
     {
         public delegate ChartDataEventReturn ChartDataEvent(ChartDataEventArgs e);
-        public List<ChartDataEvent> Registrants;
+        public          List<ChartDataEvent> Registrants;
 
-        public enum ChartDataMode
+        //
+        public int      Layer
+        {
+            get
+            {
+                return 2;
+            }
+        }
+        public enum     ChartDataMode
         {
             eRolling,
             eRescaling,
@@ -98,6 +106,16 @@ namespace rMultiplatform
             }
         }
 
+        private SKPaint DrawPaint;
+        public float    LineWidth
+        {
+            set{ DrawPaint.StrokeWidth = value; }
+        }
+        public SKColor  LineColor
+        {
+            set { DrawPaint.Color = value; }
+        }
+
         //
         List<SKPoint>   Data;
         Range           HorozontalSpan;
@@ -145,19 +163,13 @@ namespace rMultiplatform
             }
         }
 
-
         //
         float           Time;
-
-        //
         float           SampleTime;
-        float           SampleDistance;
-
-        //
         float           TimeSpan;
         ChartDataMode   Mode;
 
-        public ChartData(ChartDataMode pMode, string pHorzLabel, string pVertLabel, float pSampleTime, float pTimeSpan)
+        public      ChartData(ChartDataMode pMode, string pHorzLabel, string pVertLabel, float pSampleTime, float pTimeSpan)
         {
             Mode = pMode;
             TimeSpan = pTimeSpan;
@@ -166,18 +178,23 @@ namespace rMultiplatform
             //
             HorizontalLabel = pHorzLabel;
             VerticalLabel = pVertLabel;
-
             //
+
             Data = new List<SKPoint>();
             Registrants = new List<ChartDataEvent>();
 
             //
-            HorozontalSpan = new Range(0, pTimeSpan);
-            _VerticalSpan = new Range(0, 0);
-        }
+            DrawPaint = new SKPaint() { Color = SKColors.Red, IsStroke = true, StrokeWidth = 2 };
 
+            //
+            HorozontalSpan = new Range(0, pTimeSpan);
+            _VerticalSpan = null;
+        }
         public bool Draw (SKCanvas c)
         {
+            if (Data.Count == 0)
+                return false;
+
             //Scale vertical axis
             var vert = VerticalSpan;
             var horz = HorozontalSpan;
@@ -188,7 +205,7 @@ namespace rMultiplatform
             {
                 if((temp = axis(new ChartDataEventArgs(ChartAxis.AxisOrientation.Horizontal, horz))) != null)
                     x = temp;
-                if((temp = axis(new ChartDataEventArgs(ChartAxis.AxisOrientation.Vertical, vert))) != null)
+                if ((temp = axis(new ChartDataEventArgs(ChartAxis.AxisOrientation.Vertical, vert))) != null)
                     y = temp;
             }
 
@@ -207,7 +224,7 @@ namespace rMultiplatform
             //
             var path = new SKPath();
             path.AddPoly(data, false);
-            c.DrawPath(path, new SKPaint() { Color = SKColors.Red, IsStroke = true, StrokeWidth = 2});
+            c.DrawPath(path, DrawPaint);
             return false;
         }
         public void Sample (float pPoint)
@@ -223,6 +240,9 @@ namespace rMultiplatform
                     break;
                 case ChartDataMode.eRescaling:
                     HorozontalSpan.RescaleRangeToFitValue(Time);
+                    if (_VerticalSpan == null)
+                        _VerticalSpan = new Range(pPoint, pPoint);
+
                     VerticalSpan.RescaleRangeToFitValue(pPoint);
                     break;
                 case ChartDataMode.eScreen:
@@ -234,6 +254,7 @@ namespace rMultiplatform
                     break;
             };
             Data.Add(new SKPoint(Time, pPoint));
+            InvalidateParent();
             Time += SampleTime;
         }
 
@@ -245,7 +266,18 @@ namespace rMultiplatform
 
             //Add the object to registrants after testing whether axis is of relevant units
             var axis = o as ChartAxis;
-            Registrants.Add(axis.ChartDataEvent);
+
+            bool reg = false;
+            if (axis.Orientation == ChartAxis.AxisOrientation.Horizontal)
+                if (axis.Label == HorizontalLabel)
+                    reg = true;
+
+            if (axis.Orientation == ChartAxis.AxisOrientation.Vertical)
+                if (axis.Label == VerticalLabel)
+                    reg = true;
+
+            if (reg)
+                Registrants.Add(axis.ChartDataEvent);
             return true;
         }
         public List<Type> RequireRegistration()
@@ -257,6 +289,39 @@ namespace rMultiplatform
         public void SetParentSize(double w, double h)
         {
             //Doesn't do anything
+        }
+
+        //For the sortability of layers
+        public int CompareTo(object obj)
+        {
+            if (obj is IChartRenderer)
+            {
+                var ob = obj as IChartRenderer;
+                var layer = ob.Layer;
+
+                if (layer > Layer)
+                    return -1;
+                else if (layer < Layer)
+                    return 1;
+                else
+                    return 0;
+            }
+            return 0;
+        }
+
+        private Chart Parent;
+        public bool RegisterParent(Object c)
+        {
+            if (c is Chart)
+            {
+                Parent = c as Chart;
+                return true;
+            }
+            return false;
+        }
+        public void InvalidateParent()
+        {
+            Parent.InvalidateSurface();
         }
     }
 }

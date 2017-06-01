@@ -50,14 +50,17 @@ namespace rMultiplatform
         public delegate bool ChartAxisEvent(Object o);
         List<ChartAxisEvent> Registrants;
 
+        //Parent properties
+        private Padding ParentPadding;
+        private double ParentWidth;
+        private double ParentHeight;
+
         //Privates
         private SKPaint MajorPaint;
         private SKPaint MinorPaint;
         private float   SpaceWidth;
         private double  MainTickDrawDistance;
         private double  MinorTickDrawDistance;
-        private double  ParentWidth;
-        private double  ParentHeight;
         private void    CalculateScales()
         {
             var rangesize = Distance;
@@ -83,7 +86,6 @@ namespace rMultiplatform
         {
             get { return _Units; }
         }
-
         private string  _Label;
         public string   Label
         {
@@ -108,18 +110,16 @@ namespace rMultiplatform
                 _Label = txt;
             }
         }
-
         private double  _MainTickDistance;
-        private double   MainTickDistance
+        private double  MainTickDistance
         {
             get
             {
                 return _MainTickDistance;
             }
         }
-
         private double  _MinorTickDistance;
-        private double   MinorTickDistance
+        private double  MinorTickDistance
         {
             get
             {
@@ -139,7 +139,6 @@ namespace rMultiplatform
                 }
             }
         }
-
         private double  _MinorTicks;
         public double   MinorTicks
         {
@@ -153,8 +152,8 @@ namespace rMultiplatform
                 CalculateScales();
             }
         }
-        private double _MainTicks;
-        public double MainTicks
+        private double  _MainTicks;
+        public double   MainTicks
         {
             get
             {
@@ -167,7 +166,6 @@ namespace rMultiplatform
             }
         }
 
-
         public enum AxisDirection
         {
             Standard,
@@ -177,7 +175,6 @@ namespace rMultiplatform
         {
             get; set;
         }
-
         public enum AxisOrientation
         {
             Vertical,
@@ -217,7 +214,6 @@ namespace rMultiplatform
                 }
             }
         }
-
         private double  AxisSize
         {
             get
@@ -225,7 +221,6 @@ namespace rMultiplatform
                 return VisualScale * (1.0 - (_AxisStartScaler + _AxisEndScaler));
             }
         }
-
         private double  _AxisStartScaler;
         private float   _AxisStart;
         public double   AxisStart
@@ -240,7 +235,6 @@ namespace rMultiplatform
                 return _AxisStart;
             }
         }
-
         private double  _AxisEndScaler;
         private float   _AxisEnd;
         public double   AxisEnd
@@ -281,7 +275,7 @@ namespace rMultiplatform
                     return Minimum;
             }
         }
-        private double EndPoint
+        private double  EndPoint
         {
             get
             {
@@ -291,8 +285,7 @@ namespace rMultiplatform
                     return Maximum;
             }
         }
-
-        private bool Inverting
+        private bool    Inverting
         {
             get
             {
@@ -312,7 +305,22 @@ namespace rMultiplatform
                 }
             }
         }
-   
+
+        private bool    _Rerange;
+        public bool     Rerange
+        {
+            set
+            {
+                _Rerange = value;
+            }
+        }
+        public int      Layer
+        {
+            get
+            {
+                return 3;
+            }
+        }
 
         public          ChartAxis(double MainTicks, double MinorTicks, double Minimum, double Maximum)
             : base(Minimum, Maximum)
@@ -342,6 +350,8 @@ namespace rMultiplatform
 
             //
             Registrants = new List<ChartAxisEvent>();
+            ParentPadding = new Padding(0);
+            Rerange = true;
         }
         void            SendEvent(ref SKCanvas Can, SKColor Col, float Pos, ChartAxisEventArgs.ChartAxisEventType EventType)
         {
@@ -354,8 +364,13 @@ namespace rMultiplatform
         {
             if (e.Orientation == Orientation)
             {
-                Minimum = e.NewRange.Minimum;
-                Maximum = e.NewRange.Maximum;
+                if (Minimum > e.NewRange.Minimum || _Rerange)
+                    Minimum = e.NewRange.Minimum;
+
+                if (Maximum < e.NewRange.Maximum || _Rerange)
+                    Maximum = e.NewRange.Maximum;
+
+                Rerange = false;
                 CalculateScales();
 
                 return new ChartDataEventReturn(GetCoordinate);
@@ -379,6 +394,7 @@ namespace rMultiplatform
             
             return Value;
         }
+
         //Draws horozontal and vertical tick labels centred about the axis position
         void DrawTick       (ref SKCanvas c, float Position, float length, SKPaint TickPaint)
         {
@@ -468,7 +484,7 @@ namespace rMultiplatform
                     {
                         var y = (float)(_AxisLocation - hei);
                         pt1 = new SKPoint((float)(VisualScale - AxisEnd - wid),               y);
-                        pt2 = new SKPoint((float)(VisualScale - AxisEnd),   y);
+                        pt2 = new SKPoint((float)(VisualScale - AxisEnd),       y);
                     }
                     break;
                 default:
@@ -523,18 +539,42 @@ namespace rMultiplatform
             CalculateScales();
         }
 
-        //
+        //Required 
         public bool Register(Object o)
         {
-            if (o.GetType() != typeof(ChartAxisEvent))
-                return false;
-
-            Registrants.Add(o as ChartAxisEvent);
+            if (o.GetType() == typeof(ChartAxisEvent))
+                Registrants.Add(o as ChartAxisEvent);
+            else if (o.GetType() == typeof(Padding))
+                ParentPadding = o as Padding;
             return true;
         }
         public List<Type> RequireRegistration()
         {
             return null;
+        }
+        public int CompareTo(object obj)
+        {
+            if (obj is IChartRenderer)
+            {
+                var ob = obj as IChartRenderer;
+                var layer = ob.Layer;
+
+                if (layer > Layer)
+                    return -1;
+                else if (layer < Layer)
+                    return 1;
+                else
+                    return 0;
+            }
+            return 0;
+        }
+        public bool RegisterParent(object c)
+        {
+            return false;
+        }
+        public void InvalidateParent()
+        {
+            throw new NotImplementedException();
         }
     }
 }

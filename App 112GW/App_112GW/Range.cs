@@ -18,7 +18,6 @@ namespace rMultiplatform
                 _Maximum = value;
             }
         }
-
         private double _Minimum;
         public double Minimum
         {
@@ -31,13 +30,10 @@ namespace rMultiplatform
                 _Minimum = value;
             }
         }
-
-
         public double Distance
         {
             get{return Maximum - Minimum;}
         }
-
         public void Set     (double ValA, double ValB)
         {
             if (ValA > ValB)
@@ -55,12 +51,10 @@ namespace rMultiplatform
         {
             Set(ValA, ValB);
         }
-
         public bool InRange (double Val)
         {
             return (Minimum <= Val) && (Val <= Maximum);
         }
-
         public void AddToMaximum(double Value)
         {
             Maximum += Value;
@@ -69,7 +63,6 @@ namespace rMultiplatform
         {
             Minimum += Value;
         }
-
         public void ShiftRange(double Value)
         {
             AddToMaximum(Value);

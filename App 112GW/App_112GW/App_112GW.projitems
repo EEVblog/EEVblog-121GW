@@ -13,12 +13,14 @@
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)BackButton.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ChartSource\AxisLabel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ChartSource\Chart.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ChartSource\ChartAxis.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ChartSource\ChartData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ChartSource\ChartGrid.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ChartSource\Gridline.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ChartSource\Range.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Padding.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Range.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MultimeterMenu.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MultimeterThemed.xaml.cs">
       <DependentUpon>MultimeterThemed.xaml</DependentUpon>
@@ -133,7 +135,6 @@
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Layers\sub3dp.png" />
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Layers\sub3e.png" />
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Layers\sub3f.png" />
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Layers\sub3g.png" />
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Layers\sub4a.png" />
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Layers\sub4b.png" />
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Layers\sub4c.png" />
@@ -155,5 +156,8 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="$(MSBuildThisFileDirectory)Layers\sub3g.png" />
   </ItemGroup>
 </Project>

@@ -12,6 +12,7 @@ namespace rMultiplatform
 {
     public class ChartGrid : IChartRenderer
     {
+        private Padding     ParentPadding;
         private double      ParentWidth;
         private double      ParentHeight;
 
@@ -21,8 +22,18 @@ namespace rMultiplatform
         public SKPaint      MajorPaint;
         public SKPaint      MinorPaint;
 
+        public int          Layer
+        {
+            get
+            {
+                return 1;
+            }
+        }
+
         public              ChartGrid()
         {
+            ParentPadding = new Padding(0);
+
             MajorPaint = new SKPaint();
             MajorPaint.StrokeWidth = 1;
             MajorPaint.BlendMode = SKBlendMode.Src;
@@ -41,7 +52,6 @@ namespace rMultiplatform
         {
             return false;
         }
-
         private void        DrawGridLine(SKCanvas c, Gridline o)
         {
             o.Draw(c);
@@ -52,15 +62,9 @@ namespace rMultiplatform
             var     canvas = args.Canvas;
             SKPoint p1, p2;
             if (args.Orientation == ChartAxis.AxisOrientation.Horizontal)
-            {
-                p1 = new SKPoint((float)args.Position, 0);
-                p2 = new SKPoint((float)args.Position, (float)ParentHeight);
-            }
+                (p1, p2) = ParentPadding.GetVerticalLine((float)args.Position);
             else
-            {
-                p1 = new SKPoint(0, (float)args.Position);
-                p2 = new SKPoint((float)ParentWidth, (float)args.Position);
-            }
+                (p1, p2) = ParentPadding.GetHorozontalLine((float)args.Position);
 
             switch (args.EventType)     
             {
@@ -89,7 +93,6 @@ namespace rMultiplatform
             //There may be multiple grids?
             return false;
         }
-
         public void         SetParentSize(double w, double h)
         {
             ParentWidth = w;
@@ -104,6 +107,10 @@ namespace rMultiplatform
                 ax.Register(t);
                 return true;
             }
+            else if (o.GetType() == typeof(Padding))
+            {
+                ParentPadding = o as Padding;
+            }
             return true;
         }
         public List<Type>   RequireRegistration()
@@ -112,9 +119,35 @@ namespace rMultiplatform
 
             //Types to register
             Types.Add(typeof(ChartAxis));
+            Types.Add(typeof(Padding));
 
             //
             return Types;
+        }
+        public int          CompareTo(object obj)
+        {
+            if (obj is IChartRenderer)
+            {
+                var ob = obj as IChartRenderer;
+                var layer = ob.Layer;
+
+                if (layer > Layer)
+                    return -1;
+                else if (layer < Layer)
+                    return 1;
+                else
+                    return 0;
+            }
+            return 0;
+        }
+
+        public bool RegisterParent(object c)
+        {
+            return false;
+        }
+        public void InvalidateParent()
+        {
+            throw new NotImplementedException();
         }
     }
 }

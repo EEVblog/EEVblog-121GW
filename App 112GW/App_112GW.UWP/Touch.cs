@@ -16,6 +16,7 @@ namespace rMultiplatform.UWP
         FrameworkElement        view;
         rMultiplatform.Touch    effect;
 
+        //Required by Platform Effect
         protected override void OnAttached()
         {
             // Get the Windows FrameworkElement corresponding to the Element that the effect is attached to
@@ -27,36 +28,44 @@ namespace rMultiplatform.UWP
             if (effect != null && view != null)
             {
                 // Set event handlers on FrameworkElement
-                //view.PointerEntered     += CommonHandler;
-                view.PointerPressed     += CommonHandler;
-                //view.PointerMoved       += CommonHandler;
-                view.PointerReleased    += FinishHandler;
-                //view.PointerExited      += FinishHandler;
-                //view.PointerCanceled    += FinishHandler;
+                view.PointerEntered += MoveHandler;
+                view.PointerMoved += MoveHandler;
+                view.PointerPressed += PressedHandler;
+                view.PointerReleased += ReleasedHandler;
+                view.PointerExited += ReleasedHandler;
+                view.PointerCanceled += ReleasedHandler;
             }
         }
         protected override void OnDetached()
         {
             // Release event handlers on FrameworkElement
-            view.PointerEntered     -= CommonHandler;
-            view.PointerPressed     -= CommonHandler;
-            view.PointerMoved       -= CommonHandler;
-            view.PointerReleased    -= CommonHandler;
-            view.PointerExited      -= FinishHandler;
-            view.PointerCanceled    -= FinishHandler;
+            view.PointerEntered -= MoveHandler;
+            view.PointerMoved -= MoveHandler;
+            view.PointerPressed -= PressedHandler;
+            view.PointerReleased -= ReleasedHandler;
+            view.PointerExited -= ReleasedHandler;
+            view.PointerCanceled -= ReleasedHandler;
         }
 
-        void FinishHandler(object sender, PointerRoutedEventArgs args)
+        //Shared handler functions
+        private Point GetPoint(object sender, PointerRoutedEventArgs args)
         {
             var pp = args.GetCurrentPoint(sender as UIElement).Position;
-            var point = new Point(pp.X, pp.Y);
-            effect.OnTouchAction(Element, new TouchActionEventArgs(TouchPointFactory.Released(point)));
+            return new Point(pp.X, pp.Y);
         }
-        void CommonHandler(object sender, PointerRoutedEventArgs args)
+
+        // Common handlers
+        void ReleasedHandler(object sender, PointerRoutedEventArgs args)
         {
-            var pp = args.GetCurrentPoint(sender as UIElement).Position;
-            var point = new Point(pp.X, pp.Y);
-            effect.OnTouchAction(Element, new TouchActionEventArgs(TouchPointFactory.Pressed(point)));
+            effect.ReleasedHandler(sender, GetPoint(sender, args));
+        }
+        void MoveHandler    (object sender, PointerRoutedEventArgs args)
+        {
+            effect.MoveHandler(sender, GetPoint(sender, args));
+        }
+        void PressedHandler (object sender, PointerRoutedEventArgs args)
+        {
+            effect.PressedHandler(sender, GetPoint(sender, args));
         }
     }
 }

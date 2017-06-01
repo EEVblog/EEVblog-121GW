@@ -30,6 +30,14 @@ namespace rMultiplatform
         SKPoint Point2;
         SKPaint Paint;
 
+        public int Layer
+        {
+            get
+            {
+                return 0;
+            }
+        }
+
         public Gridline(SKPoint p1, SKPoint p2, SKPaint paint)
         {
             Point1 = p1;
@@ -48,5 +56,31 @@ namespace rMultiplatform
         { return true; }
         public List<Type> RequireRegistration()
         {return null;}
+
+        public int CompareTo(object obj)
+        {
+            if (obj is IChartRenderer)
+            {
+                var ob = obj as IChartRenderer;
+                var layer = ob.Layer;
+
+                if (layer > Layer)
+                    return -1;
+                else if (layer < Layer)
+                    return 1;
+                else
+                    return 0;
+            }
+            return 0;
+        }
+
+        public void InvalidateParent()
+        {
+            throw new NotImplementedException();
+        }
+        public bool RegisterParent(object c)
+        {
+            return false;
+        }
     }
 }

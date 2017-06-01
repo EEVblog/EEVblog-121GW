@@ -14,8 +14,8 @@ namespace rMultiplatform.Droid
 {
     public class Touch : PlatformEffect
     {
-        Android.Views.View      view;
-        rMultiplatform.Touch    effect;
+        private Android.Views.View      view;
+        private rMultiplatform.Touch    effect;
 
         protected override void OnAttached()
         {
@@ -31,48 +31,40 @@ namespace rMultiplatform.Droid
         }
         protected override void OnDetached()
         {
-            //view.Touch -= CommonHandler;
         }
 
-        void FinishHandler(object sender, Android.Views.View.TouchEventArgs args)
-        {
-            effect.OnTouchAction(Element, new TouchActionEventArgs(TouchPointFactory.Released(GetPointer(args))));
-        }
+        //Android only, routed args
         void CommonHandler(object sender, Android.Views.View.TouchEventArgs args)
         {
-            // Use ActionMasked here rather than Action to reduce the number of possibilities
             switch (args.Event.ActionMasked)
             {
                 case MotionEventActions.ButtonPress:
                 case MotionEventActions.Down:
-                case MotionEventActions.Move:
                 case MotionEventActions.PointerDown:
-                    effect.OnTouchAction(Element, new TouchActionEventArgs(TouchPointFactory.Pressed(GetPointer(args))));
+                    effect.PressedHandler(sender, GetPoint(args));
                     break;
 
+                case MotionEventActions.Move:
                 case MotionEventActions.HoverMove:
                 case MotionEventActions.HoverEnter:
-                    //Add support for this
-                    effect.OnTouchAction(Element, new TouchActionEventArgs(TouchPointFactory.Hover(GetPointer(args))));
+                    effect.MoveHandler(sender, GetPoint(args));
                     break;
 
-                case MotionEventActions.Outside:
                 case MotionEventActions.HoverExit:
                 case MotionEventActions.PointerUp:
                 case MotionEventActions.Up:
                 case MotionEventActions.Cancel:
                 case MotionEventActions.ButtonRelease:
-                    FinishHandler(sender, args);
+                    effect.ReleasedHandler(sender, GetPoint(args));
                     break;
 
                 default:
                     break;
             }
-            
         }
 
-        //Android only
-        private Point GetPointer(Android.Views.View.TouchEventArgs args)
+        //Shared handler functions
+        private Point GetPoint(Android.Views.View.TouchEventArgs args)
         {
             int index = args.Event.ActionIndex;
             MotionEvent.PointerCoords temp = new MotionEvent.PointerCoords();
