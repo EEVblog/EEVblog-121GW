@@ -110,6 +110,7 @@ namespace rMultiplatform
             }
         }
 
+        //
         private SKPaint DrawPaint;
         public float    LineWidth
         {
@@ -122,59 +123,20 @@ namespace rMultiplatform
         }
 
         //
+        List<int>       DataSortedX;
+        List<int>       DataSortedY;
         List<SKPoint>   Data;
-        Range           HorozontalSpan;
-        Range           _VerticalSpan;
-        Range           VerticalSpan
-        {
-            get
-            {
-                float? min = null, max = null;
-
-                switch (Mode)
-                {
-                    //////////////////////////////////////////////////
-                    case ChartDataMode.eRescaling:
-                        return _VerticalSpan;
-                    //////////////////////////////////////////////////
-                    case ChartDataMode.eRolling:
-                    case ChartDataMode.eScreen:
-                        foreach (SKPoint pt in Data)
-                        {
-                            var val = pt.Y;
-                            //Setup initial conditions
-                            if (min == null)
-                                min = val;
-                            if (max == null)
-                                max = val;
-                            //Setup the range
-                            if (val > max)
-                                max = val;
-                            if (val < min)
-                                min = val;
-                        }
-
-                        //Setup no-data condition
-                        if (min == null)
-                            min = 0;
-                        if (max == null)
-                            max = 0;
-                        return new Range((float)min, (float)max);
-                    //////////////////////////////////////////////////
-                    default:
-                        return new Range(0,0);
-                    //////////////////////////////////////////////////
-                };
-            }
-        }
-
+        public Range    HorozontalSpan;
+        public Range    VerticalSpan;
+        
         //
         float           Time;
         float           SampleTime;
         float           TimeSpan;
         ChartDataMode   Mode;
 
-        public      ChartData(ChartDataMode pMode, string pHorzLabel, string pVertLabel, float pSampleTime, float pTimeSpan)
+        //
+        public      ChartData (ChartDataMode pMode, string pHorzLabel, string pVertLabel, float pSampleTime, float pTimeSpan)
         {
             Mode = pMode;
             TimeSpan = pTimeSpan;
@@ -190,18 +152,22 @@ namespace rMultiplatform
 
             //
             var col = App_112GW.Globals.UniqueColor;
-            DrawPaint = new SKPaint() { Color = col.ToSKColor(), IsStroke = true, StrokeWidth = 2 };
+            DrawPaint = new SKPaint() { Color = col.ToSKColor(), IsStroke = true, StrokeWidth = 2, IsAntialias = true };
 
             //
             HorozontalSpan = new Range(0, pTimeSpan);
-            _VerticalSpan = null;
+            VerticalSpan = new Range(0, 0);
         }
         public bool Draw (SKCanvas c)
         {
             if (Data.Count == 0)
                 return false;
 
-            //Scale vertical axis
+            if (VerticalSpan == null)
+                return false;
+
+
+                //Scale vertical axis
             var vert = VerticalSpan;
             var horz = HorozontalSpan;
 
@@ -246,20 +212,23 @@ namespace rMultiplatform
                     break;
                 case ChartDataMode.eRescaling:
                     HorozontalSpan.RescaleRangeToFitValue(Time);
-                    if (_VerticalSpan == null)
-                        _VerticalSpan = new Range(pPoint, pPoint);
-
-                    VerticalSpan.RescaleRangeToFitValue(pPoint);
                     break;
                 case ChartDataMode.eScreen:
                     if (Time > HorozontalSpan.Maximum)
                     {
                         Data.Clear();
+                        VerticalSpan.Set(0, 0);
                         HorozontalSpan.ShiftRange(HorozontalSpan.Distance);
                     }
                     break;
             };
+
+            //Rescale vertical
+            VerticalSpan.RescaleRangeToFitValue(pPoint);
+
+            //
             Data.Add(new SKPoint(Time, pPoint));
+
             InvalidateParent();
             Time += SampleTime;
         }
@@ -327,7 +296,8 @@ namespace rMultiplatform
         }
         public void InvalidateParent()
         {
-            Parent.InvalidateSurface();
+            if (Parent != null)
+                Parent.InvalidateSurface();
         }
     }
 }

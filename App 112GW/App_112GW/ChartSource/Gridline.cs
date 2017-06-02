@@ -30,42 +30,38 @@ namespace rMultiplatform
         SKPoint Point2;
         SKPaint Paint;
 
-        public Color Color
+
+
+        public Color        Color
         {
             set
             {
                 Paint.Color = value.ToSKColor();
             }
         }
-
-        public int Layer
+        public int          Layer
         {
             get
             {
                 return 0;
             }
         }
-
-        public Gridline(SKPoint p1, SKPoint p2, SKPaint paint)
+        public              Gridline(SKPoint p1, SKPoint p2, SKPaint paint)
         {
             Point1 = p1;
             Point2 = p2;
             Paint = paint;
         }
-        public bool Draw (SKCanvas c)
+        public bool         Draw (SKCanvas c)
         {
             c.DrawLine(Point1.X, Point1.Y, Point2.X, Point2.Y, Paint);
             return true;
         }
-
-        public void SetParentSize (double w, double h)
-        {}
-        public bool Register (Object o)
+        public void         SetParentSize (double w, double h){}
+        public bool         Register (Object o)
         { return true; }
-        public List<Type> RequireRegistration()
-        {return null;}
-
-        public int CompareTo(object obj)
+        public List<Type>   RequireRegistration(){return null;}
+        public int          CompareTo(object obj)
         {
             if (obj is IChartRenderer)
             {
@@ -82,11 +78,11 @@ namespace rMultiplatform
             return 0;
         }
 
-        public void InvalidateParent()
+        public void         InvalidateParent()
         {
             throw new NotImplementedException();
         }
-        public bool RegisterParent(object c)
+        public bool         RegisterParent(object c)
         {
             return false;
         }

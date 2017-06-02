@@ -70,6 +70,7 @@ namespace rMultiplatform
     {
         public delegate bool ChartAxisDrawEvent(ChartAxisDrawEventArgs o);
         public delegate bool ChartAxisEvent(Object o);
+        List<Range>                 AxisDataRanges;
         List<ChartAxisEvent>        AxisDataEvents;
         List<ChartAxisDrawEvent>    AxisDrawEvents;
         List<SKColor>               AxisDataColors;
@@ -96,6 +97,8 @@ namespace rMultiplatform
         private SKPaint     MajorPaint;
         private SKPaint     ColorPaint;
         private SKPaint     MinorPaint;
+        private SKPaint     MaskPaint;
+
         private float       SpaceWidth;
         private double      MainTickDrawDistance;
         private double      MinorTickDrawDistance;
@@ -358,7 +361,7 @@ namespace rMultiplatform
             }
         }
 
-        public Color Color
+        public Color        Color
         {
             set
             {
@@ -366,7 +369,7 @@ namespace rMultiplatform
                 MinorPaint.Color = value.ToSKColor();
             }
         }
-        public enum AxisLock
+        public enum         AxisLock
         {
             eStart = 0,
             eMiddle = 999999998,
@@ -407,8 +410,47 @@ namespace rMultiplatform
             }
         }
 
+        private float       _MajorTickLineSize;
+        public float        MajorTickLineSize
+        {
+            set
+            {
+                _MajorTickLineSize = value;
+            }
+            get
+            {
+                return _MajorTickLineSize;
+            }
+        }
+        private float       _MinorTickLineSize;
+        public float        MinorTickLineSize
+        {
+            set
+            {
+                _MinorTickLineSize = value;
+            }
+            get
+            {
+                return _MinorTickLineSize;
+            }
+        }
+        private float       _CircleRadius;
+        public float        CircleRadius
+        {
+            set
+            {
+                _CircleRadius = value;
+            }
+            get
+            {
+                return _CircleRadius;
+            }
+        }
+
+        public bool         ShowDataKey;
+
         //
-        public              ChartAxis(double MainTicks, double MinorTicks, double Minimum, double Maximum)
+        public ChartAxis       (double MainTicks, double MinorTicks, double Minimum, double Maximum)
             : base(Minimum, Maximum)
         {
             ParentPadding = new ChartPadding(0);
@@ -425,11 +467,15 @@ namespace rMultiplatform
             MajorPaint.StrokeWidth = 4;
             MajorPaint.StrokeCap = SKStrokeCap.Round;
             MajorPaint.TextSize = 16;
+            MajorPaint.FakeBoldText = true;
 
             ColorPaint = new SKPaint();
             ColorPaint.StrokeWidth = 4;
             ColorPaint.StrokeCap = SKStrokeCap.Round;
             ColorPaint.TextSize = 16;
+
+            MaskPaint = new SKPaint();
+            MaskPaint.Color = App_112GW.Globals.BackgroundColor.ToSKColor();
 
             //Setup unique color for axis
             Color = App_112GW.Globals.UniqueColor.WithLuminosity(0.9);
@@ -439,48 +485,19 @@ namespace rMultiplatform
 
             //Must be set last as it depends on above
             AxisLocation = 0.5;
+            CircleRadius = SpaceWidth * 2;
+            MajorTickLineSize = 20;
+            MinorTickLineSize = 5;
 
             //
             AxisDrawEvents = new List<ChartAxisDrawEvent>();
             AxisDataEvents = new List<ChartAxisEvent>();
             AxisDataColors = new List<SKColor>();
+            AxisDataRanges = new List<Range>();
             Rerange = true;
+            ShowDataKey = true;
         }
-        void                SendEvent(ref SKCanvas Can, SKColor Col, float Pos, int index, ChartAxisEventArgs.ChartAxisEventType EventType)
-        {
-            var args = new ChartAxisEventArgs(_Label, Can, Col, Pos, MinorTickDistance, Orientation, EventType);
-
-            foreach (var registrant in AxisDataEvents)
-                if (registrant(args))
-                    break;
-
-            if (EventType == ChartAxisEventArgs.ChartAxisEventType.DrawMajorTick)
-            {
-                var arg = new ChartAxisDrawEventArgs(_Label, Orientation, Pos, index, (int)MainTicks - 1);
-                for (int i = 0; i < AxisDrawEvents.Count; i++)
-                    if (! AxisDrawEvents[i](arg))
-                        AxisDrawEvents.RemoveAt(i);
-            }
-        }
-        public              ChartDataEventReturn ChartDataEvent(ChartDataEventArgs e)
-        {
-            if (e.Orientation == Orientation)
-            {
-                if (Minimum > e.NewRange.Minimum || _Rerange)
-                    Minimum = e.NewRange.Minimum;
-
-                if (Maximum < e.NewRange.Maximum || _Rerange)
-                    Maximum = e.NewRange.Maximum;
-
-                Rerange = false;
-                CalculateScales();
-
-                return new ChartDataEventReturn(GetCoordinate);
-            }
-            return null;
-        }
-
-        public double       GetCoordinate(double Value)
+        public double       GetCoordinate   (double Value)
         {
             var scale = (AxisSize / Distance);
 
@@ -499,7 +516,39 @@ namespace rMultiplatform
         }
 
         //Draws horozontal and vertical tick labels centred about the axis position
-        public bool         ChartDrawEvent(ChartAxisDrawEventArgs e)
+        void                SendEvent       (ref SKCanvas Can, SKColor Col, float Pos, int index, ChartAxisEventArgs.ChartAxisEventType EventType)
+        {
+            var args = new ChartAxisEventArgs(_Label, Can, Col, Pos, MinorTickDistance, Orientation, EventType);
+
+            foreach (var registrant in AxisDataEvents)
+                if (registrant(args))
+                    break;
+
+            if (EventType == ChartAxisEventArgs.ChartAxisEventType.DrawMajorTick)
+            {
+                var arg = new ChartAxisDrawEventArgs(_Label, Orientation, Pos, index, (int)MainTicks - 1);
+                for (int i = 0; i < AxisDrawEvents.Count; i++)
+                    if (!AxisDrawEvents[i](arg))
+                        AxisDrawEvents.RemoveAt(i);
+            }
+        }
+        
+        public ChartDataEventReturn 
+            ChartDataEvent(ChartDataEventArgs e)
+        {
+            if (e.Orientation == Orientation)
+            {
+                var temp = Combine(AxisDataRanges);
+
+                Maximum = temp.Maximum;
+                Minimum = temp.Minimum;
+                CalculateScales();
+                return new ChartDataEventReturn(GetCoordinate);
+            }
+            return null;
+        }
+
+        public bool         ChartDrawEvent  (ChartAxisDrawEventArgs e)
         {
             //No lock position set
             if (!_LockIndexSet)
@@ -533,7 +582,7 @@ namespace rMultiplatform
 
             return true;
         }
-        void                DrawTick       (ref SKCanvas c, float Position, float length, SKPaint TickPaint)
+        void                DrawTick        (ref SKCanvas c, float Position, float length, SKPaint TickPaint)
         {
             length /= 2;
             switch (Orientation)      
@@ -558,17 +607,17 @@ namespace rMultiplatform
                     break;
             }
         }
-        void                DrawMajorTick  (ref SKCanvas c, float Position, int index)
+        void                DrawMajorTick   (ref SKCanvas c, float Position, int index)
         {
             SendEvent(ref c, MajorPaint.Color, Position, index, ChartAxisEventArgs.ChartAxisEventType.DrawMajorTick);
-            DrawTick(ref c, Position, 20, MajorPaint);
+            DrawTick(ref c, Position, MajorTickLineSize, MajorPaint);
         }
-        void                DrawMinorTick  (ref SKCanvas c, float Position)
+        void                DrawMinorTick   (ref SKCanvas c, float Position)
         {
             SendEvent(ref c, MinorPaint.Color, Position, 0, ChartAxisEventArgs.ChartAxisEventType.DrawMinorTick);
-            DrawTick(ref c, Position, 5, MinorPaint);
+            DrawTick(ref c, Position, MinorTickLineSize, MinorPaint);
         }
-        void                DrawTickLabel  (ref SKCanvas c, double Value, float Position, float length, SKPaint TickPaint)
+        void                DrawTickLabel   (ref SKCanvas c, double Value, float Position, float length, SKPaint TickPaint)
         {
             var hei = MajorPaint.TextSize /2;
             var txt = String.Format("{0:0.00}", Value);
@@ -580,16 +629,12 @@ namespace rMultiplatform
             switch (Orientation)
             {
                 case AxisOrientation.Vertical:
-
-                    pt1 = new SKPoint(_AxisLocation + SpaceWidth,       Position - hei);
-                    pt2 = new SKPoint(_AxisLocation + wid + SpaceWidth, Position - hei);
-
+                    pt1 = new SKPoint(_AxisLocation - (wid + SpaceWidth), Position - hei);
+                    pt2 = new SKPoint(_AxisLocation - (SpaceWidth),       Position - hei);
                     break;
                 case AxisOrientation.Horizontal:
-
                     pt1 = new SKPoint(Position - hei,                   _AxisLocation + wid + SpaceWidth);
                     pt2 = new SKPoint(Position - hei,                   _AxisLocation + SpaceWidth);
-
                     break;
                 default:
                     return;
@@ -598,50 +643,108 @@ namespace rMultiplatform
             pth.AddPoly(pts, false);
             c.DrawTextOnPath(txt, pth, 0, hei / 2, MajorPaint);
         }
-        void                DrawLabel      (ref SKCanvas c, float length)
+        void                DrawLabel       (ref SKCanvas c, float length)
         {
-            var hei = (double)MajorPaint.TextSize;
+            var hei = (float)MajorPaint.TextSize;
             var txt = Convert.ToString(Label);
             var wid = MajorPaint.MeasureText(txt) + SpaceWidth;
 
             var pth = new SKPath();
             SKPoint pt1, pt2;
 
-            float xmakoffset = 0, ymakoffset = 0;
+            float xmakoffset = 0, ymakoffset = 0, xfilloffset = 0, yfilloffset = 0;
+            float xfillsoffset = 0, yfillsoffset = 0;
+            var offset = MajorTickLineSize / 2.0f;
 
             length /= 2;
             switch (Orientation)
             {
                 case AxisOrientation.Vertical:
                     {
-                        var x = (float)(_AxisLocation - hei);
-                        pt2 = new SKPoint(x, (float)(AxisStart));
-                        pt1 = new SKPoint(x, (float)(AxisStart + wid));
-                        ymakoffset = SpaceWidth * 4;
+                        offset += hei;
+                        var x = _AxisLocation + offset;
+                        var ys = (float)(AxisStart + 2 * SpaceWidth);
+
+                        pt2 = new SKPoint(x, ys);
+                        pt1 = new SKPoint(x, ys + wid);
+
+                        xmakoffset = (CircleRadius + SpaceWidth * 2.0f);
+
+                        xfilloffset = - hei;
+                        yfilloffset = -SpaceWidth;
+
+                        xfillsoffset = SpaceWidth;
+                        yfillsoffset = SpaceWidth;
                     }
                     break;
                 case AxisOrientation.Horizontal:
                     {
-                        var y = (float)(_AxisLocation - hei);
-                        pt1 = new SKPoint((float)(VisualScale - AxisEnd - wid), y);
-                        pt2 = new SKPoint((float)(VisualScale - AxisEnd),       y);
-                        xmakoffset = -SpaceWidth * 4;
+                        offset += hei / 2.0f;
+                        var xs = (float)AxisEnd - SpaceWidth * 2;
+                        var y = _AxisLocation - offset;
+
+                        pt1 = new SKPoint(xs - wid, y);
+                        pt2 = new SKPoint(xs,       y);
+
+                        ymakoffset = - (CircleRadius + hei + SpaceWidth);
+
+                        yfilloffset = -hei;
+                        xfilloffset = SpaceWidth;
+
+                        yfillsoffset = SpaceWidth;
+                        xfillsoffset = -SpaceWidth;
                     }
                     break;
                 default:
                     return;
             }
+
             var pts = new SKPoint[] { pt1, pt2 };
             pth.AddPoly(pts, false);
-            c.DrawTextOnPath(txt, pth, 0, 0, MajorPaint);
+            var rect = new SKRect(pt1.X + xfillsoffset, pt1.Y + yfillsoffset, pt2.X + xfilloffset, pt2.Y + yfilloffset);
 
-            if (Orientation == AxisOrientation.Vertical)
-                foreach (var col in AxisDataColors)
-                {
-                    ColorPaint.Color = col;
-                    pt1.Offset(xmakoffset, ymakoffset);
-                    c.DrawCircle(pt1.X, pt1.Y, (float)SpaceWidth*1.5f, ColorPaint);
-                }
+            c.DrawRoundRect(rect, SpaceWidth, SpaceWidth, MaskPaint);
+            c.DrawTextOnPath(txt, pth, 0, 0, MajorPaint);
+            //
+            pth.Offset(xmakoffset, ymakoffset);
+            pts = pth.Points;
+
+            //
+            if (ShowDataKey)
+                DrawColors(ref c, ref pts);
+        }
+        void                DrawColors      (ref SKCanvas c, ref SKPoint[] p)
+        {
+            if (p.Length > 2)
+                throw (new Exception("Must contain two points."));
+
+            //
+            var pt1 = p[0];
+            var pt2 = p[1];
+            var dx  = pt2.X - pt1.X;
+            var dy  = pt2.Y - pt1.Y;
+
+            //
+            var t = 0.0f;
+            var inc = 1.0f/((float)AxisDataColors.Count-1);
+
+            //
+
+            for (var i = 0; i < AxisDataColors.Count; i++)
+            {
+                var x = pt1.X + dx * t;
+                var y = pt1.Y + dy * t;
+
+                ColorPaint.IsStroke = true;
+                ColorPaint.Color = App_112GW.Globals.BackgroundColor.ToSKColor();
+                c.DrawCircle(x, y, CircleRadius, ColorPaint);
+
+                ColorPaint.IsStroke = false;
+                ColorPaint.Color = AxisDataColors[i];
+                c.DrawCircle(x, y, CircleRadius, ColorPaint);
+
+                t += inc;
+            }
         }
 
         //Draws the entire system
@@ -705,15 +808,22 @@ namespace rMultiplatform
             else if (o.GetType() == typeof(ChartData))
             {
                 var d = o as ChartData;
+
                 if (Orientation == AxisOrientation.Horizontal)
                 {
                     if (d.HorizontalLabel == Label)
                         AxisDataColors.Add(d.LineColor);
+
+                    //
+                    AxisDataRanges.Add(d.HorozontalSpan);
                 }
                 else
                 {
                     if (d.VerticalLabel == Label)
                         AxisDataColors.Add(d.LineColor);
+
+                    //
+                    AxisDataRanges.Add(d.VerticalSpan);
                 }
             }
 

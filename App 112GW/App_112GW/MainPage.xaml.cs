@@ -13,7 +13,6 @@ namespace App_112GW
 	public partial class MainPage : ContentPage
 	{
         public List<MultimeterThemed> Devices = new List<MultimeterThemed>();
-        public List<Chart> Charts = new List<Chart>();
 
         private Button          ButtonAddDevice		= new Button        { Text = "Add Device"      };
 		private Button		    ButtonStartLogging	= new Button        { Text = "Start Logging"   };
@@ -51,10 +50,6 @@ namespace App_112GW
 			InitSurface();
 		}
 
-        ChartData Data0 = new ChartData(ChartData.ChartDataMode.eRolling,   "Time (s)", "Volts (V)",    0.1f,     10.0f);
-        ChartData Data1 = new ChartData(ChartData.ChartDataMode.eRolling,   "Time (s)", "Volts (V)",    0.1f,     10.0f);
-        ChartData Data2 = new ChartData(ChartData.ChartDataMode.eRolling,   "Time (s)", "Volts (V)",    0.1f,     10.0f);
-
         void AddDevice (object sender, EventArgs args)
 		{
             var Temp1 = new MultimeterThemed(Globals.BackgroundColor);
@@ -64,22 +59,6 @@ namespace App_112GW
             Grid.SetColumn(Temp1, 0);
             Grid.SetRowSpan(Temp1, 1);
             Grid.SetColumnSpan(Temp1, 2);
-
-            var Temp2 = new Chart() { Padding = new rMultiplatform.ChartPadding(0.1) };
-            Temp2.AddGrid(new ChartGrid());
-            Temp2.AddAxis(new ChartAxis(5, 5, 0, 20)    {Label = "Time (s)",   Orientation = ChartAxis.AxisOrientation.Horizontal, AxisLocation = 0.9, LockToAxisLabel = "Volts (V)",   LockAlignment = ChartAxis.AxisLock.eEnd     });
-            Temp2.AddAxis(new ChartAxis(5, 5, 0, 0)     {Label = "Volts (V)",  Orientation = ChartAxis.AxisOrientation.Vertical,   AxisLocation = 0.1, LockToAxisLabel = "Time (s)" ,   LockAlignment = ChartAxis.AxisLock.eStart   });
-
-            Temp2.AddData(Data0);
-            Temp2.AddData(Data1);
-            Temp2.AddData(Data2);
-
-            Charts.Add(Temp2);
-            DeviceLayout.Children.Add(Temp2);
-            Grid.SetRow(Temp2, 0);
-            Grid.SetColumn(Temp2, 0);
-            Grid.SetRowSpan(Temp2, 1);
-            Grid.SetColumnSpan(Temp2, 2);
 
             UserGrid.Children.Add       (ButtonAddDevice,       0, 1);
             UserGrid.Children.Add       (ButtonStartLogging,    1, 1);
@@ -101,24 +80,20 @@ namespace App_112GW
                 temp.Screen.Bargraph = (vals % 20);
             }
 
-            Data0.Sample(Globals.RandBetween(1, 2));
-            Data1.Sample(Globals.RandBetween(0, 1));
-            Data2.Sample(Globals.RandBetween(-1, 0));
+            var dev = Devices.Last();
+            dev.Data.Sample(Globals.RandBetween(1, 2));
             return rtn;
         }
 
         void StartLogging (object sender, EventArgs args)
         {
             if (rtn)
-            {
                 rtn = false;
-            }
             else
             {
                 rtn = true;
                 Device.StartTimer(new TimeSpan(0, 0, 0, 0, 100), UpdateValue);
             }
-
             UpdateValue();
         }
 	}
