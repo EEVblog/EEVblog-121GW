@@ -83,7 +83,7 @@ namespace App_112GW
                 PressColor      = Globals.HighlightColor,
                 IdleColor       = Globals.TextColor
             };
-            mBack.Clicked += ButtonPress_Back;
+            mBack.Back += ButtonPress_Back;
             AddView(mBack, 0, 2);
 
             //Add Plot checkbox
@@ -94,7 +94,7 @@ namespace App_112GW
                 PressColor = Globals.HighlightColor,
                 IdleColor = Globals.TextColor
             };
-            mPlotCheck.Clicked += CheckboxChange_Plot;
+            mPlotCheck.Changed += CheckboxChange_Plot;
             AddView(mPlotCheck, 0, 3);
 
             //Add Serial number
