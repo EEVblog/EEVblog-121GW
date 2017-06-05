@@ -5,6 +5,7 @@ using Xamarin.Forms;
 using SkiaSharp;
 using SkiaSharp.Views.Forms;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 
 namespace App_112GW
 {

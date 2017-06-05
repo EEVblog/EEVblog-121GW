@@ -31,7 +31,7 @@ namespace rMultiplatform.UWP
                 view.PointerPressed     += CommonHandler;
                 //view.PointerMoved       += CommonHandler;
                 view.PointerReleased    += FinishHandler;
-                //view.PointerExited      += FinishHandler;
+                view.PointerExited      += FinishHandler;
                 //view.PointerCanceled    += FinishHandler;
             }
         }
@@ -41,7 +41,8 @@ namespace rMultiplatform.UWP
             view.PointerEntered     -= CommonHandler;
             view.PointerPressed     -= CommonHandler;
             view.PointerMoved       -= CommonHandler;
-            view.PointerReleased    -= CommonHandler;
+
+            view.PointerReleased    -= FinishHandler;
             view.PointerExited      -= FinishHandler;
             view.PointerCanceled    -= FinishHandler;
         }

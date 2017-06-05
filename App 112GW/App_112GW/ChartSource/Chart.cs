@@ -38,7 +38,7 @@ namespace rMultiplatform
             VerticalOptions     = LayoutOptions.Fill;
             HorizontalOptions   = LayoutOptions.Fill;
 
-            Aspect = 2;
+            Aspect = 1.5;
         }
 
         protected override void OnSizeAllocated(double width, double height)
@@ -61,8 +61,9 @@ namespace rMultiplatform
 #endif
         {
             var canvas = e.Surface.Canvas;
+            canvas.Scale(CanvasSize.Width / (float)Width);
 
-            canvas.Clear(SKColors.Red);
+            canvas.Clear();
             foreach (IChartRenderer Element in ChartElements)
             {
                 //This allows controls to rescale retrospectively

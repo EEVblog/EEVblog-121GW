@@ -11,7 +11,7 @@
             <Color x:Key="HighlightColor">  #eaece5 </Color>
             <Color x:Key="TextColor">       #b2c2bf </Color>
             <Color x:Key="BorderColor">     #c0ded9 </Color>
-            <Color x:Key="BackgroundColor"> #3b3a30 </Color>
+            <Color x:Key="BackgroundColor">#1E1E1E</Color>
 
             <!-- DEFINE GLOBAL STYLES -->
             <Style TargetType="Grid">
@@ -21,7 +21,7 @@
             <Style TargetType="Button">
                 <Setter Property="BackgroundColor"          Value="{ StaticResource BackgroundColor }" />
                 <Setter Property="TextColor"                Value="{ StaticResource TextColor }" />
-                <Setter Property="BorderColor"              Value="{ StaticResource BorderColor }" />
+                <Setter Property="BorderColor"              Value="{ StaticResource TextColor }" />
                 <Setter Property="BorderRadius"             Value="5" />
                 <Setter Property="BorderWidth"              Value="{ StaticResource BorderWidth }" />
             </Style>
