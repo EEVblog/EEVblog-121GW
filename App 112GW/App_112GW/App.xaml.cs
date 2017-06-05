@@ -9,6 +9,13 @@ namespace App_112GW
 {
     public class Globals
     {
+        static Random random = new Random();
+        static public float RandBetween(float min, float max)
+        {
+            var output = (float)random.NextDouble() * (max - min) + min;
+            return output;
+        }
+
         static private Object GetResource(string name)
         {
             return Application.Current.Resources[name];
@@ -60,9 +67,22 @@ namespace App_112GW
                 return _BackgroundColor;
             }
         }
+
+        static double lasthue = 0.01;
+        static private Color LastColor = Color.DodgerBlue;
+        static public Color UniqueColor
+        {
+            get
+            {
+                if (lasthue > 1)
+                    lasthue = lasthue - 1;
+                lasthue += 0.3;
+
+                LastColor = LastColor.WithHue(lasthue);
+                return LastColor;
+            }
+        }
     };
-
-
 	public partial class App : Application
 	{
         public App ()

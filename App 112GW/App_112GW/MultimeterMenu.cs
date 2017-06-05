@@ -12,10 +12,19 @@ namespace App_112GW
 {
     public class MultimeterMenu: Grid
     {
-        public event EventHandler   Clicked;
+        public event EventHandler BackClicked;
+        public event EventHandler   PlotClicked;
         static bool                 SameType(object A, Type B)
         {
             return Object.ReferenceEquals(A.GetType(), B);
+        }
+
+        public bool                 PlotEnabled
+        {
+            get
+            {
+                return mPlotCheck.Checked;
+            }
         }
 
         private Button              mHold;
@@ -77,10 +86,16 @@ namespace App_112GW
             mBack.Clicked += ButtonPress_Back;
             AddView(mBack, 0, 2);
 
-            ////Add Plot checkbox
-            //mPlotCheck = new Checkbox("Plot");
-            //mPlotCheck.Changed += CheckboxChange_Plot;
-            //AddView(mPlotCheck, 0, 2);
+            //Add Plot checkbox
+            mPlotCheck = new rMultiplatform.Checkbox("Plot")
+            {
+                BorderWidth = Globals.BorderWidth,
+                BackgroundColor = Globals.BackgroundColor,
+                PressColor = Globals.HighlightColor,
+                IdleColor = Globals.TextColor
+            };
+            mPlotCheck.Clicked += CheckboxChange_Plot;
+            AddView(mPlotCheck, 0, 3);
 
             //Add Serial number
             mSerialNumber = new Label()
@@ -114,11 +129,6 @@ namespace App_112GW
             mMode.Items.Add("AC");
             mMode.SelectedIndexChanged += PickerChange_Mode;
             AddView(mMode, 1, 1);
-
-            //
-            //mTouch = new TapGestureRecognizer();
-            //mTouch.Tapped += TapCallback;
-            //GestureRecognizers.Add(mTouch);
         }
 
         //The reactions to picker, checkbox, buttons events
@@ -130,10 +140,13 @@ namespace App_112GW
         }
         private void    ButtonPress_Back       (object sender, EventArgs e)
         {
-            Clicked(sender, e);
+            if (BackClicked != null)
+                BackClicked(sender, e);
         }
         private void    CheckboxChange_Plot    (object sender, EventArgs e)
         {
+            if (PlotClicked != null)
+                PlotClicked(mPlotCheck, e);
         }
         private void    PickerChange_Range     (object sender, EventArgs e)
         {

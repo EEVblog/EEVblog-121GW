@@ -8,6 +8,7 @@ using SkiaSharp;
 using SkiaSharp.Views.Forms;
 using System.ComponentModel;
 using Xamarin.Forms.PlatformConfiguration;
+using Xamarin.Forms.Platform;
 
 namespace rMultiplatform
 {
@@ -15,6 +16,7 @@ namespace rMultiplatform
     {
         public enum eTouchType
         {
+            eMoved,
             eHover,
             ePressed,
             eReleased
@@ -35,6 +37,10 @@ namespace rMultiplatform
     }
     public static class TouchPointFactory
     {
+        public static TouchPoint Moved(Point pInput)
+        {
+            return new TouchPoint(pInput, TouchPoint.eTouchType.eMoved);
+        }
         public static TouchPoint Hover(Point pInput)
         {
             return new TouchPoint(pInput, TouchPoint.eTouchType.eHover);
@@ -48,7 +54,6 @@ namespace rMultiplatform
             return new TouchPoint(pInput, TouchPoint.eTouchType.eReleased);
         }
     }
-
     public class TouchActionEventArgs : EventArgs
     {
         public TouchActionEventArgs(TouchPoint location)
@@ -63,51 +68,101 @@ namespace rMultiplatform
     class Touch: RoutingEffect
     {
         public delegate void    TouchActionEventHandler(object sender, TouchActionEventArgs args);
-        public event            TouchActionEventHandler Press;
-        public event            TouchActionEventHandler Release;
-        public event            TouchActionEventHandler Hover;
+        public event            TouchActionEventHandler     Pressed;
+        public event            TouchActionEventHandler     Released;
+        public event            TouchActionEventHandler     Hover;
+        public event            TouchActionEventHandler     PressedMoved;
 
         public bool             Capture { set; get; }
 
-        TouchPoint.eTouchType   prevType;
-        public void             OnTouchAction(Element element, TouchActionEventArgs args)
+        
+        //Triggers a threadsafe event
+        private void SafeEvent(TouchActionEventHandler EventFunction, Element element, TouchActionEventArgs args)
         {
-            var type = args.Location.TouchType;
+            if (EventFunction != null)
+                Device.BeginInvokeOnMainThread(() =>
+                {
+                    EventFunction(element, args);
+                });
+        }
+
+        //Calls the safe event function for the event
+        private void SafeHover(Element element, TouchActionEventArgs args)
+        {
+            SafeEvent(Hover, element, args);
+        }
+        private void SafePressed(Element element, TouchActionEventArgs args)
+        {
+            SafeEvent(Pressed, element, args);
+        }
+        private void SafeReleased(Element element, TouchActionEventArgs args)
+        {
+            SafeEvent(Released, element, args);
+        }
+        private void SafePressedMove(Element element, TouchActionEventArgs args)
+        {
+            SafeEvent(PressedMoved, element, args);
+        }
+
+        //Processes platform agnostic input
+        private TouchPoint.eTouchType PreviousType;
+        public void             OnTouchAction(Element e, TouchActionEventArgs a)
+        {
+            var type = a.Location.TouchType;
+            var change = type != PreviousType;
             switch (type)
             {
-                case TouchPoint.eTouchType.eHover:
-                    if (type != prevType)
-                        if (Hover != null)
-                            Device.BeginInvokeOnMainThread(() =>
-                            {
-                                Hover(element, args);
-                            });
+                case TouchPoint.eTouchType.eMoved:
+                    switch (PreviousType)
+                    {
+                        case TouchPoint.eTouchType.eReleased:
+                            SafeHover(e, a);
+                            break;
+                        case TouchPoint.eTouchType.ePressed:
+                            SafePressedMove(e, a);
+                            break;
+                        default:
+                            throw (new Exception("Cannot determine previous state. It must be pressed or released"));
+                    }
                     break;
                 case TouchPoint.eTouchType.ePressed:
-                    if (prevType != TouchPoint.eTouchType.eHover)
-                        if (type != prevType)
-                            if (Press != null)
-                                Device.BeginInvokeOnMainThread(() =>
-                                {
-                                    Press(element, args);
-                                });
+                    if (change)
+                        SafePressed(e, a);
                     break;
                 case TouchPoint.eTouchType.eReleased:
-                    if (type != prevType)
-                        if (Release != null)
-                            Device.BeginInvokeOnMainThread(() =>
-                            {
-                                Release(element, args);
-                            });
+                    SafeReleased(e, a);
                     break;
                 default:
-                    break;
+                    throw (new Exception("Do not issue commands other than pressed, released and move from a device."));
             }
-            prevType = type;
+
+            //Moved is not a state change
+            if (type != TouchPoint.eTouchType.eMoved)
+                PreviousType = type;
         }
+
+        //Initialise class and base
         public                  Touch() : base("rMultiplatform.Touch")
         {
-            prevType = TouchPoint.eTouchType.eReleased;
+            PreviousType = TouchPoint.eTouchType.eReleased;
+        }
+
+        //Common handlers
+        public void RaiseAction(TouchActionEventArgs Action)
+        {
+            OnTouchAction(Element, Action);
+        }
+        public void ReleasedHandler(object sender, Point pt)
+        {
+            RaiseAction(new TouchActionEventArgs(TouchPointFactory.Released(pt)));
+        }
+        public void MoveHandler(object sender, Point pt)
+        {
+            RaiseAction(new TouchActionEventArgs(TouchPointFactory.Moved(pt)));
+        }
+        public void PressedHandler(object sender, Point pt)
+        {
+            RaiseAction(new TouchActionEventArgs(TouchPointFactory.Pressed(pt)));
         }
     }
 }

@@ -24,6 +24,7 @@
                 <Setter Property="BorderColor"              Value="{ StaticResource TextColor }" />
                 <Setter Property="BorderRadius"             Value="5" />
                 <Setter Property="BorderWidth"              Value="{ StaticResource BorderWidth }" />
+                <Setter Property="FontSize"                 Value="Large" />
             </Style>
 
             <Style TargetType="Picker">
@@ -32,6 +33,7 @@
             </Style>
             <Style TargetType="Label">
                 <Setter Property="TextColor"                Value="{ StaticResource TextColor }" />
+                <Setter Property="FontSize"                 Value="Large" />
             </Style>
             <Style TargetType="ContentView">
                 <Setter Property="BackgroundColor"  Value="{ StaticResource BackgroundColor }" />

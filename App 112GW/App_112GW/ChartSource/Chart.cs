@@ -10,14 +10,23 @@ using System.Runtime.CompilerServices;
 
 namespace rMultiplatform
 {
-    interface IChartRenderer
+    interface IChartRenderer : IComparable
     {
+        int Layer
+        {
+            get;
+        }
+
+        bool            Register(Object o);
+        List<Type>      RequireRegistration();
+
         //Return true when redraw is required
-        bool Draw(SKCanvas c);
+        bool Draw           (SKCanvas c);
+        void SetParentSize  (double w, double h);
 
-        void SetParentSize(double w, double h);
-    }
-
+        bool RegisterParent(Object c);
+        void InvalidateParent();
+    };
 
     public class Chart :
 #if __ANDROID__
@@ -28,19 +37,74 @@ namespace rMultiplatform
         SKCanvasView
 #endif
     {
-        double Aspect;
-        List<IChartRenderer> ChartElements;
-        public Chart ()
+        //The padding around the control
+        private SKPaint     mDrawPaint;
+        private SKBitmap    mBitmap;
+        private SKCanvas    mCanvas;
+        private double      _Aspect;
+        public double       Aspect
         {
-            ChartElements = new List<IChartRenderer>();
-            ChartElements.Add(new ChartAxis(10, 10, 20, 100, Height));
-
-            VerticalOptions     = LayoutOptions.Fill;
-            HorizontalOptions   = LayoutOptions.Fill;
-
-            Aspect = 1.5;
+            set
+            {
+                _Aspect = value;
+                InvalidateMeasure();
+            }
+            get
+            {
+                return _Aspect;
+            }
         }
 
+        //Defines the padding around the boarder of the control
+        public ChartPadding Padding
+        {
+            set
+            {
+                for (var i = 0; i < ChartElements.Count; i++)
+                {
+                    if (ChartElements[i].GetType() == typeof(ChartPadding))
+                    {
+                        ChartElements[i] =  value;
+                        InvalidateSurface();
+                    }
+                }
+
+            }
+            get
+            {
+                for (var a = 0; a < ChartElements.Count; a++)
+                    if (a.GetType() == typeof(ChartPadding))
+                    {
+                        return ChartElements[a] as ChartPadding;
+                    }
+                return null;
+            }
+        }
+
+        //Stores all chart elements, this handles rendering too
+        private List<IChartRenderer> ChartElements;
+
+        //Wrappers for the supported chart elements
+        private void    AddElement(IChartRenderer pInput)
+        {
+            ChartElements.Add(pInput);
+            ChartElements.Sort();
+        }
+        public void     AddAxis(ChartAxis pInput)
+        {
+            AddElement(pInput as IChartRenderer);
+        }
+        public void     AddData(ChartData pInput)
+        {
+            AddElement(pInput as IChartRenderer);
+        }
+        public void     AddGrid(ChartGrid pInput)
+        {
+            AddElement(pInput as IChartRenderer);
+        }
+
+        //Resizes the control and registers resize with parents
+        bool Rescale = true;
         protected override void OnSizeAllocated(double width, double height)
         {
             base.OnSizeAllocated(width, height);
@@ -48,10 +112,54 @@ namespace rMultiplatform
             var h = width / Aspect;
             HeightRequest = h;
 
+            //Null out the bitmap and canvas
+            mBitmap?.Dispose();
+            mBitmap = null;
+            mCanvas?.Dispose();
+            mCanvas = null;
+
+            //
+            Rescale = true;
+
+            //As base class initialises first the onSizeAllocated can be triggered before padding is intiialised
+            if (Padding != null)
+                Padding.SetParentSize(Width, Height);
+
             foreach (IChartRenderer Element in ChartElements)
                 Element.SetParentSize(Width, Height);
         }
 
+        //Renders the chart and child objects
+        bool RequireRegister = true;
+        protected void Register()
+        {
+            //Register all elements
+            foreach (var Element in ChartElements)
+            {
+                //Register parent (this class) with children who need it
+                Element.RegisterParent(this);
+
+                //Get list of types to register
+                var Types = Element.RequireRegistration();
+                if (Types == null)
+                    continue;
+
+                //
+                foreach (var SubElement in ChartElements)
+                {
+                    //Skip self registration
+                    if (Element.Equals(SubElement))
+                        continue;
+
+                    //Register if it is a required type
+                    foreach (var RegType in Types)
+                        if (RegType == SubElement.GetType())
+                            Element.Register(SubElement);
+                }
+            }
+
+            RequireRegister = false;
+        }
 #if __ANDROID__
         protected override void OnPaintSurface(SKPaintGLSurfaceEventArgs e)
 #elif __IOS__
@@ -61,19 +169,61 @@ namespace rMultiplatform
 #endif
         {
             var canvas = e.Surface.Canvas;
+
+            //Reinitialise the buffer canvas if it is undefined at all.
+            if (mBitmap == null || mCanvas == null | Rescale)
+            {
+                mBitmap = new SKBitmap((int)Width, (int)Height);
+                mCanvas = new SKCanvas(mBitmap);
+                mCanvas.Clear();
+                Rescale = false;
+            }
             canvas.Scale(CanvasSize.Width / (float)Width);
 
-            canvas.Clear();
-            foreach (IChartRenderer Element in ChartElements)
+            //If the child elements are not registered with each other do that
+            // before rendering
+            if (RequireRegister)
+                Register();
+
+            //Let all child elements render, layers are already sorted
+            foreach ( var Element in ChartElements )
             {
-                //This allows controls to rescale retrospectively
-                canvas.Save();
-                while (Element.Draw(canvas))
+                //This allows controls to rescale retrospectively'
+                var layer = mBitmap.Copy();
+                while (Element.Draw(mCanvas))
                 {
-                    canvas.Restore();
-                    canvas.Save();
+                    mCanvas.DrawBitmap(layer, 0, 0, mDrawPaint);
+                    layer = mBitmap.Copy();
                 }
             }
+
+            //Draw to canvas
+            canvas.Clear();
+            canvas.DrawBitmap(mBitmap, 0, 0, mDrawPaint);
+            mCanvas.Clear(App_112GW.Globals.BackgroundColor.ToSKColor());
+        }
+
+        //Initialises the object
+        public Chart() : base()
+        {
+            //Setup chart elements
+            ChartElements = new List<IChartRenderer>();
+
+            //Setup the padding object
+            ChartElements.Add(new ChartPadding(0));
+
+            //Must always fill parent container
+            VerticalOptions = LayoutOptions.Fill;
+            HorizontalOptions = LayoutOptions.Fill;
+
+            //Default aspect ratio 1:3
+            Aspect = 3;
+
+            //Default draw brush paints transparent
+            var transparency = SKColors.Transparent;
+            mDrawPaint = new SKPaint();
+            mDrawPaint.BlendMode = SKBlendMode.SrcOver;
+            mDrawPaint.ColorFilter = SKColorFilter.CreateBlendMode(transparency, SKBlendMode.DstOver);
         }
     }
 }

@@ -12,13 +12,13 @@ namespace App_112GW
 {
 	public partial class MainPage : ContentPage
 	{
-        public List<MultimeterThemed> Devices = new List<MultimeterThemed> ( );
+        public List<MultimeterThemed> Devices = new List<MultimeterThemed>();
 
-        private Button          ButtonAddDevice		= new Button        {  Text = "Add Device"      };
-		private Button		    ButtonStartLogging	= new Button        {  Text = "Start Logging"   };
-		private Grid		    UserGrid			= new Grid          {  HorizontalOptions=LayoutOptions.Fill, VerticalOptions = LayoutOptions.Fill, RowSpacing = 1, ColumnSpacing = 1, Padding = 1};
-        private ScrollView      DeviceView          = new ScrollView    { HorizontalOptions = LayoutOptions.Fill, VerticalOptions = LayoutOptions.Fill };
-        private StackLayout     DeviceLayout        = new StackLayout   { HorizontalOptions = LayoutOptions.Fill, VerticalOptions = LayoutOptions.StartAndExpand };
+        private Button          ButtonAddDevice		= new Button        { Text = "Add Device"      };
+		private Button		    ButtonStartLogging	= new Button        { Text = "Start Logging"   };
+		private Grid		    UserGrid			= new Grid          { HorizontalOptions = LayoutOptions.Fill,   VerticalOptions = LayoutOptions.Fill, RowSpacing = 1, ColumnSpacing = 1, Padding = 1};
+        private ScrollView      DeviceView          = new ScrollView    { HorizontalOptions = LayoutOptions.Fill,   VerticalOptions = LayoutOptions.Fill };
+        private StackLayout     DeviceLayout        = new StackLayout   { HorizontalOptions = LayoutOptions.Fill,   VerticalOptions = LayoutOptions.StartAndExpand };
 
         void InitSurface()
 		{
@@ -44,31 +44,21 @@ namespace App_112GW
 
 			Content = UserGrid;
 		}
-
 		public MainPage ()
 		{
 			InitializeComponent();
 			InitSurface();
 		}
 
-		void AddDevice (object sender, EventArgs args)
+        void AddDevice (object sender, EventArgs args)
 		{
-            var Temp1 = new MultimeterThemed (Globals.BackgroundColor);
-
+            var Temp1 = new MultimeterThemed(Globals.BackgroundColor);
             Devices.Add(Temp1);
-            DeviceLayout.Children.Add   (Temp1);
-            Grid.SetRow                 (Temp1, 0);
-            Grid.SetColumn              (Temp1, 0);
-            Grid.SetRowSpan             (Temp1, 1);
-            Grid.SetColumnSpan          (Temp1, 2);
-
-            var Temp2 = new Chart();
-            DeviceLayout.Children.Add(Temp2);
-            Grid.SetRow(Temp2, 0);
-            Grid.SetColumn(Temp2, 0);
-            Grid.SetRowSpan(Temp2, 1);
-            Grid.SetColumnSpan(Temp2, 2);
-
+            DeviceLayout.Children.Add(Temp1);
+            Grid.SetRow(Temp1, 0);
+            Grid.SetColumn(Temp1, 0);
+            Grid.SetRowSpan(Temp1, 1);
+            Grid.SetColumnSpan(Temp1, 2);
 
             UserGrid.Children.Add       (ButtonAddDevice,       0, 1);
             UserGrid.Children.Add       (ButtonStartLogging,    1, 1);
@@ -76,6 +66,7 @@ namespace App_112GW
             Grid.SetColumnSpan          (ButtonStartLogging,    1);
         }
 
+        bool rtn = false;
         int vals = 0;
         bool UpdateValue()
         {
@@ -89,13 +80,20 @@ namespace App_112GW
                 temp.Screen.Bargraph = (vals % 20);
             }
 
-            return true;
+            var dev = Devices.Last();
+            dev.Data.Sample(Globals.RandBetween(1, 2));
+            return rtn;
         }
 
         void StartLogging (object sender, EventArgs args)
         {
-            Device.StartTimer(new TimeSpan(0,0,0,0,50), UpdateValue); 
-
+            if (rtn)
+                rtn = false;
+            else
+            {
+                rtn = true;
+                Device.StartTimer(new TimeSpan(0, 0, 0, 0, 100), UpdateValue);
+            }
             UpdateValue();
         }
 	}

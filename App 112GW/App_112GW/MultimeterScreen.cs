@@ -222,11 +222,10 @@ namespace App_112GW
         List<ImageLayers>	    mSegments;
 		List<ImageLayers>	    mSubSegments;
 		ImageLayers			    mBargraph;
-        //ImageLayers			mOther;
+        ImageLayers			mOther;
 
         protected virtual void LayerChange(object o, EventArgs e)
         {
-            //mCanvas.Clear(BackgroundColor.ToSKColor());
             InvalidateSurface();
         }
 
@@ -302,8 +301,8 @@ namespace App_112GW
                 subsegments.AddLayer(Image, filename);
             else if (filename.Contains("bar"))
                 mBargraph.AddLayer(Image, filename);
-            //else
-                //mOther.AddLayer(Image, filename);
+            else
+                mOther.AddLayer(Image, filename);
 
             return true;
         }
@@ -315,7 +314,7 @@ namespace App_112GW
             mSegments		= new List<ImageLayers> ();
 			mSubSegments	= new List<ImageLayers> ();
 			mBargraph		= new ImageLayers       ("mBargraph");
-			//mOther			= new ImageLayers       ("mOther");
+            mOther = new ImageLayers("mOther");
 
             //Sort images into appropreate layered images
             var Loader = new ImageLoader(ProcessImage);
@@ -324,8 +323,8 @@ namespace App_112GW
 			subsegments.Sort();
 			mBargraph.Sort();
 			segments.Sort();
-			//mOther.Sort();
-           
+            mOther.Sort();
+
             //Sort segments and subsegments into seperate digits
             ImageLayers returned;
 			int i;
@@ -353,11 +352,7 @@ namespace App_112GW
                 temp.OnChanged += LayerChange;
             }
 
-            //foreach (ImageLayers temp in mOther)
-            //{
-            //    temp.OnChanged += LayerChange;
-            //}
-
+            mOther.OnChanged += LayerChange;
             mBargraph.OnChanged += LayerChange;
 
             //Add the gesture recognizer 
@@ -430,7 +425,7 @@ namespace App_112GW
                 mSubSegments[i].Render(ref mCanvas);
 
             mBargraph.Render(ref mCanvas);
-            //mOther.Render(ref pSurface);
+            mOther.Render(ref pSurface);
 
             //Add render on change
             pSurface.Scale(CanvasSize.Width/(float)Width);
