@@ -77,7 +77,7 @@ namespace App_112GW
             {
                 temp.Screen.LargeSegments = (float)vals;
                 temp.Screen.SmallSegments = 99999 - vals;
-                temp.Screen.Bargraph = (vals % 20);
+                temp.Screen.Bargraph = (vals % 27);
             }
 
             var dev = Devices.Last();
