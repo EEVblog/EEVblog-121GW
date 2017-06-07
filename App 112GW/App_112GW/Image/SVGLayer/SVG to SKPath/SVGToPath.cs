@@ -170,6 +170,8 @@ namespace App_112GW
 
             LastPoint.X = pPoint;
 
+            pPoint *= 2;
+
             return pPoint;
         }
         float RepointY(float pPoint, bool pAbsolute)
@@ -178,6 +180,8 @@ namespace App_112GW
                 pPoint += LastPoint.Y;
 
             LastPoint.Y = pPoint;
+
+            pPoint *= 2;
 
             return pPoint;
         }
@@ -191,7 +195,9 @@ namespace App_112GW
 
             LastPoint = pPoint;
 
-            return LastPoint;
+            pPoint.X *= 2;
+            pPoint.Y *= 2;
+            return pPoint;
         }
 
 
@@ -226,8 +232,7 @@ namespace App_112GW
                 }
             }
 
-            //Convert commands to a path
-            Curves = new List<Polycurve>();
+
 
             LastPoint = new SKPoint(0, 0);
             foreach (var cmd in Commands)
@@ -317,7 +322,7 @@ namespace App_112GW
         int runcount = 0;
         bool ProcessSVG(string Name, Stream Stream)
         {
-            //if(runcount++ == 10)
+            if (runcount++ == 41)
             {
                 var xdoc = new System.Xml.Linq.XDocument();
                 xdoc = System.Xml.Linq.XDocument.Load(Stream);
@@ -331,7 +336,6 @@ namespace App_112GW
                                 ParsePath(at.Value);
                 }
             }
-
             return true;
         }
 
@@ -343,6 +347,8 @@ namespace App_112GW
         }
         public  SVGToPath(string pInput)
         {
+            //Convert commands to a path
+            Curves = new List<Polycurve>();
             var loader = new GeneralLoader(ProcessSVG, "svg");
         }
     }
