@@ -854,4 +854,7 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)Image\Layers\sub1dp - Copy.svg" />
+  </ItemGroup>
 </Project>

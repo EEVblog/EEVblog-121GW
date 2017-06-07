@@ -46,8 +46,10 @@ namespace App_112GW
 
             //
             var transparency = Color.FromRgba(0, 0, 0, 0).ToSKColor();
-
+            
             mDrawPaint = new SKPaint();
+            mDrawPaint.Color = SKColors.Red;
+            mDrawPaint.IsAntialias = true;
             mDrawPaint.BlendMode = SKBlendMode.SrcOver;
             mDrawPaint.ColorFilter = SKColorFilter.CreateBlendMode(transparency, SKBlendMode.DstOver);
 
@@ -115,9 +117,25 @@ namespace App_112GW
             }
 
 
-            var a = new SVGToPath("asasd");
+
+
+
+
+
+
+
+            pSurface.Clear(SKColors.Black);
+            var a = new SVGPathBuilder("asasd");
             foreach (var curv in a.Curves)
-                pSurface.DrawPath(curv.ToPath(), mDrawPaint);
+                pSurface.DrawPath(curv.ToPath(0.1f), mDrawPaint);
+
+
+
+
+            SKMatrix aoewgin = SVGPath.BuildTransformMatrix("matrix(0.26458333,0,0,0.26458333,24.575937,125.35773)");
+
+
+
 
         }
     }

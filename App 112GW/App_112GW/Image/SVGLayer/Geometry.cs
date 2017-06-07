@@ -221,7 +221,7 @@ namespace App_112GW
             else
                 start = mStart;
 
-            mCurves.Add(new Cubic(start, pControl1, pControl1, pEnd));
+            mCurves.Add(new Cubic(start, pControl1, pControl2, pEnd));
         }
         public void AddBezier(Vector[] pPoints)
         {
