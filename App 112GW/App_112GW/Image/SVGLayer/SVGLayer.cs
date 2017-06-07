@@ -54,6 +54,8 @@ namespace App_112GW
             mUndrawPaint = new SKPaint();
             mUndrawPaint.BlendMode = SKBlendMode.DstOut;
             mUndrawPaint.ColorFilter = SKColorFilter.CreateBlendMode(transparency, SKBlendMode.DstOver);
+
+            Off();
         }
         public void Set(bool pState)
         {
@@ -113,15 +115,10 @@ namespace App_112GW
             }
 
 
-            //var Curv = new Polycurve(0, 0);
-            //Curv.AddLine(new SKPoint(100, 100));
-            //Curv.AddBezier(new SKPoint[] { new SKPoint(0, 0), new SKPoint(0, 100), new SKPoint(100, 100) });
-            //Curv.AddLine(new SKPoint(0, 100));
-            //Curv.CloseCurve();
+            var a = new SVGToPath("asasd");
+            foreach (var curv in a.Curves)
+                pSurface.DrawPath(curv.ToPath(), mDrawPaint);
 
-            //pSurface.DrawPath(Curv.ToPath(), mDrawPaint);
-
-            //var a = new SVGToPath("asasd");
         }
     }
 }

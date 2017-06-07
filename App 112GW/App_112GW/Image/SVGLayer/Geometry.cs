@@ -147,7 +147,7 @@ namespace App_112GW
             return WeightedPoint(Start, End, pTime);
         }
     }
-    class                   Polycurve : ICurve
+    public class            Polycurve : ICurve
     {
         private Vector      mStart;
         private List<Curve> mCurves;
@@ -165,6 +165,9 @@ namespace App_112GW
         {
             get
             {
+                if (Count == 0)
+                    return mStart;
+
                 var i = Count - 1;
                 return mCurves[i].End;
             }
@@ -180,6 +183,9 @@ namespace App_112GW
         }
         public Vector   GetPoint(float pTime)
         {
+            if (Count == 0)
+                return mStart;
+
             pTime *= Count;
             var i = (int)pTime;
             pTime -= (float)i;

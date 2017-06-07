@@ -3,25 +3,29 @@ using System.Collections.Generic;
 using System.Text;
 using SkiaSharp;
 using SkiaSharp.Views.Forms;
+using Xamarin.Forms;
 
 namespace App_112GW
 {
     public class Layers
     {
-        private bool mChange;
+        private bool            mChange;
         public event EventHandler OnChanged;
-        protected virtual void LayerChange(object o, EventArgs e)
+        protected virtual void  LayerChange(object o, EventArgs e)
         {
             mChange = true;
             OnChanged?.Invoke(o, e);
         }
      
-        public  List<ILayer>	    mLayers;
-		public  float			    Width, Height;
-		private bool			    mActive;
-		private string			    mName;
+        public  List<ILayer>    mLayers;
 
-        public Layers(string pName = "")
+        public float            Width;
+        public float            Height;
+
+		private bool		    mActive;
+		private string		    mName;
+
+        public                  Layers(string pName = "")
 		{
 			mLayers     = new List<ILayer>();
 			mName       = pName;
@@ -30,21 +34,23 @@ namespace App_112GW
 
             mLayers.Clear();
         }
-		public void Set(bool pState)
+
+        public void             Set(bool pState)
 		{
 			mActive = pState;
 			foreach (ILayer Layer in mLayers)
 				Layer.Set(pState);
 		}
-		public void On()
+		public void             On()
 		{
 			Set(true);
 		}
-		public void Off()
+		public void             Off()
 		{
 			Set(false);
 		}
-		public override string ToString()
+
+        public override string  ToString()
 		{
 			string output = "{";
 			foreach (ILayer Layer in mLayers)
@@ -54,7 +60,7 @@ namespace App_112GW
 			output = output.Remove(output.Length - 2) + "}";
 			return output;
 		}
-        public (int, int) GetResultSize()
+        public (int, int)       GetResultSize()
         {
             int x = 0;
             int y = 0;
@@ -66,9 +72,10 @@ namespace App_112GW
                 if (Layer.Height > y)
                     y = Layer.Height;
             }
+
             return (x, y);
         }
-        public void Render(ref SKCanvas pSurface)
+        public void             Render(ref SKCanvas pSurface)
         {
             if (mActive)
             {
@@ -80,7 +87,8 @@ namespace App_112GW
                 mChange = false;
             }
         }
-		public void AddLayer(ILayer pInput)
+
+        public void             AddLayer(ILayer pInput)
 		{
             pInput.OnChanged += LayerChange;
             mLayers.Add(pInput);
@@ -94,21 +102,22 @@ namespace App_112GW
             if (mLayers.Count == 1)
                 mActive = true;
         }
-		public void AddLayer(SKImage pImage, string pName, bool pActive = true)
+		public void             AddLayer(SKImage pImage, string pName, bool pActive = true)
 		{
             var temp = new ImageLayer(pImage, pName, pActive);
             AddLayer(temp);
 		}
-        public void AddLayer(SKSvg pImage, string pName, bool pActive = true)
+        public void             AddLayer(SKSvg pImage, string pName, bool pActive = true)
         {
             var temp = new SVGLayer(pImage, pName, pActive);
             AddLayer(temp);
         }
-        public void Sort()
+
+        public void             Sort()
 		{
 			mLayers.Sort(new LayerCompare());
 		}
-		public bool Group(string pInput, out Layers pReturn)
+		public bool             Group(string pInput, out Layers pReturn)
 		{
 			var temp = new Layers(mName + " " + pInput);
 			foreach (ILayer layer in mLayers)
@@ -120,7 +129,7 @@ namespace App_112GW
 				return true;
 			return false;
 		}
-		public void ToBottom(string pInput)
+		public void             ToBottom(string pInput)
 		{
 			for (int i = 0; i < mLayers.Count; i++)
 				if (mLayers[i].Name.Contains(pInput))

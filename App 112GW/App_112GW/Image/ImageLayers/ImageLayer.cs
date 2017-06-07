@@ -51,6 +51,8 @@ namespace App_112GW
             mUndrawPaint                = new SKPaint();
             mUndrawPaint.BlendMode      = SKBlendMode.DstOut;
             mUndrawPaint.ColorFilter    = SKColorFilter.CreateBlendMode(transparency, SKBlendMode.DstOver);
+
+            Off();
         }
 		public void Set(bool pState)
 		{

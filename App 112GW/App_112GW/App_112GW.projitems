@@ -369,7 +369,7 @@
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\sub5g.svg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\sug5e.svg">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\sub5e.svg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
   </ItemGroup>
