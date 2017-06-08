@@ -96,22 +96,16 @@ namespace App_112GW
             }
         }
 
-        public void Render(ref SKCanvas pSurface)
+        public void Render (ref SKCanvas pSurface)
         {
             //This is render changed variable, don't move it to set, that is wrong
             if (_RenderChanged.Update(ref mActive))
             {
                 var Pth = new SKPath();
                 if (mActive)
-                {
-                    while (mImage.GetPath(0.1f, out Pth))
-                        pSurface.DrawPath(Pth, mDrawPaint);
-                }
+                    mImage.Draw(ref pSurface, ref mDrawPaint);
                 else
-                {
-                    while (mImage.GetPath(0.1f, out Pth))
-                        pSurface.DrawPath(Pth, mUndrawPaint);
-                }
+                    mImage.Draw(ref pSurface, ref mUndrawPaint);
             }
         }
     }

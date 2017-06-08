@@ -102,7 +102,8 @@ namespace App_112GW
             if (mLayers.Count == 1)
                 mActive = true;
         }
-		public void             AddLayer(SKImage pImage, string pName, bool pActive = true)
+
+        public void             AddLayer(SKImage pImage, string pName, bool pActive = true)
 		{
             var temp = new ImageLayer(pImage, pName, pActive);
             AddLayer(temp);
@@ -110,6 +111,11 @@ namespace App_112GW
         public void             AddLayer(SKSvg pImage, string pName, bool pActive = true)
         {
             var temp = new SVGLayer(pImage, pName, pActive);
+            AddLayer(temp);
+        }
+        public void             AddLayer(Polycurve pImage, string pName, bool pActive = true)
+        {
+            var temp = new PathLayer(pImage, pName, pActive);
             AddLayer(temp);
         }
 

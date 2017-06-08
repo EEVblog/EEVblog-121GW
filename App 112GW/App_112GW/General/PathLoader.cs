@@ -17,9 +17,12 @@ using System.Text;
 
 namespace App_112GW
 {
-
-    public class PathLoader
+    class PathLoader : ResourceLoader
     {
+        public delegate bool ProcessImage(string Name, Polycurve Image);
+        private ProcessImage mImageFunction;
+
+        #region SVGTOPATH
         private enum Coordinate
         {
             Absolute,
@@ -349,6 +352,8 @@ namespace App_112GW
 
             return true;
         }
+
+        #endregion
         bool ProcessSVG(string Name, Stream Stream)
         {
             var xdoc = new System.Xml.Linq.XDocument();
@@ -387,13 +392,21 @@ namespace App_112GW
                         break;
                 }
             }
+
+            LastCurve.Update();
+            if (LastCurve != null)
+                mImageFunction(Name, LastCurve);
             return true;
         }
 
-        public PathLoader(string pInput)
+        public PathLoader(ProcessImage pLoaderFunction)
         {
+            mImageFunction = pLoaderFunction;
+
             //Convert commands to a path
             Curves = new List<Polycurve>();
+
+            //Immediately triggers loading of all SVG files through the Process SVG function above
             var loader = new GeneralLoader(ProcessSVG, "svg");
         }
     }

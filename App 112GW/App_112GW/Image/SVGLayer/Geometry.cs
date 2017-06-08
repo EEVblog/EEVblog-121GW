@@ -198,6 +198,8 @@ namespace App_112GW
 
     public class            Polycurve : ICurve
     {
+        List<SKPath>        mPath;
+
         SKRect              mBoundary;
 
         public float Width
@@ -215,8 +217,7 @@ namespace App_112GW
             }
         }
 
-
-        private int         mIndex;
+        
         private string      mName;
         private List<Curve> mCurves;
 
@@ -257,24 +258,20 @@ namespace App_112GW
         public void AddLine(Vector pPoint)
         {
             mCurves.Add(new Line(End, pPoint));
-            Update();
         }
         public void AddQuadratic(Vector pControl, Vector pEnd)
         {
             mCurves.Add(new Quadratic(End, pControl, pEnd));
-            Update();
         }
         public void AddCubic(Vector pControl1, Vector pControl2, Vector pEnd)
         {
             mCurves.Add(new Cubic(End, pControl1, pControl2, pEnd));
-            Update();
         }
         public void AddBezier(Vector[] pPoints)
         {
             var pts = new List<Vector>(pPoints);
             pts.Insert(0, End);
             mCurves.Add(new Bezier(pts));
-            Update();
         }
         public void AddStart(Vector pPoint)
         {
@@ -285,81 +282,75 @@ namespace App_112GW
             if (Start.Equals(End))
                 return;
             AddLine(Start);
-            Update();
         }
 
         //Constructor
         public          Polycurve(string name)
         {
-            mIndex = 0;
+            mPath = new List<Path>();
             mName = name;
             mCurves = new List<Curve>();
         }
         public          Polycurve(string name, Vector pStart)
         {
-            mIndex = 0;
+            mPath = new List<Path>();
             mName = name;
             mCurves = new List<Curve>();
             mCurves.Add(new Start(pStart));
         }
 
         //Update routines to setup things like width, height, minimum, maximum
-        void Update()
+        public void Update()
         {
-            mBoundary = new SKRect(0,0,0,0);
-
             var TRect = new SKRect();
             var Pth = new SKPath();
-            while (GetPath(0.5f, out Pth))
-                if(Pth.GetBounds(out TRect))
-                {
-                    if (mBoundary.Width == 0)
-                    {
-                        mBoundary.Left = TRect.Left;
-                        mBoundary.Top = TRect.Top;
-                        mBoundary.Bottom = TRect.Bottom;
-                        mBoundary.Right = TRect.Right;
-                    }
 
-                    if (TRect.Left < mBoundary.Left)
-                        mBoundary.Left = TRect.Left;
-                    if (TRect.Top < mBoundary.Top)
-                        mBoundary.Top = TRect.Top;
-                    if (TRect.Bottom > mBoundary.Bottom)
-                        mBoundary.Bottom = TRect.Bottom;
-                    if (TRect.Right > mBoundary.Right)
-                        mBoundary.Right = TRect.Right;
+            bool Set = true;
+
+            var xmax = 0.0f;
+            var ymax = 0.0f;
+
+            GenerateCache(0.5f);
+
+            foreach(var pth in mPath)
+            {
+                if (pth.GetBounds(out TRect))
+                {
+                    var xmax_n = TRect.Right;
+                    var ymax_n = TRect.Bottom;
+
+                    if (Set)
+                    {
+                        Set = false;
+                        ymax = ymax_n;
+                        xmax = xmax_n;
+                    }
+                    if (xmax_n > xmax)
+                        xmax = xmax_n;
+                    if (ymax_n > ymax)
+                        ymax = ymax_n;
                 }
+            }
+            mBoundary = new SKRect(0, 0, xmax, ymax);
         }
 
         //
         public SKMatrix Transformation = SKMatrix.MakeIdentity();
 
         //Default resolution makes 10 points per line segment
-        public bool GetPath(float Resolution, out SKPath Path)
+        bool MakeCache = true;
+        public bool GenerateCache(float Resolution)
         {
             if (Resolution == 0f)
-                throw (new Exception("Cannot have inifinite resolution, don't be silly."));
-
-            if (mIndex == mCurves.Count)
-            {
-                mIndex = 1;
-                Path = new SKPath();
                 return false;
-            }
 
             var Pts = new List<SKPoint>();
             var Limit = 1.0f - Resolution;
-            Path = new SKPath();
             
             //
             bool Skip = true;
-            var breakloop = false;
-            for (; mIndex < mCurves.Count; mIndex++)
-            {
-                breakloop = false;
-                var curv = mCurves[mIndex];
-
+            foreach(var curv in mCurves)
+            { 
                 if (Skip)
                     Pts.Add(curv.Start);
 
@@ -384,35 +375,40 @@ namespace App_112GW
                             Skip = false;
                             continue;
                         }
+                        var pth = new SKPath();
+                        pth.AddPoly(Pts.ToArray(), false);
+                        pth.Transform(Transformation);
+                        pth.Transform(SKMatrix.MakeScale(4, 4));
 
-                        breakloop = true;
+                        //Add path to cache
+                        mPath.Add(pth);
+                        Pts.Clear();
+                        Pts.Add(curv.Start);
                         break;
                 }
-                if (breakloop)
-                    break;
             }
 
+            //Add the last curve to the system
+            var Path = new SKPath();
             Path.AddPoly(Pts.ToArray(), false);
             Path.Transform(Transformation);
-            Path.Transform(SKMatrix.MakeScale(10, 10));
+            Path.Transform(SKMatrix.MakeScale(4, 4));
 
-            if (breakloop)
-            {
-                if (mIndex + 1 >= mCurves.Count)
-                {
-                    mIndex = 1;
-                    return false;
-                }
-                else
-                {
-                    return true;
-                }
-            }
-            else if (mIndex == mCurves.Count)
-            {
-                return true;
-            }
+            //Add path to cache
+            mPath.Add(Path);
+
+            MakeCache = false;
             return true;
+        }
+
+
+        public void Draw(ref SKCanvas pSurface, ref SKPaint pPaint)
+        {
+            if (MakeCache)
+                GenerateCache(1f);
+
+            foreach(var pth in mPath)
+                pSurface.DrawPath(pth, pPaint);
         }
     }
 }

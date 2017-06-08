@@ -301,6 +301,24 @@ namespace App_112GW
         {
             mLayerCache.Add(image);
         }
+
+
+        bool                    ProcessImage    (string filename, Polycurve Image)
+        {
+            if (CacheFunction != null)
+                CacheFunction((new PathLayer(Image, filename) as ILayer));
+
+            if (filename.Contains("seg"))
+                segments.AddLayer(Image, filename);
+            else if (filename.Contains("sub"))
+                subsegments.AddLayer(Image, filename);
+            else if (filename.Contains("bar"))
+                mBargraph.AddLayer(Image, filename);
+            else
+                mOther.AddLayer(Image, filename);
+
+            return true;
+        }
         bool                    ProcessImage    (string filename, SKSvg Image)
         {
             if (CacheFunction != null)
@@ -352,8 +370,6 @@ namespace App_112GW
 
         public MultimeterScreen()
 		{
-            
-
             HorizontalOptions = LayoutOptions.Fill;
 
             //New layer images
@@ -370,7 +386,7 @@ namespace App_112GW
                 CacheFunction = Cacher;
 
                 //Sort images into appropreate layered images
-                var Loader = new SVGLoader(ProcessImage);
+                var Loader = new PathLoader(ProcessImage);
             }
             else
             {
@@ -419,16 +435,10 @@ namespace App_112GW
             mTouch.Tapped += TapCallback;
             GestureRecognizers.Add(mTouch);
 
-            //Setup the buffer layer
-            (double aspect, double x, double y) = GetResultSize();
-            mLayer  =   new SKBitmap((int)x, (int)y, SKImageInfo.PlatformColorType, SKAlphaType.Premul);
-            mCanvas =   new SKCanvas(mLayer);
 
-
-            var transparency = SKColors.Transparent;
+            
             mDrawPaint = new SKPaint();
-            mDrawPaint.BlendMode = SKBlendMode.SrcOver;
-            mDrawPaint.ColorFilter = SKColorFilter.CreateBlendMode(transparency, SKBlendMode.DstOver);
+            mDrawPaint.BlendMode = SKBlendMode.Src;
         }
         private void            Invalidate()
         {
@@ -474,21 +484,33 @@ namespace App_112GW
                 mImageRectangle.Offset(dx, 0);
             }
         }
-        private void            Render(SKCanvas pSurface)
-		{
+        bool NeedClear = true;
+        private void Render(SKCanvas pSurface)
+        {
+            if (NeedClear)
+            {
+                pSurface.Clear(App_112GW.Globals.BackgroundColor.ToSKColor());
+
+                //Setup the buffer layer
+                (double aspect, double x, double y) = GetResultSize();
+                mLayer = new SKBitmap((int)x, (int)y);
+                mLayer.Erase(App_112GW.Globals.BackgroundColor.ToSKColor());
+                mCanvas = new SKCanvas(mLayer);
+                NeedClear = false;
+            }
+
             //Add render on change
             for (int i = 0; i < mSegments.Count; i++)
                 mSegments[i].Render(ref mCanvas);
-
+            
             for (int i = 0; i < mSegments.Count; i++)
                 mSubSegments[i].Render(ref mCanvas);
 
             mBargraph.Render(ref mCanvas);
-            mOther.Render(ref pSurface);
+            mOther.Render(ref mCanvas);
 
             //Add render on change
-            pSurface.Scale(CanvasSize.Width/(float)Width);
-            pSurface.Clear(Globals.BackgroundColor.ToSKColor());
+            pSurface.Scale(CanvasSize.Width / (float)Width);
             pSurface.DrawBitmap(mLayer, mImageRectangle, mDrawPaint);
         }
 		static private void     SetSegment(char pInput, Layers pSegment)

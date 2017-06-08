@@ -92,7 +92,7 @@ namespace App_112GW
             else
             {
                 rtn = true;
-                Device.StartTimer(new TimeSpan(0, 0, 0, 0, 100), UpdateValue);
+                Device.StartTimer(new TimeSpan(0, 0, 0, 0, 10), UpdateValue);
             }
             UpdateValue();
         }

@@ -115,18 +115,6 @@ namespace App_112GW
                 else
                     pSurface.DrawPicture(mImage.Picture, mUndrawPaint);
             }
-
-
-            //pSurface.Clear(SKColors.Black);
-            var a = new PathLoader("asasd");
-
-            var Pth = new SKPath();
-            foreach (var curv in a.Curves)
-            {
-                while (curv.GetPath(0.1f, out Pth))
-                    pSurface.DrawPath(Pth, mDrawPaint);
-            }
-
         }
     }
 }
