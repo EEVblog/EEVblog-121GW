@@ -14,11 +14,13 @@ namespace App_112GW
 {
     public class SVGPath
     {
+        SKMatrix LocalTransform;
+
         public static SKMatrix BuildTransformMatrix(string Transform)
         {
-            var Output = new SKMatrix();
+            var Output = SKMatrix.MakeIdentity();
 
-            char[] delim = {',',' ','-', '(', ')'};
+            char[] delim = {',',' ', '(', ')'};
             var v_s = Transform.Split(delim, StringSplitOptions.RemoveEmptyEntries);
 
             if (v_s.Length == 0)
@@ -28,22 +30,25 @@ namespace App_112GW
             int i = 0;
             var Type = v_s[i++].ToLower();
 
-            //Setup matrix and zero cells
-            float[] matrix = new float[6];
-            for (int x = 0; x < matrix.Length; x++)
-                matrix[x] = 0;
-
             //Switch to correct transform type
             switch (Type)
             {
                 case "matrix":
+                    var a = float.Parse(v_s[i++]);
+                    var b = float.Parse(v_s[i++]);
+                    var c = float.Parse(v_s[i++]);
+                    var d = float.Parse(v_s[i++]);
+                    var e = float.Parse(v_s[i++]);
+                    var f = float.Parse(v_s[i++]);
 
-                    matrix[0] = float.Parse(v_s[i++]);
-                    matrix[1] = float.Parse(v_s[i++]);
-                    matrix[2] = float.Parse(v_s[i++]);
-                    matrix[3] = float.Parse(v_s[i++]);
-                    matrix[4] = float.Parse(v_s[i++]);
-                    matrix[5] = float.Parse(v_s[i++]);
+                   
+                    Output.ScaleX   = a;
+                    Output.ScaleY   = d;
+                    Output.SkewX    = c;
+                    Output.SkewY    = b;
+                    Output.TransX   = e;
+                    Output.TransY   = f;
+
                     break;
                 case "translate":
                     var tx = float.Parse(v_s[i++]);
@@ -53,10 +58,7 @@ namespace App_112GW
                         ty = float.Parse(v_s[i++]);
 
                     //
-                    matrix[0] = 1;
-                    matrix[4] = 1;
-                    matrix[2] = tx;
-                    matrix[5] = ty;
+                    Output = SKMatrix.MakeTranslation(tx, ty);
                     break;
                 case "scale":
                     var sx = float.Parse(v_s[i++]);
@@ -66,8 +68,7 @@ namespace App_112GW
                         sy = float.Parse(v_s[i++]);
 
                     //
-                    matrix[0] = sx;
-                    matrix[4] = sy;
+                    Output = SKMatrix.MakeScale(sx, sy);
                     break;
                 case "rotate":
                     //
@@ -84,50 +85,31 @@ namespace App_112GW
                         cy = float.Parse(v_s[i++]);
 
                     //
-                    const float convt = ((float)Math.PI / 180.0f);
-                    var angl_degrees = convt * angle;
-
-                    //
-                    matrix[0] =  (float)Math.Cos(angl_degrees);
-                    matrix[1] = -(float)Math.Sin(angl_degrees);
-                    matrix[3] =  (float)Math.Sin(angl_degrees);
-                    matrix[4] =  (float)Math.Cos(angl_degrees);
+                    Output = SKMatrix.MakeRotationDegrees(angle, cx, cy);
                     break;
                 case "skewX":
                     var sk_x_angle = float.Parse(v_s[i++]);
-                    angl_degrees = convt * sk_x_angle;
-
-                    matrix[0] = 1;
-                    matrix[1] = (float)Math.Tan(angl_degrees);
-                    matrix[4] = 1;
+                    var anglx_radians = ((float)Math.PI/180.0f) * sk_x_angle;
+                    Output = SKMatrix.MakeSkew((float)Math.Tan(anglx_radians), 0);
                     break;
                 case "skewY":
                     var sk_y_angle = float.Parse(v_s[i++]);
-                    angl_degrees = convt * sk_y_angle;
-
-                    matrix[0] = 1;
-                    matrix[3] = (float)Math.Tan(angl_degrees);
-                    matrix[4] = 1;
+                    var angly_radians = ((float)Math.PI / 180.0f) * sk_y_angle;
+                    Output = SKMatrix.MakeSkew(0, (float)Math.Tan(angly_radians));
                     break;
             };
 
-            Output.ScaleX = matrix[0];
-            Output.SkewX = matrix[1];
-            Output.TransX = matrix[2];
-            Output.SkewY = matrix[3];
-            Output.ScaleY = matrix[4];
-            Output.TransY = matrix[5];
-            Output.Persp0 = 0;
-            Output.Persp1 = 0;
-            Output.Persp2 = 1;
-
+            // SVG always have these settings
+            Output.Persp0   = 0;
+            Output.Persp1   = 0;
+            Output.Persp2   = 1;
             return Output;
         }
 
         public SVGPath(string pPath, string Transform)
         {
-            //
-
+            //Identity matrix must always be default
+            LocalTransform = SKMatrix.MakeIdentity();
         }
     }
 }

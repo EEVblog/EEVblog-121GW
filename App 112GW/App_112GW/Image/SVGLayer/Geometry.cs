@@ -33,6 +33,13 @@ namespace App_112GW
     {
         protected Vector[] Points;
 
+        public enum eType
+        {
+            eLine,
+            eBezier,
+            eStart
+        }
+        public abstract eType Type { get; }
         //time value is a value between 0 and 1
         public abstract Vector GetPoint(float pTime);
         public virtual Vector Start
@@ -98,6 +105,14 @@ namespace App_112GW
     }
     public class            Bezier : Curve
     {
+        public override eType Type
+        {
+            get
+            {
+                return eType.eBezier;
+            }
+        }
+
         public Bezier(Vector[] pPoints)
         {
             Points = pPoints;
@@ -138,6 +153,13 @@ namespace App_112GW
     }
     public class            Line : Curve
     {
+        public override eType Type
+        {
+            get
+            {
+                return eType.eLine;
+            }
+        }
         public Line(Vector P1, Vector P2)
         {
             Points = new Vector[] { P1, P2 };
@@ -147,32 +169,74 @@ namespace App_112GW
             return WeightedPoint(Start, End, pTime);
         }
     }
+    public class            Start : Curve
+    {
+        public override eType Type
+        {
+            get
+            {
+                return eType.eStart;
+            }
+        }
+        public override Vector End
+        {
+            get
+            {
+                return Points[0];
+            }
+        }
+        public Start(Vector P1)
+        {
+            Points = new Vector[] { P1 };
+        }
+        public override Vector GetPoint(float pTime)
+        {
+            return End;
+        }
+    }
+
+
     public class            Polycurve : ICurve
     {
-        private Vector      mStart;
+        SKRect              mBoundary;
+
+        public float Width
+        {
+            get
+            {
+                return mBoundary.Width;
+            }
+        }
+        public float Height
+        {
+            get
+            {
+                return mBoundary.Height;
+            }
+        }
+
+
+        private int         mIndex;
+        private string      mName;
         private List<Curve> mCurves;
 
         //Interface functions
-        public Vector   Start
+        public Vector       Start
         {
             get
             {
-                var i = 0;
-                return mCurves[i].Start;
+                return mCurves[0].Start;
             }
         }
-        public Vector   End
+        public Vector       End
         {
             get
             {
-                if (Count == 0)
-                    return mStart;
-
                 var i = Count - 1;
                 return mCurves[i].End;
             }
         }
-        public int      Count
+        public int          Count
         {
             get
             {
@@ -181,11 +245,8 @@ namespace App_112GW
                 return mCurves.Count;
             }
         }
-        public Vector   GetPoint(float pTime)
+        public Vector       GetPoint(float pTime)
         {
-            if (Count == 0)
-                return mStart;
-
             pTime *= Count;
             var i = (int)pTime;
             pTime -= (float)i;
@@ -195,97 +256,163 @@ namespace App_112GW
         //Polycurve functions
         public void AddLine(Vector pPoint)
         {
-            Vector start;
-            if (Count > 0)
-                start = End;
-            else
-                start = mStart;
-            
-            mCurves.Add(new Line(start, pPoint));
+            mCurves.Add(new Line(End, pPoint));
+            Update();
         }
         public void AddQuadratic(Vector pControl, Vector pEnd)
         {
-            Vector start;
-            if (Count > 0)
-                start = End;
-            else
-                start = mStart;
-
-            mCurves.Add(new Quadratic(start, pControl, pEnd));
+            mCurves.Add(new Quadratic(End, pControl, pEnd));
+            Update();
         }
         public void AddCubic(Vector pControl1, Vector pControl2, Vector pEnd)
         {
-            Vector start;
-            if (Count > 0)
-                start = End;
-            else
-                start = mStart;
-
-            mCurves.Add(new Cubic(start, pControl1, pControl2, pEnd));
+            mCurves.Add(new Cubic(End, pControl1, pControl2, pEnd));
+            Update();
         }
         public void AddBezier(Vector[] pPoints)
         {
-            Vector start;
-            if (Count > 0)
-                start = End;
-            else
-                start = mStart;
             var pts = new List<Vector>(pPoints);
-            pts.Insert(0, start);
+            pts.Insert(0, End);
             mCurves.Add(new Bezier(pts));
+            Update();
+        }
+        public void AddStart(Vector pPoint)
+        {
+            mCurves.Add(new Start(pPoint));
         }
         public void CloseCurve()
         {
             if (Start.Equals(End))
                 return;
             AddLine(Start);
+            Update();
         }
 
         //Constructor
-        public Polycurve(float x, float y)
+        public          Polycurve(string name)
         {
+            mIndex = 0;
+            mName = name;
             mCurves = new List<Curve>();
-            mStart = new Vector(x, y);
         }
-        public Polycurve(Vector pStart)
+        public          Polycurve(string name, Vector pStart)
         {
+            mIndex = 0;
+            mName = name;
             mCurves = new List<Curve>();
-            mStart = new Vector();
-            mStart = pStart;
+            mCurves.Add(new Start(pStart));
         }
 
-        //Default resolution makes 10 points per line segment
-        public SKPath ToPath(float Resolution = 0.1f)
+        //Update routines to setup things like width, height, minimum, maximum
+        void Update()
         {
-            var Pts = new List<SKPoint>();
-            var Limit = 1.0f;
+            mBoundary = new SKRect(0,0,0,0);
 
-            Resolution /= (float)Count;
+            var TRect = new SKRect();
+            var Pth = new SKPath();
+            while (GetPath(0.5f, out Pth))
+                if(Pth.GetBounds(out TRect))
+                {
+                    if (mBoundary.Width == 0)
+                    {
+                        mBoundary.Left = TRect.Left;
+                        mBoundary.Top = TRect.Top;
+                        mBoundary.Bottom = TRect.Bottom;
+                        mBoundary.Right = TRect.Right;
+                    }
 
-            for (float time = 0; time <= Limit; time += Resolution)
-                Pts.Add(GetPoint(time));
-
-            var Path = new SKPath();
-            Path.AddPoly(Pts.ToArray(), false);
-            return Path;
+                    if (TRect.Left < mBoundary.Left)
+                        mBoundary.Left = TRect.Left;
+                    if (TRect.Top < mBoundary.Top)
+                        mBoundary.Top = TRect.Top;
+                    if (TRect.Bottom > mBoundary.Bottom)
+                        mBoundary.Bottom = TRect.Bottom;
+                    if (TRect.Right > mBoundary.Right)
+                        mBoundary.Right = TRect.Right;
+                }
         }
-
-        //TEST CODE
-        //var Curv = new Polycurve(0, 0);
-        //Curv.AddLine(new SKPoint(100, 100));
-        //Curv.AddBezier(new SKPoint[] { new SKPoint(0, 0), new SKPoint(0, 100), new SKPoint(100, 100) });
-        //Curv.AddLine(new SKPoint(0, 100));
-
-        //Curv.CloseCurve();
 
         //
-        //for (float time = 0; time <= 1; time += 0.01f)
-        //{
-        //Pts.Add(Curv.GetPoint(time));
-        //}
-        //var Path = new SKPath();
-        //Path.AddPoly(Pts.ToArray(),false);
-        //mDrawPaint.IsStroke = false;
-        //pSurface.DrawPath(Path, mDrawPaint);
+        public SKMatrix Transformation = SKMatrix.MakeIdentity();
+
+        //Default resolution makes 10 points per line segment
+        public bool GetPath(float Resolution, out SKPath Path)
+        {
+            if (Resolution == 0f)
+                throw (new Exception("Cannot have inifinite resolution, don't be silly."));
+
+            if (mIndex == mCurves.Count)
+            {
+                mIndex = 1;
+                Path = new SKPath();
+                return false;
+            }
+
+            var Pts = new List<SKPoint>();
+            var Limit = 1.0f - Resolution;
+            Path = new SKPath();
+            
+            //
+            bool Skip = true;
+            var breakloop = false;
+            for (; mIndex < mCurves.Count; mIndex++)
+            {
+                breakloop = false;
+                var curv = mCurves[mIndex];
+
+                if (Skip)
+                    Pts.Add(curv.Start);
+
+                switch (curv.Type)
+                {
+                    case Curve.eType.eBezier:
+                        for (float time = Resolution; time <= Limit; time += Resolution)
+                            Pts.Add(curv.GetPoint(time));
+
+                        //More accurate than using reosolution
+                        Pts.Add(curv.End);
+                        break;
+
+                    case Curve.eType.eLine:
+                        //Start is already there
+                        Pts.Add(curv.End);
+                        break;
+
+                    case Curve.eType.eStart:
+                        if (Skip)
+                        {
+                            Skip = false;
+                            continue;
+                        }
+
+                        breakloop = true;
+                        break;
+                }
+                if (breakloop)
+                    break;
+            }
+
+            Path.AddPoly(Pts.ToArray(), false);
+            Path.Transform(Transformation);
+            Path.Transform(SKMatrix.MakeScale(10, 10));
+
+            if (breakloop)
+            {
+                if (mIndex + 1 >= mCurves.Count)
+                {
+                    mIndex = 1;
+                    return false;
+                }
+                else
+                {
+                    return true;
+                }
+            }
+            else if (mIndex == mCurves.Count)
+            {
+                return true;
+            }
+            return true;
+        }
     }
 }

@@ -29,11 +29,12 @@
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Controls\Buttons\Checkbox.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)General\ResourceLoader.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Image\ImageLayers\Layer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Image\Layer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Image\Layers.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Image\ImageLayers\ImageLayer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Image\PathLayer\PathLayer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Image\SVGLayer\Geometry.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Image\SVGLayer\SVG to SKPath\SVGToPath.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)General\PathLoader.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Image\SVGLayer\SVGPath.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
@@ -377,6 +378,7 @@
     <Folder Include="$(MSBuildThisFileDirectory)Controls\Multimeter\" />
     <Folder Include="$(MSBuildThisFileDirectory)Controls\Buttons\" />
     <Folder Include="$(MSBuildThisFileDirectory)General\" />
+    <Folder Include="$(MSBuildThisFileDirectory)Image\SVGLayer\SVG to SKPath\" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\!bar_range.png">
@@ -855,6 +857,6 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <None Include="$(MSBuildThisFileDirectory)Image\Layers\sub1dp - Copy.svg" />
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\sub1dp - Copy.svg" />
   </ItemGroup>
 </Project>

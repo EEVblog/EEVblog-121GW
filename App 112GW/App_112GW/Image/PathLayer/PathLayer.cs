@@ -2,16 +2,13 @@
 using System.Collections.Generic;
 using System.Text;
 using SkiaSharp;
-using SkiaSharp.Views.Forms;
 using Xamarin.Forms;
-
-
+using SkiaSharp.Views.Forms;
 
 namespace App_112GW
 {
-    public class SVGLayer : ILayer
+    public class PathLayer : ILayer
     {
-
         private bool mActive;
         private VariableMonitor<bool> _Changed;
         public event EventHandler OnChanged
@@ -27,29 +24,26 @@ namespace App_112GW
         }
 
 
-        public SKSvg mImage;
+        public Polycurve mImage;
         public string mName;
 
         SKPaint mDrawPaint;
         SKPaint mUndrawPaint;
 
-        public SVGLayer(SKSvg pImage, string pName, bool pActive = true)
+        public PathLayer(Polycurve pImage, string pName, bool pActive = true)
         {
             _Changed = new VariableMonitor<bool>();
             _RenderChanged = new VariableMonitor<bool>();
 
             //Open the defined image
-
             mActive = pActive;
             mImage = pImage;
             mName = pName;
 
             //
             var transparency = Color.FromRgba(0, 0, 0, 0).ToSKColor();
-            
+
             mDrawPaint = new SKPaint();
-            mDrawPaint.Color = SKColors.Red;
-            mDrawPaint.IsAntialias = true;
             mDrawPaint.BlendMode = SKBlendMode.SrcOver;
             mDrawPaint.ColorFilter = SKColorFilter.CreateBlendMode(transparency, SKBlendMode.DstOver);
 
@@ -80,53 +74,48 @@ namespace App_112GW
 
         private VariableMonitor<bool> _RenderChanged;
 
-        public string   Name
+        public string Name
         {
             get
-            {
-                return mName;
-            }
+            { return mName; }
             set
-            {
-                mName = value;
-            }
+            { mName = value; }
         }
-        public int      Width
+        public int Width
         {
             get
             {
-                return (int)mImage.CanvasSize.Width;
+                return (int)mImage.Width;
             }
         }
-        public int      Height
+        public int Height
         {
             get
             {
-                return (int)mImage.CanvasSize.Height;
+                return (int)mImage.Height;
             }
         }
-        public void     Render(ref SKCanvas pSurface)
+
+        public void Render(ref SKCanvas pSurface)
         {
             //This is render changed variable, don't move it to set, that is wrong
             if (_RenderChanged.Update(ref mActive))
             {
+                var Pth = new SKPath();
                 if (mActive)
-                    pSurface.DrawPicture(mImage.Picture, mDrawPaint);
+                {
+                    while (mImage.GetPath(0.1f, out Pth))
+                        pSurface.DrawPath(Pth, mDrawPaint);
+                }
                 else
-                    pSurface.DrawPicture(mImage.Picture, mUndrawPaint);
+                {
+                    while (mImage.GetPath(0.1f, out Pth))
+                        pSurface.DrawPath(Pth, mUndrawPaint);
+                }
             }
-
-
-            //pSurface.Clear(SKColors.Black);
-            var a = new PathLoader("asasd");
-
-            var Pth = new SKPath();
-            foreach (var curv in a.Curves)
-            {
-                while (curv.GetPath(0.1f, out Pth))
-                    pSurface.DrawPath(Pth, mDrawPaint);
-            }
-
         }
     }
 }
+
+
+

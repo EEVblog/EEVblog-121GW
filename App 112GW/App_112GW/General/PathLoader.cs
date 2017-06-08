@@ -18,8 +18,14 @@ using System.Text;
 namespace App_112GW
 {
 
-    public class SVGPathBuilder
+    public class PathLoader
     {
+        private enum Coordinate
+        {
+            Absolute,
+            Relative
+        }
+
         public List<Polycurve> Curves;
         Polycurve LastCurve
         {
@@ -49,8 +55,7 @@ namespace App_112GW
             return (!(input == 'z' || input == 'Z'));
         }
 
-
-        struct SVGCommand
+        private struct SVGCommand
         {
             static bool     _IsAbsolute(char input)
             {
@@ -158,39 +163,54 @@ namespace App_112GW
             }
         }
 
-        float Zoom = 1f;
-        SKMatrix LocalTransform = SKMatrix.MakeIdentity();
-        SKMatrix GlobalTransform = SKMatrix.MakeIdentity();
+        SKMatrix _CTM = new SKMatrix();
+        SKMatrix _LocalTransform = SKMatrix.MakeIdentity();
+        SKMatrix _GlobalTransform = SKMatrix.MakeIdentity();
 
-        SKPoint AT(SKPoint Input)
+        void    UpdateCTM()
         {
-            var Rslt = new SKMatrix();
-            SKMatrix.Concat(ref Rslt, LocalTransform, GlobalTransform);
-
-            Input = Rslt.MapPoint(Input);
-
-            return Input;
+            _CTM = SKMatrix.MakeIdentity();
+             SKMatrix.Concat(ref _CTM  , _GlobalTransform, _LocalTransform);
         }
-
+        SKMatrix LocalTransform
+        {
+            set
+            {
+                _LocalTransform = value;
+                UpdateCTM();
+            }
+            get
+            {
+                return _LocalTransform;
+            }
+        }
+        SKMatrix GlobalTransform
+        {
+            set
+            {
+                _GlobalTransform = value;
+                UpdateCTM();
+            }
+            get
+            {
+                return _GlobalTransform;
+            }
+        }
+        
         SKPoint LastPoint;
-        float RepointX(float pPoint, bool pAbsolute)
+        SKPoint RepointX(float pPoint, bool pAbsolute)
         {
             if (!pAbsolute)
                 pPoint += LastPoint.X;
-
-            LastPoint.X = pPoint;
-            pPoint *= Zoom;
             
-            return pPoint;
+            return Repoint(new SKPoint(pPoint, LastPoint.Y), true);
         }
-        float RepointY(float pPoint, bool pAbsolute)
+        SKPoint RepointY(float pPoint, bool pAbsolute)
         {
             if (!pAbsolute)
                 pPoint += LastPoint.Y;
 
-            LastPoint.Y = pPoint;
-            pPoint *= Zoom;
-            return pPoint;
+            return Repoint(new SKPoint(LastPoint.X, pPoint), true);
         }
         SKPoint Repoint(SKPoint pPoint, bool pAbsolute)
         {
@@ -199,13 +219,8 @@ namespace App_112GW
                 pPoint.X += LastPoint.X;
                 pPoint.Y += LastPoint.Y;
             }
-
             LastPoint = pPoint;
-
-            pPoint.X *= Zoom;
-            pPoint.Y *= Zoom;
-
-            return AT(pPoint);
+            return pPoint;
         }
         SKPoint RepointP(SKPoint pPoint, bool pAbsolute)
         {
@@ -214,13 +229,10 @@ namespace App_112GW
                 pPoint.X += LastPoint.X;
                 pPoint.Y += LastPoint.Y;
             }
-
-            pPoint.X *= Zoom;
-            pPoint.Y *= Zoom;
-            return AT(pPoint);
+            return pPoint;
         }
 
-        bool ParsePath(string Path)
+        bool ParsePath(string Name, string Path, SKMatrix Transform)
         {
             var Commands = new List<SVGCommand>();
 
@@ -274,16 +286,19 @@ namespace App_112GW
                 switch (key)
                 {
                     case 'm':
-                        //Process initial move command (It is treated differently)
                         if ((param = cmd.GetParameterSet) != null)
-                            Curves.Add(new Polycurve(Repoint(new SKPoint(param[0], param[1]), cmd.IsAbsolute)));
-
+                        {
+                            var pt1 = Repoint(new SKPoint(param[0], param[1]), cmd.IsAbsolute);
+                            LastCurve.AddStart(pt1);
+                        }
+                        
                         //Process subsequent move commands they are treated identically
                         while ((param = cmd.GetParameterSet) != null)
                         {
                             var pt1 = Repoint(new SKPoint(param[0], param[1]), cmd.IsAbsolute);
                             LastCurve.AddLine(pt1);
                         }
+                        LastCurve.Transformation = Transform;
                         break;
                     case 'z':
                         LastCurve.CloseCurve();
@@ -297,21 +312,20 @@ namespace App_112GW
                         }
                         break;
                     case 'h':
-                        var y = LastCurve.End.Y;
+                        //var y = LastCurve.End.Y;
                         //Process subsequent move commands they are treated identically
                         while ((param = cmd.GetParameterSet) != null)
                         {
-                            var pt1 = new SKPoint(RepointX(param[0], cmd.IsAbsolute), y);
+                            var pt1 = RepointX(param[0], cmd.IsAbsolute);
                             LastCurve.AddLine(pt1);
                         }
-                        
                         break;
                     case 'v':
-                        var x = LastCurve.End.X;
+                        //var x = LastCurve.End.X;
                         //Process subsequent move commands they are treated identically
                         while ((param = cmd.GetParameterSet) != null)
                         {
-                            var pt1 = new SKPoint(x, RepointY(param[0], cmd.IsAbsolute));
+                            var pt1 = RepointY(param[0], cmd.IsAbsolute);
                             LastCurve.AddLine(pt1);
                         }
                         break;
@@ -320,9 +334,9 @@ namespace App_112GW
                         var ind = 0;
                         while ((param = cmd.GetParameterSet) != null)
                         {
-                            var pt1 = RepointP(new SKPoint(param[ind++], param[ind++]), cmd.IsAbsolute);
-                            var pt2 = RepointP(new SKPoint(param[ind++], param[ind++]), cmd.IsAbsolute);
-                            var pt3 = Repoint(new SKPoint(param[ind++], param[ind++]), cmd.IsAbsolute);
+                            var pt1 = RepointP  (new SKPoint(param[ind++],  param[ind++]),  cmd.IsAbsolute);
+                            var pt2 = RepointP  (new SKPoint(param[ind++],  param[ind++]),  cmd.IsAbsolute);
+                            var pt3 = Repoint   (new SKPoint(param[ind++],  param[ind++]),  cmd.IsAbsolute);
                             LastCurve.AddCubic(pt1, pt2, pt3);
                             ind = 0;
                         }
@@ -332,81 +346,51 @@ namespace App_112GW
                         break;
                 }
             }
+
             return true;
         }
-
-        int runcount = 0;
         bool ProcessSVG(string Name, Stream Stream)
         {
-            //if (runcount++ == 41)
+            var xdoc = new System.Xml.Linq.XDocument();
+            xdoc = System.Xml.Linq.XDocument.Load(Stream);
+            var temp = xdoc.Descendants();
+
+            foreach (var t in temp)
             {
-                var xdoc = new System.Xml.Linq.XDocument();
-                xdoc = System.Xml.Linq.XDocument.Load(Stream);
-                var temp = xdoc.Descendants();
-
-                foreach (var t in temp)
+                switch (t.Name.LocalName.ToString())
                 {
-                    switch (t.Name.LocalName.ToString())
-                    {
-                        case "g":
-                            foreach (var at in t.Attributes())
-                            {
-                                switch (at.Name.ToString())
-                                {
-                                    case "id":
-                                        //Debug.WriteLine("Found ID " + at.Value);
+                    case "g":
+                        //Get and apply global transform
+                        var gtransform = t.Attribute("transform");
+                        if (gtransform != null)
+                            GlobalTransform = SVGPath.BuildTransformMatrix(gtransform.Value);
+                        else
+                            GlobalTransform = SKMatrix.MakeIdentity();
 
-                                        break;
-                                    case "transform":
-                                        GlobalTransform = SVGPath.BuildTransformMatrix(at.Value);
-                                        break;
-                                };
-                            }
-                            break;
-                        case "path":
+
+                        Curves.Add(new Polycurve(Name));
+                        break;
+                    case "path":
+                        //Get and apply local transformation
+                        var ptransform = t.Attribute("transform");
+                        if (ptransform != null)
+                            LocalTransform = SVGPath.BuildTransformMatrix(ptransform.Value);
+                        else
                             LocalTransform = SKMatrix.MakeIdentity();
-                            foreach (var at in t.Attributes())
-                            {
-                                switch (at.Name.ToString())
-                                {
-                                    case "d":
-                                        //Debug.WriteLine("Found Path ");
-                                        ParsePath(at.Value);
-                                        break;
 
-                                    case "style":
-                                        //Debug.WriteLine("Found Style " + at.Value);
+                        var attribute = t.Attribute("d");
+                        if (attribute != null)
+                            ParsePath(Name, attribute.Value, _CTM);
 
-                                        break;
-
-                                    case "id":
-                                        //Debug.WriteLine("Found ID " + at.Value);
-
-                                        break;
-
-                                    case "transform":
-                                        LocalTransform = SVGPath.BuildTransformMatrix(at.Value);
-                                        break;
-                                };
-
-                                //var Image as SVGLayer();
-                            }
-                            break;
-                        default:
-                            break;
-                    }
+                        break;
+                    default:
+                        break;
                 }
             }
             return true;
         }
 
-
-        enum Coordinate
-        {
-            Absolute,
-            Relative
-        }
-        public SVGPathBuilder(string pInput)
+        public PathLoader(string pInput)
         {
             //Convert commands to a path
             Curves = new List<Polycurve>();
