@@ -39,31 +39,31 @@ namespace App_112GW
             eBezier,
             eStart
         }
-        public abstract eType Type { get; }
+        public abstract eType   Type { get; }
         //time value is a value between 0 and 1
-        public abstract Vector GetPoint(float pTime);
-        public virtual Vector Start
+        public abstract Vector  GetPoint(float pTime);
+        public virtual Vector   Start
         {
             get
             {
                 return Points[0];
             }
         }
-        public virtual Vector End
+        public virtual Vector   End
         {
             get
             {
                 return Points[Count - 1];
             }
         }
-        public virtual int Count
+        public virtual int      Count
         {
             get
             {
                 return Points.Length;
             }
         }
-        public static float DistanceBetween(Vector P1, Vector P2)
+        public static float     DistanceBetween(Vector P1, Vector P2)
         {
             var dx = P2.X - P1.X;
             var dy = P2.Y - P1.Y;
@@ -200,20 +200,39 @@ namespace App_112GW
     {
         List<SKPath>        mPath;
 
-        SKRect              mBoundary;
+        private SKSize      mBoundary;
+        private SKSize?     _CanvasSize;
+        public SKSize       CanvasSize
+        {
+            get
+            {
+                return _CanvasSize.Value;
+            }
+            set
+            {
+                _CanvasSize = value;
+            }
+        }
+        bool                CanvasSizeSet
+        {
+            get
+            {
+                return (_CanvasSize.HasValue);
+            }
+        }
 
         public float Width
         {
             get
             {
-                return mBoundary.Width;
+                return CanvasSize.Width;
             }
         }
         public float Height
         {
             get
             {
-                return mBoundary.Height;
+                return CanvasSize.Height;
             }
         }
 
@@ -222,14 +241,14 @@ namespace App_112GW
         private List<Curve> mCurves;
 
         //Interface functions
-        public Vector       Start
+        public Vector   Start
         {
             get
             {
                 return mCurves[0].Start;
             }
         }
-        public Vector       End
+        public Vector   End
         {
             get
             {
@@ -237,7 +256,7 @@ namespace App_112GW
                 return mCurves[i].End;
             }
         }
-        public int          Count
+        public int      Count
         {
             get
             {
@@ -246,7 +265,7 @@ namespace App_112GW
                 return mCurves.Count;
             }
         }
-        public Vector       GetPoint(float pTime)
+        public Vector   GetPoint(float pTime)
         {
             pTime *= Count;
             var i = (int)pTime;
@@ -255,29 +274,29 @@ namespace App_112GW
         }
 
         //Polycurve functions
-        public void AddLine(Vector pPoint)
+        public void     AddLine(Vector pPoint)
         {
             mCurves.Add(new Line(End, pPoint));
         }
-        public void AddQuadratic(Vector pControl, Vector pEnd)
+        public void     AddQuadratic(Vector pControl, Vector pEnd)
         {
             mCurves.Add(new Quadratic(End, pControl, pEnd));
         }
-        public void AddCubic(Vector pControl1, Vector pControl2, Vector pEnd)
+        public void     AddCubic(Vector pControl1, Vector pControl2, Vector pEnd)
         {
             mCurves.Add(new Cubic(End, pControl1, pControl2, pEnd));
         }
-        public void AddBezier(Vector[] pPoints)
+        public void     AddBezier(Vector[] pPoints)
         {
             var pts = new List<Vector>(pPoints);
             pts.Insert(0, End);
             mCurves.Add(new Bezier(pts));
         }
-        public void AddStart(Vector pPoint)
+        public void     AddStart(Vector pPoint)
         {
             mCurves.Add(new Start(pPoint));
         }
-        public void CloseCurve()
+        public void     CloseCurve()
         {
             if (Start.Equals(End))
                 return;
@@ -290,6 +309,7 @@ namespace App_112GW
             mPath = new List<Path>();
             mName = name;
             mCurves = new List<Curve>();
+            mBoundary = new SKSize(0, 0);
         }
         public          Polycurve(string name, Vector pStart)
         {
@@ -297,6 +317,7 @@ namespace App_112GW
             mName = name;
             mCurves = new List<Curve>();
             mCurves.Add(new Start(pStart));
+            mBoundary = new SKSize(0, 0);
         }
 
         //Update routines to setup things like width, height, minimum, maximum
@@ -331,7 +352,7 @@ namespace App_112GW
                         ymax = ymax_n;
                 }
             }
-            mBoundary = new SKRect(0, 0, xmax, ymax);
+            mBoundary = new SKSize(xmax, ymax);
         }
 
         //
@@ -341,6 +362,9 @@ namespace App_112GW
         bool MakeCache = true;
         public bool GenerateCache(float Resolution)
         {
+            if (!CanvasSizeSet)
+                throw (new Exception("Geometry type is a vector format must have canvassize set!"));
+
             if (Resolution == 0f)
                 return false;
 
@@ -378,7 +402,6 @@ namespace App_112GW
                         var pth = new SKPath();
                         pth.AddPoly(Pts.ToArray(), false);
                         pth.Transform(Transformation);
-                        pth.Transform(SKMatrix.MakeScale(4, 4));
 
                         //Add path to cache
                         mPath.Add(pth);
@@ -392,7 +415,6 @@ namespace App_112GW
             var Path = new SKPath();
             Path.AddPoly(Pts.ToArray(), false);
             Path.Transform(Transformation);
-            Path.Transform(SKMatrix.MakeScale(4, 4));
 
             //Add path to cache
             mPath.Add(Path);
@@ -401,14 +423,17 @@ namespace App_112GW
             return true;
         }
 
-
-        public void Draw(ref SKCanvas pSurface, ref SKPaint pPaint)
+        public void Draw(ref SKCanvas pSurface, SKMatrix pTransform, ref SKPaint pPaint)
         {
             if (MakeCache)
-                GenerateCache(1f);
-
-            foreach(var pth in mPath)
-                pSurface.DrawPath(pth, pPaint);
+                GenerateCache(1.0f);
+            
+            foreach (var pth in mPath)
+            {
+                var path = new SKPath(pth);
+                path.Transform(pTransform);
+                pSurface.DrawPath(path, pPaint);
+            }
         }
     }
 }

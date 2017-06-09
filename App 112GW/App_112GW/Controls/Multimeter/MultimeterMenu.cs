@@ -46,8 +46,9 @@ namespace App_112GW
         }
         public          MultimeterMenu   (string pSerialNumber = "SN0000")
         {
-            Padding = 20;
-            VerticalOptions = LayoutOptions.Center;
+            HorizontalOptions   = LayoutOptions.Fill;
+            VerticalOptions     = LayoutOptions.StartAndExpand;
+            Padding             = 10;
 
             //The grid is currently 2x5
             //Setup Grid rows

@@ -98,15 +98,15 @@ namespace App_112GW
             }
         }
 
-        public void Render(ref SKCanvas pSurface)
+        public void Render(ref SKCanvas pSurface, SKRect pDestination)
         {
             //This is render changed variable, don't move it to set, that is wrong
             if (_RenderChanged.Update(ref mActive))
             {
                 if (mActive)
-                    pSurface.DrawImage(mImage, 0, 0, mDrawPaint);
+                    pSurface.DrawImage(mImage, pDestination, mDrawPaint);
                 else
-                    pSurface.DrawImage(mImage, 0, 0, mUndrawPaint);
+                    pSurface.DrawImage(mImage, pDestination, mUndrawPaint);
             }
 		}
 	}

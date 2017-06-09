@@ -75,15 +75,14 @@ namespace App_112GW
 
             return (x, y);
         }
-        public void             Render(ref SKCanvas pSurface)
+
+        public void             Render(ref SKCanvas pSurface, SKRect pRectangle)
         {
             if (mActive)
             {
                 if (mChange)
-                {
                     foreach (ILayer Layer in mLayers)
-                        Layer.Render(ref pSurface);
-                }
+                        Layer.Render(ref pSurface, pRectangle);
                 mChange = false;
             }
         }
@@ -102,18 +101,18 @@ namespace App_112GW
             if (mLayers.Count == 1)
                 mActive = true;
         }
-
-        public void             AddLayer(SKImage pImage, string pName, bool pActive = true)
+       
+        public void             AddLayer(SKImage    pImage,  string pName,   bool pActive = true)
 		{
             var temp = new ImageLayer(pImage, pName, pActive);
             AddLayer(temp);
 		}
-        public void             AddLayer(SKSvg pImage, string pName, bool pActive = true)
+        public void             AddLayer(SKSvg      pImage,  string pName,   bool pActive = true)
         {
             var temp = new SVGLayer(pImage, pName, pActive);
             AddLayer(temp);
         }
-        public void             AddLayer(Polycurve pImage, string pName, bool pActive = true)
+        public void             AddLayer(Polycurve  pImage,  string pName,   bool pActive = true)
         {
             var temp = new PathLayer(pImage, pName, pActive);
             AddLayer(temp);

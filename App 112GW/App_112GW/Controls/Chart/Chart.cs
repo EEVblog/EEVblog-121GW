@@ -206,24 +206,24 @@ namespace rMultiplatform
         //Initialises the object
         public Chart() : base()
         {
+            //Must always fill parent container
+            HorizontalOptions = LayoutOptions.Fill;
+            VerticalOptions = LayoutOptions.StartAndExpand;
+
             //Setup chart elements
-            ChartElements = new List<IChartRenderer>();
+            mDrawPaint              = new SKPaint();
+            ChartElements           = new List<IChartRenderer>();
 
             //Setup the padding object
             ChartElements.Add(new ChartPadding(0));
-
-            //Must always fill parent container
-            VerticalOptions = LayoutOptions.Fill;
-            HorizontalOptions = LayoutOptions.Fill;
 
             //Default aspect ratio 1:3
             Aspect = 3;
 
             //Default draw brush paints transparent
-            var transparency = SKColors.Transparent;
-            mDrawPaint = new SKPaint();
-            mDrawPaint.BlendMode = SKBlendMode.SrcOver;
-            mDrawPaint.ColorFilter = SKColorFilter.CreateBlendMode(transparency, SKBlendMode.DstOver);
+            var transparency        = SKColors.Transparent;
+            mDrawPaint.BlendMode    = SKBlendMode.SrcOver;
+            mDrawPaint.ColorFilter  = SKColorFilter.CreateBlendMode(transparency, SKBlendMode.DstOver);
         }
     }
 }

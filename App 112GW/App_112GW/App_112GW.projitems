@@ -378,7 +378,6 @@
     <Folder Include="$(MSBuildThisFileDirectory)Controls\Multimeter\" />
     <Folder Include="$(MSBuildThisFileDirectory)Controls\Buttons\" />
     <Folder Include="$(MSBuildThisFileDirectory)General\" />
-    <Folder Include="$(MSBuildThisFileDirectory)Image\SVGLayer\SVG to SKPath\" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\!bar_range.png">

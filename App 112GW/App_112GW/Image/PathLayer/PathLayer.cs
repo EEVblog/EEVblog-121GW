@@ -9,9 +9,15 @@ namespace App_112GW
 {
     public class PathLayer : ILayer
     {
-        private bool mActive;
-        private VariableMonitor<bool> _Changed;
-        public event EventHandler OnChanged
+        public string                   mName;
+        public Polycurve                mImage;
+        private bool                    mActive;
+        SKPaint                         mDrawPaint;
+        SKPaint                         mUndrawPaint;
+
+        private VariableMonitor<bool>   _RenderChanged;
+        private VariableMonitor<bool>   _Changed;
+        public event EventHandler       OnChanged
         {
             add
             {
@@ -22,13 +28,6 @@ namespace App_112GW
                 _Changed.OnChanged -= value;
             }
         }
-
-
-        public Polycurve mImage;
-        public string mName;
-
-        SKPaint mDrawPaint;
-        SKPaint mUndrawPaint;
 
         public PathLayer(Polycurve pImage, string pName, bool pActive = true)
         {
@@ -44,51 +43,52 @@ namespace App_112GW
             var transparency = Color.FromRgba(0, 0, 0, 0).ToSKColor();
 
             mDrawPaint = new SKPaint();
-            mDrawPaint.BlendMode = SKBlendMode.SrcOver;
-            mDrawPaint.ColorFilter = SKColorFilter.CreateBlendMode(transparency, SKBlendMode.DstOver);
+            mDrawPaint.BlendMode = SKBlendMode.Src;
+            mDrawPaint.Color = App_112GW.Globals.TextColor.ToSKColor();
+            mDrawPaint.ColorFilter = SKColorFilter.CreateBlendMode(transparency, SKBlendMode.Dst);
 
             mUndrawPaint = new SKPaint();
-            mUndrawPaint.BlendMode = SKBlendMode.DstOut;
-            mUndrawPaint.ColorFilter = SKColorFilter.CreateBlendMode(transparency, SKBlendMode.DstOver);
+            mUndrawPaint.BlendMode = SKBlendMode.Src;
+            mUndrawPaint.Color = App_112GW.Globals.BackgroundColor.ToSKColor();
+            mUndrawPaint.ColorFilter = SKColorFilter.CreateBlendMode(transparency, SKBlendMode.Dst);
 
             Off();
         }
-        public void Set(bool pState)
+
+        public void             Set(bool pState)
         {
             bool temp = mActive;
             mActive = pState;
             _Changed.Update(ref mActive);
         }
-        public void On()
+        public void             On()
         {
             Set(true);
         }
-        public void Off()
+        public void             Off()
         {
             Set(false);
         }
-        public override string ToString()
+        public override string  ToString()
         {
             return mName;
         }
 
-        private VariableMonitor<bool> _RenderChanged;
-
-        public string Name
+        public string           Name
         {
             get
             { return mName; }
             set
             { mName = value; }
         }
-        public int Width
+        public int              Width
         {
             get
             {
                 return (int)mImage.Width;
             }
         }
-        public int Height
+        public int              Height
         {
             get
             {
@@ -96,20 +96,24 @@ namespace App_112GW
             }
         }
 
-        public void Render (ref SKCanvas pSurface)
+
+        public void             Render (ref SKCanvas pSurface, SKRect pDestination)
         {
             //This is render changed variable, don't move it to set, that is wrong
+
             if (_RenderChanged.Update(ref mActive))
             {
-                var Pth = new SKPath();
-                if (mActive)
-                    mImage.Draw(ref pSurface, ref mDrawPaint);
-                else
-                    mImage.Draw(ref pSurface, ref mUndrawPaint);
+                var isize   = mImage.CanvasSize;
+
+                var xscale  = pDestination.Width / isize.Width;
+                var yscale  = pDestination.Height / isize.Height;
+
+                var transform = SKMatrix.MakeIdentity();
+                transform.SetScaleTranslate(xscale, yscale, pDestination.Left, pDestination.Top);
+
+                if (mActive)    mImage.Draw(ref pSurface, transform, ref mDrawPaint);
+                else            mImage.Draw(ref pSurface, transform, ref mUndrawPaint);
             }
         }
     }
 }
-
-
-

@@ -16,39 +16,55 @@ namespace App_112GW
 
         private Button          ButtonAddDevice		= new Button        { Text = "Add Device"      };
 		private Button		    ButtonStartLogging	= new Button        { Text = "Start Logging"   };
-		private Grid		    UserGrid			= new Grid          { HorizontalOptions = LayoutOptions.Fill,   VerticalOptions = LayoutOptions.Fill, RowSpacing = 1, ColumnSpacing = 1, Padding = 1};
+		private Grid		    UserGrid			= new Grid          { HorizontalOptions = LayoutOptions.CenterAndExpand,   VerticalOptions = LayoutOptions.Fill, RowSpacing = 1, ColumnSpacing = 1, Padding = 1};
         private ScrollView      DeviceView          = new ScrollView    { HorizontalOptions = LayoutOptions.Fill,   VerticalOptions = LayoutOptions.Fill };
         private StackLayout     DeviceLayout        = new StackLayout   { HorizontalOptions = LayoutOptions.Fill,   VerticalOptions = LayoutOptions.StartAndExpand };
 
         void InitSurface()
 		{
-			UserGrid.RowDefinitions.Add(	new RowDefinition		{ Height	= new GridLength(1,     GridUnitType.Star)      });
+            BackgroundColor             = App_112GW.Globals.BackgroundColor;
+            UserGrid.BackgroundColor    = App_112GW.Globals.BackgroundColor;
+
+            UserGrid.RowDefinitions.Add(	new RowDefinition		{ Height	= new GridLength(1,     GridUnitType.Star)      });
 			UserGrid.RowDefinitions.Add(	new RowDefinition		{ Height	= new GridLength(50,    GridUnitType.Absolute)	});
 			UserGrid.ColumnDefinitions.Add(	new ColumnDefinition	{ Width		= new GridLength(1,     GridUnitType.Star)		});
 			UserGrid.ColumnDefinitions.Add(	new ColumnDefinition	{ Width		= new GridLength(1,     GridUnitType.Star)		});
 
+            //
             DeviceView.Content = DeviceLayout;
             UserGrid.Children.Add	(DeviceView);
+
+            //
 			Grid.SetRow				(DeviceView, 0);
 			Grid.SetColumn			(DeviceView, 0);
 			Grid.SetRowSpan			(DeviceView, 1);
 			Grid.SetColumnSpan		(DeviceView, 2);
 
+            //
 			UserGrid.Children.Add	(ButtonAddDevice,		0, 1);
 			UserGrid.Children.Add	(ButtonStartLogging,	1, 1);
 			Grid.SetColumnSpan		(ButtonAddDevice,		1);
 			Grid.SetColumnSpan		(ButtonStartLogging,	1);
 			
+            //
 			ButtonAddDevice.Clicked		+= AddDevice;
 			ButtonStartLogging.Clicked	+= StartLogging;
-
-			Content = UserGrid;
+            
+            UserGrid.WidthRequest = 400;
+            Content = UserGrid;
 		}
 		public MainPage ()
 		{
 			InitializeComponent();
 			InitSurface();
 		}
+
+        //Only maintains aspect ratio
+        protected override void OnSizeAllocated(double width, double height)
+        {
+            base.OnSizeAllocated(width, height);
+        }
+
 
         void AddDevice (object sender, EventArgs args)
 		{
@@ -78,6 +94,7 @@ namespace App_112GW
                 temp.Screen.LargeSegments = (float)vals;
                 temp.Screen.SmallSegments = 99999 - vals;
                 temp.Screen.Bargraph = (vals % 27);
+                temp.Screen.InvalidateSurface();
             }
 
             var dev = Devices.Last();
@@ -92,7 +109,7 @@ namespace App_112GW
             else
             {
                 rtn = true;
-                Device.StartTimer(new TimeSpan(0, 0, 0, 0, 10), UpdateValue);
+                Device.StartTimer(new TimeSpan(0, 0, 0, 0, 100), UpdateValue);
             }
             UpdateValue();
         }

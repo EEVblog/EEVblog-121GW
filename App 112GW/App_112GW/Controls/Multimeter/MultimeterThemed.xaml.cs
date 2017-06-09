@@ -19,9 +19,14 @@ namespace App_112GW
         bool Item = true;
 
         public MultimeterThemed (Color BackColor)
-		{
+        {
+            HorizontalOptions       = LayoutOptions.Fill;
+            VerticalOptions         = LayoutOptions.StartAndExpand;
+
+            //Assures that a non-zero height is allocated
+            MinimumHeightRequest    = 200;
+
             InitializeComponent ();
-            HorizontalOptions = LayoutOptions.Fill;
 
             Screen = new MultimeterScreen() { };
             Screen.BackgroundColor = BackColor;
@@ -55,20 +60,18 @@ namespace App_112GW
         protected override void OnSizeAllocated(double width, double height)
         {
             base.OnSizeAllocated(width, height);
-            var ScreenSize = Screen.GetResultSize(Width);
-            Menu.HeightRequest = ScreenSize.height - Menu.Padding.Top - Menu.Padding.Bottom;
         }
         private void            SetView()
         {
             switch (Item)
             {
                 case true:
-                    Menu.IsVisible = true;
-                    Screen.IsVisible = false;
+                    Menu.IsVisible          = true;
+                    Screen.IsVisible        = false;
                     break;
                 case false:
-                    Menu.IsVisible = false;
-                    Screen.IsVisible = true;
+                    Menu.IsVisible          = false;
+                    Screen.IsVisible        = true;
                     break;
                 default:
                     break;

@@ -21,7 +21,7 @@ namespace App_112GW
             get;
             set;
         }
-        void                    Render(ref SKCanvas pSurface);
+        void                    Render(ref SKCanvas pSurface, SKRect pDestination);
 
 
         int Width

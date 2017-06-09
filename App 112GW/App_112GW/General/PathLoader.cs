@@ -354,10 +354,17 @@ namespace App_112GW
         }
 
         #endregion
-        bool ProcessSVG(string Name, Stream Stream)
+        bool ProcessSVG(string Name, Stream InputStream)
         {
+            MemoryStream ms = new MemoryStream();
+            InputStream.CopyTo(ms);
+            byte[] data = ms.ToArray();
+
+            MemoryStream ms1 = new MemoryStream(data);
+            MemoryStream ms2 = new MemoryStream(data);
+
             var xdoc = new System.Xml.Linq.XDocument();
-            xdoc = System.Xml.Linq.XDocument.Load(Stream);
+            xdoc = System.Xml.Linq.XDocument.Load(ms1);
             var temp = xdoc.Descendants();
 
             foreach (var t in temp)
@@ -393,9 +400,15 @@ namespace App_112GW
                 }
             }
 
+            SKSvg Imag = new SKSvg();
+            Imag.Load(ms2);
+
+            LastCurve.CanvasSize = Imag.ViewBox.Size;
             LastCurve.Update();
+
             if (LastCurve != null)
                 mImageFunction(Name, LastCurve);
+
             return true;
         }
 

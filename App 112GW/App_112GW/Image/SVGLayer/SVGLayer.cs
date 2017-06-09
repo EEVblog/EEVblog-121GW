@@ -11,7 +11,6 @@ namespace App_112GW
 {
     public class SVGLayer : ILayer
     {
-
         private bool mActive;
         private VariableMonitor<bool> _Changed;
         public event EventHandler OnChanged
@@ -25,7 +24,6 @@ namespace App_112GW
                 _Changed.OnChanged -= value;
             }
         }
-
 
         public SKSvg mImage;
         public string mName;
@@ -105,15 +103,21 @@ namespace App_112GW
                 return (int)mImage.CanvasSize.Height;
             }
         }
-        public void     Render(ref SKCanvas pSurface)
+        public void     Render(ref SKCanvas pSurface, SKRect pDestination)
         {
             //This is render changed variable, don't move it to set, that is wrong
             if (_RenderChanged.Update(ref mActive))
             {
+                var isize = mImage.CanvasSize;
+                var xscale = pDestination.Width / isize.Width;
+                var yscale = pDestination.Height / isize.Height;
+                var transform = SKMatrix.MakeIdentity();
+                transform.SetScaleTranslate(xscale, yscale, pDestination.Left, pDestination.Top);
+
                 if (mActive)
-                    pSurface.DrawPicture(mImage.Picture, mDrawPaint);
+                    pSurface.DrawPicture(mImage.Picture, ref transform, mDrawPaint);
                 else
-                    pSurface.DrawPicture(mImage.Picture, mUndrawPaint);
+                    pSurface.DrawPicture(mImage.Picture, ref transform, mUndrawPaint);
             }
         }
     }
