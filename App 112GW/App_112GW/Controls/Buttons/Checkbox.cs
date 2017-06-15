@@ -1,13 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-using Xamarin.Forms;
-
 using SkiaSharp;
-using SkiaSharp.Views.Forms;
-using System.Runtime.CompilerServices;
-using App_112GW;
 
 namespace rMultiplatform
 {
@@ -21,6 +13,7 @@ namespace rMultiplatform
                 return _Checked;
             }
         }
+
         public event EventHandler Changed
         {
             add
@@ -40,7 +33,7 @@ namespace rMultiplatform
             else
                 mRenderer.HidePoints();
         }
-        public Checkbox(string label) : base(label, new SKPoint[3]{
+        public Checkbox() : base(new SKPoint[3]{
                 new SKPoint((float)(0), (float)(0)),
                 new SKPoint((float)(20), (float)(0)),
                 new SKPoint((float)20, (float)(10))})

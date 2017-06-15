@@ -5,7 +5,7 @@ using System.Text;
 using SkiaSharp;
 using SkiaSharp.Views.Forms;
 
-namespace App_112GW
+namespace rMultiplatform
 {
     using Vector = SKPoint;
     using Path = SKPath;

@@ -2,11 +2,27 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace App_112GW
+namespace rMultiplatform
 {
     class VariableMonitor<T>
     {
         private T OldValue;
+
+        private bool _UpdateOverride;
+        public bool UpdateOverride
+        {
+            set
+            {
+                _UpdateOverride = value;
+            }
+            get
+            {
+                var updatebuf = new bool();
+                updatebuf = _UpdateOverride;
+                _UpdateOverride = false;
+                return updatebuf;
+            }
+        }
 
         private bool _Changed = true;
         public event EventHandler OnChanged;
@@ -35,7 +51,7 @@ namespace App_112GW
                 Changed = !OldValue.Equals(pValue);
 
             OldValue = pValue;
-            return Changed;
+            return Changed || UpdateOverride;
         }
     }
 }

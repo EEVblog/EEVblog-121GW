@@ -12,7 +12,10 @@
     <Compile Include="$(MSBuildThisFileDirectory)App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Bluetooth\Bluetooth.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\Buttons\BackButton.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Controls\Labelled Controls\LabelledBackButton.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Controls\Labelled Controls\LabelledCheckbox.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\Chart\AxisLabel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\Chart\Chart.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\Chart\ChartAxis.cs" />
@@ -21,6 +24,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Controls\Chart\Gridline.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\Chart\ChartPadding.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\Buttons\GeneralControl.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Controls\Labelled Controls\LabelledControl.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)General\Range.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\Multimeter\MultimeterMenu.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\Multimeter\MultimeterThemed.xaml.cs">
@@ -376,7 +380,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="$(MSBuildThisFileDirectory)Controls\Multimeter\" />
-    <Folder Include="$(MSBuildThisFileDirectory)Controls\Buttons\" />
+    <Folder Include="$(MSBuildThisFileDirectory)Controls\Labelled Controls\" />
     <Folder Include="$(MSBuildThisFileDirectory)General\" />
   </ItemGroup>
   <ItemGroup>

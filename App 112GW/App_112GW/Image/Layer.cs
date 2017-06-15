@@ -5,15 +5,26 @@ using Xamarin.Forms;
 using SkiaSharp;
 using SkiaSharp.Views.Forms;
 
-namespace App_112GW
+namespace rMultiplatform
 {
     public interface ILayer
     {
+        SKColor BackgroundColor
+        {
+            get;
+            set;
+        }
+        SKColor DrawColor
+        {
+            get;
+            set;
+        }
+
         event EventHandler      OnChanged;
         void                    Set(bool pState);
         void                    Off();
         void                    On();
-                
+        void                    Redraw();
 
         string                  ToString();
         string                  Name
@@ -22,7 +33,6 @@ namespace App_112GW
             set;
         }
         void                    Render(ref SKCanvas pSurface, SKRect pDestination);
-
 
         int Width
         {
@@ -34,10 +44,10 @@ namespace App_112GW
         }
     }
 
-    public class LayerCompare : Comparer<App_112GW.ILayer>
+    public class LayerCompare : Comparer<ILayer>
     {
         // Compares by Length, Height, and Width.
-        public override int Compare(App_112GW.ILayer x, App_112GW.ILayer y)
+        public override int Compare(ILayer x, ILayer y)
         {
             return x.Name.CompareTo(y.Name);
         }

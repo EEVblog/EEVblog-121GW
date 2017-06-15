@@ -1,23 +1,23 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<Application xmlns="http://xamarin.com/schemas/2014/forms"
-                 xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="App_112GW.App">
+<Application        xmlns   = "http://xamarin.com/schemas/2014/forms"
+                    xmlns:x = "http://schemas.microsoft.com/winfx/2009/xaml"
+                    x:Class = "App_112GW.App">
     <Application.Resources>
-        <!--<ResourceDictionary MergedWith="dark:DarkThemeResources" />-->
-
         <ResourceDictionary>
             <!-- DEFINE ANY CONSTANTS -->
             <x:Double x:Key="BorderWidth">  3       </x:Double>
-            <Color x:Key="HighlightColor">  #eaece5 </Color>
-            <Color x:Key="TextColor">       #b2c2bf </Color>
-            <Color x:Key="BorderColor">     #c0ded9 </Color>
-            <Color x:Key="BackgroundColor">#1E1E1E  </Color>
+
+            <Color x:Key="HighlightColor">#FFFFFF</Color>
+            <Color x:Key="TextColor">#C5CCB9</Color>
+            <Color x:Key="BorderColor">#292F33</Color>
+            <Color x:Key="FocusColor">#7E827A</Color>
+            <Color x:Key="BackgroundColor">#111111</Color>
 
             <!-- DEFINE GLOBAL STYLES -->
             <Style TargetType="Grid">
                 <Setter Property="BackgroundColor"          Value="{ StaticResource BackgroundColor }" />
             </Style>
-            
+
             <Style TargetType="Button">
                 <Setter Property="BackgroundColor"          Value="{ StaticResource BackgroundColor }" />
                 <Setter Property="TextColor"                Value="{ StaticResource TextColor }" />

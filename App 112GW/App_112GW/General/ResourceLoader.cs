@@ -6,10 +6,7 @@ using System.Xml;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
-using System.Reflection;
 using System.Text.RegularExpressions;
-using System.Xml;
 
 using Xamarin;
 using Xamarin.Forms;
@@ -17,7 +14,7 @@ using Xamarin.Forms.Internals;
 using Xamarin.Forms.Xaml.Internals;
 using System.Xml.Serialization;
 
-namespace App_112GW
+namespace rMultiplatform
 {
     class ResourceLoader
     {

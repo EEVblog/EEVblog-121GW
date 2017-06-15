@@ -5,10 +5,27 @@ using SkiaSharp;
 using SkiaSharp.Views.Forms;
 using Xamarin.Forms;
 
-namespace App_112GW
+namespace rMultiplatform
 {
     public class Layers
     {
+        public SKColor BackgroundColor
+        {
+            set
+            {
+                foreach (ILayer Layer in mLayers)
+                    Layer.BackgroundColor = value;
+            }
+        }
+        public SKColor DrawColor
+        {
+            set
+            {
+                foreach (ILayer Layer in mLayers)
+                    Layer.DrawColor = value;
+            }
+        }
+
         private bool            mChange;
         public event EventHandler OnChanged;
         protected virtual void  LayerChange(object o, EventArgs e)
@@ -49,6 +66,14 @@ namespace App_112GW
 		{
 			Set(false);
 		}
+        public void             Redraw()
+        {
+            foreach (ILayer Layer in mLayers)
+                Layer.Redraw();
+            mChange = true;
+
+            LayerChange(this, EventArgs.Empty);
+        }
 
         public override string  ToString()
 		{

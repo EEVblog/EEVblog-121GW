@@ -7,12 +7,13 @@ using rMultiplatform;
 using SkiaSharp;
 using SkiaSharp.Views.Forms;
 using System.Runtime.CompilerServices;
+using App_112GW;
 
-namespace App_112GW
+namespace rMultiplatform
 {
     public class MultimeterMenu: Grid
     {
-        public event EventHandler BackClicked;
+        public event EventHandler   BackClicked;
         public event EventHandler   PlotClicked;
         static bool                 SameType(object A, Type B)
         {
@@ -32,8 +33,8 @@ namespace App_112GW
         private Label               mSerialNumber;
         private Picker              mRange;
         private Picker              mMode;
-        private Checkbox            mPlotCheck;
-        private BackButton          mBack;
+        private LabelledCheckbox    mPlotCheck;
+        private LabelledBackButton  mBack;
 
         private void    AddView    (View pInput, int pX, int pY, int pXSpan = 1, int pYSpan = 1)
         {
@@ -46,10 +47,12 @@ namespace App_112GW
         }
         public          MultimeterMenu   (string pSerialNumber = "SN0000")
         {
-            HorizontalOptions   = LayoutOptions.Fill;
+            //##################################################
+            HorizontalOptions = LayoutOptions.Fill;
             VerticalOptions     = LayoutOptions.StartAndExpand;
             Padding             = 10;
 
+            //##################################################
             //The grid is currently 2x5
             //Setup Grid rows
             RowDefinitions.Add(new RowDefinition { Height = new GridLength (1, GridUnitType.Star) });
@@ -60,6 +63,7 @@ namespace App_112GW
             ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength (1, GridUnitType.Star) });
             ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength (1, GridUnitType.Star) });
 
+            //##################################################
             //Add Hold Button
             mHold = new Button()
             {
@@ -68,6 +72,7 @@ namespace App_112GW
             mHold.Clicked += ButtonPress_Hold;
             AddView(mHold, 0, 0);
 
+            //##################################################
             //Add Relative Button
             mRelative = new Button()
             {
@@ -76,41 +81,55 @@ namespace App_112GW
             mRelative.Clicked += ButtonPress_Relative;
             AddView(mRelative, 0, 1);
 
+            //##################################################
             //Add Relative Button
-            mBack = new BackButton()
+            var Stack = new StackLayout()
             {
-                BorderWidth     = Globals.BorderWidth,
-                BackgroundColor = Globals.BackgroundColor,
-                PressColor      = Globals.HighlightColor,
-                IdleColor       = Globals.TextColor
+                Orientation             = StackOrientation.Horizontal,
+                HorizontalOptions       = LayoutOptions.FillAndExpand,
+                VerticalOptions         = LayoutOptions.CenterAndExpand,
+            };
+            mBack = new LabelledBackButton("Back")
+            {
+                BorderWidth             = Globals.BorderWidth,
+
+                LabelSide               = LabelledControl.eLabelSide.Right,
+                HorizontalOptions       = LayoutOptions.StartAndExpand,
+                Padding                 = 0
             };
             mBack.Back += ButtonPress_Back;
-            AddView(mBack, 0, 2);
 
+            //##################################################
             //Add Plot checkbox
-            mPlotCheck = new rMultiplatform.Checkbox("Plot")
+            mPlotCheck = new LabelledCheckbox("Plot")
             {
-                BorderWidth = Globals.BorderWidth,
-                BackgroundColor = Globals.BackgroundColor,
-                PressColor = Globals.HighlightColor,
-                IdleColor = Globals.TextColor
+                BorderWidth             = Globals.BorderWidth,
+                LabelSide               = LabelledControl.eLabelSide.Left,
+                HorizontalOptions       = LayoutOptions.EndAndExpand,
+                Padding                 = 0
             };
-            mPlotCheck.Changed += CheckboxChange_Plot;
-            AddView(mPlotCheck, 0, 3);
 
+            //##################################################
             //Add Serial number
             mSerialNumber = new Label()
             {
-                Text = pSerialNumber
+                Text                    = pSerialNumber,
+                VerticalOptions         = LayoutOptions.CenterAndExpand,
+                HorizontalOptions       = LayoutOptions.Fill,
+                HorizontalTextAlignment = TextAlignment.Center
             };
-            AddView(mSerialNumber, 1, 2);
+            mPlotCheck.Changed += CheckboxChange_Plot;
+            Stack.Children.Add(mBack);
+            Stack.Children.Add(mSerialNumber);
+            Stack.Children.Add(mPlotCheck);
+            AddView(Stack, 0 ,2, 2, 1);
 
+            //##################################################
             //Add range dropdown
             mRange = new Picker()
             {
                 Title = "Select Range"
             };
-
             mRange.Items.Add("V");
             mRange.Items.Add("mV");
             mRange.Items.Add("uV");
@@ -119,26 +138,39 @@ namespace App_112GW
             mRange.SelectedIndexChanged += PickerChange_Range;
             AddView(mRange, 1, 0);
 
+            //##################################################
             //Add Mode dropdown
             mMode = new Picker()
             {
-                Title = "Select Mode"
+                Title = "Select Mode",
+                HorizontalOptions = LayoutOptions.Fill
             };
 
+            //##################################################
             //
             mMode.Items.Add("DC");
             mMode.Items.Add("AC");
             mMode.SelectedIndexChanged += PickerChange_Mode;
             AddView(mMode, 1, 1);
+
+            //##################################################
+            //
+            BackgroundColor = Globals.BackgroundColor;
+            mMode.BackgroundColor = Globals.BackgroundColor;
+            mMode.TextColor = Globals.TextColor;
+            mRange.BackgroundColor = Globals.BackgroundColor;
+            mRange.TextColor = Globals.TextColor;
+            mHold.BackgroundColor = Globals.BackgroundColor;
+            mHold.TextColor = Globals.TextColor;
+            mRelative.BackgroundColor = Globals.BackgroundColor;
+            mRelative.TextColor = Globals.TextColor;
         }
 
         //The reactions to picker, checkbox, buttons events
         private void    ButtonPress_Hold       (object sender, EventArgs e)
-        {
-        }
+        {}
         private void    ButtonPress_Relative   (object sender, EventArgs e)
-        {
-        }
+        {}
         private void    ButtonPress_Back       (object sender, EventArgs e)
         {
             if (BackClicked != null)
@@ -150,10 +182,8 @@ namespace App_112GW
                 PlotClicked(mPlotCheck, e);
         }
         private void    PickerChange_Range     (object sender, EventArgs e)
-        {
-        }
+        {}
         private void    PickerChange_Mode      (object sender, EventArgs e)
-        {
-        }
+        {}
     }
 }

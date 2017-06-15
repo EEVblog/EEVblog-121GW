@@ -5,10 +5,32 @@ using Xamarin.Forms;
 using SkiaSharp;
 using SkiaSharp.Views.Forms;
 
-namespace App_112GW
+namespace rMultiplatform
 {
 	public class ImageLayer : ILayer
 	{
+        public SKColor BackgroundColor
+        {
+            get
+            {
+                return mUndrawPaint.Color;
+            }
+            set
+            {
+                mUndrawPaint.Color = value;
+            }
+        }
+        public SKColor DrawColor
+        {
+            get
+            {
+                return mDrawPaint.Color;
+            }
+            set
+            {
+                mDrawPaint.Color = value;
+            }
+        }
 
         private bool                    mActive;
         private VariableMonitor<bool>   _Changed;
@@ -23,7 +45,6 @@ namespace App_112GW
                 _Changed.OnChanged -= value;
             }
         }
-
 
         public SKImage  mImage;
 		public string   mName;
@@ -68,7 +89,12 @@ namespace App_112GW
 		{
 			Set(false);
 		}
-		public override string ToString()
+        public void Redraw()
+        {
+            _RenderChanged.UpdateOverride = true;
+        }
+
+        public override string ToString()
 		{
 			return mName;
 		}

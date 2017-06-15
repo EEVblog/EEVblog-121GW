@@ -5,15 +5,38 @@ using SkiaSharp;
 using Xamarin.Forms;
 using SkiaSharp.Views.Forms;
 
-namespace App_112GW
+namespace rMultiplatform
 {
     public class PathLayer : ILayer
     {
+        public SKColor BackgroundColor
+        {
+            get
+            {
+                return mUndrawPaint.Color;
+            }
+            set
+            {
+                mUndrawPaint.Color = value;
+            }
+        }
+        public SKColor DrawColor
+        {
+            get
+            {
+                return mDrawPaint.Color;
+            }
+            set
+            {
+                mDrawPaint.Color = value;
+            }
+        }
+
         public string                   mName;
         public Polycurve                mImage;
         private bool                    mActive;
-        SKPaint                         mDrawPaint;
-        SKPaint                         mUndrawPaint;
+        private SKPaint                 mDrawPaint;
+        private SKPaint                 mUndrawPaint;
 
         private VariableMonitor<bool>   _RenderChanged;
         private VariableMonitor<bool>   _Changed;
@@ -55,40 +78,46 @@ namespace App_112GW
             Off();
         }
 
-        public void             Set(bool pState)
+        public void     Set(bool pState)
         {
             bool temp = mActive;
             mActive = pState;
             _Changed.Update(ref mActive);
         }
-        public void             On()
+        public void     On()
         {
             Set(true);
         }
-        public void             Off()
+        public void     Off()
         {
             Set(false);
         }
-        public override string  ToString()
+        public void     Redraw()
+        {
+            _Changed.UpdateOverride = true;
+            _RenderChanged.UpdateOverride = true;
+        }
+
+        public override string ToString()
         {
             return mName;
         }
 
-        public string           Name
+        public string   Name
         {
             get
             { return mName; }
             set
             { mName = value; }
         }
-        public int              Width
+        public int      Width
         {
             get
             {
                 return (int)mImage.Width;
             }
         }
-        public int              Height
+        public int      Height
         {
             get
             {
@@ -96,11 +125,9 @@ namespace App_112GW
             }
         }
 
-
-        public void             Render (ref SKCanvas pSurface, SKRect pDestination)
+        public void Render (ref SKCanvas pSurface, SKRect pDestination)
         {
             //This is render changed variable, don't move it to set, that is wrong
-
             if (_RenderChanged.Update(ref mActive))
             {
                 var isize   = mImage.CanvasSize;
@@ -111,8 +138,8 @@ namespace App_112GW
                 var transform = SKMatrix.MakeIdentity();
                 transform.SetScaleTranslate(xscale, yscale, pDestination.Left, pDestination.Top);
 
-                if (mActive)    mImage.Draw(ref pSurface, transform, ref mDrawPaint);
-                else            mImage.Draw(ref pSurface, transform, ref mUndrawPaint);
+                if (mActive)    mImage.Draw (ref pSurface, transform, ref mDrawPaint);
+                else            mImage.Draw (ref pSurface, transform, ref mUndrawPaint);
             }
         }
     }

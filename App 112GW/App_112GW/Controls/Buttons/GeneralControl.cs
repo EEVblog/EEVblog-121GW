@@ -9,10 +9,11 @@ using SkiaSharp.Views.Forms;
 
 using System.Runtime.CompilerServices;
 using App_112GW;
+using System.Threading.Tasks;
 
 namespace rMultiplatform
 {
-    class GeneralControlRenderer :
+    public class GeneralControlRenderer :
 #if __ANDROID__
         SKGLView
 #elif __IOS__
@@ -21,9 +22,8 @@ namespace rMultiplatform
         SKCanvasView
 #endif
     {
-        public bool ShowPoly;
-        public float Scale = 0.5f;
-
+        public bool         ShowPoly;
+        public new float    Scale = 0.5f;
 
         public enum eControlInputState
         {
@@ -31,8 +31,8 @@ namespace rMultiplatform
             ePressed,
             eHover
         }
-        private eControlInputState _State;
-        public eControlInputState State
+        private     eControlInputState _State;
+        public      eControlInputState State
         {
             get
             {
@@ -86,7 +86,6 @@ namespace rMultiplatform
                 InvalidateSurface();
             }
         }
-
 
         public new SKColor BackgroundColor
         {
@@ -249,7 +248,6 @@ namespace rMultiplatform
             return b;
         }
 
-
         public float OffsetAngle
         {
             get;
@@ -277,14 +275,12 @@ namespace rMultiplatform
                     default:
                         break;
                 }
-
                 
-
                 //Clear button
                 can.Clear(BackgroundColor);
 
                 //Draw border
-                can.DrawRect(FitRectange(can.ClipDeviceBounds), curStyle);
+                can.DrawRect(FitRectange(can.DeviceClipBounds), curStyle);
 
                 if (ShowPoly)
                 {
@@ -320,7 +316,7 @@ namespace rMultiplatform
         }
     }
 
-    class GeneralControl : ContentView
+    public class GeneralControl : ContentView
     {
         private rMultiplatform.Touch mTouch;
         private void MTouch_Press(object sender, rMultiplatform.TouchActionEventArgs args)
@@ -340,7 +336,6 @@ namespace rMultiplatform
             mRenderer.State = GeneralControlRenderer.eControlInputState.eNone;
         }
 
-
         private void SetupTouch()
         {
             //Add the gesture recognizer 
@@ -350,7 +345,6 @@ namespace rMultiplatform
             mTouch.Released += MTouch_Release;
             Effects.Add(mTouch);
         }
-
         public GeneralControlRenderer mRenderer;
         public SKPaint  IdleStyle
         {
@@ -416,7 +410,6 @@ namespace rMultiplatform
                 HoverStyle.Color = value.ToSKColor();
             }
         }
-
         public new Color BackgroundColor
         {
             set
@@ -433,7 +426,7 @@ namespace rMultiplatform
         private async void OnClickedAsync()
         {
             mRenderer.State = GeneralControlRenderer.eControlInputState.eNone;
-            await System.Threading.Tasks.Task.Delay(100);
+            await Task.Delay(100);
             if (Clicked != null)
                 Clicked(this, EventArgs.Empty);
         }
@@ -442,13 +435,20 @@ namespace rMultiplatform
             OnClickedAsync();
         }
 
-        public  GeneralControl(string label, SKPoint[] pPoints)
+        public  GeneralControl(SKPoint[] pPoints)
         {
-            HorizontalOptions = LayoutOptions.Start;
-            VerticalOptions = LayoutOptions.Fill;
+            //
+            HorizontalOptions   = LayoutOptions.Start;
+            VerticalOptions     = LayoutOptions.Fill;
+            mRenderer           = new GeneralControlRenderer(pPoints);
+            Content             = mRenderer;
 
-            mRenderer = new GeneralControlRenderer(pPoints);
-            Content = mRenderer;
+            //
+            BorderWidth = Globals.BorderWidth;
+            BackgroundColor = Globals.BackgroundColor;
+            PressColor = Globals.FocusColor;
+            HoverColor = Globals.HighlightColor;
+            IdleColor = Globals.TextColor;
 
             SetupTouch();
         }

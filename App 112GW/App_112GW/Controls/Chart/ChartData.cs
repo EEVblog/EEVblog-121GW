@@ -123,8 +123,6 @@ namespace rMultiplatform
         }
 
         //
-        List<int>       DataSortedX;
-        List<int>       DataSortedY;
         List<SKPoint>   Data;
         public Range    HorozontalSpan;
         public Range    VerticalSpan;

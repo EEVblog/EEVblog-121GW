@@ -1,5 +1,6 @@
 ﻿{
   "dependencies": {
+    "Acr.Ble": "2.0.0",
     "Microsoft.NETCore.UniversalWindowsPlatform": "5.2.2",
     "SkiaSharp": "1.58.0",
     "SkiaSharp.Svg": "1.58.0",

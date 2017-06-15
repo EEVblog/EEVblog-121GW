@@ -10,7 +10,7 @@ using Xamarin.Forms.Xaml.Internals;
 
 using SkiaSharp;
 
-namespace App_112GW
+namespace rMultiplatform
 {
     public class SVGPath
     {

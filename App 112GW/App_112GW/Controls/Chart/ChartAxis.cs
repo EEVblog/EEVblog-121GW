@@ -8,6 +8,8 @@ using SkiaSharp;
 using SkiaSharp.Views.Forms;
 using System.Runtime.CompilerServices;
 
+using App_112GW;
+
 namespace rMultiplatform
 {
     public class ChartAxisEventArgs : EventArgs
@@ -472,13 +474,13 @@ namespace rMultiplatform
             ColorPaint = new SKPaint();
             ColorPaint.StrokeWidth = 4;
             ColorPaint.StrokeCap = SKStrokeCap.Round;
-            ColorPaint.TextSize = 16;
+            ColorPaint.TextSize = 10;
 
             MaskPaint = new SKPaint();
-            MaskPaint.Color = App_112GW.Globals.BackgroundColor.ToSKColor();
+            MaskPaint.Color = Globals.BackgroundColor.ToSKColor();
 
             //Setup unique color for axis
-            Color = App_112GW.Globals.UniqueColor.WithLuminosity(0.9);
+            Color = Globals.TextColor;
 
             //Calculate the width of a space charater
             SpaceWidth = MajorPaint.MeasureText(" ");

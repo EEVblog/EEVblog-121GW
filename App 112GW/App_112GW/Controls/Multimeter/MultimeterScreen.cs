@@ -9,7 +9,9 @@ using SkiaSharp;
 using SkiaSharp.Views.Forms;
 using System.Runtime.CompilerServices;
 
-namespace App_112GW
+using App_112GW;
+
+namespace rMultiplatform
 {
 	public class SevenSegment
 	{
@@ -214,7 +216,133 @@ namespace App_112GW
             }
         }
 
-        private TapGestureRecognizer    mTouch;
+        private rMultiplatform.Touch mTouch;
+
+        public enum eControlInputState
+        {
+            eNone,
+            ePressed,
+            eHover
+        }
+        private eControlInputState _State;
+        public eControlInputState State
+        {
+            get
+            {   return _State;  }
+            set
+            {
+                _State = value;
+                InvalidateSurface();
+            }
+        }
+
+        private void MTouch_Press           (object sender, rMultiplatform.TouchActionEventArgs args)
+        {
+            State = eControlInputState.ePressed;
+            ChangeColors();
+        }
+        private void MTouch_Hover           (object sender, rMultiplatform.TouchActionEventArgs args)
+        {
+            State = eControlInputState.eHover;
+            ChangeColors();
+        }
+        private void MTouch_Release         (object sender, rMultiplatform.TouchActionEventArgs args)
+        {
+            if (State == eControlInputState.ePressed)
+                OnClicked(EventArgs.Empty);
+            State = eControlInputState.eNone;
+            ChangeColors();
+        }
+
+        private SKColor     _IdleColor;
+        public Color         IdleColor
+        {
+            set
+            {
+                _IdleColor = value.ToSKColor();
+                ChangeColors();
+            }
+            get
+            {
+                return _IdleColor.ToFormsColor();
+            }
+        }
+        private SKColor     _PressColor;
+        public Color         PressColor
+        {
+            set
+            {
+                _PressColor = value.ToSKColor();
+                ChangeColors();
+            }
+            get
+            {
+                return _PressColor.ToFormsColor();
+            }
+        }
+        private SKColor     _HoverColor;
+        public Color         HoverColor
+        {
+            set
+            {
+                _HoverColor = value.ToSKColor();
+                ChangeColors();
+            }
+            get
+            {
+                return _HoverColor.ToFormsColor();
+            }
+        }
+        private SKColor     _BackgroundColor;
+        public new Color     BackgroundColor
+        {
+            set
+            {
+                _BackgroundColor = value.ToSKColor();
+                ChangeColors();
+            }
+            get
+            {
+                return _BackgroundColor.ToFormsColor();
+            }
+        }
+
+        private void ChangeColors           ()
+        {
+            switch (State)
+            {
+                case eControlInputState.eNone:
+                    ChangePrimaryColor(_IdleColor);
+                    break;
+                case eControlInputState.ePressed:
+                    ChangePrimaryColor(_PressColor);
+                    break;
+                case eControlInputState.eHover:
+                    ChangePrimaryColor(_HoverColor);
+                    break;
+            }
+            ChangeBackgroundColor(_BackgroundColor);
+            Redraw();
+        }
+        private void ChangePrimaryColor     (SKColor pInput)
+        {
+            for (int i = 0; i < mSegments.Count; i++)
+                mSegments[i].DrawColor = pInput;
+            for (int i = 0; i < mSegments.Count; i++)
+                mSubSegments[i].DrawColor = pInput;
+            mBargraph.DrawColor = pInput;
+            mOther.DrawColor = pInput;
+        }
+        private void ChangeBackgroundColor  (SKColor pInput)
+        {
+            for (int i = 0; i < mSegments.Count; i++)
+                mSegments[i].BackgroundColor = pInput;
+            for (int i = 0; i < mSegments.Count; i++)
+                mSubSegments[i].BackgroundColor = pInput;
+            mBargraph.BackgroundColor = pInput;
+            mOther.BackgroundColor = pInput;
+        }
+
         public event EventHandler       Clicked;
         protected virtual   void        OnClicked   (EventArgs e)
         {
@@ -224,11 +352,6 @@ namespace App_112GW
                 handler(this, e);
             }
         }
-        private             void        TapCallback (object sender, EventArgs args)
-        {
-            OnClicked(EventArgs.Empty);
-        }
-
         SKBitmap                        mLayer;
         SKCanvas                        mCanvas;
         static List<ILayer>             mLayerCache;
@@ -239,11 +362,12 @@ namespace App_112GW
 
         protected virtual void          LayerChange(object o, EventArgs e)
         {
+
         }
         private void                    SetLargeSegments(string pInput)
         {
             if (pInput.Length > mSegments.Count)
-                throw (new Exception("Large segment value too many decimal places."));
+                pInput.Substring(0, mSegments.Count);
 
             SetSegments(pInput.PadLeft(mSegments.Count, ' '), ref mSegments);
         }
@@ -375,84 +499,32 @@ namespace App_112GW
             return true;
         }
 
-        public MultimeterScreen()
+        private void SetupTouch()
         {
-            //Default size options
-            HorizontalOptions = LayoutOptions.Fill;
-            VerticalOptions = LayoutOptions.StartAndExpand;
-
-            //New layer images
-            mSegments = new List<Layers>();
-            mSubSegments = new List<Layers>();
-            mBargraph = new Layers("mBargraph");
-            mOther = new Layers("mOther");
-
-            //Setup the image cache if it doesn't exist
-            CacheFunction = null;
-            if (mLayerCache == null)
-            {
-                mLayerCache = new List<ILayer>();
-                CacheFunction = Cacher;
-
-                //Sort images into appropreate layered images
-                var Loader = new PathLoader(ProcessImage);
-            }
-            else
-            {
-                //Load from cache
-                foreach (var layer in mLayerCache)
-                    ProcessImage(layer);
-            }
-
-            //Sort Images alphabetically within layered images
-            //Sort segments and subsegments into seperate digits
-            subsegments.Sort();
-            mBargraph.Sort();
-            segments.Sort();
-            mOther.Sort();
-
-            //Setup the different segments
-            {
-                Layers returned;
-                int i;
-                i = 1;
-			    while (segments.Group("seg" + (i++).ToString(), out returned))
-				    mSegments.Add(returned);
-
-			    //Setup the different subsegments
-			    i = 1;
-			    while (subsegments.Group("sub" + (i++).ToString(), out returned))
-				    mSubSegments.Add(returned);
-            }
-
-			//Move decimal point to the end
-			foreach (var temp in mSegments)
-            {
-                temp.ToBottom("dp");
-                temp.OnChanged += LayerChange;
-            }
-            foreach (var temp in mSubSegments)
-            {
-				temp.ToBottom("dp");
-                temp.OnChanged += LayerChange;
-            }
-
-            //
-            mOther.OnChanged += LayerChange;
-            mBargraph.OnChanged += LayerChange;
-
             //Add the gesture recognizer 
-            mTouch = new TapGestureRecognizer();
-            mTouch.Tapped += TapCallback;
-            GestureRecognizers.Add(mTouch);
+            mTouch = new rMultiplatform.Touch();
+            mTouch.Pressed += MTouch_Press;
+            mTouch.Hover += MTouch_Hover;
+            mTouch.Released += MTouch_Release;
+            Effects.Add(mTouch);
+        }
+        private void Redraw()
+        {
+            //Add render on change
+            for (int i = 0; i < mSegments.Count; i++)
+                mSegments[i].Redraw();
+            for (int i = 0; i < mSegments.Count; i++)
+                mSubSegments[i].Redraw();
+            mBargraph.Redraw();
+            mOther.Redraw();
+            InvalidateSurface();
         }
         private void            Invalidate()
         {
             InvalidateSurface();
         }
-
         public (float aspect, float width, float height)       
-                                GetResultSize   (double Width = 0)
+                                GetResultSize(double Width = 0)
         {
             (float x, float y) = mBargraph.GetResultSize();
             return ((y / x), x, y);
@@ -515,7 +587,6 @@ namespace App_112GW
             {
                 if (CanvasSize.Width == 0 || CanvasSize.Height == 0)
                     return;
-
                 NeedClear = false;
 
                 //Cancel render if canvas doesn't exist
@@ -528,10 +599,10 @@ namespace App_112GW
                 
                 //Setup a clear canvas
                 mCanvas = new SKCanvas(mLayer);
-                mCanvas.Clear(App_112GW.Globals.BackgroundColor.ToSKColor());
+                mCanvas.Clear(Globals.BackgroundColor.ToSKColor());
 
                 //Clear draw surface
-                pSurface.Clear(App_112GW.Globals.BackgroundColor.ToSKColor());
+                pSurface.Clear(Globals.BackgroundColor.ToSKColor());
             }
 
             //Create the draw rectnagle from the draw size
@@ -590,6 +661,81 @@ namespace App_112GW
 #endif
         {
             Render(e.Surface.Canvas);
+        }
+
+        public                  MultimeterScreen()
+        {
+            //Default size options
+            HorizontalOptions = LayoutOptions.Fill;
+            VerticalOptions = LayoutOptions.StartAndExpand;
+
+            //New layer images
+            mSegments = new List<Layers>();
+            mSubSegments = new List<Layers>();
+            mBargraph = new Layers("mBargraph");
+            mOther = new Layers("mOther");
+
+            //Setup the image cache if it doesn't exist
+            CacheFunction = null;
+            if (mLayerCache == null)
+            {
+                mLayerCache = new List<ILayer>();
+                CacheFunction = Cacher;
+
+                //Sort images into appropreate layered images
+                var Loader = new PathLoader(ProcessImage);
+            }
+            else
+            {
+                //Load from cache
+                foreach (var layer in mLayerCache)
+                    ProcessImage(layer);
+            }
+
+            //Sort Images alphabetically within layered images
+            //Sort segments and subsegments into seperate digits
+            subsegments.Sort();
+            mBargraph.Sort();
+            segments.Sort();
+            mOther.Sort();
+
+            BackgroundColor = Globals.BackgroundColor;
+            PressColor = Globals.FocusColor;
+            HoverColor = Globals.HighlightColor;
+            IdleColor = Globals.TextColor;
+
+            //Setup the different segments
+            {
+                Layers returned;
+                int i;
+                i = 1;
+			    while (segments.Group("seg" + (i++).ToString(), out returned))
+				    mSegments.Add(returned);
+
+			    //Setup the different subsegments
+			    i = 1;
+			    while (subsegments.Group("sub" + (i++).ToString(), out returned))
+				    mSubSegments.Add(returned);
+            }
+
+			//Move decimal point to the end
+			foreach (var temp in mSegments)
+            {
+                temp.ToBottom("dp");
+                temp.OnChanged += LayerChange;
+            }
+            foreach (var temp in mSubSegments)
+            {
+				temp.ToBottom("dp");
+                temp.OnChanged += LayerChange;
+            }
+
+            //
+            mOther.OnChanged += LayerChange;
+            mBargraph.OnChanged += LayerChange;
+
+            //Add the gesture recognizer 
+            SetupTouch();
         }
     }
 }

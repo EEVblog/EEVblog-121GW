@@ -218,7 +218,7 @@ namespace rMultiplatform
             ChartElements.Add(new ChartPadding(0));
 
             //Default aspect ratio 1:3
-            Aspect = 3;
+            Aspect = 2;
 
             //Default draw brush paints transparent
             var transparency        = SKColors.Transparent;

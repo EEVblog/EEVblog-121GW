@@ -7,12 +7,13 @@ using Xamarin.Forms;
 using rMultiplatform;
 using SkiaSharp;
 using SkiaSharp.Views.Forms;
+using System.Diagnostics;
 
 namespace App_112GW
 {
 	public partial class MainPage : ContentPage
 	{
-        public List<MultimeterThemed> Devices = new List<MultimeterThemed>();
+        public List<rMultiplatform.MultimeterThemed> Devices = new List<rMultiplatform.MultimeterThemed>();
 
         private Button          ButtonAddDevice		= new Button        { Text = "Add Device"      };
 		private Button		    ButtonStartLogging	= new Button        { Text = "Start Logging"   };
@@ -53,11 +54,14 @@ namespace App_112GW
             UserGrid.WidthRequest = 400;
             Content = UserGrid;
 		}
-		public MainPage ()
+        rMultiplatform.BLE.IClientBLE temp = new rMultiplatform.BLE.ClientBLE();
+        rMultiplatform.BLE.IDeviceBLE device = null;
+
+        public MainPage ()
 		{
 			InitializeComponent();
 			InitSurface();
-		}
+        }
 
         //Only maintains aspect ratio
         protected override void OnSizeAllocated(double width, double height)
@@ -68,7 +72,7 @@ namespace App_112GW
 
         void AddDevice (object sender, EventArgs args)
 		{
-            var Temp1 = new MultimeterThemed(Globals.BackgroundColor);
+            var Temp1 = new rMultiplatform.MultimeterThemed(Globals.BackgroundColor);
             Devices.Add(Temp1);
             DeviceLayout.Children.Add(Temp1);
             Grid.SetRow(Temp1, 0);
@@ -83,25 +87,19 @@ namespace App_112GW
         }
 
         bool rtn = false;
-        int vals = 0;
-        bool UpdateValue()
+        bool UpdateValue(float value)
         {
-            vals += 1;
-            if (vals >= 99999) vals = 0;
-
-            foreach (MultimeterThemed temp in Devices)
-            {
-                temp.Screen.LargeSegments = (float)vals;
-                temp.Screen.SmallSegments = 99999 - vals;
-                temp.Screen.Bargraph = (vals % 27);
-                temp.Screen.InvalidateSurface();
-            }
+            if (Devices.Count == 0)
+                return false;
 
             var dev = Devices.Last();
-            dev.Data.Sample(Globals.RandBetween(1, 2));
+            Devices.Last().Screen.LargeSegments = (float)value;
+            dev.Data.Sample(value);
+
+            dev.Screen.InvalidateSurface();
             return rtn;
         }
-
+        
         void StartLogging (object sender, EventArgs args)
         {
             if (rtn)
@@ -109,9 +107,46 @@ namespace App_112GW
             else
             {
                 rtn = true;
-                Device.StartTimer(new TimeSpan(0, 0, 0, 0, 100), UpdateValue);
             }
-            UpdateValue();
+            
+            var devices = temp.ListDevices();
+            foreach (var line in devices)
+                if (line.name.Contains("CR"))
+                {
+                    Task.Run(async () =>
+                    {
+                        device = (await temp.Connect(line));
+                    }).Wait();
+
+                    //
+                    Debug.WriteLine(device.name);
+                }
+
+            Debug.WriteLine(device.name);
+            foreach (var serv in device.Services)
+                foreach (var chari in serv.Characteristics)
+                    chari.ValueChanged += MainPage_ValueChanged;
         }
-	}
+
+        bool next = false;
+        private void MainPage_ValueChanged(object o, rMultiplatform.BLE.CharacteristicEvent v)
+        {
+            Debug.WriteLine(v.NewValue);
+
+            var first = (byte)v.Bytes[0];
+            if (first == 0xf2)
+                next = true;
+            else
+            if (next)
+            {
+                var valuehexMSB = Convert.ToInt64(v.NewValue.Substring(4, 2), 16);
+                var valuehexLSB = Convert.ToInt64(v.NewValue.Substring(6, 2), 16);
+
+                var result = (float)(valuehexMSB << 8 | valuehexLSB) / 10;
+
+                UpdateValue(result);
+                next = false;
+            }
+        }
+    }
 }

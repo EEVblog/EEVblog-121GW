@@ -7,10 +7,33 @@ using Xamarin.Forms;
 
 
 
-namespace App_112GW
+namespace rMultiplatform
 {
     public class SVGLayer : ILayer
     {
+        public SKColor BackgroundColor
+        {
+            get
+            {
+                return mUndrawPaint.Color;
+            }
+            set
+            {
+                mUndrawPaint.Color = value;
+            }
+        }
+        public SKColor DrawColor
+        {
+            get
+            {
+                return mDrawPaint.Color;
+            }
+            set
+            {
+                mDrawPaint.Color = value;
+            }
+        }
+
         private bool mActive;
         private VariableMonitor<bool> _Changed;
         public event EventHandler OnChanged
@@ -57,6 +80,7 @@ namespace App_112GW
 
             Off();
         }
+
         public void Set(bool pState)
         {
             bool temp = mActive;
@@ -71,6 +95,11 @@ namespace App_112GW
         {
             Set(false);
         }
+        public void Redraw()
+        {
+            _RenderChanged.UpdateOverride = true;
+        }
+
         public override string ToString()
         {
             return mName;

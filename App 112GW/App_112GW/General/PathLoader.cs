@@ -1,21 +1,11 @@
-﻿using System.Reflection;
-using System.IO;
+﻿using System.IO;
 using SkiaSharp;
-using System.Xml;
 
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Text.RegularExpressions;
 
-using Xamarin;
-using Xamarin.Forms;
-using Xamarin.Forms.Internals;
-using Xamarin.Forms.Xaml.Internals;
-using System.Xml.Serialization;
-using System.Text;
-
-namespace App_112GW
+namespace rMultiplatform
 {
     class PathLoader : ResourceLoader
     {
@@ -400,6 +390,7 @@ namespace App_112GW
                 }
             }
 
+            //Use SKSVG to get viewbox
             SKSvg Imag = new SKSvg();
             Imag.Load(ms2);
 
@@ -408,6 +399,12 @@ namespace App_112GW
 
             if (LastCurve != null)
                 mImageFunction(Name, LastCurve);
+
+            ms1.Dispose();
+            ms2.Dispose();
+            ms1 = null;
+            ms2 = null;
+            Imag = null;
 
             return true;
         }

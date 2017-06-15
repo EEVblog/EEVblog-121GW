@@ -49,6 +49,15 @@ namespace App_112GW
                 return _TextColor;
             }
         }
+        static public Color _FocusColor;
+        static public Color FocusColor
+        {
+            get
+            {
+                _FocusColor = (Color)GetResource("FocusColor");
+                return _FocusColor;
+            }
+        }
         static public Color _BorderColor;
         static public Color BorderColor
         {
