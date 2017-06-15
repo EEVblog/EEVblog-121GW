@@ -16,7 +16,6 @@ namespace rMultiplatform.BLE
             NewValue = Encoding.UTF8.GetString(Bytes);
         }
     }
-
     public interface IDeviceBLE
     {
         string id { get; }

@@ -1,15 +1,15 @@
 ﻿using System;
+using System.Text;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Text;
-using Windows.Devices.Enumeration;
-using Windows.Devices.Bluetooth.Advertisement;
-using Windows.Devices.Bluetooth;
-using Windows.Devices.Bluetooth.GenericAttributeProfile;
 using Windows.UI.Core;
-using System.Threading.Tasks;
 using System.Diagnostics;
+using System.Threading.Tasks;
 using Windows.Security.Cryptography;
+using Windows.Devices.Bluetooth;
+using Windows.Devices.Bluetooth.Advertisement;
+using Windows.Devices.Bluetooth.GenericAttributeProfile;
+using Windows.Devices.Enumeration;
 
 namespace rMultiplatform.BLE
 {
@@ -317,17 +317,22 @@ namespace rMultiplatform.BLE
             {
                 //Pair with the defice if needed.
                 var input = pInput as UnPairedDeviceBLE;
+                if (input.paired)
+                {
+                    var id = input.id;
+                    var status = (await input.Information.Pairing.UnpairAsync()).Status;
+                }
                 if (input.CanPair)
                 {
                     var id = input.id;
+                   
                     var status = (await input.Information.Pairing.PairAsync()).Status;
-
                     if (!(status == DevicePairingResultStatus.AlreadyPaired || status == DevicePairingResultStatus.Paired))
                         return null;
                 }
 
                 //Get the bluetooth device from the UI thread
-                var mDeviceBLE = (await BluetoothLEDevice.FromIdAsync(input.Information.Id));
+                var mDeviceBLE = await BluetoothLEDevice.FromIdAsync(input.Information.Id);
 
                 //Setup the services for the bluetooth device
                 if (mDeviceBLE == null)

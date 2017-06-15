@@ -223,8 +223,6 @@ namespace rMultiplatform
             mRight = V;
             mTop = V;
             mBottom = V;
-
-            DrawBoundary = false;
         }
         public ChartPadding(float L, float R, float T, float B)
         {
@@ -235,8 +233,6 @@ namespace rMultiplatform
             mRight = R;
             mTop = T;
             mBottom = B;
-
-            DrawBoundary = false;
         }
 
         //To simplify code
@@ -249,8 +245,6 @@ namespace rMultiplatform
             mRight = (float)V;
             mTop = (float)V;
             mBottom = (float)V;
-
-            DrawBoundary = false;
         }
         public ChartPadding(double L, double R, double T, double B)
         {
@@ -261,8 +255,6 @@ namespace rMultiplatform
             mRight = (float)R;
             mTop = (float)T;
             mBottom = (float)B;
-
-            DrawBoundary = false;
         }
     }
 }

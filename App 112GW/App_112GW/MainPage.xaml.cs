@@ -54,8 +54,6 @@ namespace App_112GW
             UserGrid.WidthRequest = 400;
             Content = UserGrid;
 		}
-        rMultiplatform.BLE.IClientBLE temp = new rMultiplatform.BLE.ClientBLE();
-        rMultiplatform.BLE.IDeviceBLE device = null;
 
         public MainPage ()
 		{
@@ -86,7 +84,6 @@ namespace App_112GW
             Grid.SetColumnSpan          (ButtonStartLogging,    1);
         }
 
-        bool rtn = false;
         bool UpdateValue(float value)
         {
             if (Devices.Count == 0)
@@ -97,41 +94,50 @@ namespace App_112GW
             dev.Data.Sample(value);
 
             dev.Screen.InvalidateSurface();
-            return rtn;
+            return true;
         }
-        
-        void StartLogging (object sender, EventArgs args)
+
+        rMultiplatform.BLE.IDeviceBLE device = null;
+        rMultiplatform.BLE.IClientBLE temp = new rMultiplatform.BLE.ClientBLE();
+        List<rMultiplatform.BLE.IDeviceBLE> devices = new List<rMultiplatform.BLE.IDeviceBLE>();
+
+        bool lockme = false;
+        async void AsyncStartLogging(object sender, EventArgs args)
         {
-            if (rtn)
-                rtn = false;
-            else
-            {
-                rtn = true;
-            }
-            
-            var devices = temp.ListDevices();
+            if (lockme)
+                return;
+            lockme = true;
+
+            devices = temp.ListDevices();
             foreach (var line in devices)
                 if (line.name.Contains("CR"))
                 {
-                    Task.Run(async () =>
-                    {
-                        device = (await temp.Connect(line));
-                    }).Wait();
-
-                    //
-                    Debug.WriteLine(device.name);
+                    device = (await temp.Connect(line));
+                    Debug.WriteLine("Found Device: " + device.name);
                 }
 
-            Debug.WriteLine(device.name);
-            foreach (var serv in device.Services)
-                foreach (var chari in serv.Characteristics)
-                    chari.ValueChanged += MainPage_ValueChanged;
+            if (device != null)
+            {
+                Debug.WriteLine("Current Device: " + device.name);
+                foreach (var serv in device.Services)
+                    foreach (var chari in serv.Characteristics)
+                        chari.ValueChanged += MainPage_ValueChanged;
+            }
+            else
+                Debug.WriteLine("No device added.");
+
+
+            lockme = false;
+        }
+        void StartLogging (object sender, EventArgs args)
+        {
+            AsyncStartLogging(sender, args);
         }
 
         bool next = false;
         private void MainPage_ValueChanged(object o, rMultiplatform.BLE.CharacteristicEvent v)
         {
-            Debug.WriteLine(v.NewValue);
+            Debug.WriteLine("Recieved: " + v.NewValue);
 
             var first = (byte)v.Bytes[0];
             if (first == 0xf2)
