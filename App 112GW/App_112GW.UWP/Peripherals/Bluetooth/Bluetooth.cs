@@ -202,6 +202,7 @@ namespace rMultiplatform.BLE
         {
             _ValueChanged = null;
             mCharacteristic = pInput;
+            mCharacteristic.WriteClientCharacteristicConfigurationDescriptorAsync(GattClientCharacteristicConfigurationDescriptorValue.Indicate).AsTask();
             mCharacteristic.ValueChanged += CharacteristicEvent_ValueChanged;
         }
     }
@@ -296,7 +297,8 @@ namespace rMultiplatform.BLE
                     if (mDeviceBLE == null)
                         return null;
 
-                    mVisibleDevices.Remove(pInput);
+                    mVisibleDevices?.Clear();
+                    mVisibleDevices = null;
                     return (LastDevice = new PairedDeviceBLE(mDeviceBLE));
                 }
             }

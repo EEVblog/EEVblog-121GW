@@ -99,12 +99,13 @@ namespace App_112GW
 
         rMultiplatform.BLE.ClientBLE client = new rMultiplatform.BLE.ClientBLE();
         rMultiplatform.BLE.IDeviceBLE device = null;
+        bool loop = true;
         async void AsyncStartLogging(object sender, EventArgs args)
         { 
             await Task.Run(() =>
             {
                 //Wait for device to appear
-                var loop = true;
+                
                 while (loop)
                 {
                     foreach (var line in client.ListDevices())
