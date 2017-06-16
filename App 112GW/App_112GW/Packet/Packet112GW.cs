@@ -350,11 +350,13 @@ namespace rMultiplatform
                 return (pData[12] & 0x01) != 0;
             }
         }
-
         public Packet112GW()
         {
             pData = new List<byte>();
         }
+
+        //Note the above properties should not be read until this subroutine
+        // completes
         public void ProcessPacket(byte[] pInput)
         {
             var str = Encoding.UTF8.GetString(pInput);
