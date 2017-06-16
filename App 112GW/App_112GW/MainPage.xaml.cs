@@ -54,11 +54,13 @@ namespace App_112GW
             UserGrid.WidthRequest = 400;
             Content = UserGrid;
 		}
-
+        PacketProcessor MyProcessor = new PacketProcessor(0xF2, 26);
         public MainPage ()
 		{
 			InitializeComponent();
 			InitSurface();
+
+            MyProcessor.mCallback += ProcessPacket;
         }
 
         //Only maintains aspect ratio
@@ -86,14 +88,14 @@ namespace App_112GW
 
         bool UpdateValue(float value)
         {
-            //if (Devices.Count == 0)
-            //    return false;
+            if (Devices.Count == 0)
+                return false;
 
-            //var dev = Devices.Last();
-            //Devices.Last().Screen.LargeSegments = (float)value;
-            //dev.Data.Sample(value);
+            var dev = Devices.Last();
+            Devices.Last().Screen.LargeSegments = (float)value;
+            dev.Data.Sample(value);
 
-            //dev.Screen.InvalidateSurface();
+            dev.Screen.InvalidateSurface();
             return true;
         }
 
@@ -135,25 +137,34 @@ namespace App_112GW
             AsyncStartLogging(sender, args);
         }
 
-        bool next = false;
+        
+        void ProcessPacket(byte[] pInput)
+        {
+            var processor = new rMultiplatform.Packet112GW();
+            try
+            {
+                processor.ProcessPacket(pInput);
+
+                var str = Encoding.UTF8.GetString(pInput);
+
+                var valuehexMSB = Convert.ToInt64(str.Substring(4, 2), 16);
+                var valuehexLSB = Convert.ToInt64(str.Substring(6, 2), 16);
+
+                var result = (float)(valuehexMSB << 8 | valuehexLSB);
+
+                UpdateValue(result);
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.ToString());
+            }
+        }
+
+       
         private void MainPage_ValueChanged(object o, rMultiplatform.BLE.CharacteristicEvent v)
         {
             Debug.WriteLine("Recieved: " + v.NewValue);
-
-            var first = (byte)v.Bytes[0];
-            if (first == 0xf2)
-                next = true;
-            else
-            if (next)
-            {
-                var valuehexMSB = Convert.ToInt64(v.NewValue.Substring(4, 2), 16);
-                var valuehexLSB = Convert.ToInt64(v.NewValue.Substring(6, 2), 16);
-
-                var result = (float)(valuehexMSB << 8 | valuehexLSB) / 10;
-
-                UpdateValue(result);
-                next = false;
-            }
+            MyProcessor.Recieve(v.Bytes);
         }
     }
 }

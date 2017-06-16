@@ -47,6 +47,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Image\SVGLayer\SVGLayer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)General\Touch.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)General\VariableMonitor.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Packet\Packet112GW.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Packet\PacketProcessor.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)MainPage.xaml">
