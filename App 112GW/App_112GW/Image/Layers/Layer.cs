@@ -43,7 +43,6 @@ namespace rMultiplatform
             get;
         }
     }
-
     public class LayerCompare : Comparer<ILayer>
     {
         // Compares by Length, Height, and Width.

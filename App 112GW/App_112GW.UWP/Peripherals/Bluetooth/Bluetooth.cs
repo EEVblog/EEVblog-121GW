@@ -4,68 +4,49 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using Windows.UI.Core;
 using System.Diagnostics;
+using System.Threading;
 using System.Threading.Tasks;
 using Windows.Security.Cryptography;
 using Windows.Devices.Bluetooth;
 using Windows.Devices.Bluetooth.Advertisement;
 using Windows.Devices.Bluetooth.GenericAttributeProfile;
 using Windows.Devices.Enumeration;
+using Windows.Storage.Streams;
 
 namespace rMultiplatform.BLE
 {
     public class UnPairedDeviceBLE : IDeviceBLE
     {
-        public DeviceInformation Information;
-
-        private string _id;
-        public string id
+        volatile public DeviceInformation Information;
+        public string Id
         {
             get
             {
-                return _id;
-            }
-            set
-            {
-                _id = value;
+                return Information.Id;
             }
         }
-        private string _name;
-        public string name
+        public string Name
         {
             get
             {
-                return _name;
-            }
-            set
-            {
-                _name = value;
+                return Information.Name;
             }
         }
-        private bool _paired;
-        public bool paired
+        public bool Paired
         {
             get
             {
-                return _paired;
-            }
-            set
-            {
-                _paired = value;
+                return Information.Pairing.IsPaired;
             }
         }
-        private bool _CanPair;
         public bool CanPair
         {
             get
             {
-                return _CanPair;
-            }
-            set
-            {
-                _CanPair = value;
+                return Information.Pairing.CanPair;
             }
         }
-        public UnPairedDeviceBLE(){}
+        public UnPairedDeviceBLE(DeviceInformation pInput) { Information = pInput; }
 
         public List<IServiceBLE> Services
         {
@@ -77,32 +58,32 @@ namespace rMultiplatform.BLE
     }
     public class PairedDeviceBLE : IDeviceBLE
     {
+        volatile private BluetoothLEDevice mDevice;
         private bool mSuccess;
-        public BluetoothLEDevice mDevice;
         private List<IServiceBLE> mServices;
 
-        public string   id
+        public string Id
         {
             get
             {
                 return mDevice.DeviceId;
             }
         }
-        public string   name
+        public string Name
         {
             get
             {
                 return mDevice.Name;
             }
         }
-        public bool     paired
+        public bool Paired
         {
             get
             {
                 return mDevice.DeviceInformation.Pairing.IsPaired;
             }
         }
-        public bool     CanPair
+        public bool CanPair
         {
             get
             {
@@ -110,10 +91,11 @@ namespace rMultiplatform.BLE
             }
         }
 
-        private async Task<bool> Build()
+        private bool Build()
         {
-            var servs = (await mDevice.GetGattServicesAsync()).Services;
+            var servs = mDevice.GetGattServicesAsync().AsTask().Result.Services;
 
+            mServices = new List<IServiceBLE>();
             mServices.Clear();
             foreach (var service in servs)
                 mServices.Add(new ServiceBLE(service));
@@ -123,11 +105,7 @@ namespace rMultiplatform.BLE
         public PairedDeviceBLE(BluetoothLEDevice pInput)
         {
             mDevice = pInput;
-            mServices = new List<IServiceBLE>();
-            Task.Run(async () =>
-            {
-                mSuccess = await Build();
-            }).Wait();
+            mSuccess = Build();
         }
         public List<IServiceBLE> Services
         {
@@ -139,9 +117,18 @@ namespace rMultiplatform.BLE
     }
     public class ServiceBLE : IServiceBLE
     {
+        volatile private GattDeviceService mService;
+        private List<ICharacteristicBLE> mCharacteristics;
+        public List<ICharacteristicBLE> Characteristics
+        {
+            get
+            {
+                return mCharacteristics;
+            }
+        }
         private bool mSuccess;
-        private GattDeviceService           mService;
-        public string id
+
+        public string Id
         {
             get
             {
@@ -150,11 +137,13 @@ namespace rMultiplatform.BLE
         }
         public override string ToString()
         {
-            return id;
+            return Id;
         }
-        private async Task<bool> Build()
+        private bool Build()
         {
-            var items = (await mService.GetCharacteristicsAsync()).Characteristics;
+            var items = mService.GetCharacteristicsAsync().AsTask().Result.Characteristics;
+
+            mCharacteristics = new List<ICharacteristicBLE>();
             mCharacteristics.Clear();
             foreach (var item in items)
                 mCharacteristics.Add(new CharacteristicBLE(item));
@@ -164,54 +153,25 @@ namespace rMultiplatform.BLE
         public ServiceBLE(GattDeviceService pInput)
         {
             mService = pInput;
-            mCharacteristics = new List<ICharacteristicBLE>();
-            Task.Run(async () =>
-            {
-                mSuccess = await Build();
-            }).Wait();
-        }
-        private List<ICharacteristicBLE> mCharacteristics;
-        public List<ICharacteristicBLE> Characteristics
-        {
-            get
-            {
-                return mCharacteristics;
-            }
+            mSuccess = Build();
         }
     }
     public class CharacteristicBLE : ICharacteristicBLE
     {
-        private GattCharacteristic  mCharacteristic;
-
-        public string id
+        volatile private GattCharacteristic  mCharacteristic;
+        public string Id
         {
             get
             {
                 return mCharacteristic.Uuid.ToString();
             }
         }
-        public string description
+        public string Description
         {
             get
             {
                 return mCharacteristic.UserDescription;
             }
-        }
-
-        //Event that is called when the value of the characteristic is changed
-        private void CharacteristicEvent(GattCharacteristic sender, GattValueChangedEventArgs args)
-        {
-            var buffer = args.CharacteristicValue;
-            byte[] data;
-            CryptographicBuffer.CopyToByteArray(buffer, out data);
-            _ValueChanged?.Invoke(sender, new CharacteristicEvent(data));
-        }
-
-        public CharacteristicBLE(GattCharacteristic pInput)
-        {
-            _ValueChanged = null;
-            mCharacteristic = pInput;
-            mCharacteristic.ValueChanged += CharacteristicEvent;
         }
         event ChangeEvent _ValueChanged;
         public event ChangeEvent ValueChanged
@@ -225,126 +185,122 @@ namespace rMultiplatform.BLE
                 _ValueChanged -= value;
             }
         }
+
+        //Event that is called when the value of the characteristic is changed
+        private void CharacteristicEvent_ValueChanged(GattCharacteristic sender, GattValueChangedEventArgs args)
+        {
+            Debug.WriteLine("CharateristicEvent : " + args.ToString());
+
+            var buffer = args.CharacteristicValue;
+            byte[] data;
+            CryptographicBuffer.CopyToByteArray(buffer, out data);
+
+            var charEvent = new CharacteristicEvent(data);
+            _ValueChanged?.Invoke(sender, charEvent);
+        }
+        public CharacteristicBLE(GattCharacteristic pInput)
+        {
+            _ValueChanged = null;
+            mCharacteristic = pInput;
+            mCharacteristic.ValueChanged += CharacteristicEvent_ValueChanged;
+        }
     }
+
     public class ClientBLE : IClientBLE
     {
-        private List<IDeviceBLE> mVisibleDevices;
-        private DeviceWatcher mDeviceWatcher;
+        volatile private List<IDeviceBLE> mVisibleDevices;
+        volatile private DeviceWatcher mDeviceWatcher;
 
-        private async void DeviceWatcher_Added(DeviceWatcher sender, DeviceInformation args)
+        private static int index = 0;
+        private static Mutex mut = new Mutex();
+        private void DeviceWatcher_Added        (DeviceWatcher sender, DeviceInformation args)
         {
-            await Task.Run(() =>
-            {
-                if (sender != mDeviceWatcher)
-                    return;
-                if (args.Name == string.Empty)
-                    return;
-                mVisibleDevices.Add(new UnPairedDeviceBLE() { id = args.Id, name = args.Name, paired = args.Pairing.IsPaired, CanPair = args.Pairing.CanPair, Information = args });
-            });
-        }
-        private async void DeviceWatcher_Removed(DeviceWatcher sender, DeviceInformationUpdate args)
-        {
-            await Task.Run(() =>
-            {
-                if (sender != mDeviceWatcher)
-                    return;
+            if (sender != mDeviceWatcher)
+                return;
+            if (args.Name == string.Empty)
+                return;
 
-                var removed_id = args.Id;
-                for (int i = 0; i < mVisibleDevices.Count; i++)
-                {
-                    var item = mVisibleDevices[i];
-                    if (item.id == removed_id)
-                    {
-                        mVisibleDevices.Remove(item);
-                        return;
-                    }
-                }
-            });
-        }
-        private async void DeviceWatcher_Updated(DeviceWatcher sender, DeviceInformationUpdate args)
-        {
-            await Task.Run(() =>
-            {
-                if (sender != mDeviceWatcher)
-                    return;
+            var temp = new UnPairedDeviceBLE(args);
 
-                var removed_id = args.Id;
-                for (int i = 0; i < mVisibleDevices.Count; i++)
-                {
-                    var item = mVisibleDevices[i];
+            int indexer = index++;
+            string tag = indexer.ToString() + " Adding";
 
-                }
-            });
-        }
-        private async void DeviceWatcher_EnumComplete(DeviceWatcher sender, Object args)
-        {
-            await Task.Run(() =>
-            {
-                if (sender != mDeviceWatcher)
-                    return;
-            });
-        }
-        private async void DeviceWatcher_Stopped(DeviceWatcher sender, Object args)
-        {
-            await Task.Run(() =>
-            {
-                if (sender != mDeviceWatcher)
-                    return;
-            });
-        }
+            Debug.WriteLine(tag + " : Waiting");
+            mut.WaitOne();
+            Debug.WriteLine(tag + " : Started");
 
-        private string _Name;
-        public string Name
+            mVisibleDevices.Add(temp);
+
+            Debug.WriteLine(tag + " : Done");
+            mut.ReleaseMutex();
+            Debug.WriteLine(tag + " : Released");
+        }
+        private void DeviceWatcher_Removed      (DeviceWatcher sender, DeviceInformationUpdate args)
         {
-            private set
+            if (sender != mDeviceWatcher)
+                return;
+
+            int indexer = index++;
+            string tag = indexer.ToString() + " Removed";
+
+            Debug.WriteLine(tag + " : Waiting");
+            mut.WaitOne();
+            Debug.WriteLine(tag + " : Started");
+
+            var removed_id = args.Id;
+            for (int i = 0; i < mVisibleDevices.Count; i++)
             {
-                _Name = value;
+                var item = mVisibleDevices[i];
+                if (item.Id == removed_id)
+                    mVisibleDevices.RemoveAt(i);
             }
-            get
-            {
-                return _Name;
-            }
+
+            Debug.WriteLine(tag + " : Done");
+            mut.ReleaseMutex();
+            Debug.WriteLine(tag + " : Released");
+        }
+        private void DeviceWatcher_Updated      (DeviceWatcher sender, DeviceInformationUpdate args)
+        {
+            if (sender != mDeviceWatcher)
+                return;
         }
 
+        private IDeviceBLE LastDevice = null;
         public List<IDeviceBLE> ListDevices()
         {
             return mVisibleDevices;
         }
 
-        public async Task<IDeviceBLE> Connect(IDeviceBLE pInput)
+        public IDeviceBLE Connect(IDeviceBLE pInput)
         {
-            if (pInput.GetType() == typeof(UnPairedDeviceBLE))
+            var inputType = pInput.GetType();
+            var searchType = typeof(UnPairedDeviceBLE);
+            if (inputType == searchType)
             {
                 //Pair with the defice if needed.
                 var input = pInput as UnPairedDeviceBLE;
-                if (input.paired)
+
+                //Pair if the device is able to pair
+                var     id = input.Id;
+                var     result = input.Information.Pairing.PairAsync().AsTask().Result;
+                var     status = result.Status;
+                bool    paired = (
+                    (status == DevicePairingResultStatus.AlreadyPaired) || 
+                    (status == DevicePairingResultStatus.Paired));
+
+                //Only create device if it is paired
+                if (paired)
                 {
-                    var id = input.id;
-                    var status = (await input.Information.Pairing.UnpairAsync()).Status;
-                }
-                if (input.CanPair)
-                {
-                    var id = input.id;
-                   
-                    var status = (await input.Information.Pairing.PairAsync()).Status;
-                    if (!(status == DevicePairingResultStatus.AlreadyPaired || status == DevicePairingResultStatus.Paired))
+                    //Get the bluetooth device from the UI thread
+                    var mDeviceBLE = BluetoothLEDevice.FromIdAsync(input.Information.Id).AsTask().Result;
+                    if (mDeviceBLE == null)
                         return null;
+
+                    mVisibleDevices.Remove(pInput);
+                    return (LastDevice = new PairedDeviceBLE(mDeviceBLE));
                 }
-
-                //Get the bluetooth device from the UI thread
-                var mDeviceBLE = await BluetoothLEDevice.FromIdAsync(input.Information.Id);
-
-                //Setup the services for the bluetooth device
-                if (mDeviceBLE == null)
-                    return null;
-
-                return new PairedDeviceBLE(mDeviceBLE);
             }
             return null;
-        }
-        public bool Initialise()
-        {
-            throw new NotImplementedException();
         }
 
         public ClientBLE()
@@ -361,13 +317,9 @@ namespace rMultiplatform.BLE
 
             // Register event handlers before starting the watcher.
             // Added, Updated and Removed are required to get all nearby devices
-            mDeviceWatcher.Added += DeviceWatcher_Added;
-            mDeviceWatcher.Updated += DeviceWatcher_Updated;
-            mDeviceWatcher.Removed += DeviceWatcher_Removed;
-
-            // EnumerationCompleted and Stopped are optional to implement.
-            mDeviceWatcher.EnumerationCompleted += DeviceWatcher_EnumComplete;
-            mDeviceWatcher.Stopped += DeviceWatcher_Stopped;
+            mDeviceWatcher.Added                += DeviceWatcher_Added;
+            mDeviceWatcher.Updated              += DeviceWatcher_Updated;
+            mDeviceWatcher.Removed              += DeviceWatcher_Removed;
 
             // Start the watcher.
             mDeviceWatcher.Start();
@@ -380,8 +332,6 @@ namespace rMultiplatform.BLE
                 mDeviceWatcher.Added -= DeviceWatcher_Added;
                 mDeviceWatcher.Updated -= DeviceWatcher_Updated;
                 mDeviceWatcher.Removed -= DeviceWatcher_Removed;
-                mDeviceWatcher.EnumerationCompleted -= DeviceWatcher_EnumComplete;
-                mDeviceWatcher.Stopped -= DeviceWatcher_Stopped;
 
                 // Stop the watcher.
                 mDeviceWatcher.Stop();

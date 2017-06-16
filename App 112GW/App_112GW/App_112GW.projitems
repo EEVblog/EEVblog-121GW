@@ -33,8 +33,8 @@
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Controls\Buttons\Checkbox.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)General\ResourceLoader.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Image\Layer.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Image\Layers.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Image\Layers\Layer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Image\Layers\Layers.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Image\ImageLayers\ImageLayer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Image\PathLayer\PathLayer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Image\SVGLayer\Geometry.cs" />
@@ -65,316 +65,316 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\!bar_range.svg">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\!bar_range.svg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\bar01.svg">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\bar01.svg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\bar02.svg">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\bar02.svg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\bar03.svg">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\bar03.svg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\bar04.svg">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\bar04.svg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\bar05.svg">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\bar05.svg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\bar06.svg">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\bar06.svg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\bar07.svg">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\bar07.svg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\bar08.svg">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\bar08.svg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\bar09.svg">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\bar09.svg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\bar10.svg">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\bar10.svg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\bar11.svg">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\bar11.svg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\bar12.svg">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\bar12.svg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\bar13.svg">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\bar13.svg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\bar14.svg">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\bar14.svg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\bar15.svg">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\bar15.svg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\bar16.svg">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\bar16.svg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\bar17.svg">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\bar17.svg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\bar18.svg">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\bar18.svg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\bar19.svg">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\bar19.svg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\bar20.svg">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\bar20.svg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\bar21.svg">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\bar21.svg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\bar22.svg">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\bar22.svg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\bar23.svg">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\bar23.svg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\bar24.svg">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\bar24.svg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\bar25.svg">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\bar25.svg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\bar26.svg">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\bar26.svg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\seg1a.svg">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\seg1a.svg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\seg1b.svg">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\seg1b.svg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\seg1c.svg">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\seg1c.svg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\seg1d.svg">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\seg1d.svg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\seg1dp.svg">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\seg1dp.svg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\seg1e.svg">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\seg1e.svg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\seg1f.svg">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\seg1f.svg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\seg1g.svg">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\seg1g.svg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\seg2a.svg">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\seg2a.svg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\seg2b.svg">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\seg2b.svg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\seg2c.svg">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\seg2c.svg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\seg2d.svg">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\seg2d.svg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\seg2dp.svg">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\seg2dp.svg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\seg2e.svg">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\seg2e.svg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\seg2f.svg">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\seg2f.svg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\seg2g.svg">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\seg2g.svg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\seg3a.svg">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\seg3a.svg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\seg3b.svg">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\seg3b.svg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\seg3c.svg">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\seg3c.svg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\seg3d.svg">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\seg3d.svg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\seg3dp.svg">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\seg3dp.svg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\seg3e.svg">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\seg3e.svg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\seg3f.svg">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\seg3f.svg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\seg3g.svg">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\seg3g.svg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\seg4a.svg">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\seg4a.svg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\seg4b.svg">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\seg4b.svg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\seg4c.svg">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\seg4c.svg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\seg4d.svg">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\seg4d.svg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\seg4dp.svg">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\seg4dp.svg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\seg4e.svg">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\seg4e.svg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\seg4f.svg">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\seg4f.svg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\seg4g.svg">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\seg4g.svg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\seg5a.svg">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\seg5a.svg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\seg5b.svg">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\seg5b.svg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\seg5c.svg">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\seg5c.svg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\seg5d.svg">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\seg5d.svg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\seg5e.svg">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\seg5e.svg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\seg5f.svg">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\seg5f.svg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\seg5g.svg">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\seg5g.svg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\sub1a.svg">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\sub1a.svg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\sub1b.svg">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\sub1b.svg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\sub1c.svg">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\sub1c.svg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\sub1d.svg">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\sub1d.svg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\sub1e.svg">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\sub1e.svg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\sub1f.svg">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\sub1f.svg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\sub1g.svg">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\sub1g.svg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\sub2a.svg">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\sub2a.svg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\sub2b.svg">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\sub2b.svg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\sub2c.svg">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\sub2c.svg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\sub2d.svg">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\sub2d.svg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\sub2dp.svg">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\sub2dp.svg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\sub2e.svg">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\sub2e.svg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\sub2f.svg">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\sub2f.svg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\sub2g.svg">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\sub2g.svg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\sub3a.svg">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\sub3a.svg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\sub3b.svg">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\sub3b.svg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\sub3c.svg">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\sub3c.svg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\sub3d.svg">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\sub3d.svg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\sub3dp.svg">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\sub3dp.svg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\sub3e.svg">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\sub3e.svg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\sub3f.svg">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\sub3f.svg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\sub3g.svg">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\sub3g.svg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\sub4a.svg">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\sub4a.svg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\sub4b.svg">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\sub4b.svg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\sub4c.svg">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\sub4c.svg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\sub4d.svg">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\sub4d.svg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\sub4dp.svg">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\sub4dp.svg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\sub4e.svg">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\sub4e.svg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\sub4f.svg">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\sub4f.svg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\sub4g.svg">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\sub4g.svg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\sub5a.svg">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\sub5a.svg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\sub5b.svg">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\sub5b.svg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\sub5c.svg">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\sub5c.svg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\sub5d.svg">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\sub5d.svg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\sub5f.svg">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\sub5f.svg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\sub5g.svg">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\sub5g.svg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\sub5e.svg">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\sub5e.svg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
   </ItemGroup>
@@ -382,484 +382,485 @@
     <Folder Include="$(MSBuildThisFileDirectory)Controls\Multimeter\" />
     <Folder Include="$(MSBuildThisFileDirectory)Controls\Labelled Controls\" />
     <Folder Include="$(MSBuildThisFileDirectory)General\" />
+    <Folder Include="$(MSBuildThisFileDirectory)Image\Layers\" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\!bar_range.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\!bar_range.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\%.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\%.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\+.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\+.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\1khz.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\1khz.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\1ms.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\1ms.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\a-.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\a-.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\ac.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\ac.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\ac2.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\ac2.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\ampre 2.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\ampre 2.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\ampre.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\ampre.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\Amps.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\Amps.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\apo.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\apo.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\auto.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\auto.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\avg.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\avg.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\bar01.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\bar01.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\bar02.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\bar02.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\bar03.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\bar03.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\bar04.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\bar04.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\bar05.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\bar05.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\bar06.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\bar06.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\bar07.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\bar07.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\bar08.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\bar08.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\bar09.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\bar09.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\bar10.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\bar10.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\bar11.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\bar11.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\bar12.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\bar12.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\bar13.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\bar13.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\bar14.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\bar14.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\bar15.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\bar15.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\bar16.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\bar16.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\bar17.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\bar17.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\bar18.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\bar18.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\bar19.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\bar19.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\bar20.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\bar20.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\bar21.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\bar21.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\bar22.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\bar22.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\bar23.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\bar23.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\bar24.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\bar24.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\bar25.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\bar25.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\bar26.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\bar26.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\bar_+.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\bar_+.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\bar_-.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\bar_-.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\bar_1000.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\bar_1000.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\bar_500.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\bar_500.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\battery.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\battery.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\bt.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\bt.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\dB.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\dB.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\DC 2.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\DC 2.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\dc.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\dc.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\degreesC.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\degreesC.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\degreesF.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\degreesF.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\diode.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\diode.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\electric.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\electric.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\Farads.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\Farads.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\hold.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\hold.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\Hz 2.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\Hz 2.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\hz.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\hz.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\k.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\k.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\Kilo.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\Kilo.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\LowZ.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\LowZ.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\M.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\M.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\MAX.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\MAX.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\Mega.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\Mega.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\mem.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\mem.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\micro 2.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\micro 2.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\micro.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\micro.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\milli 2.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\milli 2.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\milli.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\milli.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\min.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\min.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\n.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\n.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\negitive.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\negitive.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\ohm right top.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\ohm right top.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\ohm.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\ohm.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\percent.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\percent.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\s.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\s.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\seg1a.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\seg1a.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\seg1b.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\seg1b.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\seg1c.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\seg1c.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\seg1d.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\seg1d.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\seg1dp.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\seg1dp.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\seg1e.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\seg1e.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\seg1f.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\seg1f.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\seg1g.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\seg1g.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\seg2a.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\seg2a.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\seg2b.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\seg2b.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\seg2c.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\seg2c.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\seg2d.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\seg2d.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\seg2dp.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\seg2dp.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\seg2e.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\seg2e.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\seg2f.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\seg2f.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\seg2g.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\seg2g.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\seg3a.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\seg3a.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\seg3b.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\seg3b.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\seg3c.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\seg3c.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\seg3d.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\seg3d.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\seg3dp.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\seg3dp.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\seg3e.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\seg3e.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\seg3f.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\seg3f.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\seg3g.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\seg3g.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\seg4a.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\seg4a.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\seg4b.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\seg4b.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\seg4c.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\seg4c.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\seg4d.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\seg4d.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\seg4e.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\seg4e.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\seg4f.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\seg4f.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\seg4g.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\seg4g.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\seg5a.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\seg5a.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\seg5b.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\seg5b.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\seg5c.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\seg5c.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\seg5d.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\seg5d.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\seg5e.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\seg5e.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\seg5f.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\seg5f.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\seg5g.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\seg5g.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\Sound.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\Sound.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\sub1a.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\sub1a.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\sub1b.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\sub1b.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\sub1c.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\sub1c.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\sub1d.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\sub1d.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\sub1dp.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\sub1dp.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\sub1e.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\sub1e.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\sub1f.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\sub1f.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\sub1g.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\sub1g.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\sub2a.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\sub2a.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\sub2b.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\sub2b.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\sub2c.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\sub2c.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\sub2d.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\sub2d.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\sub2dp.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\sub2dp.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\sub2e.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\sub2e.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\sub2f.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\sub2f.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\sub2g.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\sub2g.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\sub3a.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\sub3a.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\sub3b.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\sub3b.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\sub3c.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\sub3c.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\sub3d.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\sub3d.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\sub3dp.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\sub3dp.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\sub3e.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\sub3e.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\sub3f.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\sub3f.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\sub3g.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\sub3g.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\sub4a.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\sub4a.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\sub4b.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\sub4b.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\sub4c.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\sub4c.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\sub4d.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\sub4d.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\sub4dp.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\sub4dp.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\sub4e.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\sub4e.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\sub4f.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\sub4f.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\sub4g.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\sub4g.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\sub5a.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\sub5a.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\sub5b.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\sub5b.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\sub5c.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\sub5c.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\sub5d.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\sub5d.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\sub5e.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\sub5e.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\sub5f.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\sub5f.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\sub5g.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\sub5g.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\subnegative.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\subnegative.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\sym.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\sym.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\triangle.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\triangle.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\V.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\V.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\Volts.png">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\Volts.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layers\sub1dp - Copy.svg" />
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\sub1dp - Copy.svg" />
   </ItemGroup>
 </Project>

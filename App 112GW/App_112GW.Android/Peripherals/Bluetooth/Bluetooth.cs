@@ -32,7 +32,7 @@ namespace rMultiplatform.BLE
         {
             return null;
         }
-        public  Task<IDeviceBLE> Connect(IDeviceBLE pInput)
+        public  IDeviceBLE Connect(IDeviceBLE pInput)
         {
             return null;
         }

@@ -5,49 +5,49 @@ using System.Threading.Tasks;
 
 namespace rMultiplatform.BLE
 {
-    public delegate void ChangeEvent(Object o, CharacteristicEvent v);
-    public class CharacteristicEvent : EventArgs
+    public delegate void    ChangeEvent(Object o, CharacteristicEvent v);
+    public delegate void    DeviceConnected(IDeviceBLE device);
+
+    public class            CharacteristicEvent : EventArgs
     {
         public string NewValue;
         public byte[] Bytes;
+
         public CharacteristicEvent(byte[] pNewValue)
         {
             Bytes = pNewValue;
             NewValue = Encoding.UTF8.GetString(Bytes);
         }
     }
-    public interface IDeviceBLE
+    public interface        IDeviceBLE
     {
-        string id { get; }
-        string name { get; }
-        bool paired { get; }
-        bool CanPair { get; }
+        string  Id { get; }
+        string  Name { get; }
+        bool    Paired { get; }
+        bool    CanPair { get; }
+
         string ToString();
 
         List<IServiceBLE> Services { get; }
     }
-    public interface IServiceBLE
+    public interface        IServiceBLE
     {
-        string id { get; }
+        string Id { get; }
         string ToString();
 
         List<ICharacteristicBLE> Characteristics { get;}
     }
-    public interface ICharacteristicBLE
+    public interface        ICharacteristicBLE
     {
-        string id { get; }
-        string description { get; }
+        string Id { get; }
+        string Description { get; }
 
         event ChangeEvent ValueChanged;
     }
-    public interface IClientBLE
+    public interface        IClientBLE
     {
-        string Name{ get;}
-
         //Does not return a usable device, it must be paired first
         List<IDeviceBLE> ListDevices();
-        Task<IDeviceBLE> Connect(IDeviceBLE pInput);
-
-        bool Initialise();
+        IDeviceBLE Connect(IDeviceBLE pInput);
     }
 }

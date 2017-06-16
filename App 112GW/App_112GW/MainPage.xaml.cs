@@ -86,48 +86,48 @@ namespace App_112GW
 
         bool UpdateValue(float value)
         {
-            if (Devices.Count == 0)
-                return false;
+            //if (Devices.Count == 0)
+            //    return false;
 
-            var dev = Devices.Last();
-            Devices.Last().Screen.LargeSegments = (float)value;
-            dev.Data.Sample(value);
+            //var dev = Devices.Last();
+            //Devices.Last().Screen.LargeSegments = (float)value;
+            //dev.Data.Sample(value);
 
-            dev.Screen.InvalidateSurface();
+            //dev.Screen.InvalidateSurface();
             return true;
         }
 
+        rMultiplatform.BLE.ClientBLE client = new rMultiplatform.BLE.ClientBLE();
         rMultiplatform.BLE.IDeviceBLE device = null;
-        rMultiplatform.BLE.IClientBLE temp = new rMultiplatform.BLE.ClientBLE();
-        List<rMultiplatform.BLE.IDeviceBLE> devices = new List<rMultiplatform.BLE.IDeviceBLE>();
-
-        bool lockme = false;
         async void AsyncStartLogging(object sender, EventArgs args)
-        {
-            if (lockme)
-                return;
-            lockme = true;
-
-            devices = temp.ListDevices();
-            foreach (var line in devices)
-                if (line.name.Contains("CR"))
+        { 
+            await Task.Run(() =>
+            {
+                //Wait for device to appear
+                var loop = true;
+                while (loop)
                 {
-                    device = (await temp.Connect(line));
-                    Debug.WriteLine("Found Device: " + device.name);
+                    foreach (var line in client.ListDevices())
+                    {
+                        if (line.Name.Contains("CR"))
+                        {
+                            device = line;
+                            //Setup service events
+                            loop = false;
+                            break;
+                        }
+                    }
                 }
 
-            if (device != null)
-            {
-                Debug.WriteLine("Current Device: " + device.name);
-                foreach (var serv in device.Services)
+                var services = client.Connect(device).Services;
+                foreach (var serv in services)
                     foreach (var chari in serv.Characteristics)
-                        chari.ValueChanged += MainPage_ValueChanged;
-            }
-            else
-                Debug.WriteLine("No device added.");
-
-
-            lockme = false;
+                        if (chari.Description.Length > 0)
+                        {
+                            Debug.WriteLine("Setting up event for : " + chari.Description);
+                            chari.ValueChanged += MainPage_ValueChanged;
+                        }
+            });
         }
         void StartLogging (object sender, EventArgs args)
         {

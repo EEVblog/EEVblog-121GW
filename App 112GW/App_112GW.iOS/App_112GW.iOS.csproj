@@ -124,17 +124,8 @@
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Newtonsoft.Json.6.0.4\lib\portable-net45+wp80+win8+wpa81\Newtonsoft.Json.dll</HintPath>
     </Reference>
-    <Reference Include="nexus.core, Version=0.27.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\nexus.core.0.27.0\lib\portable45-net45+win8\nexus.core.dll</HintPath>
-    </Reference>
     <Reference Include="PLCrashReporterUnifiedBinding, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Xamarin.Insights.1.12.3\lib\Xamarin.iOS10\PLCrashReporterUnifiedBinding.dll</HintPath>
-    </Reference>
-    <Reference Include="Plugin.BluetoothLE, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Plugin.BluetoothLE.2.0.0\lib\Xamarin.iOS10\Plugin.BluetoothLE.dll</HintPath>
-    </Reference>
-    <Reference Include="Plugin.BluetoothLE.Abstractions, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Plugin.BluetoothLE.2.0.0\lib\Xamarin.iOS10\Plugin.BluetoothLE.Abstractions.dll</HintPath>
     </Reference>
     <Reference Include="SkiaSharp, Version=1.58.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
       <HintPath>..\..\packages\SkiaSharp.1.58.0\lib\XamariniOS\SkiaSharp.dll</HintPath>
