@@ -26,7 +26,7 @@ namespace rMultiplatform
             //Assures that a non-zero height is allocated
             MinimumHeightRequest    = 200;
 
-           // InitializeComponent ();
+            // InitializeComponent ();
             Screen = new MultimeterScreen();
             Screen.BackgroundColor = BackColor;
             Screen.Clicked += BackClicked;

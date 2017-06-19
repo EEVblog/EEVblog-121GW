@@ -4,6 +4,7 @@ using System.Text;
 
 using SkiaSharp;
 using SkiaSharp.Views.Forms;
+using System.Diagnostics;
 
 namespace rMultiplatform
 {
@@ -196,13 +197,49 @@ namespace rMultiplatform
     }
 
 
-    public class            Polycurve : ICurve
+    public class Polycurve : ICurve
     {
-        List<SKPath>        mPath;
+        public class EnhancedPath
+        {
+            private SKPath _Path;
+            public SKPath Path
+            {
+                get
+                {
+                    return _Path;
+                }
+            }
 
-        private SKSize      mBoundary;
-        private SKSize?     _CanvasSize;
-        public SKSize       CanvasSize
+            private bool _Negative;
+            public bool Negative
+            {
+                get
+                {
+                    return _Negative;
+                }
+                set
+                {
+                    _Negative = value;
+                }
+            }
+
+            public EnhancedPath()
+            {
+                _Path = null;
+                Negative = false;
+            }
+            public EnhancedPath(SKPath pPath, bool pNegative)
+            {
+                _Path = pPath;
+                Negative = pNegative;
+            }
+        }
+
+        List<EnhancedPath> mPath;
+
+        private SKSize mBoundary;
+        private SKSize? _CanvasSize;
+        public SKSize CanvasSize
         {
             get
             {
@@ -213,7 +250,7 @@ namespace rMultiplatform
                 _CanvasSize = value;
             }
         }
-        bool                CanvasSizeSet
+        bool CanvasSizeSet
         {
             get
             {
@@ -236,16 +273,29 @@ namespace rMultiplatform
             }
         }
 
-        
-        private string      mName;
+        private string mName;
         private List<Curve> mCurves;
 
         //Interface functions
-        public Vector   Start
+        public Vector Start
         {
             get
             {
                 return mCurves[0].Start;
+            }
+        }
+
+        public Vector LastStart
+        {
+            get
+            {
+                for ( var i = Count - 1; i >= 0; --i)
+                {
+                    var curvs = mCurves[i];
+                    if (mCurves[i].GetType() == typeof(Start))
+                        return curvs.Start;
+                }
+                return Start;
             }
         }
         public Vector   End
@@ -298,22 +348,22 @@ namespace rMultiplatform
         }
         public void     CloseCurve()
         {
-            if (Start.Equals(End))
+            if (LastStart.Equals(End))
                 return;
-            AddLine(Start);
+            AddLine(LastStart);
         }
 
         //Constructor
         public          Polycurve(string name)
         {
-            mPath = new List<Path>();
+            mPath = new List<EnhancedPath>();
             mName = name;
             mCurves = new List<Curve>();
             mBoundary = new SKSize(0, 0);
         }
         public          Polycurve(string name, Vector pStart)
         {
-            mPath = new List<Path>();
+            mPath = new List<EnhancedPath>();
             mName = name;
             mCurves = new List<Curve>();
             mCurves.Add(new Start(pStart));
@@ -321,7 +371,7 @@ namespace rMultiplatform
         }
 
         //Update routines to setup things like width, height, minimum, maximum
-        public void Update()
+        public void Update ()
         {
             var TRect = new SKRect();
             var Pth = new SKPath();
@@ -331,11 +381,10 @@ namespace rMultiplatform
             var xmax = 0.0f;
             var ymax = 0.0f;
 
-            GenerateCache(0.5f);
-
-            foreach(var pth in mPath)
+            GenerateCache (0.5f);
+            foreach (var pth in mPath)
             {
-                if (pth.GetBounds(out TRect))
+                if (pth.Path.GetBounds(out TRect))
                 {
                     var xmax_n = TRect.Right;
                     var ymax_n = TRect.Bottom;
@@ -358,7 +407,29 @@ namespace rMultiplatform
         //
         public SKMatrix Transformation = SKMatrix.MakeIdentity();
 
+        private SKRectI ToIntRect(SKRect Value, float scale = 1000)
+        {
+            var left = (int)(Value.Left * scale);
+            var right = (int)(Value.Right * scale);
+            var top = (int)(Value.Top * scale);
+            var bottom = (int)(Value.Bottom * scale);
+
+            return new SKRectI(left, top, right, bottom);
+        }
+
         //Default resolution makes 10 points per line segment
+        private bool IsInside(SKPath pInput, SKPath pBoundary)
+        {
+            var input = new SKRegion();
+            var boundary = new SKRegion();
+
+            input.SetRect   (ToIntRect(pInput.Bounds));
+            boundary.SetRect(ToIntRect(pBoundary.Bounds));
+
+            var contained = boundary.Contains(input);
+            return contained;
+        }
+
         bool MakeCache = true;
         public bool GenerateCache(float Resolution)
         {
@@ -404,7 +475,7 @@ namespace rMultiplatform
                         pth.Transform(Transformation);
 
                         //Add path to cache
-                        mPath.Add(pth);
+                        mPath.Add(new EnhancedPath(pth, false));
                         Pts.Clear();
                         Pts.Add(curv.Start);
                         break;
@@ -417,22 +488,42 @@ namespace rMultiplatform
             Path.Transform(Transformation);
 
             //Add path to cache
-            mPath.Add(Path);
-
+            mPath.Add(new EnhancedPath(Path, false));
             MakeCache = false;
+
+            //Setup whether each path is inside or outside each other, first sort by area, largest area should be first.
+            //Assuming largest is drawn first as per the evenodd/not-zero styling dictates in svg
+            for ( var i = 0; i < mPath.Count - 1; ++i )
+            {
+                var parent = mPath[i];
+                for ( var j = i + 1; j < mPath.Count; ++j )
+                {
+                    var child = mPath[j];
+                    if (parent == child)
+                        continue;
+
+                    //If it is contained it is negative
+                    if ( IsInside(child.Path, parent.Path ) )
+                        child.Negative = !parent.Negative;
+                }
+            }
             return true;
         }
 
-        public void Draw(ref SKCanvas pSurface, SKMatrix pTransform, ref SKPaint pPaint)
+        public void Draw (ref SKCanvas pSurface, SKMatrix pTransform, ref SKPaint pDrawPaint, ref SKPaint pUndrawPaint)
         {
-            if (MakeCache)
-                GenerateCache(1.0f);
-            
-            foreach (var pth in mPath)
+            if ( MakeCache )
+                GenerateCache ( 0.1f );
+
+            foreach ( var pth in mPath )
             {
-                var path = new SKPath(pth);
+                var path = new SKPath( pth.Path );
                 path.Transform(pTransform);
-                pSurface.DrawPath(path, pPaint);
+
+                if (pth.Negative)
+                    pSurface.DrawPath(path, pUndrawPaint);
+                else
+                    pSurface.DrawPath(path, pDrawPaint);
             }
         }
     }

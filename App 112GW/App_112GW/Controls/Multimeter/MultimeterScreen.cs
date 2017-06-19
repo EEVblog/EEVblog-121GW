@@ -425,6 +425,168 @@ namespace rMultiplatform
                 mBargraph.mLayers[i].Set(pInput >= i);
         }
 
+
+        private void SetOther(string Label, bool State)
+        {
+            foreach (var other in mOther.mLayers)
+                if (other.Name.ToLower() == Label.ToLower())
+                    other.Set(State);
+        }
+        public Packet112GW.eMode Mode
+        {
+            set
+            {
+                foreach (var other in mOther.mLayers)
+                    other.Off();
+                SetOther("BT", true);
+
+                switch (value)
+                {   
+                    case Packet112GW.eMode.Low_Z:
+                        SetOther("LowZ", true);
+                        SetOther("SegV", true);
+                        break;
+                    case Packet112GW.eMode.DCV:
+                        SetOther("DC", true);
+                        SetOther("SegV", true);
+                        break;
+                    case Packet112GW.eMode.ACV:
+                        SetOther("AC", true);
+                        SetOther("SegV", true);
+                        break;
+                    case Packet112GW.eMode.DCmV:
+                        SetOther("DC", true);
+                        SetOther("SegV", true);
+                        SetOther("SegmV", true);
+                        break;
+                    case Packet112GW.eMode.ACmV:
+                        SetOther("AC", true);
+                        SetOther("SegV", true);
+                        SetOther("SegmV", true);
+                        break;
+                    case Packet112GW.eMode.Temp:
+                        SetOther("SegTempC", true);
+                        break;
+                    case Packet112GW.eMode.Hz:
+                        SetOther("SegHz", true);
+                        break;
+                    case Packet112GW.eMode.mS:
+                        SetOther("Subms", true);
+                        break;
+                    case Packet112GW.eMode.Duty:
+                        SetOther("Sub%", true);
+                        break;
+                    case Packet112GW.eMode.Resistor:
+                        SetOther("SegR", true);
+                        break;
+                    case Packet112GW.eMode.Continuity:
+                        SetOther("Beep", true);
+                        SetOther("SegR", true);
+                        break;
+                    case Packet112GW.eMode.Diode:
+                        SetOther("Diode", true);
+                        SetOther("SegV", true);
+                        break;
+                    case Packet112GW.eMode.Capacitor:
+                        SetOther("SegCapF", true);
+                        break;
+                    case Packet112GW.eMode.ACuVA:
+                        SetOther("AC", true);
+                        SetOther("SegV", true);
+                        SetOther("SegA", true);
+                        SetOther("Segu", true);
+                        break;
+                    case Packet112GW.eMode.ACmVA:
+                        SetOther("AC", true);
+                        SetOther("SegV", true);
+                        SetOther("SegA", true);
+                        SetOther("SegmV", true);
+                        break;
+                    case Packet112GW.eMode.ACVA:
+                        SetOther("AC", true);
+                        SetOther("SegV", true);
+                        SetOther("SegA", true);
+                        break;
+                    case Packet112GW.eMode.ACuA:
+                        SetOther("AC", true);
+                        SetOther("SegA", true);
+                        SetOther("Segu", true);
+                        break;
+                    case Packet112GW.eMode.DCuA:
+                        SetOther("DC", true);
+                        SetOther("SegA", true);
+                        SetOther("Segu", true);
+                        break;
+                    case Packet112GW.eMode.ACmA:
+                        SetOther("AC", true);
+                        SetOther("SegA", true);
+                        SetOther("SegmV", true);
+                        break;
+                    case Packet112GW.eMode.DCmA:
+                        SetOther("DC", true);
+                        SetOther("SegA", true);
+                        SetOther("SegmV", true);
+                        break;
+                    case Packet112GW.eMode.ACA:
+                        SetOther("AC", true);
+                        SetOther("SegA", true);
+                        break;
+                    case Packet112GW.eMode.DCA:
+                        SetOther("DC", true);
+                        SetOther("SegA", true);
+                        break;
+                    case Packet112GW.eMode.DCuVA:
+                        SetOther("DC", true);
+                        SetOther("SegV", true);
+                        SetOther("SegA", true);
+                        SetOther("Segu", true);
+                        break;
+                    case Packet112GW.eMode.DCmVA:
+                        SetOther("DC", true);
+                        SetOther("SegV", true);
+                        SetOther("SegA", true);
+                        SetOther("SegmV", true);
+                        break;
+                    case Packet112GW.eMode.DCVA:
+                        SetOther("DC", true);
+                        SetOther("SegV", true);
+                        SetOther("SegA", true);
+                        break;
+                    case Packet112GW.eMode._TempC:
+                        break;
+                    case Packet112GW.eMode._TempF:
+                        break;
+                    case Packet112GW.eMode._Battery:
+                        break;
+                    case Packet112GW.eMode._APO_On:
+                        break;
+                    case Packet112GW.eMode._APO_Off:
+                        break;
+                    case Packet112GW.eMode._YEAR:
+                        break;
+                    case Packet112GW.eMode._DATE:
+                        break;
+                    case Packet112GW.eMode._TIME:
+                        break;
+                    case Packet112GW.eMode._BURDEN_BOLTAGE:
+                        break;
+                    case Packet112GW.eMode._LCD:
+                        break;
+                    case Packet112GW.eMode._dBm:
+                        break;
+                    case Packet112GW.eMode._Interval:
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+
+        public void                     Update (Packet112GW pInput)
+        {
+            Mode = pInput.Mode;
+        }
+
         Layers segments        = new Layers("mSegments");
         Layers subsegments     = new Layers("mSubsegments");
 
@@ -699,6 +861,11 @@ namespace rMultiplatform
             segments.Sort();
             mOther.Sort();
 
+            mOther.On();
+            foreach (var item in mOther.mLayers)
+                item.Off();
+
+
             BackgroundColor = Globals.BackgroundColor;
             PressColor = Globals.FocusColor;
             HoverColor = Globals.HighlightColor;
@@ -736,6 +903,7 @@ namespace rMultiplatform
 
             //Add the gesture recognizer 
             SetupTouch();
+            ChangeColors();
         }
     }
 }

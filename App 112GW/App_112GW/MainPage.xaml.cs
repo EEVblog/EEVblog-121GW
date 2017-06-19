@@ -88,14 +88,7 @@ namespace App_112GW
 
         bool UpdateValue(float value)
         {
-            if (Devices.Count == 0)
-                return false;
-
-            var dev = Devices.Last();
-            Devices.Last().Screen.LargeSegments = (float)value;
-            dev.Data.Sample(value);
-
-            dev.Screen.InvalidateSurface();
+            
             return true;
         }
 
@@ -107,7 +100,6 @@ namespace App_112GW
             await Task.Run(() =>
             {
                 //Wait for device to appear
-                
                 while (loop)
                 {
                     foreach (var line in client.ListDevices())
@@ -115,6 +107,7 @@ namespace App_112GW
                         if (line.Name.Contains("CR"))
                         {
                             device = line;
+
                             //Setup service events
                             loop = false;
                             break;
@@ -145,14 +138,19 @@ namespace App_112GW
             {
                 processor.ProcessPacket(pInput);
 
-                var str = Encoding.UTF8.GetString(pInput);
+                if (Devices.Count == 0)
+                    return;
 
-                var valuehexMSB = Convert.ToInt64(str.Substring(4, 2), 16);
-                var valuehexLSB = Convert.ToInt64(str.Substring(6, 2), 16);
+                var dev = Devices.Last();
+                dev.Screen.LargeSegments    = processor.MainValue;
+                dev.Screen.SmallSegments    = processor.SubValue;
+                dev.Screen.Bargraph         = processor.BarValue;
+                dev.Data.Sample(processor.MainValue);
 
-                var result = (float)(valuehexMSB << 8 | valuehexLSB);
 
-                UpdateValue(result);
+                dev.Screen.Update(processor);
+
+                dev.Screen.InvalidateSurface();
             }
             catch (Exception ex)
             {

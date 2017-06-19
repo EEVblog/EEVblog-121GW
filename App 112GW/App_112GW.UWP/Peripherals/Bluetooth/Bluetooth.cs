@@ -220,6 +220,8 @@ namespace rMultiplatform.BLE
                 return;
             if (args.Name == string.Empty)
                 return;
+            if (mVisibleDevices == null)
+                return;
 
             var temp = new UnPairedDeviceBLE(args);
 
@@ -239,6 +241,8 @@ namespace rMultiplatform.BLE
         private void DeviceWatcher_Removed      (DeviceWatcher sender, DeviceInformationUpdate args)
         {
             if (sender != mDeviceWatcher)
+                return;
+            if (mVisibleDevices == null)
                 return;
 
             int indexer = index++;

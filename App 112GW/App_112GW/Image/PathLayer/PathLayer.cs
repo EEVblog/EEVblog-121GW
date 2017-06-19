@@ -138,8 +138,9 @@ namespace rMultiplatform
                 var transform = SKMatrix.MakeIdentity();
                 transform.SetScaleTranslate(xscale, yscale, pDestination.Left, pDestination.Top);
 
-                if (mActive)    mImage.Draw (ref pSurface, transform, ref mDrawPaint);
-                else            mImage.Draw (ref pSurface, transform, ref mUndrawPaint);
+                //If the item is inside the another path then it should undraw it whendraw operation takes place.
+                if (mActive)    mImage.Draw (ref pSurface, transform, ref mDrawPaint, ref mUndrawPaint);
+                else            mImage.Draw (ref pSurface, transform, ref mUndrawPaint, ref mUndrawPaint);
             }
         }
     }

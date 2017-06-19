@@ -235,7 +235,8 @@ namespace rMultiplatform
         {
             get
             {
-                return pData[9] & 0x1F;
+                var value = (pData[9] & 0x1F) + 1;
+                return value;
             }
         }
         public bool Status1KHz
