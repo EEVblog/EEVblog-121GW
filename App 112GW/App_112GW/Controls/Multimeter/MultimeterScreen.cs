@@ -10,6 +10,7 @@ using SkiaSharp.Views.Forms;
 using System.Runtime.CompilerServices;
 
 using App_112GW;
+using System.Diagnostics;
 
 namespace rMultiplatform
 {
@@ -552,31 +553,8 @@ namespace rMultiplatform
                         SetOther("SegV", true);
                         SetOther("SegA", true);
                         break;
-                    case Packet112GW.eMode._TempC:
-                        break;
-                    case Packet112GW.eMode._TempF:
-                        break;
-                    case Packet112GW.eMode._Battery:
-                        break;
-                    case Packet112GW.eMode._APO_On:
-                        break;
-                    case Packet112GW.eMode._APO_Off:
-                        break;
-                    case Packet112GW.eMode._YEAR:
-                        break;
-                    case Packet112GW.eMode._DATE:
-                        break;
-                    case Packet112GW.eMode._TIME:
-                        break;
-                    case Packet112GW.eMode._BURDEN_BOLTAGE:
-                        break;
-                    case Packet112GW.eMode._LCD:
-                        break;
-                    case Packet112GW.eMode._dBm:
-                        break;
-                    case Packet112GW.eMode._Interval:
-                        break;
                     default:
+                        Debug.WriteLine("Other mode recieved" + value.ToString());
                         break;
                 }
             }
