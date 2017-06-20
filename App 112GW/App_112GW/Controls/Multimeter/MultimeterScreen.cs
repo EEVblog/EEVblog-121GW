@@ -164,32 +164,32 @@ namespace rMultiplatform
 		}
 
 		SevenSegment	(){}
-		static public void SetSegment	(char pInput, ref Layers pImages)
+		static public void SetSegment	(char pInput, bool dp, ref Layers pImages)
 		{
             //Make len a member 
             int len		= pImages.mLayers.Count;
 			int pValue	= ToSegment(pInput);
+
 			pValue		&= 0xff;
+            pValue      |= ((dp)?0x80:0);
 
 			for (int i = 0; i < len; i++)
 			{
 				if ((pValue & 1) == 1)
 					pImages.mLayers[i].On();
 				else
-				{
-					if (pInput != '.')
-						pImages.mLayers[i].Off();
-				}
+					pImages.mLayers[i].Off();
+
 				pValue >>= 1;
 			}
 		}
         static public void Blank(Layers pImages)
         {
-            SetSegment(' ', ref pImages);
+            SetSegment(' ', false, ref pImages);
         }
         static public void Blank(ref Layers pImages)
 		{
-			SetSegment(' ', ref pImages);
+			SetSegment(' ', false, ref pImages);
 		}
 	}
 
@@ -1041,22 +1041,27 @@ namespace rMultiplatform
             //Draw bitmap
             pSurface.DrawBitmap(mLayer, rendrect);
         }
-		static private void     SetSegment(char pInput, Layers pSegment)
+		static private void     SetSegment(char pInput, bool dp, Layers pSegment)
 		{
-			SevenSegment.SetSegment(pInput, ref pSegment);
+			SevenSegment.SetSegment(pInput, dp, ref pSegment);
 		}
 		private void            SetSegments(string pInput, ref List<Layers> pSegments)
 		{
             foreach (Layers Segment in pSegments)
                 SevenSegment.Blank(Segment);
 
-			for(int i = 0; i < pInput.Length; i++)
+            int i = 0;
+			for(int j = 0; i <= pSegments.Count; j++)
 			{
-				if (i >= pSegments.Count)
-					return;
+				char    cur = pInput[j];
+                if (cur == '.')
+                    continue;
 
-				char cur = pInput[i];
-                SetSegment(cur, pSegments[i]);
+                char    nxt = (j + 1 < pInput.Length) ? pInput[j + 1] : ' ';
+                var     dp  = (nxt == '.');
+
+                SetSegment(cur, dp, pSegments[i]);
+                i++;
             }
 		}
 
