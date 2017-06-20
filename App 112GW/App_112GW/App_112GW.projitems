@@ -878,7 +878,7 @@
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\Bar500_0_2.svg" />
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\Bar500_5_0.svg" />
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\BarTick-.svg" />
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\BarTick.svg" />
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\BarTick5_5.svg" />
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\BarTick0_0.svg" />
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\BarTick1_1.svg" />
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\BarTick1_2.svg" />
@@ -904,7 +904,7 @@
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\REL.svg" />
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\Seg-.svg" />
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\SegA.svg" />
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\SegAC.svg" />
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\SubAC.svg" />
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\SegCapF.svg" />
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\SegHz.svg" />
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\Layer Resources\Segk.svg" />

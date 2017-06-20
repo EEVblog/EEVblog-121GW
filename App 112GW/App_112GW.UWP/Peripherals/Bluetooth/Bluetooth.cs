@@ -1,17 +1,11 @@
 ﻿using System;
-using System.Text;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using Windows.UI.Core;
-using System.Diagnostics;
 using System.Threading;
-using System.Threading.Tasks;
+using System.Diagnostics;
+using System.Collections.Generic;
 using Windows.Security.Cryptography;
 using Windows.Devices.Bluetooth;
-using Windows.Devices.Bluetooth.Advertisement;
-using Windows.Devices.Bluetooth.GenericAttributeProfile;
 using Windows.Devices.Enumeration;
-using Windows.Storage.Streams;
+using Windows.Devices.Bluetooth.GenericAttributeProfile;
 
 namespace rMultiplatform.BLE
 {
@@ -212,9 +206,10 @@ namespace rMultiplatform.BLE
         volatile private List<IDeviceBLE> mVisibleDevices;
         volatile private DeviceWatcher mDeviceWatcher;
 
-        private static int index = 0;
-        private static Mutex mut = new Mutex();
-        private void DeviceWatcher_Added        (DeviceWatcher sender, DeviceInformation args)
+        private static int      index   = 0;
+        private static Mutex    mut     = new Mutex ();
+
+        private void DeviceWatcher_Added    (DeviceWatcher sender, DeviceInformation        args)
         {
             if (sender != mDeviceWatcher)
                 return;
@@ -238,7 +233,7 @@ namespace rMultiplatform.BLE
             mut.ReleaseMutex();
             Debug.WriteLine(tag + " : Released");
         }
-        private void DeviceWatcher_Removed      (DeviceWatcher sender, DeviceInformationUpdate args)
+        private void DeviceWatcher_Removed  (DeviceWatcher sender, DeviceInformationUpdate  args)
         {
             if (sender != mDeviceWatcher)
                 return;
@@ -264,7 +259,7 @@ namespace rMultiplatform.BLE
             mut.ReleaseMutex();
             Debug.WriteLine(tag + " : Released");
         }
-        private void DeviceWatcher_Updated      (DeviceWatcher sender, DeviceInformationUpdate args)
+        private void DeviceWatcher_Updated  (DeviceWatcher sender, DeviceInformationUpdate  args)
         {
             if (sender != mDeviceWatcher)
                 return;
@@ -308,7 +303,6 @@ namespace rMultiplatform.BLE
             }
             return null;
         }
-
         public ClientBLE()
         {
             mVisibleDevices = new List<IDeviceBLE>();

@@ -8,6 +8,7 @@ using rMultiplatform;
 using SkiaSharp;
 using SkiaSharp.Views.Forms;
 using System.Diagnostics;
+using rMultiplatform.BLE;
 
 namespace App_112GW
 {
@@ -92,10 +93,11 @@ namespace App_112GW
             return true;
         }
 
-        rMultiplatform.BLE.ClientBLE client = new rMultiplatform.BLE.ClientBLE();
-        rMultiplatform.BLE.IDeviceBLE device = null;
+        IClientBLE client = new ClientBLE ();
+        IDeviceBLE device = null;
+
         bool loop = true;
-        async void AsyncStartLogging(object sender, EventArgs args)
+        async void AsyncStartLogging (object sender, EventArgs args)
         { 
             await Task.Run(() =>
             {
@@ -142,14 +144,12 @@ namespace App_112GW
                     return;
 
                 var dev = Devices.Last();
-                dev.Screen.LargeSegments    = processor.MainValue;
-                dev.Screen.SmallSegments    = processor.SubValue;
-                dev.Screen.Bargraph         = processor.BarValue;
+                //dev.Screen.LargeSegments    = processor.MainValue;
+                //dev.Screen.SmallSegments    = processor.SubValue;
+                //dev.Screen.Bargraph         = processor.BarValue;
                 dev.Data.Sample(processor.MainValue);
 
-
                 dev.Screen.Update(processor);
-
                 dev.Screen.InvalidateSurface();
             }
             catch (Exception ex)

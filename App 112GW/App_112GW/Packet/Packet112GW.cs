@@ -59,7 +59,7 @@ namespace rMultiplatform
             _YEAR = 130,
             _DATE = 135,
             _TIME = 140,
-            _BURDEN_BOLTAGE = 150,
+            _BURDEN_VOLTAGE = 150,
             _LCD = 160,
             _dBm= 180,
             _Interval = 190
@@ -99,7 +99,7 @@ namespace rMultiplatform
                 return (eMode)pData[0];
             }
         }
-        public Range112GW Range
+        public Range112GW MainRange
         {
             get
             {
@@ -107,11 +107,11 @@ namespace rMultiplatform
                 return RangeLookup[md];
             }
         }
-        public double RangeValue
+        public double MainRangeValue
         {
             get
             {
-                var rg = Range;
+                var rg = MainRange;
                 return rg.mValues[(int)pData[1] & 0xF];
             }
         }

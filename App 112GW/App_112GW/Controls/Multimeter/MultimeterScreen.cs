@@ -307,7 +307,6 @@ namespace rMultiplatform
                 return _BackgroundColor.ToFormsColor();
             }
         }
-
         private void ChangeColors           ()
         {
             switch (State)
@@ -353,6 +352,7 @@ namespace rMultiplatform
                 handler(this, e);
             }
         }
+
         SKBitmap                        mLayer;
         SKCanvas                        mCanvas;
         static List<ILayer>             mLayerCache;
@@ -361,53 +361,55 @@ namespace rMultiplatform
         Layers                          mBargraph;
         Layers                          mOther;
 
-        protected virtual void          LayerChange(object o, EventArgs e)
+        int                             mDecimalPosition;
+
+        protected virtual void LayerChange(object o, EventArgs e)
         {
 
         }
-        private void                    SetLargeSegments(string pInput)
+        private void SetLargeSegments(string pInput)
         {
             if (pInput.Length > mSegments.Count)
                 pInput.Substring(0, mSegments.Count);
 
             SetSegments(pInput.PadLeft(mSegments.Count, ' '), ref mSegments);
         }
-        private void                    SetSmallSegments(string pInput)
+        private void SetSmallSegments(string pInput)
         {
             if (pInput.Length > mSubSegments.Count)
                 throw (new Exception("Small segment value too many decimal places."));
 
             SetSegments(pInput.PadLeft(mSubSegments.Count, ' '), ref mSubSegments);
         }
-        public float                    LargeSegments
+        public float LargeSegments
         {
             set
             {
                 SetLargeSegments(value.ToString());
             }
         }
-        public string                   LargeSegmentsWord
+        public string LargeSegmentsWord
         {
             set
             {
                 SetLargeSegments(value);
             }
         }
-        public float                    SmallSegments
+        public float SmallSegments
         {
             set
             {
                 SetSmallSegments(value.ToString());
             }
         }
-        public string                   SmallSegmentsWord
+        public string SmallSegmentsWord
         {
             set
             {
                 SetSmallSegments(value);
             }
         }
-        public int                      Bargraph
+        public int Bargraph
         {
             set
             {
@@ -417,7 +419,7 @@ namespace rMultiplatform
                     throw (new Exception("Bargraph value too high."));
             }
         }
-        private void                    SetBargraph(int pInput)
+        private void SetBargraph(int pInput)
         {
             foreach (ILayer Layer in mBargraph.mLayers)
                 Layer.Off();
@@ -425,23 +427,18 @@ namespace rMultiplatform
             for (int i = 0; i < mBargraph.mLayers.Count; i++)
                 mBargraph.mLayers[i].Set(pInput >= i);
         }
-
-
         private void SetOther(string Label, bool State)
         {
             foreach (var other in mOther.mLayers)
                 if (other.Name.ToLower() == Label.ToLower())
                     other.Set(State);
         }
-        public Packet112GW.eMode Mode
+
+        public Packet112GW MainMode
         {
             set
             {
-                foreach (var other in mOther.mLayers)
-                    other.Off();
-                SetOther("BT", true);
-
-                switch (value)
+                switch (value.Mode)
                 {   
                     case Packet112GW.eMode.Low_Z:
                         SetOther("LowZ", true);
@@ -559,10 +556,284 @@ namespace rMultiplatform
                 }
             }
         }
-
-        public void                     Update (Packet112GW pInput)
+        public Packet112GW MainRangeValue
         {
-            Mode = pInput.Mode;
+            set
+            {
+                var OFL = value.MainOverload;
+                var Sign = value.MainSign;
+                var Range = value.MainRangeValue;
+
+                //Overload
+                if ( OFL )
+                    LargeSegmentsWord = "OFL";
+                else
+                {
+                    //Negative sign for segments
+                    if ( Sign == Packet112GW.eSign.eNegative )
+                        SetOther("Seg-", true);
+                    else
+                        SetOther("Seg-", false);
+
+                    //Calculate the position of the decimal point
+                    mDecimalPosition = (int)Math.Log10(Range) + 1;
+
+                    var DisplayString = value.MainValue.ToString();
+
+                    DisplayString = DisplayString.Insert(mDecimalPosition, ".");
+                    LargeSegmentsWord = DisplayString;
+                }
+            }
+        }
+
+        private Packet112GW.eMode _SubMode;
+        public Packet112GW SubMode
+        {
+            set
+            {
+                var mode = value.SubMode;
+                _SubMode = mode;
+                switch (mode)
+                {
+                    case Packet112GW.eMode.Low_Z:
+                        SetOther("SubV", true);
+                        break;
+                    case Packet112GW.eMode.DCV:
+                        SetOther("SubDC", true);
+                        SetOther("SubV", true);
+                        break;
+                    case Packet112GW.eMode.ACV:
+                        SetOther("SubAC", true);
+                        SetOther("SubV", true);
+                        break;
+                    case Packet112GW.eMode.DCmV:
+                        SetOther("SubDC", true);
+                        SetOther("SubV", true);
+                        SetOther("Subm", true);
+                        break;
+                    case Packet112GW.eMode.ACmV:
+                        SetOther("AC", true);
+                        SetOther("SegV", true);
+                        SetOther("Subm", true);
+                        break;
+                    case Packet112GW.eMode.Temp:
+                        break;
+                    case Packet112GW.eMode.Hz:
+                        SetOther("SubHz", true);
+                        break;
+                    case Packet112GW.eMode.mS:
+                        SetOther("Subms", true);
+                        break;
+                    case Packet112GW.eMode.Duty:
+                        SetOther("Sub%", true);
+                        break;
+                    case Packet112GW.eMode.Resistor:
+                        SetOther("SubR", true);
+                        break;
+                    case Packet112GW.eMode.Continuity:
+                        break;
+                    case Packet112GW.eMode.Diode:
+                        break;
+                    case Packet112GW.eMode.Capacitor:
+                        break;
+                    case Packet112GW.eMode.ACuVA:
+                        break;
+                    case Packet112GW.eMode.ACmVA:
+                        break;
+                    case Packet112GW.eMode.ACVA:
+                        SetOther("SubAC", true);
+                        SetOther("SubV", true);
+                        SetOther("SubA", true);
+                        break;
+                    case Packet112GW.eMode.ACuA:
+                        break;
+                    case Packet112GW.eMode.DCuA:
+                        break;
+                    case Packet112GW.eMode.ACmA:
+                        SetOther("SubAC", true);
+                        SetOther("SubA", true);
+                        SetOther("Subm", true);
+                        break;
+                    case Packet112GW.eMode.DCmA:
+                        SetOther("SubDC", true);
+                        SetOther("SubA", true);
+                        SetOther("SubmV", true);
+                        break;
+                    case Packet112GW.eMode.ACA:
+                        SetOther("SubAC", true);
+                        SetOther("SubA", true);
+                        break;
+                    case Packet112GW.eMode.DCA:
+                        SetOther("SubDC", true);
+                        SetOther("SubA", true);
+                        break;
+                    case Packet112GW.eMode.DCuVA:
+                        break;
+                    case Packet112GW.eMode.DCmVA:
+                        break;
+                    case Packet112GW.eMode.DCVA:
+                        SetOther("SubDC", true);
+                        SetOther("SubV", true);
+                        SetOther("SubA", true);
+                        break;
+                    case Packet112GW.eMode._Battery:
+                        SetOther("SubDC", true);
+                        SetOther("SubV", true);
+                        break;
+                    case Packet112GW.eMode._BURDEN_VOLTAGE:
+                        SetOther("SubV", true);
+                        break;
+                    case Packet112GW.eMode._YEAR:
+                        break;
+                    case Packet112GW.eMode._DATE:
+                        break;
+                    case Packet112GW.eMode._TIME:
+                        break;
+                    case Packet112GW.eMode._LCD:
+                        break;
+                    case Packet112GW.eMode._TempC:
+                        break;
+                    case Packet112GW.eMode._TempF:
+                        break;
+                    case Packet112GW.eMode._dBm:
+                        SetOther("SubdB", true);
+                        break;
+                    case Packet112GW.eMode._Interval:
+                        SetOther("Subm", true);
+                        SetOther("SubS", true);
+                        break;
+                    default:
+                        Debug.WriteLine("Other mode recieved" + value.ToString());
+                        break;
+                }
+            }
+        }
+        public Packet112GW SubRangeValue
+        {
+            set
+            {
+                var OFL = value.SubOverload;
+                var Sign = value.SubSign;
+                var Range = value.SubPoint;
+
+                //Overload
+                if (OFL)
+                    SmallSegmentsWord = "OFL";
+                else
+                {
+                    //Negative sign for segments
+                    if (Sign == Packet112GW.eSign.eNegative)
+                        SetOther("Sub-", true);
+                    else
+                        SetOther("Sub-", false);
+
+                    //Calculate the position of the decimal point
+                    mDecimalPosition = (int)Range / 10 + 1;
+
+                    var DisplayString = value.SubValue.ToString();
+                    DisplayString.Insert(mDecimalPosition, ".");
+
+                    switch (_SubMode)
+                    {
+                        case Packet112GW.eMode.Temp:
+                        case Packet112GW.eMode._TempC:
+                            DisplayString += "c";
+                            break;
+                        case Packet112GW.eMode._TempF:
+                            DisplayString += "f";
+                            break;
+                    }
+
+                    SmallSegmentsWord = DisplayString;
+                }
+            }
+        }
+
+        public Packet112GW BarStatus
+        {
+            set
+            {
+                var use = value.BarOn;
+                var _0_150 = value.Bar0_150;
+                var _1000_500 = value.Bar1000_500;
+                var sign = value.BarSign;
+                var barval = value.BarValue;
+
+                if (use)
+                {
+                    //Setup bargraph ranges
+                    SetOther("BarTick0_0",  true);
+                    if (_1000_500 > 0)
+                    {
+                        SetOther("BarTick1_2", false);
+                        SetOther("BarTick2_4", false);
+                        SetOther("BarTick3_6", false);
+                        SetOther("BarTick4_8", false);
+                        SetOther("BarTick5_1", false);
+                        SetOther("BarTick5_0", false);
+                    }
+                    else
+                    {
+                        SetOther("BarTick1_1", false);
+                        SetOther("BarTick2_2", false);
+                        SetOther("BarTick3_3", false);
+                        SetOther("BarTick4_4", false);
+                        SetOther("BarTick5_5", false);
+                    }
+
+                    if (sign == Packet112GW.eSign.eNegative)
+                        SetOther("BarTick -", false);
+                    else
+                        SetOther("Bar+", false);
+
+                    Bargraph = barval + 1;
+                }
+            }
+        }
+        public Packet112GW IconStatus
+        {
+            set
+            {
+                SetOther("1 kHz",   value.Status1KHz);
+                SetOther("Subms",   value.Status1ms);
+                SetOther("Sub1",    value.Status1ms);
+                SetOther("DC+AC",   value.StatusAC_DC > 0);
+                SetOther("auto",    value.StatusAuto);
+                SetOther("apo",     value.StatusAPO);
+                SetOther("Battery", value.StatusBAT);
+                SetOther("BT",      value.StatusBT);
+                SetOther("Arrow",   value.StatusArrow);
+                SetOther("REL",     value.StatusRel);
+                SetOther("SubdB",   value.StatusdBm);
+
+                //NOTE UNKONWN MIN/MAX bits config
+                SetOther("TEST",    value.StatusTest);
+                SetOther("MEM",     value.StatusMem > 0);
+                SetOther("HOLD",    value.StatusAHold > 0);
+                SetOther("AC",      value.StatusAC);
+                SetOther("DC",      value.StatusDC);
+            }
+        }
+
+        public void Update (Packet112GW pInput)
+        {
+            SetOther("BT", true);
+            foreach (var other in mOther.mLayers)
+                other.Off();
+
+            //Main range bits
+            MainMode        = pInput;
+            MainRangeValue  = pInput;
+
+            //Sub range bits
+            SubMode         = pInput;
+            SubRangeValue   = pInput;
+
+            //Bar graph bits
+            BarStatus       = pInput;
+
+            //Update icons
+            IconStatus      = pInput;
         }
 
         Layers segments        = new Layers("mSegments");
@@ -639,7 +910,7 @@ namespace rMultiplatform
             return true;
         }
 
-        private void SetupTouch()
+        private void            SetupTouch()
         {
             //Add the gesture recognizer 
             mTouch = new rMultiplatform.Touch();
@@ -648,7 +919,7 @@ namespace rMultiplatform
             mTouch.Released += MTouch_Release;
             Effects.Add(mTouch);
         }
-        private void Redraw()
+        private void            Redraw()
         {
             //Add render on change
             for (int i = 0; i < mSegments.Count; i++)
@@ -669,7 +940,6 @@ namespace rMultiplatform
             (float x, float y) = mBargraph.GetResultSize();
             return ((y / x), x, y);
         }
-
         private float           ConvertWidthToPixel(float value)
         {
             return (CanvasSize.Width * value / (float)Width);
@@ -695,7 +965,6 @@ namespace rMultiplatform
             //Setup the height request
             HeightRequest = NewHeight;
         }
-
         SKRect                  mDrawRectangle;
         private void            Rescale()
         {
@@ -719,7 +988,6 @@ namespace rMultiplatform
             //
             mDrawRectangle = new SKRect(0, 0, imageWidth, imageHeight);
         }
-
         bool                    NeedClear = true;
         private void            Render (SKCanvas pSurface)
         {
@@ -788,8 +1056,8 @@ namespace rMultiplatform
 					return;
 
 				char cur = pInput[i];
-				SetSegment(cur, pSegments[i]);
-			}
+                SetSegment(cur, pSegments[i]);
+            }
 		}
 
 #if __ANDROID__
@@ -802,7 +1070,6 @@ namespace rMultiplatform
         {
             Render(e.Surface.Canvas);
         }
-
         public                  MultimeterScreen()
         {
             //Default size options

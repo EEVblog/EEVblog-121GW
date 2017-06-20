@@ -46,8 +46,6 @@ namespace rMultiplatform
                         mBuffer.Clear();
                     }
                 }
-                    
-
             }
         }
     }
