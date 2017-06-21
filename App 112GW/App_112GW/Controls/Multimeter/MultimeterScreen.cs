@@ -369,6 +369,9 @@ namespace rMultiplatform
         }
         private void SetLargeSegments(string pInput)
         {
+            if (pInput.EndsWith("."))
+                pInput += "0";
+
             if (pInput.Length > mSegments.Count)
                 pInput.Substring(0, mSegments.Count);
 
@@ -430,7 +433,7 @@ namespace rMultiplatform
         private void SetOther(string Label, bool State)
         {
             foreach (var other in mOther.mLayers)
-                if (other.Name.ToLower() == Label.ToLower())
+                if (other.Name == Label)
                     other.Set(State);
         }
 
@@ -445,15 +448,12 @@ namespace rMultiplatform
                         SetOther("SegV", true);
                         break;
                     case Packet112GW.eMode.DCV:
-                        SetOther("DC", true);
                         SetOther("SegV", true);
                         break;
                     case Packet112GW.eMode.ACV:
-                        SetOther("AC", true);
                         SetOther("SegV", true);
                         break;
                     case Packet112GW.eMode.DCmV:
-                        SetOther("DC", true);
                         SetOther("SegV", true);
                         SetOther("SegmV", true);
                         break;
@@ -489,64 +489,52 @@ namespace rMultiplatform
                         SetOther("SegCapF", true);
                         break;
                     case Packet112GW.eMode.ACuVA:
-                        SetOther("AC", true);
                         SetOther("SegV", true);
                         SetOther("SegA", true);
                         SetOther("Segu", true);
                         break;
                     case Packet112GW.eMode.ACmVA:
-                        SetOther("AC", true);
                         SetOther("SegV", true);
                         SetOther("SegA", true);
                         SetOther("SegmV", true);
                         break;
                     case Packet112GW.eMode.ACVA:
-                        SetOther("AC", true);
                         SetOther("SegV", true);
                         SetOther("SegA", true);
                         break;
                     case Packet112GW.eMode.ACuA:
-                        SetOther("AC", true);
                         SetOther("SegA", true);
                         SetOther("Segu", true);
                         break;
                     case Packet112GW.eMode.DCuA:
-                        SetOther("DC", true);
                         SetOther("SegA", true);
                         SetOther("Segu", true);
                         break;
                     case Packet112GW.eMode.ACmA:
-                        SetOther("AC", true);
                         SetOther("SegA", true);
                         SetOther("SegmV", true);
                         break;
                     case Packet112GW.eMode.DCmA:
-                        SetOther("DC", true);
                         SetOther("SegA", true);
                         SetOther("SegmV", true);
                         break;
                     case Packet112GW.eMode.ACA:
-                        SetOther("AC", true);
                         SetOther("SegA", true);
                         break;
                     case Packet112GW.eMode.DCA:
-                        SetOther("DC", true);
                         SetOther("SegA", true);
                         break;
                     case Packet112GW.eMode.DCuVA:
-                        SetOther("DC", true);
                         SetOther("SegV", true);
                         SetOther("SegA", true);
                         SetOther("Segu", true);
                         break;
                     case Packet112GW.eMode.DCmVA:
-                        SetOther("DC", true);
                         SetOther("SegV", true);
                         SetOther("SegA", true);
                         SetOther("SegmV", true);
                         break;
                     case Packet112GW.eMode.DCVA:
-                        SetOther("DC", true);
                         SetOther("SegV", true);
                         SetOther("SegA", true);
                         break;
@@ -578,10 +566,36 @@ namespace rMultiplatform
                     //Calculate the position of the decimal point
                     mDecimalPosition = (int)Math.Log10(Range) + 1;
 
-                    var DisplayString = value.MainValue.ToString();
+                    var DisplayString = value.MainValue.ToString().PadLeft(5, ' ');
+
 
                     DisplayString = DisplayString.Insert(mDecimalPosition, ".");
-                    LargeSegmentsWord = DisplayString;
+
+                    bool beforepoint = true;
+                    string outstring = "";
+                    for (int i = 0; i < DisplayString.Length; i++)
+                    {
+
+                        var c = DisplayString[i];
+                        if ( c == '.' )
+                        {
+                            beforepoint = false;
+                        }
+                        if (beforepoint)
+                        {
+                            outstring += c;
+                        }
+                        else
+                        {
+                            if (c == ' ')
+                                outstring += '0';
+                            else
+                                outstring += c;
+                        }
+                    }
+                    outstring = outstring.PadLeft(5, ' ').Replace(" .", "0.");
+
+                    LargeSegmentsWord = outstring;
                 }
             }
         }
@@ -795,9 +809,28 @@ namespace rMultiplatform
             set
             {
                 SetOther("1 kHz",   value.Status1KHz);
-                SetOther("Subms",   value.Status1ms);
-                SetOther("Sub1",    value.Status1ms);
-                SetOther("DC+AC",   value.StatusAC_DC > 0);
+
+                if (value.Status1ms)
+                {
+                    SetOther("Subms", true);
+                    SetOther("Sub1", true);
+                }
+
+                switch (value.StatusAC_DC)
+                {
+                    case Packet112GW.eAD_DC.eDC:
+                        SetOther("DC", true);
+                        break;
+                    case Packet112GW.eAD_DC.eAC:
+                        SetOther("AC", true);
+                        break;
+                    case Packet112GW.eAD_DC.eACDC:
+                        SetOther("DC+AC", true);
+                        break;
+                    case Packet112GW.eAD_DC.eNone:
+                        break;
+                }
+
                 SetOther("auto",    value.StatusAuto);
                 SetOther("apo",     value.StatusAPO);
                 SetOther("Battery", value.StatusBAT);
@@ -810,8 +843,6 @@ namespace rMultiplatform
                 SetOther("TEST",    value.StatusTest);
                 SetOther("MEM",     value.StatusMem > 0);
                 SetOther("HOLD",    value.StatusAHold > 0);
-                SetOther("AC",      value.StatusAC);
-                SetOther("DC",      value.StatusDC);
             }
         }
 
@@ -1051,7 +1082,7 @@ namespace rMultiplatform
                 SevenSegment.Blank(Segment);
 
             int i = 0;
-			for(int j = 0; i <= pSegments.Count; j++)
+			for(int j = 0; j < pInput.Length; j++)
 			{
 				char    cur = pInput[j];
                 if (cur == '.')

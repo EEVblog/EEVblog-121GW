@@ -407,14 +407,39 @@ namespace rMultiplatform
         //
         public SKMatrix Transformation = SKMatrix.MakeIdentity();
 
-        private SKRectI ToIntRect(SKRect Value, float scale = 1000)
+        private SKRectI ToIntRect(SKRect value)
         {
-            var left = (int)(Value.Left * scale);
-            var right = (int)(Value.Right * scale);
-            var top = (int)(Value.Top * scale);
-            var bottom = (int)(Value.Bottom * scale);
+            int x, r, y, b;
+            //Horozontal scaling.
+            if (value.Right > value.Left)
+            {
+                //Standard rectangle
+                x = (int)Math.Floor(value.Left);
+                r = (int)Math.Ceiling(value.Right);
+            }
+            else
+            {
+                //Inverted rectangle
+                x = (int)Math.Ceiling(value.Left);
+                r = (int)Math.Floor(value.Right);
 
-            return new SKRectI(left, top, right, bottom);
+            }
+
+            //Vertical scaling
+            if (value.Bottom > value.Top)
+            {
+                //Standard rectangle
+                y = (int)Math.Floor(value.Top);
+                b = (int)Math.Ceiling(value.Bottom);
+            }
+            else
+            {
+                //Inverted rectangle
+                y = (int)Math.Ceiling(value.Top);
+                b = (int)Math.Floor(value.Bottom);
+            }
+
+            return new SKRectI(x, y, r, b);
         }
 
         //Default resolution makes 10 points per line segment

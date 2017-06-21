@@ -66,9 +66,9 @@ namespace rMultiplatform
         }
         Range112GW[] RangeLookup =
         {
-            new Range112GW("V",     "Low_Z",        new double[]{600.0}),
-            new Range112GW("V",     "DCV",          new double[]{5.0000,50.000,500.00,600.0}),
-            new Range112GW("V",     "ACV",          new double[]{5.0000,50.000,500.00,600.0}),
+            new Range112GW("V",     "Low_Z",        new double[]{1000.0}),
+            new Range112GW("V",     "DCV",          new double[]{5.0000,50.000,500.00,1000.0}),
+            new Range112GW("V",     "ACV",          new double[]{5.0000,50.000,500.00,1000.0}),
             new Range112GW("mV",    "DCmV",         new double[]{50.000,500.00}),
             new Range112GW("mV",    "ACmV",         new double[]{50.000,500.00}),
             new Range112GW("°C",    "Temp",         new double[]{1350}),
@@ -92,6 +92,8 @@ namespace rMultiplatform
             new Range112GW("mVA",   "DCmVA",        new double[]{25.000,250.00,250.00,2500.0}),
             new Range112GW("VA",    "DCVA",         new double[]{2500.0,25000,50.000,500.00})
         };
+        private readonly eAD_DC eACDC;
+
         public eMode Mode
         {
             get
@@ -253,11 +255,30 @@ namespace rMultiplatform
                 return (pData[10] & 0x20) != 0;
             }
         }
-        public int  StatusAC_DC
+
+
+        public enum eAD_DC
+        {
+            eDC = 1,
+            eAC = 2,
+            eACDC = 3,
+            eNone
+        }
+        public eAD_DC StatusAC_DC
         {
             get
             {
-                return (pData[10] & 0x18) >> 3;
+                switch ((pData[10] & 0x18) >> 3)
+                {
+                    case 1:
+                        return eAD_DC.eDC;
+                    case 2:
+                        return eAD_DC.eAC;
+                    case 3:
+                        return eAD_DC.eACDC;
+                    default:
+                        return eAD_DC.eNone;
+                }
             }
         }
         public bool StatusAuto

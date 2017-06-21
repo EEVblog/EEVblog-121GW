@@ -148,7 +148,6 @@ namespace App_112GW
                 //dev.Screen.SmallSegments    = processor.SubValue;
                 //dev.Screen.Bargraph         = processor.BarValue;
                 dev.Data.Sample(processor.MainValue);
-
                 dev.Screen.Update(processor);
                 dev.Screen.InvalidateSurface();
             }
