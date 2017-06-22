@@ -212,7 +212,6 @@ namespace rMultiplatform.BLE
             mCharacteristic.ValueChanged += CharacteristicEvent_ValueChanged;
         }
     }
-
     public class ClientBLE : IClientBLE
     {
         volatile private List<IDeviceBLE> mVisibleDevices;

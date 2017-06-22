@@ -14,7 +14,7 @@ namespace App_112GW
 {
 	public partial class MainPage : ContentPage
 	{
-        public List<rMultiplatform.MultimeterThemed> Devices = new List<rMultiplatform.MultimeterThemed>();
+        public List<Multimeter> Devices = new List<Multimeter>();
         private Button          ButtonAddDevice		= new Button        { Text = "Add Device"      };
 		private Button		    ButtonStartLogging	= new Button        { Text = "Start Logging"   };
 		private Grid		    UserGrid			= new Grid          { HorizontalOptions = LayoutOptions.CenterAndExpand,   VerticalOptions = LayoutOptions.Fill, RowSpacing = 1, ColumnSpacing = 1, Padding = 1};
@@ -54,7 +54,6 @@ namespace App_112GW
             UserGrid.WidthRequest = 400;
             Content = UserGrid;
 		}
-        PacketProcessor MyProcessor = new PacketProcessor(0xF2, 26);
         public MainPage ()
 		{
 			InitializeComponent();
@@ -68,11 +67,9 @@ namespace App_112GW
         {
             base.OnSizeAllocated(width, height);
         }
-
-
         void AddDevice (object sender, EventArgs args)
 		{
-            var Temp1 = new rMultiplatform.MultimeterThemed(Globals.BackgroundColor);
+            var Temp1 = new rMultiplatform.Multimeter(Globals.BackgroundColor);
             Devices.Add(Temp1);
             DeviceLayout.Children.Add(Temp1);
             Grid.SetRow(Temp1, 0);
@@ -88,13 +85,19 @@ namespace App_112GW
 
         bool UpdateValue(float value)
         {
-            
             return true;
         }
 
-        IClientBLE client = new ClientBLE();
-        IDeviceBLE device = null;
         bool loop = true;
+
+        //
+        IDeviceBLE device = null;
+        IClientBLE client = new ClientBLE();
+
+        //
+        PacketProcessor MyProcessor = new PacketProcessor(0xF2, 26);
+
+        //
         async void AsyncStartLogging (object sender, EventArgs args)
         { 
             await Task.Run(() =>
@@ -132,7 +135,6 @@ namespace App_112GW
         {
             AsyncStartLogging(sender, args);
         }
-
         void ProcessPacket(byte[] pInput)
         {
             var processor = new rMultiplatform.Packet112GW();
@@ -154,7 +156,7 @@ namespace App_112GW
             }
         }
 
-       
+        //
         private void MainPage_ValueChanged(object o, rMultiplatform.BLE.CharacteristicEvent v)
         {
             Debug.WriteLine("Recieved: " + v.NewValue);
