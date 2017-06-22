@@ -407,6 +407,7 @@ namespace rMultiplatform
         //
         public SKMatrix Transformation = SKMatrix.MakeIdentity();
 
+        //
         private SKRectI ToIntRect(SKRect value)
         {
             int x, r, y, b;
@@ -450,6 +451,8 @@ namespace rMultiplatform
 
             input.SetRect   (ToIntRect(pInput.Bounds));
             boundary.SetRect(ToIntRect(pBoundary.Bounds));
+            input.SetPath(pInput);
+            boundary.SetPath(pBoundary);
 
             var contained = boundary.Contains(input);
             return contained;

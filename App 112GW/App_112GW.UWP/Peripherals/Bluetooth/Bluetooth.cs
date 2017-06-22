@@ -268,6 +268,8 @@ namespace rMultiplatform.BLE
         private IDeviceBLE LastDevice = null;
         public List<IDeviceBLE> ListDevices()
         {
+            if (mVisibleDevices == null)
+                return new List<IDeviceBLE>();
             return mVisibleDevices;
         }
 
@@ -298,7 +300,9 @@ namespace rMultiplatform.BLE
 
                     mVisibleDevices?.Clear();
                     mVisibleDevices = null;
-                    return (LastDevice = new PairedDeviceBLE(mDeviceBLE));
+
+                    LastDevice = new PairedDeviceBLE(mDeviceBLE);
+                    return (LastDevice);
                 }
             }
             return null;

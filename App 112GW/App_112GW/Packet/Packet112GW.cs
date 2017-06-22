@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 
 namespace rMultiplatform
@@ -8,10 +9,12 @@ namespace rMultiplatform
     {
         public string mUnits;
         public string mLabel;
-        public double[] mValues;
+        public int[] mValues;
+        public string mNotation;
 
-        public Range112GW(string pUnits, string pLabel, double[] pValues)
+        public Range112GW(string pUnits, string pLabel, int[] pValues, string pNotation)
         {
+            mNotation = pNotation;
             mUnits = pUnits;
             mLabel = pLabel;
             mValues = pValues;
@@ -66,35 +69,35 @@ namespace rMultiplatform
         }
         Range112GW[] RangeLookup =
         {
-            new Range112GW("V",     "Low_Z",        new double[]{1000.0}),
-            new Range112GW("V",     "DCV",          new double[]{5.0000,50.000,500.00,1000.0}),
-            new Range112GW("V",     "ACV",          new double[]{5.0000,50.000,500.00,1000.0}),
-            new Range112GW("mV",    "DCmV",         new double[]{50.000,500.00}),
-            new Range112GW("mV",    "ACmV",         new double[]{50.000,500.00}),
-            new Range112GW("°C",    "Temp",         new double[]{1350}),
-            new Range112GW("KHz",   "Hz",           new double[]{99.999,999.99,9999.9,99999,999999}),
-            new Range112GW("ms",    "mS",           new double[]{9.9999,99.999,999.99}),
-            new Range112GW("%",     "Duty",         new double[]{99.9}),
-            new Range112GW("KΩ",    "Resistor",     new double[]{0.05,0.5,5.00,50.000,500.00,5000,50000}),
-            new Range112GW("KΩ",    "Continuity",   new double[]{500}),
-            new Range112GW("ms",    "Diode",        new double[]{3.0000,10.000}),
-            new Range112GW("ms",    "Capacitor",    new double[]{0.010,0.100,1.000,10.00,100.0,1000}),
-            new Range112GW("uVA",   "ACuVA",        new double[]{250.00,2500.0,2500.0,25000}),
-            new Range112GW("mVA",   "ACmVA",        new double[]{25.000,250.00,250.00,2500.0}),
-            new Range112GW("mVA",   "ACVA",         new double[]{2500.0,25000,50.000,500.00}),
-            new Range112GW("uA",    "ACuA",         new double[]{50.000,500.00}),
-            new Range112GW("uA",    "DCuA",         new double[]{50.000,500.00}),
-            new Range112GW("mA",    "ACmA",         new double[]{5.0000,50.000}),
-            new Range112GW("mA",    "DCmA",         new double[]{5.0000,50.000}),
-            new Range112GW("A",     "ACA",          new double[]{500.00,5.0000,10.000}),
-            new Range112GW("A",     "DCA",          new double[]{500.00,5.0000,10.000}),
-            new Range112GW("uVA",   "DCuVA",        new double[]{250.00,2500.0,2500.0,25000}),
-            new Range112GW("mVA",   "DCmVA",        new double[]{25.000,250.00,250.00,2500.0}),
-            new Range112GW("VA",    "DCVA",         new double[]{2500.0,25000,50.000,500.00})
+            new Range112GW("V",     "Low_Z",        new int[]{4}            ," "),
+            new Range112GW("V",     "DCV",          new int[]{1,2,3,4}      ,"    "),
+            new Range112GW("V",     "ACV",          new int[]{1,2,3,4}      ,"    "),
+            new Range112GW("mV",    "DCmV",         new int[]{2,3}          ,"mm"),
+            new Range112GW("mV",    "ACmV",         new int[]{2,3}          ,"mm"),
+            new Range112GW("°C",    "Temp",         new int[]{4}            ," "),
+            new Range112GW("KHz",   "Hz",           new int[]{2,3,1,2,3}    ,"  kkk"),
+            new Range112GW("ms",    "mS",           new int[]{1,2,3}        ,"   "),
+            new Range112GW("%",     "Duty",         new int[]{4}            ," "),
+            new Range112GW("KΩ",    "Resistor",     new int[]{2,3,1,2,3,1,2},"  kkkMM"),
+            new Range112GW("KΩ",    "Continuity",   new int[]{3}            ," "),
+            new Range112GW("ms",    "Diode",        new int[]{1,2}          ,"  "),
+            new Range112GW("ms",    "Capacitor",    new int[]{3,4,2,3,4,5}  ,"nnuuuu"),
+            new Range112GW("uVA",   "ACuVA",        new int[]{4,5,2,3}      ,"    "),
+            new Range112GW("mVA",   "ACmVA",        new int[]{4,5,2,3}      ,"mm  "),
+            new Range112GW("mVA",   "ACVA",         new int[]{4,5,2,3}      ,"mm  "),
+            new Range112GW("uA",    "ACuA",         new int[]{2,3}          ,"  "),
+            new Range112GW("uA",    "DCuA",         new int[]{2,3}          ,"  "),
+            new Range112GW("mA",    "ACmA",         new int[]{3,1,2}        ,"mAA"),
+            new Range112GW("mA",    "DCmA",         new int[]{3,1,2}        ,"mAA"),
+            new Range112GW("A",     "ACA",          new int[]{3,1,2}        ,"mAA"),
+            new Range112GW("A",     "DCA",          new int[]{3,1,2}        ,"mAA"),
+            new Range112GW("uVA",   "DCuVA",        new int[]{3,4,4,5}      ,"    "),
+            new Range112GW("mVA",   "DCmVA",        new int[]{4,5,2,3}      ,"mm  "),
+            new Range112GW("VA",    "DCVA",         new int[]{4,5,2,3}      ,"mm  ")
         };
         private readonly eAD_DC eACDC;
 
-        public eMode Mode
+        public eMode    Mode
         {
             get
             {
@@ -109,15 +112,30 @@ namespace rMultiplatform
                 return RangeLookup[md];
             }
         }
-        public double MainRangeValue
+        public int      MainRangeValue
+        {
+            get
+            {
+
+                var rg = MainRange;
+                var range = (int)pData[1] & 0xF;
+                Debug.WriteLine("Current Range: " + range.ToString());
+
+                return rg.mValues[range];
+            }
+        }
+        public char     MainRangeUnits
         {
             get
             {
                 var rg = MainRange;
-                return rg.mValues[(int)pData[1] & 0xF];
+                var range = (int)pData[1] & 0xF;
+                Debug.WriteLine("Current Notation: " + rg.mNotation[range].ToString());
+                return rg.mNotation[range];
             }
         }
-        public int MainValue
+
+        public int      MainValue
         {
             get
             {
@@ -126,19 +144,19 @@ namespace rMultiplatform
                 return (msb << 8) | lsb;
             }
         }
-        public bool MainOverload
+        public bool     MainOverload
         {
             get
             {
                 return (pData[1] & 0x80) > 0;
             }
         }
-        public enum eSign
+        public enum     eSign
         {
             ePositive = 0,
             eNegative = 1
         }
-        public eSign MainSign
+        public eSign    MainSign
         {
             get
             {
@@ -148,21 +166,21 @@ namespace rMultiplatform
                 return (eSign)intt;
             }
         }
-        public eMode SubMode
+        public eMode    SubMode
         {
             get
             {
                 return (eMode) pData[4];
             }
         }
-        public bool SubOverload
+        public bool     SubOverload
         {
             get
             {
                 return (pData[6] & 0x80) != 0;
             }
         }
-        public eSign SubSign
+        public eSign    SubSign
         {
             get
             {
@@ -172,28 +190,28 @@ namespace rMultiplatform
                 return (eSign)intt;
             }
         }
-        public bool SubK
+        public bool     SubK
         {
             get
             {
                 return (pData[6] & 0x20) > 0;
             }
         }
-        public bool SubHz
+        public bool     SubHz
         {
             get
             {
                 return (pData[6] & 0x10) > 0;
             }
         }
-        public int SubPoint
+        public int      SubPoint
         {
             get
             {
                 return (pData[6] & 0xF);
             }
         }
-        public int SubValue
+        public int      SubValue
         {
             get
             {
@@ -202,21 +220,21 @@ namespace rMultiplatform
                 return (msb << 8) | lsb;
             }
         }
-        public bool BarOn
+        public bool     BarOn
         {
             get
             {
-                return (pData[8] & 0x10) != 0;
+                return (pData[8] & 0x10) == 0;
             }
         }
-        public bool Bar0_150
+        public bool     Bar0_150
         {
             get
             {
                 return (pData[8] & 0x08) != 0;
             }
         }
-        public eSign BarSign
+        public eSign    BarSign
         {
             get
             {
@@ -226,29 +244,29 @@ namespace rMultiplatform
                 return (eSign)intt;
             }
         }
-        public int  Bar1000_500
+        public int      Bar1000_500
         {
             get
             {
                 return pData[8] & 3;
             }
         }
-        public int  BarValue
+        public int      BarValue
         {
             get
             {
-                var value = (pData[9] & 0x1F) + 1;
+                var value = (pData[9] & 0x1F);
                 return value;
             }
         }
-        public bool Status1KHz
+        public bool     Status1KHz
         {
             get
             {
                 return (pData[10] & 0x40) != 0;
             }
         }
-        public bool Status1ms
+        public bool     Status1ms
         {
             get
             {
@@ -264,7 +282,7 @@ namespace rMultiplatform
             eACDC = 3,
             eNone
         }
-        public eAD_DC StatusAC_DC
+        public eAD_DC   StatusAC_DC
         {
             get
             {
@@ -281,91 +299,91 @@ namespace rMultiplatform
                 }
             }
         }
-        public bool StatusAuto
+        public bool     StatusAuto
         {
             get
             {
                 return (pData[10] & 0x04) != 0;
             }
         }
-        public bool StatusAPO
+        public bool     StatusAPO
         {
             get
             {
                 return (pData[10] & 0x02) != 0;
             }
         }
-        public bool StatusBAT
+        public bool     StatusBAT
         {
             get
             {
                 return (pData[10] & 0x01) != 0;
             }
         }
-        public bool StatusBT
+        public bool     StatusBT
         {
             get
             {
                 return (pData[11] & 0x40) != 0;
             }
         }
-        public bool StatusArrow
+        public bool     StatusArrow
         {
             get
             {
                 return (pData[11] & 0x20) != 0;
             }
         }
-        public bool StatusRel
+        public bool     StatusRel
         {
             get
             {
                 return (pData[11] & 0x10) != 0;
             }
         }
-        public bool StatusdBm
+        public bool     StatusdBm
         {
             get
             {
                 return (pData[11] & 0x08) != 0;
             }
         }
-        public int  StatusMinMax
+        public int      StatusMinMax
         {
             get
             {
                 return pData[11] & 0x7;
             }
         }
-        public bool StatusTest
+        public bool     StatusTest
         {
             get
             {
                 return (pData[12] & 0x40) != 0;
             }
         }
-        public int  StatusMem
+        public int      StatusMem
         {
             get
             {
                 return (pData[12] & 0x30) >> 4;
             }
         }
-        public int  StatusAHold
+        public int      StatusAHold
         {
             get
             {
-                return (pData[12] & 0x0B) >> 4;
+                return (pData[12] >> 2) & 3;
             }
         }
-        public bool StatusAC
+        public bool     StatusAC
         {
             get
             {
                 return (pData[12] & 0x02) != 0;
             }
         }
-        public bool StatusDC
+        public bool     StatusDC
         {
             get
             {

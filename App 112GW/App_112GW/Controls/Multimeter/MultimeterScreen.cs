@@ -564,18 +564,18 @@ namespace rMultiplatform
                         SetOther("Seg-", false);
 
                     //Calculate the position of the decimal point
-                    mDecimalPosition = (int)Math.Log10(Range) + 1;
+                    mDecimalPosition = Range;
 
                     var DisplayString = value.MainValue.ToString().PadLeft(5, ' ');
 
+                    if (mDecimalPosition < 5)
+                        DisplayString = DisplayString.Insert(mDecimalPosition, ".");
 
-                    DisplayString = DisplayString.Insert(mDecimalPosition, ".");
 
                     bool beforepoint = true;
                     string outstring = "";
                     for (int i = 0; i < DisplayString.Length; i++)
                     {
-
                         var c = DisplayString[i];
                         if ( c == '.' )
                         {
@@ -593,13 +593,34 @@ namespace rMultiplatform
                                 outstring += c;
                         }
                     }
-                    outstring = outstring.PadLeft(5, ' ').Replace(" .", "0.");
 
+                    //Setup the SI units outputs
+                    var units = value.MainRangeUnits;
+                    switch(units)
+                    {
+                        case 'm':
+                            SetOther("SegmV", true);
+                            break;
+                        case 'M':
+                            SetOther("SegM", true);
+                            break;
+                        case 'k':
+                            SetOther("Segk", true);
+                            break;
+                        case 'u':
+                            SetOther("Segu", true);
+                            break;
+                        case 'n':
+                            SetOther("Segn", true);
+                            break;
+                    }
+
+                    //Output the value to the emulated LCD
+                    outstring = outstring.PadLeft(5, ' ').Replace(" .", "0.");
                     LargeSegmentsWord = outstring;
                 }
             }
         }
-
         private Packet112GW.eMode _SubMode;
         public Packet112GW SubMode
         {
@@ -762,43 +783,68 @@ namespace rMultiplatform
                 }
             }
         }
-
         public Packet112GW BarStatus
         {
             set
             {
-                var use = value.BarOn;
+                var On = value.BarOn;
                 var _0_150 = value.Bar0_150;
                 var _1000_500 = value.Bar1000_500;
                 var sign = value.BarSign;
                 var barval = value.BarValue;
 
-                if (use)
+                if (On)
                 {
                     //Setup bargraph ranges
                     SetOther("BarTick0_0",  true);
-                    if (_1000_500 > 0)
+                    if (_0_150)
                     {
-                        SetOther("BarTick1_2", false);
-                        SetOther("BarTick2_4", false);
-                        SetOther("BarTick3_6", false);
-                        SetOther("BarTick4_8", false);
-                        SetOther("BarTick5_1", false);
-                        SetOther("BarTick5_0", false);
+                        SetOther("BarTick1_2", true);
+                        SetOther("BarTick2_4", true);
+                        SetOther("BarTick3_6", true);
+                        SetOther("BarTick4_8", true);
+                        SetOther("BarTick5_1", true);
+                        SetOther("BarTick5_0", true);
                     }
                     else
                     {
-                        SetOther("BarTick1_1", false);
-                        SetOther("BarTick2_2", false);
-                        SetOther("BarTick3_3", false);
-                        SetOther("BarTick4_4", false);
-                        SetOther("BarTick5_5", false);
+                        SetOther("BarTick1_1", true);
+                        SetOther("BarTick2_2", true);
+                        SetOther("BarTick3_3", true);
+                        SetOther("BarTick4_4", true);
+                        SetOther("BarTick5_5", true);
+                    }
+                    
+                    switch (_1000_500)
+                    {
+                        case 0:
+                            //5
+                            SetOther("Bar500_5_0", true);
+                            break;
+                        case 1:
+                            //50
+                            SetOther("Bar500_5_0", true);
+                            SetOther("Bar500_0_1", true);
+                            break;
+                        case 2:
+                            //500
+                            SetOther("Bar500_5_0", true);
+                            SetOther("Bar500_0_1", true);
+                            SetOther("Bar500_0_2", true);
+                            break;
+                        case 3:
+                            //1000
+                            SetOther("Bar1000_1_0", true);
+                            SetOther("Bar1000_0_1", true);
+                            SetOther("Bar1000_0_2", true);
+                            SetOther("Bar1000_0_3", true);
+                            break;
                     }
 
                     if (sign == Packet112GW.eSign.eNegative)
-                        SetOther("BarTick -", false);
+                        SetOther("BarTick -", true);
                     else
-                        SetOther("Bar+", false);
+                        SetOther("Bar+", true);
 
                     Bargraph = barval + 1;
                 }
@@ -834,7 +880,6 @@ namespace rMultiplatform
                 SetOther("auto",    value.StatusAuto);
                 SetOther("apo",     value.StatusAPO);
                 SetOther("Battery", value.StatusBAT);
-                SetOther("BT",      value.StatusBT);
                 SetOther("Arrow",   value.StatusArrow);
                 SetOther("REL",     value.StatusRel);
                 SetOther("SubdB",   value.StatusdBm);
@@ -842,10 +887,40 @@ namespace rMultiplatform
                 //NOTE UNKONWN MIN/MAX bits config
                 SetOther("TEST",    value.StatusTest);
                 SetOther("MEM",     value.StatusMem > 0);
-                SetOther("HOLD",    value.StatusAHold > 0);
+                
+                switch (value.StatusAHold)
+                {
+                    case 0:
+                        break;
+                    case 1:
+                        SetOther("HOLD", true);
+                        SetOther("A-", true);
+                        break;
+                    case 2:
+                        SetOther("HOLD", true);
+                        break;
+                }
+                switch (value.StatusMinMax)
+                {
+                    case 0:
+                        break;
+                    case 1:
+                        SetOther("MAX", true);
+                        break;
+                    case 2:
+                        SetOther("MIN", true);
+                        break;
+                    case 3:
+                        SetOther("AVG", true);
+                        break;
+                    case 4:
+                        SetOther("AVG", true);
+                        SetOther("MIN", true);
+                        SetOther("MAX", true);
+                        break;
+                }
             }
         }
-
         public void Update (Packet112GW pInput)
         {
             SetOther("BT", true);
@@ -875,7 +950,6 @@ namespace rMultiplatform
         {
             mLayerCache.Add(image);
         }
-
         bool                    ProcessImage    (string filename, Polycurve Image)
         {
             if (CacheFunction != null)

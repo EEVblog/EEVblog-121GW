@@ -95,36 +95,38 @@ namespace App_112GW
 
         IClientBLE client = new ClientBLE ();
         IDeviceBLE device = null;
-
         bool loop = true;
         async void AsyncStartLogging (object sender, EventArgs args)
         { 
             await Task.Run(() =>
             {
                 //Wait for device to appear
-                while (loop)
+                if (client != null)
                 {
                     foreach (var line in client.ListDevices())
                     {
                         if (line.Name.Contains("CR"))
                         {
                             device = line;
+                            Debug.WriteLine("Found device : " + device.Name);
 
-                            //Setup service events
-                            loop = false;
+                            //Connect to device
+                            var services = client.Connect(device).Services;
+                            Debug.WriteLine("Connected to device : " + device.Name);
+
+                            //Setup events
+                            foreach (var serv in services)
+                                foreach (var chari in serv.Characteristics)
+                                    if (chari.Description.Length > 0)
+                                    {
+                                        Debug.WriteLine("Setting up event for : " + chari.Description);
+                                        chari.ValueChanged += MainPage_ValueChanged;
+                                    }
+
                             break;
                         }
                     }
                 }
-
-                var services = client.Connect(device).Services;
-                foreach (var serv in services)
-                    foreach (var chari in serv.Characteristics)
-                        if (chari.Description.Length > 0)
-                        {
-                            Debug.WriteLine("Setting up event for : " + chari.Description);
-                            chari.ValueChanged += MainPage_ValueChanged;
-                        }
             });
         }
         void StartLogging (object sender, EventArgs args)
@@ -144,9 +146,6 @@ namespace App_112GW
                     return;
 
                 var dev = Devices.Last();
-                //dev.Screen.LargeSegments    = processor.MainValue;
-                //dev.Screen.SmallSegments    = processor.SubValue;
-                //dev.Screen.Bargraph         = processor.BarValue;
                 dev.Data.Sample(processor.MainValue);
                 dev.Screen.Update(processor);
                 dev.Screen.InvalidateSurface();
