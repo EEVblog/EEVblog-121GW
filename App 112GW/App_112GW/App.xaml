@@ -26,7 +26,6 @@
                 <Setter Property="BorderWidth"              Value="{ StaticResource BorderWidth }" />
                 <Setter Property="FontSize"                 Value="Medium" />
             </Style>
-
             <Style TargetType="Picker">
                 <Setter Property="BackgroundColor"          Value="{ StaticResource BackgroundColor }" />
                 <Setter Property="TextColor"                Value="{ StaticResource TextColor }" />

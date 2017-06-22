@@ -42,7 +42,10 @@ namespace rMultiplatform.BLE
             }
         }
         public UnPairedDeviceBLE(DeviceInformation pInput) { Information = pInput; }
-
+        public override string ToString()
+        {
+            return Name + "\n" + Id;
+        }
         public List<IServiceBLE> Services
         {
             get
@@ -102,6 +105,11 @@ namespace rMultiplatform.BLE
             mDevice = pInput;
             mSuccess = Build();
         }
+
+        public override string ToString()
+        {
+            return Name + "\n" + Id;
+        }
         public List<IServiceBLE> Services
         {
             get
@@ -110,6 +118,7 @@ namespace rMultiplatform.BLE
             }
         }
     }
+
     public class ServiceBLE : IServiceBLE
     {
         volatile private GattDeviceService mService;
@@ -214,7 +223,7 @@ namespace rMultiplatform.BLE
     }
     public class ClientBLE : IClientBLE
     {
-        volatile private List<IDeviceBLE> mVisibleDevices;
+        volatile public List<IDeviceBLE> mVisibleDevices;
         volatile private DeviceWatcher mDeviceWatcher;
 
         private static int      index   = 0;

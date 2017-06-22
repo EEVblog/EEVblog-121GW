@@ -27,7 +27,6 @@ namespace rMultiplatform.BLE
         bool    CanPair { get; }
 
         string ToString();
-
         List<IServiceBLE> Services { get; }
     }
     public interface        IServiceBLE

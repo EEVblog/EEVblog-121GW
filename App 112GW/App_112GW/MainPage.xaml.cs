@@ -15,6 +15,7 @@ namespace App_112GW
 	public partial class MainPage : ContentPage
 	{
         public List<Multimeter> Devices = new List<Multimeter>();
+        public BLEDeviceSelector BLESelectDevice = new BLEDeviceSelector();
         private Button          ButtonAddDevice		= new Button        { Text = "Add Device"      };
 		private Button		    ButtonStartLogging	= new Button        { Text = "Start Logging"   };
 		private Grid		    UserGrid			= new Grid          { HorizontalOptions = LayoutOptions.CenterAndExpand,   VerticalOptions = LayoutOptions.Fill, RowSpacing = 1, ColumnSpacing = 1, Padding = 1};
@@ -22,7 +23,10 @@ namespace App_112GW
         private StackLayout     DeviceLayout        = new StackLayout   { HorizontalOptions = LayoutOptions.Fill,   VerticalOptions = LayoutOptions.StartAndExpand };
 
         void InitSurface()
-		{
+        {
+            //Setup connected event
+            BLESelectDevice.Connected += Connected;
+
             BackgroundColor             = Globals.BackgroundColor;
             UserGrid.BackgroundColor    = Globals.BackgroundColor;
 
@@ -46,20 +50,23 @@ namespace App_112GW
 			UserGrid.Children.Add	(ButtonStartLogging,	1, 1);
 			Grid.SetColumnSpan		(ButtonAddDevice,		1);
 			Grid.SetColumnSpan		(ButtonStartLogging,	1);
-			
+
             //
-			ButtonAddDevice.Clicked		+= AddDevice;
-			ButtonStartLogging.Clicked	+= StartLogging;
-            
+            ButtonAddDevice.Clicked		+= SelectDevice;
             UserGrid.WidthRequest = 400;
-            Content = UserGrid;
+
+            Content = BLESelectDevice;
 		}
         public MainPage ()
 		{
 			InitializeComponent();
 			InitSurface();
-
-            MyProcessor.mCallback += ProcessPacket;
+        }
+        void SelectDevice (object o, EventArgs e)
+        {
+            BLESelectDevice = new BLEDeviceSelector();
+            BLESelectDevice.Connected += Connected;
+            Content = BLESelectDevice;
         }
 
         //Only maintains aspect ratio
@@ -67,100 +74,35 @@ namespace App_112GW
         {
             base.OnSizeAllocated(width, height);
         }
-        void AddDevice (object sender, EventArgs args)
+
+
+        void AddDevice (IDeviceBLE pDevice)
 		{
-            var Temp1 = new rMultiplatform.Multimeter(Globals.BackgroundColor);
-            Devices.Add(Temp1);
-            DeviceLayout.Children.Add(Temp1);
-            Grid.SetRow(Temp1, 0);
-            Grid.SetColumn(Temp1, 0);
-            Grid.SetRowSpan(Temp1, 1);
-            Grid.SetColumnSpan(Temp1, 2);
+            var NewDevice = new Multimeter(pDevice);
+            Devices.Add(NewDevice);
+            DeviceLayout.Children.Add(NewDevice);
+            Grid.SetRow(NewDevice, 0);
+            Grid.SetColumn(NewDevice, 0);
+            Grid.SetRowSpan(NewDevice, 1);
+            Grid.SetColumnSpan(NewDevice, 2);
 
-            UserGrid.Children.Add       (ButtonAddDevice,       0, 1);
-            UserGrid.Children.Add       (ButtonStartLogging,    1, 1);
-            Grid.SetColumnSpan          (ButtonAddDevice,       1);
-            Grid.SetColumnSpan          (ButtonStartLogging,    1);
+           // UserGrid.Children.Add       (ButtonAddDevice,       0, 1);
+           // UserGrid.Children.Add       (ButtonStartLogging,    1, 1);
+           // Grid.SetColumnSpan          (ButtonAddDevice,       1);
+           // Grid.SetColumnSpan          (ButtonStartLogging,    1);
         }
 
-        bool UpdateValue(float value)
+        //
+        void Connected(IDeviceBLE pDevice)
         {
-            return true;
-        }
+            Debug.WriteLine("Connected to device : " + pDevice.Name);
 
-        bool loop = true;
-
-        //
-        IDeviceBLE device = null;
-        IClientBLE client = new ClientBLE();
-
-        //
-        PacketProcessor MyProcessor = new PacketProcessor(0xF2, 26);
-
-        //
-        async void AsyncStartLogging (object sender, EventArgs args)
-        { 
-            await Task.Run(() =>
+            //Add multimeter
+            Xamarin.Forms.Device.BeginInvokeOnMainThread( () =>
             {
-                //Wait for device to appear
-                if (client != null)
-                {
-                    foreach (var line in client.ListDevices())
-                    {
-                        if (line.Name.Contains("CR"))
-                        {
-                            device = line;
-                            Debug.WriteLine("Found device : " + device.Name);
-
-                            //Connect to device
-                            var services = client.Connect(device).Services;
-                            Debug.WriteLine("Connected to device : " + device.Name);
-
-                            //Setup events
-                            foreach (var serv in services)
-                                foreach (var chari in serv.Characteristics)
-                                    if (chari.Description.Length > 0)
-                                    {
-                                        Debug.WriteLine("Setting up event for : " + chari.Description);
-                                        chari.ValueChanged += MainPage_ValueChanged;
-                                    }
-
-                            break;
-                        }
-                    }
-                }
+                AddDevice(pDevice);
+                Content = UserGrid;
             });
-        }
-        void StartLogging (object sender, EventArgs args)
-        {
-            AsyncStartLogging(sender, args);
-        }
-        void ProcessPacket(byte[] pInput)
-        {
-            var processor = new rMultiplatform.Packet112GW();
-            try
-            {
-                processor.ProcessPacket(pInput);
-
-                if (Devices.Count == 0)
-                    return;
-
-                var dev = Devices.Last();
-                dev.Data.Sample(processor.MainValue);
-                dev.Screen.Update(processor);
-                dev.Screen.InvalidateSurface();
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine(ex.ToString());
-            }
-        }
-
-        //
-        private void MainPage_ValueChanged(object o, rMultiplatform.BLE.CharacteristicEvent v)
-        {
-            Debug.WriteLine("Recieved: " + v.NewValue);
-            MyProcessor.Recieve(v.Bytes);
         }
     }
 }

@@ -5,11 +5,32 @@ using System.Text;
 using System.Threading.Tasks;
 using Xamarin.Forms.Themes;
 using Xamarin.Forms;
+using App_112GW;
+using System.Diagnostics;
 
 namespace rMultiplatform
 {
     public partial class Multimeter : ContentView
     {
+        private BLE.IDeviceBLE mDevice;
+        PacketProcessor MyProcessor = new PacketProcessor(0xF2, 26);
+        void ProcessPacket(byte[] pInput)
+        {
+            var processor = new rMultiplatform.Packet112GW();
+            try
+            {
+                processor.ProcessPacket(pInput);
+                Data.Sample(processor.MainValue);
+                Screen.Update(processor);
+                Screen.InvalidateSurface();
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.ToString());
+            }
+        }
+
+
         public StackLayout              MultimeterGrid;
         public MultimeterScreen         Screen;
         public MultimeterMenu           Menu;
@@ -17,8 +38,28 @@ namespace rMultiplatform
         public rMultiplatform.Chart     Plot;
         bool Item = true;
 
-        public Multimeter(Color BackColor)
+
+        private void ValueChanged(object o, rMultiplatform.BLE.CharacteristicEvent v)
         {
+            Debug.WriteLine("Recieved: " + v.NewValue);
+            MyProcessor.Recieve(v.Bytes);
+        }
+
+        public Multimeter(BLE.IDeviceBLE pDevice)
+        {
+            MyProcessor.mCallback += ProcessPacket; 
+            mDevice = pDevice;
+
+            //Setup events
+            var services = mDevice.Services;
+            foreach (var serv in services)
+                foreach (var chari in serv.Characteristics)
+                    if (chari.Description.Length > 0)
+                    {
+                        Debug.WriteLine("Setting up event for : " + chari.Description);
+                        chari.ValueChanged += ValueChanged;
+                    }
+
             HorizontalOptions = LayoutOptions.Fill;
             VerticalOptions = LayoutOptions.StartAndExpand;
 
@@ -27,11 +68,11 @@ namespace rMultiplatform
 
             // InitializeComponent ();
             Screen = new MultimeterScreen();
-            Screen.BackgroundColor = BackColor;
+            Screen.BackgroundColor = Globals.BackgroundColor;
             Screen.Clicked += BackClicked;
 
             Menu = new MultimeterMenu();
-            Menu.BackgroundColor = BackColor;
+            Menu.BackgroundColor = Globals.BackgroundColor;
             Menu.BackClicked += BackClicked;
             Menu.PlotClicked += PlotClicked;
 
