@@ -13,7 +13,6 @@ namespace rMultiplatform
         public StackLayout                      MultimeterGrid;
         public MultimeterScreen                 Screen;
         public MultimeterMenu                   Menu;
-
         public rMultiplatform.ChartData         Data;
         public rMultiplatform.Chart             Plot;
         bool Item = true;

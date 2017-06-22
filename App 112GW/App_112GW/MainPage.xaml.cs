@@ -15,7 +15,6 @@ namespace App_112GW
 	public partial class MainPage : ContentPage
 	{
         public List<rMultiplatform.MultimeterThemed> Devices = new List<rMultiplatform.MultimeterThemed>();
-
         private Button          ButtonAddDevice		= new Button        { Text = "Add Device"      };
 		private Button		    ButtonStartLogging	= new Button        { Text = "Start Logging"   };
 		private Grid		    UserGrid			= new Grid          { HorizontalOptions = LayoutOptions.CenterAndExpand,   VerticalOptions = LayoutOptions.Fill, RowSpacing = 1, ColumnSpacing = 1, Padding = 1};
@@ -24,8 +23,8 @@ namespace App_112GW
 
         void InitSurface()
 		{
-            BackgroundColor             = App_112GW.Globals.BackgroundColor;
-            UserGrid.BackgroundColor    = App_112GW.Globals.BackgroundColor;
+            BackgroundColor             = Globals.BackgroundColor;
+            UserGrid.BackgroundColor    = Globals.BackgroundColor;
 
             UserGrid.RowDefinitions.Add(	new RowDefinition		{ Height	= new GridLength(1,     GridUnitType.Star)      });
 			UserGrid.RowDefinitions.Add(	new RowDefinition		{ Height	= new GridLength(50,    GridUnitType.Absolute)	});
@@ -93,7 +92,7 @@ namespace App_112GW
             return true;
         }
 
-        IClientBLE client = new ClientBLE ();
+        IClientBLE client = new ClientBLE();
         IDeviceBLE device = null;
         bool loop = true;
         async void AsyncStartLogging (object sender, EventArgs args)
@@ -134,7 +133,6 @@ namespace App_112GW
             AsyncStartLogging(sender, args);
         }
 
-        
         void ProcessPacket(byte[] pInput)
         {
             var processor = new rMultiplatform.Packet112GW();

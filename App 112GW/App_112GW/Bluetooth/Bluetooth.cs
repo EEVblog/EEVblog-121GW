@@ -42,6 +42,9 @@ namespace rMultiplatform.BLE
         string Id { get; }
         string Description { get; }
 
+        bool Send( string pInput );
+        bool Send( byte[] pInput );
+
         event ChangeEvent ValueChanged;
     }
     public interface        IClientBLE

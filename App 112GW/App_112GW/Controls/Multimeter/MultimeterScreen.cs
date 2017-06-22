@@ -566,12 +566,15 @@ namespace rMultiplatform
                     //Calculate the position of the decimal point
                     mDecimalPosition = Range;
 
+                    //Align the string to the right of the display
                     var DisplayString = value.MainValue.ToString().PadLeft(5, ' ');
 
+                    //Cannot insert a decimal point outside the range of the string
                     if (mDecimalPosition < 5)
                         DisplayString = DisplayString.Insert(mDecimalPosition, ".");
 
-
+                    //Combine decimal points and charaters so that a decimal point 
+                    // doesn't occupy a full character
                     bool beforepoint = true;
                     string outstring = "";
                     for (int i = 0; i < DisplayString.Length; i++)

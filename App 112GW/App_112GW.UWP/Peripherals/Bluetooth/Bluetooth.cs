@@ -6,6 +6,7 @@ using Windows.Security.Cryptography;
 using Windows.Devices.Bluetooth;
 using Windows.Devices.Enumeration;
 using Windows.Devices.Bluetooth.GenericAttributeProfile;
+using System.Text;
 
 namespace rMultiplatform.BLE
 {
@@ -152,7 +153,7 @@ namespace rMultiplatform.BLE
     }
     public class CharacteristicBLE : ICharacteristicBLE
     {
-        volatile private GattCharacteristic  mCharacteristic;
+        volatile private GattCharacteristic mCharacteristic;
         public string Id
         {
             get
@@ -178,6 +179,17 @@ namespace rMultiplatform.BLE
             {
                 _ValueChanged -= value;
             }
+        }
+
+        public bool Send(string pInput)
+        {
+            var temp = mCharacteristic.WriteValueAsync(CryptographicBuffer.ConvertStringToBinary(pInput, BinaryStringEncoding.Utf8)).AsTask().Result;
+            return true;
+        }
+        public bool Send(byte[] pInput)
+        {
+            var temp = mCharacteristic.WriteValueAsync(CryptographicBuffer.CreateFromByteArray(pInput)).AsTask().Result;
+            return true;
         }
 
         //Event that is called when the value of the characteristic is changed

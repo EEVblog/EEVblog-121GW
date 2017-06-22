@@ -404,5 +404,78 @@ namespace rMultiplatform
             for (int i = 0; i < str.Length - 1; i += 2)
                 pData.Add(ToByte(str.Substring(i, 2)));
         }
+
+        private static byte[] KEYCODE_RANGE = { (byte)0xF4, 0x30, 0x31, 0x30, 0x31 };
+        private static byte[] KEYCODE_HOLD = { (byte)0xF4, 0x30, 0x32, 0x30, 0x32 };
+        private static byte[] KEYCODE_REL = { (byte)0xF4, 0x30, 0x33, 0x30, 0x33 };
+        private static byte[] KEYCODE_PEAK = { (byte)0xF4, 0x30, 0x34, 0x30, 0x34 };
+        private static byte[] KEYCODE_MODE = { (byte)0xF4, 0x30, 0x35, 0x30, 0x35 };
+        private static byte[] KEYCODE_MINMAX = { (byte)0xF4, 0x30, 0x36, 0x30, 0x36 };
+        private static byte[] KEYCODE_MEM = { (byte)0xF4, 0x30, 0x37, 0x30, 0x37 };
+        private static byte[] KEYCODE_SETUP = { (byte)0xF4, 0x30, 0x38, 0x30, 0x38 };
+        private static byte[] KEYCODE_LONG_RANGE = { (byte)0xF4, 0x38, 0x31, 0x38, 0x31 };
+        private static byte[] KEYCODE_LONG_HOLD = { (byte)0xF4, 0x38, 0x32, 0x38, 0x32 };
+        private static byte[] KEYCODE_LONG_REL = { (byte)0xF4, 0x38, 0x33, 0x38, 0x33 };
+        private static byte[] KEYCODE_LONG_PEAK = { (byte)0xF4, 0x38, 0x34, 0x38, 0x34 };
+        private static byte[] KEYCODE_LONG_MODE = { (byte)0xF4, 0x38, 0x35, 0x38, 0x35 };
+        private static byte[] KEYCODE_LONG_MINMAX = { (byte)0xF4, 0x38, 0x36, 0x38, 0x36 };
+        private static byte[] KEYCODE_LONG_MEM = { (byte)0xF4, 0x38, 0x37, 0x38, 0x37 };
+        private static byte[] KEYCODE_LONG_SETUP = { (byte)0xF4, 0x38, 0x38, 0x38, 0x38 };
+        
+        public enum Keycode
+        {
+            RANGE,
+            HOLD,
+            REL,
+            PEAK,
+            MODE,
+            MINMAX,
+            MEM,
+            SETUP,
+            LONG_RANGE,
+            LONG_HOLD,
+            LONG_REL,
+            LONG_PEAK,
+            LONG_MINMAX,
+            LONG_MEM,
+            LONG_SETUP
+        }
+        static public byte[] GetKeycode(Keycode Input)
+        {
+            switch (Input)
+            {
+                case Keycode.RANGE:
+                    return KEYCODE_RANGE;
+                case Keycode.HOLD:
+                    return KEYCODE_HOLD;
+                case Keycode.REL:
+                    return KEYCODE_REL;
+                case Keycode.PEAK:
+                    return KEYCODE_PEAK;
+                case Keycode.MODE:
+                    return KEYCODE_MODE;
+                case Keycode.MINMAX:
+                    return KEYCODE_MINMAX;
+                case Keycode.MEM:
+                    return KEYCODE_MEM;
+                case Keycode.SETUP:
+                    return KEYCODE_SETUP;
+                case Keycode.LONG_RANGE:
+                    return KEYCODE_LONG_RANGE;
+                case Keycode.LONG_HOLD:
+                    return KEYCODE_LONG_HOLD;
+                case Keycode.LONG_REL:
+                    return KEYCODE_LONG_REL;
+                case Keycode.LONG_PEAK:
+                    return KEYCODE_LONG_PEAK;
+                case Keycode.LONG_MINMAX:
+                    return KEYCODE_LONG_MINMAX;
+                case Keycode.LONG_MEM:
+                    return KEYCODE_LONG_MEM;
+                case Keycode.LONG_SETUP:
+                    return KEYCODE_LONG_SETUP;
+            }
+            return null;
+        }
     }
 }
