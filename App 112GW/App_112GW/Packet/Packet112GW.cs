@@ -116,11 +116,9 @@ namespace rMultiplatform
         {
             get
             {
-
                 var rg = MainRange;
                 var range = (int)pData[1] & 0xF;
                 Debug.WriteLine("Current Range: " + range.ToString());
-
                 return rg.mValues[range];
             }
         }
@@ -134,14 +132,25 @@ namespace rMultiplatform
                 return rg.mNotation[range];
             }
         }
-
-        public int      MainValue
+        public double   MainValue
         {
             get
             {
                 var msb = (int)pData[2];
                 var lsb = (int)pData[3];
-                return (msb << 8) | lsb;
+                var val = (double)((int)((msb << 8) | lsb));
+
+                return val / Math.Pow(10.0, ( 5 - (double)MainRangeValue));
+            }
+        }
+        public int MainIntValue
+        {
+            get
+            {
+                var msb = (int)pData[2];
+                var lsb = (int)pData[3];
+                var val = (msb << 8) | lsb;
+                return val;
             }
         }
         public bool     MainOverload

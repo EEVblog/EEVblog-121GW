@@ -75,7 +75,6 @@ namespace App_112GW
             base.OnSizeAllocated(width, height);
         }
 
-
         void AddDevice (IDeviceBLE pDevice)
 		{
             var NewDevice = new Multimeter(pDevice);
@@ -86,15 +85,18 @@ namespace App_112GW
             Grid.SetRowSpan(NewDevice, 1);
             Grid.SetColumnSpan(NewDevice, 2);
 
-           // UserGrid.Children.Add       (ButtonAddDevice,       0, 1);
-           // UserGrid.Children.Add       (ButtonStartLogging,    1, 1);
-           // Grid.SetColumnSpan          (ButtonAddDevice,       1);
-           // Grid.SetColumnSpan          (ButtonStartLogging,    1);
+            //UserGrid.Children.Add       (ButtonAddDevice,       0, 1);
+            //UserGrid.Children.Add       (ButtonStartLogging,    1, 1);
+            //Grid.SetColumnSpan          (ButtonAddDevice,       1);
+            //Grid.SetColumnSpan          (ButtonStartLogging,    1);
+            //Files.SaveFile("I AM BOB!");
         }
 
         //
         void Connected(IDeviceBLE pDevice)
         {
+            if (pDevice == null)
+                return;
             Debug.WriteLine("Connected to device : " + pDevice.Name);
 
             //Add multimeter

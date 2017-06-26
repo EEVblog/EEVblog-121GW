@@ -6,6 +6,7 @@ using SkiaSharp.Views;
 using SkiaSharp.Views.Forms;
 using System.Collections.Generic;
 using System.Text;
+using App_112GW;
 
 namespace rMultiplatform
 {
@@ -32,6 +33,18 @@ namespace rMultiplatform
     {
         public delegate ChartDataEventReturn ChartDataEvent(ChartDataEventArgs e);
         public          List<ChartDataEvent> Registrants;
+
+        //
+        public void ToCSV()
+        {
+            if (Data.Count > 1)
+            {
+                string output = "";
+                foreach (var item in Data)
+                    output += item.X.ToString() + ", " + item.Y.ToString() + "\r\n";
+                Files.SaveFile(output);
+            }
+        }
 
         //
         public int      Layer
@@ -149,12 +162,12 @@ namespace rMultiplatform
             Registrants = new List<ChartDataEvent>();
 
             //
-            var col = App_112GW.Globals.UniqueColor;
-            DrawPaint = new SKPaint() { Color = col.ToSKColor(), IsStroke = true, StrokeWidth = 2, IsAntialias = true };
+            var col = Globals.UniqueColor;
+            DrawPaint = new SKPaint () { Color = col.ToSKColor(), IsStroke = true, StrokeWidth = 2, IsAntialias = true };
 
             //
-            HorozontalSpan = new Range(0, pTimeSpan);
-            VerticalSpan = new Range(0, 0);
+            HorozontalSpan = new Range (0, pTimeSpan);
+            VerticalSpan = new Range (0, 0);
         }
         public bool Draw (SKCanvas c)
         {

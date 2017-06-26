@@ -16,11 +16,11 @@ namespace rMultiplatform
         PacketProcessor MyProcessor = new PacketProcessor(0xF2, 26);
         void ProcessPacket(byte[] pInput)
         {
-            var processor = new rMultiplatform.Packet112GW();
+            var processor = new Packet112GW();
             try
             {
                 processor.ProcessPacket(pInput);
-                Data.Sample(processor.MainValue);
+                Data.Sample((float)processor.MainValue);
                 Screen.Update(processor);
                 Screen.InvalidateSurface();
             }
@@ -34,23 +34,21 @@ namespace rMultiplatform
         public StackLayout              MultimeterGrid;
         public MultimeterScreen         Screen;
         public MultimeterMenu           Menu;
-        public rMultiplatform.ChartData Data;
-        public rMultiplatform.Chart     Plot;
-        bool Item = true;
-
+        public ChartData                Data;
+        public ChartView                Plot;
+        bool                            Item = true;
 
         private void ValueChanged(object o, rMultiplatform.BLE.CharacteristicEvent v)
         {
             Debug.WriteLine("Recieved: " + v.NewValue);
             MyProcessor.Recieve(v.Bytes);
         }
-
         public Multimeter(BLE.IDeviceBLE pDevice)
         {
             MyProcessor.mCallback += ProcessPacket; 
             mDevice = pDevice;
 
-            //Setup events
+            // Setup events
             var services = mDevice.Services;
             foreach (var serv in services)
                 foreach (var chari in serv.Characteristics)
@@ -60,10 +58,11 @@ namespace rMultiplatform
                         chari.ValueChanged += ValueChanged;
                     }
 
+            // 
             HorizontalOptions = LayoutOptions.Fill;
             VerticalOptions = LayoutOptions.StartAndExpand;
 
-            //Assures that a non-zero height is allocated
+            // Assures that a non-zero height is allocated
             MinimumHeightRequest = 200;
 
             // InitializeComponent ();
@@ -76,21 +75,21 @@ namespace rMultiplatform
             Menu.BackClicked += BackClicked;
             Menu.PlotClicked += PlotClicked;
 
-            Data = new rMultiplatform.ChartData(rMultiplatform.ChartData.ChartDataMode.eRolling, "Time (s)", "Volts (V)", 0.1f, 10.0f);
-            Plot = new rMultiplatform.Chart() { Padding = new rMultiplatform.ChartPadding(0.1) };
-            Plot.AddGrid(new rMultiplatform.ChartGrid());
-            Plot.AddAxis(new rMultiplatform.ChartAxis(5, 5, 0, 20) { Label = "Time (s)", Orientation = rMultiplatform.ChartAxis.AxisOrientation.Horizontal, AxisLocation = 0.9, LockToAxisLabel = "Volts (V)", LockAlignment = rMultiplatform.ChartAxis.AxisLock.eMiddle });
-            Plot.AddAxis(new rMultiplatform.ChartAxis(5, 5, 0, 0) { Label = "Volts (V)", Orientation = rMultiplatform.ChartAxis.AxisOrientation.Vertical, AxisLocation = 0.1, LockToAxisLabel = "Time (s)", LockAlignment = rMultiplatform.ChartAxis.AxisLock.eStart });
+            Data = new ChartData(ChartData.ChartDataMode.eRolling, "Time (s)", "Volts (V)", 0.1f, 10.0f);
+            Plot = new ChartView() { Padding = new ChartPadding(0.1) };
+            Plot.AddGrid(new ChartGrid());
+            Plot.AddAxis(new ChartAxis(5, 5, 0, 20) {   Label = "Time (s)",     Orientation = ChartAxis.AxisOrientation.Horizontal, AxisLocation = 0.9, LockToAxisLabel = "Volts (V)",  LockAlignment = ChartAxis.AxisLock.eMiddle });
+            Plot.AddAxis(new ChartAxis(5, 5, 0, 0) {    Label = "Volts (V)",    Orientation = ChartAxis.AxisOrientation.Vertical,   AxisLocation = 0.1, LockToAxisLabel = "Time (s)",   LockAlignment = ChartAxis.AxisLock.eStart });
             Plot.AddData(Data);
-
-            Menu.IsVisible = true;
-            Screen.IsVisible = false;
-            Plot.IsVisible = false;
 
             MultimeterGrid = new StackLayout();
             MultimeterGrid.Children.Add(Screen);
             MultimeterGrid.Children.Add(Menu);
             MultimeterGrid.Children.Add(Plot);
+
+            Menu.IsVisible      = true;
+            Screen.IsVisible    = false;
+            Plot.IsVisible      = false;
 
             Content = MultimeterGrid;
             SetView();

@@ -567,27 +567,24 @@ namespace rMultiplatform
                     mDecimalPosition = Range;
 
                     //Align the string to the right of the display
-                    var DisplayString = value.MainValue.ToString().PadLeft(5, ' ');
+                    var DisplayString = value.MainIntValue.ToString().PadLeft(5, ' ');
 
                     //Cannot insert a decimal point outside the range of the string
-                    if (mDecimalPosition < 5)
+                    if ( mDecimalPosition < 5 )
                         DisplayString = DisplayString.Insert(mDecimalPosition, ".");
 
                     //Combine decimal points and charaters so that a decimal point 
                     // doesn't occupy a full character
                     bool beforepoint = true;
                     string outstring = "";
-                    for (int i = 0; i < DisplayString.Length; i++)
+                    for ( int i = 0; i < DisplayString.Length; ++i )
                     {
                         var c = DisplayString[i];
                         if ( c == '.' )
-                        {
                             beforepoint = false;
-                        }
+      
                         if (beforepoint)
-                        {
                             outstring += c;
-                        }
                         else
                         {
                             if (c == ' ')
@@ -599,7 +596,7 @@ namespace rMultiplatform
 
                     //Setup the SI units outputs
                     var units = value.MainRangeUnits;
-                    switch(units)
+                    switch( units )
                     {
                         case 'm':
                             SetOther("SegmV", true);
@@ -1222,7 +1219,6 @@ namespace rMultiplatform
             mOther.On();
             foreach (var item in mOther.mLayers)
                 item.Off();
-
 
             BackgroundColor = Globals.BackgroundColor;
             PressColor = Globals.FocusColor;

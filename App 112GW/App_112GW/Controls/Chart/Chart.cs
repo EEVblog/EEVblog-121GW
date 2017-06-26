@@ -129,6 +129,13 @@ namespace rMultiplatform
                 Element.SetParentSize(Width, Height);
         }
 
+        public void SaveCSV()
+        {
+            foreach(var Element in ChartElements)
+                if (Element.GetType() == typeof (ChartData))
+                    (Element as ChartData).ToCSV();
+        }
+
         //Renders the chart and child objects
         bool RequireRegister = true;
         protected void Register()
@@ -203,6 +210,59 @@ namespace rMultiplatform
             mCanvas.Clear(App_112GW.Globals.BackgroundColor.ToSKColor());
         }
 
+        public event EventHandler Clicked;
+        private void OnClicked(EventArgs e)
+        {
+            EventHandler handler = Clicked;
+            if (handler != null)
+            {
+                handler(this, e);
+            }
+        }
+        public enum eControlInputState
+        {
+            eNone,
+            ePressed,
+            eHover
+        }
+        private eControlInputState _State;
+        public eControlInputState State
+        {
+            get
+            { return _State; }
+            set
+            {
+                _State = value;
+                InvalidateSurface();
+            }
+        }
+        private rMultiplatform.Touch mTouch;
+        private void MTouch_Press(object sender, rMultiplatform.TouchActionEventArgs args)
+        {
+            State = eControlInputState.ePressed;
+            //ChangeColors();
+        }
+        private void MTouch_Hover(object sender, rMultiplatform.TouchActionEventArgs args)
+        {
+            State = eControlInputState.eHover;
+            //ChangeColors();
+        }
+        private void MTouch_Release(object sender, rMultiplatform.TouchActionEventArgs args)
+        {
+            if (State == eControlInputState.ePressed)
+                OnClicked(EventArgs.Empty);
+            State = eControlInputState.eNone;
+            //ChangeColors();
+        }
+        private void SetupTouch()
+        {
+            //Add the gesture recognizer 
+            mTouch = new rMultiplatform.Touch();
+            mTouch.Pressed += MTouch_Press;
+            mTouch.Hover += MTouch_Hover;
+            mTouch.Released += MTouch_Release;
+            Effects.Add(mTouch);
+        }
         //Initialises the object
         public Chart() : base()
         {
@@ -224,6 +284,9 @@ namespace rMultiplatform
             var transparency        = SKColors.Transparent;
             mDrawPaint.BlendMode    = SKBlendMode.SrcOver;
             mDrawPaint.ColorFilter  = SKColorFilter.CreateBlendMode(transparency, SKBlendMode.DstOver);
+
+            //Setup touch input
+            SetupTouch();
         }
     }
 }

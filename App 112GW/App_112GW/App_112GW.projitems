@@ -12,9 +12,11 @@
     <Compile Include="$(MSBuildThisFileDirectory)App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
-    <Compile Include="$(MSBuildThisFileDirectory)Bluetooth\BLEDeviceSelector.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Bluetooth\Bluetooth.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Peripherals\Bluetooth\BLEDeviceSelector.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Peripherals\Bluetooth\Bluetooth.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\Buttons\BackButton.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Controls\Chart\ChartMenu.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Controls\Chart\ChartView.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\Labelled Controls\LabelledBackButton.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\Labelled Controls\LabelledCheckbox.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\Chart\AxisLabel.cs" />
@@ -27,6 +29,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Controls\Buttons\GeneralControl.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\Labelled Controls\LabelledControl.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\Multimeter\Multimeter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)General\Files.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)General\Range.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\Multimeter\MultimeterMenu.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\Buttons\Checkbox.cs" />
@@ -43,7 +46,7 @@
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Controls\Multimeter\MultimeterScreen.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Image\SVGLayer\SVGLayer.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)General\Touch.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Peripherals\Touch.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)General\VariableMonitor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Packet\Packet112GW.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Packet\PacketProcessor.cs" />
@@ -374,9 +377,9 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="$(MSBuildThisFileDirectory)Controls\Labelled Controls\" />
-    <Folder Include="$(MSBuildThisFileDirectory)General\" />
     <Folder Include="$(MSBuildThisFileDirectory)Image\Layers\" />
     <Folder Include="$(MSBuildThisFileDirectory)Image\PNG%27s\" />
+    <Folder Include="$(MSBuildThisFileDirectory)Peripherals\" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\PNG%27s\!bar_range.png">

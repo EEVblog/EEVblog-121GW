@@ -11,7 +11,7 @@ using App_112GW;
 
 namespace rMultiplatform
 {
-    public class MultimeterMenu: Grid
+    public class MultimeterMenu : Grid
     {
         public event EventHandler   BackClicked;
         public event EventHandler   PlotClicked;
@@ -19,7 +19,6 @@ namespace rMultiplatform
         {
             return Object.ReferenceEquals(A.GetType(), B);
         }
-
         public bool                 PlotEnabled
         {
             get
@@ -27,7 +26,6 @@ namespace rMultiplatform
                 return mPlotCheck.Checked;
             }
         }
-
         private Button              mHold;
         private Button              mRelative;
         private Label               mSerialNumber;

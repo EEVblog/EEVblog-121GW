@@ -65,7 +65,7 @@ namespace rMultiplatform
             private set; get;
         }
     }
-    class Touch: RoutingEffect
+    public class Touch : RoutingEffect
     {
         public delegate void    TouchActionEventHandler(object sender, TouchActionEventArgs args);
         public event            TouchActionEventHandler     Pressed;
