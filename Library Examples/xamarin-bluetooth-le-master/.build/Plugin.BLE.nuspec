@@ -1,0 +1,57 @@
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>Plugin.BLE</id>
+    <version>1.2.3</version>
+    <title>Bluetooth LE Plugin for Xamarin</title>
+    <authors>Adrian Seceleanu, Sven-Michael Stübe</authors>
+    <owners>Adrian Seceleanu, Sven-Michael Stübe</owners>
+    <licenseUrl>http://www.apache.org/licenses/LICENSE-2.0</licenseUrl>
+    <projectUrl>https://github.com/xabre/xamarin-bluetooth-le</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>
+      Xamarin plugin to access Bluetooth Low Energy functionality on Android and iOS.
+      Read the full documentation on the projects page.
+    </description>
+    <tags>xamarin monodroid Xamarin.iOS bluetooth BLE LE BTLE Smart xamarin.forms ios android forms xamarinforms</tags>
+    <iconUrl>https://raw.githubusercontent.com/xabre/xamarin-bluetooth-le/master/icon_small.png</iconUrl>
+    <releaseNotes>
+      [1.2.3]
+      - #183: Android fixed UpdateRssiAsync
+      [1.2.2]
+      - #136: Added support for scan modes
+      [1.2.1]
+      - Merge PR #157 iOS add support for NSString descriptor values
+      - Merge PR #148 Added a boolean (forceBleTransport) to force the use of transport parameter to BLE in connectGatt method in Android
+      - Breaking changes: ConnectDeviceAsync optional parameters are now encapsulated in a ConnectParameter class
+      [1.2.0]
+      - #150 iOS: No disconnect when the connect CancelationToken is cancelled after a successful connect.
+      [1.2.0-beta4]
+      - #122 Android: Introduced a extra connectivity state to distinguish system connected device from app connected devices. System connected devices can't be used by the app because we have no gatt instance so we should allow to connect them via the adapter even though the ProfileState is -Connected-
+      [1.2.0-beta3]
+      - #121 #126 hardened characteristic discovery error handling for iOS
+      [1.2.0-beta2]
+      - #118 fixed crash on read in empty value on iOS
+      [1.2.0-beta1]
+      - #90: API change, added parent reference for IDescriptor to ICharacteristic to IService to IDevice
+      - #109, #111 merge PR: iOS parse TxPower, ServiceData
+
+      for older releases: https://github.com/xabre/xamarin-bluetooth-le/blob/master/doc/changelog.md
+    </releaseNotes>
+    <dependencies>
+      <group targetFramework="MonoAndroid">
+      </group>
+      <group targetFramework="Xamarin.iOS">
+      </group>
+      <group targetFramework="portable-net45+win8+wpa81+wp8">
+      </group>
+    </dependencies>
+  </metadata>
+  <files>
+    <!-- PCL -->
+    <file src="pcl\Plugin.BLE.*" target="lib\portable-net45+win8+wpa81+wp8" />
+    <!-- droid -->
+    <file src="android\Plugin.BLE.*" target="lib\MonoAndroid" />
+    <!-- iOS -->
+    <file src="ios\Plugin.BLE.*" target="lib\Xamarin.iOS10" />
+  </files>
+</package>

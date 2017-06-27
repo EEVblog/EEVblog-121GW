@@ -97,9 +97,9 @@ namespace rMultiplatform.BLE
             }
         }
 
-        private async Task<bool> Build()
+        private bool Build()
         {
-            var servs = await mDevice.GetServicesAsync();
+            var servs = mDevice.GetServicesAsync().Result;
 
             mServices = new List<IServiceBLE>();
             mServices.Clear();
@@ -111,7 +111,7 @@ namespace rMultiplatform.BLE
         public PairedDeviceBLE(IDevice pDevice)
         {
             mDevice = pDevice;
-            mSuccess = Build().Result;
+            mSuccess = Build();
         }
 
         public override string ToString()
@@ -122,7 +122,7 @@ namespace rMultiplatform.BLE
         {
             get
             {
-                return null;
+                return mServices;
             }
         }
     }
@@ -161,9 +161,9 @@ namespace rMultiplatform.BLE
         {
             return Id;
         }
-        private async Task<bool> Build()
+        private bool Build()
         {
-            var items = await mService.GetCharacteristicsAsync();
+            var items = mService.GetCharacteristicsAsync().Result;
 
             mCharacteristics = new List<ICharacteristicBLE>();
             mCharacteristics.Clear();
@@ -175,7 +175,7 @@ namespace rMultiplatform.BLE
         public ServiceBLE(IService pInput)
         {
             mService = pInput;
-            mSuccess = Build().Result;
+            mSuccess = Build();
         }
     }
 
@@ -249,7 +249,14 @@ namespace rMultiplatform.BLE
             mCharacteristic = pInput;
             mCharacteristic.ValueUpdated += CharacteristicEvent_ValueChanged;
 
-            mCharacteristic.StartUpdatesAsync().Wait();
+            try
+            {
+                mCharacteristic.StartUpdatesAsync();
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine(e.Message);
+            }
         }
     }
 
@@ -317,30 +324,23 @@ namespace rMultiplatform.BLE
                 var input = pInput as UnPairedDeviceBLE;
 
                 //Pair if the device is able to pair
-                bool connected = false;
                 try
                 {
-                    Xamarin.Forms.Device.BeginInvokeOnMainThread(() =>
-                    {
-                        mAdapter.ConnectToDeviceAsync(input.mDevice).Wait();
-                    });
-                    connected = true;
-                }
-                catch (DeviceConnectionException e)
-                {
-                    // ... could not connect to device
-                    Debug.WriteLine(e.Message);
-                }
+                    mAdapter.StopScanningForDevicesAsync().Wait();
+                    mAdapter.ConnectToDeviceAsync(input.mDevice).Wait();
 
-                bool paired = connected;
-
-                //Only create device if it is paired
-                if (paired)
-                {
                     mVisibleDevices?.Clear();
                     mVisibleDevices = null;
                     LastDevice = new PairedDeviceBLE(input.mDevice);
                     return (LastDevice);
+                }
+                catch (DeviceConnectionException e)
+                {
+                    Debug.WriteLine(e.Message);
+                }
+                catch (Exception e)
+                {
+                    Debug.WriteLine(e.Message);
                 }
             }
             return null;
