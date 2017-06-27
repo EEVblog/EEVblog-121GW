@@ -79,7 +79,7 @@ namespace rMultiplatform
             Plot = new ChartView() { Padding = new ChartPadding(0.1) };
             Plot.AddGrid(new ChartGrid());
             Plot.AddAxis(new ChartAxis(5, 5, 0, 20) {   Label = "Time (s)",     Orientation = ChartAxis.AxisOrientation.Horizontal, AxisLocation = 0.9, LockToAxisLabel = "Volts (V)",  LockAlignment = ChartAxis.AxisLock.eMiddle });
-            Plot.AddAxis(new ChartAxis(5, 5, 0, 0) {    Label = "Volts (V)",    Orientation = ChartAxis.AxisOrientation.Vertical,   AxisLocation = 0.1, LockToAxisLabel = "Time (s)",   LockAlignment = ChartAxis.AxisLock.eStart });
+            Plot.AddAxis(new ChartAxis(5, 5, 0, 0)  {   Label = "Volts (V)",    Orientation = ChartAxis.AxisOrientation.Vertical,   AxisLocation = 0.1, LockToAxisLabel = "Time (s)",   LockAlignment = ChartAxis.AxisLock.eStart });
             Plot.AddData(Data);
 
             MultimeterGrid = new StackLayout();

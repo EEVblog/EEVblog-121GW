@@ -14,21 +14,34 @@ namespace rMultiplatform.BLE
         public delegate void DeviceConnected(IDeviceBLE pDevice);
         public event DeviceConnected Connected;
 
+        ListView listView;
+        void UpdateDeviceList()
+        {
+            listView.ItemsSource = null;
+            listView.ItemsSource = mClient.ListDevices();
+        }
+
+        public void Reset()
+        {
+            mClient.Reset();
+        }
+
         IClientBLE mClient;
         public BLEDeviceSelector()
         {
             HorizontalOptions = LayoutOptions.CenterAndExpand;
             VerticalOptions = LayoutOptions.CenterAndExpand;
 
-            mClient = new ClientBLE();
-
-            //
-            var listView = new ListView();
-            listView.ItemsSource = mClient.ListDevices();
-
-            //
+            listView = new ListView();
             listView.BackgroundColor = Globals.BackgroundColor;
 
+            //Reset BLE
+            mClient = null;
+            mClient = new ClientBLE();
+            mClient.DeviceListUpdated += UpdateDeviceList;
+            Reset();
+
+            //
             var template = new DataTemplate(typeof(TextCell));
 
             // We can set data bindings to our supplied objects.
@@ -37,7 +50,7 @@ namespace rMultiplatform.BLE
             template.SetValue(TextCell.TextColorProperty, Globals.TextColor);
             template.SetValue(TextCell.DetailColorProperty, Globals.HighlightColor);
 
-
+            //
             listView.ItemTemplate = template;
             listView.ItemSelected += OnSelection;
             Content = listView;
@@ -46,11 +59,8 @@ namespace rMultiplatform.BLE
         private void OnSelection(object sender, SelectedItemChangedEventArgs e)
         {
             var item = e.SelectedItem as IDeviceBLE;
-            Task.Run(() =>
-            {
-                var dev = Connect(item);
-                Connected?.Invoke(dev);
-            });
+            var dev = Connect(item);
+            Connected?.Invoke(dev);
         }
 
         private IDeviceBLE Connect(IDeviceBLE Device)
@@ -58,7 +68,8 @@ namespace rMultiplatform.BLE
             //Wait for device to appear
             if (mClient != null)
             {
-                return mClient.Connect(Device);
+                var rtn = mClient.Connect(Device);
+                return rtn;
             }
             return null;
         }

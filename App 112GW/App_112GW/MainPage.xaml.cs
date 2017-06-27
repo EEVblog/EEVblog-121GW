@@ -25,7 +25,6 @@ namespace App_112GW
         void InitSurface()
         {
             //Setup connected event
-            BLESelectDevice.Connected += Connected;
 
             BackgroundColor             = Globals.BackgroundColor;
             UserGrid.BackgroundColor    = Globals.BackgroundColor;
@@ -55,6 +54,8 @@ namespace App_112GW
             ButtonAddDevice.Clicked		+= SelectDevice;
             UserGrid.WidthRequest = 400;
 
+            BLESelectDevice = new BLEDeviceSelector();
+            BLESelectDevice.Connected += Connected;
             Content = BLESelectDevice;
 		}
         public MainPage ()
@@ -64,8 +65,7 @@ namespace App_112GW
         }
         void SelectDevice (object o, EventArgs e)
         {
-            BLESelectDevice = new BLEDeviceSelector();
-            BLESelectDevice.Connected += Connected;
+            BLESelectDevice.Reset();
             Content = BLESelectDevice;
         }
 
@@ -84,17 +84,12 @@ namespace App_112GW
             Grid.SetColumn(NewDevice, 0);
             Grid.SetRowSpan(NewDevice, 1);
             Grid.SetColumnSpan(NewDevice, 2);
-
-            //UserGrid.Children.Add       (ButtonAddDevice,       0, 1);
-            //UserGrid.Children.Add       (ButtonStartLogging,    1, 1);
-            //Grid.SetColumnSpan          (ButtonAddDevice,       1);
-            //Grid.SetColumnSpan          (ButtonStartLogging,    1);
-            //Files.SaveFile("I AM BOB!");
         }
 
         //
         void Connected(IDeviceBLE pDevice)
         {
+            //BLESelectDevice = null;
             if (pDevice == null)
                 return;
             Debug.WriteLine("Connected to device : " + pDevice.Name);

@@ -252,6 +252,7 @@ namespace rMultiplatform.BLE
             Debug.WriteLine(tag + " : Done");
             mut.ReleaseMutex();
             Debug.WriteLine(tag + " : Released");
+            DeviceListUpdated?.Invoke();
         }
         private void DeviceWatcher_Removed  (DeviceWatcher sender, DeviceInformationUpdate  args)
         {
@@ -278,14 +279,19 @@ namespace rMultiplatform.BLE
             Debug.WriteLine(tag + " : Done");
             mut.ReleaseMutex();
             Debug.WriteLine(tag + " : Released");
+            DeviceListUpdated?.Invoke();
         }
         private void DeviceWatcher_Updated  (DeviceWatcher sender, DeviceInformationUpdate  args)
         {
             if (sender != mDeviceWatcher)
                 return;
+            DeviceListUpdated?.Invoke();
         }
 
         private IDeviceBLE LastDevice = null;
+
+        public event VoidEvent DeviceListUpdated;
+
         public List<IDeviceBLE> ListDevices()
         {
             if (mVisibleDevices == null)

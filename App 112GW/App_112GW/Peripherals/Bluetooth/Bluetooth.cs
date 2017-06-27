@@ -46,8 +46,18 @@ namespace rMultiplatform.BLE
 
         event ChangeEvent ValueChanged;
     }
+
+    public delegate void VoidEvent();
     public interface        IClientBLE
     {
+        event VoidEvent DeviceListUpdated;
+
+        //Default functions
+        void Start();
+        void Stop();
+        void Rescan();
+        void Reset();
+
         //Does not return a usable device, it must be paired first
         List<IDeviceBLE> ListDevices();
         IDeviceBLE Connect(IDeviceBLE pInput);
