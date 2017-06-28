@@ -65,11 +65,20 @@ namespace rMultiplatform.BLE
 
         private IDeviceBLE Connect(IDeviceBLE Device)
         {
+            if (Device == null)
+                return null;
+
             //Wait for device to appear
             if (mClient != null)
             {
                 var rtn = mClient.Connect(Device);
-                return rtn;
+                if ( rtn == null )
+                {
+                    listView.SelectedItem = null;
+                    return null;
+                }
+                else
+                    return rtn;
             }
             return null;
         }
