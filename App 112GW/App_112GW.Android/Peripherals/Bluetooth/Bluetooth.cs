@@ -17,6 +17,8 @@ namespace rMultiplatform.BLE
     {
         public IDevice mDevice;
 
+        public event SetupComplete Ready;
+
         public string Id
         {
             get
@@ -63,8 +65,9 @@ namespace rMultiplatform.BLE
     public class PairedDeviceBLE : IDeviceBLE
     {
         private IDevice mDevice;
-        private bool mSuccess;
         private List<IServiceBLE> mServices;
+
+        public event SetupComplete Ready;
 
         public string Id
         {
@@ -97,19 +100,42 @@ namespace rMultiplatform.BLE
             }
         }
 
-        private bool Build()
+        void Build()
         {
-            var servs = mDevice.GetServicesAsync().Result;
-            mServices = new List<IServiceBLE>();
-            mServices.Clear();
-            foreach (var service in servs)
-                mServices.Add(new ServiceBLE(service));
-            return true;
+            var servs = mDevice.GetServicesAsync().ContinueWith(AddServices);
         }
-        public PairedDeviceBLE(IDevice pDevice)
+
+        private int UninitialisedServices = 0;
+        
+
+
+        void AddServices(Task<IList<IService>> obj)
         {
+            UninitialisedServices = obj.Result.Count;
+            foreach (var item in obj.Result)
+            {
+                Debug.WriteLine("Service adding : " + item.Name);
+                var temp = new ServiceBLE(item, ServiceReady);
+                mServices.Add(temp);
+            }
+        }
+
+        private void ServiceReady()
+        {
+            --UninitialisedServices;
+            if (UninitialisedServices == 0)
+            {
+                Debug.WriteLine("Services finished setting up : " + Id);
+                Ready?.Invoke();
+            }
+        }
+
+        public PairedDeviceBLE(IDevice pDevice, SetupComplete ready)
+        {
+            mServices = new List<IServiceBLE>();
             mDevice = pDevice;
-            mSuccess = Build();
+            Ready += ready;
+            Build();
         }
 
         public override string ToString()
@@ -125,21 +151,12 @@ namespace rMultiplatform.BLE
         }
     }
 
-
-
-
-
-
-
-
-
-
-
     public class ServiceBLE : IServiceBLE
     {
-        volatile private IService mService;
-        private bool mSuccess;
-        private List<ICharacteristicBLE> mCharacteristics;
+        public event SetupComplete Ready;
+
+        volatile private IService           mService;
+        private List<ICharacteristicBLE>    mCharacteristics;
         public List<ICharacteristicBLE> Characteristics
         {
             get
@@ -147,7 +164,6 @@ namespace rMultiplatform.BLE
                 return mCharacteristics;
             }
         }
-
         public string Id
         {
             get
@@ -159,41 +175,55 @@ namespace rMultiplatform.BLE
         {
             return Id;
         }
-        private bool Build()
+
+        private void Build()
         {
-            var items = mService.GetCharacteristicsAsync().Result;
-
-            mCharacteristics = new List<ICharacteristicBLE>();
-            mCharacteristics.Clear();
-            foreach (var item in items)
-                mCharacteristics.Add(new CharacteristicBLE(item));
-
-            return true;
+            mService.GetCharacteristicsAsync().ContinueWith(AddCharacteristics);
         }
-        public ServiceBLE(IService pInput)
+        private void AddCharacteristics(Task<IList<ICharacteristic>> obj)
         {
+            try
+            {
+                UninitialisedServices = obj.Result.Count;
+                foreach (var item in obj.Result)
+                {
+                    Debug.WriteLine("Characteristic adding : " + item.Name);
+                    var temp = new CharacteristicBLE(item, CharateristicReady);
+                    mCharacteristics.Add(temp);
+                }
+            }
+            catch ( Exception e )
+            {
+                Debug.WriteLine("ERROR: " + e.Message);
+            }
+        }
+
+        private int UninitialisedServices = 0;
+        private void CharateristicReady()
+        {
+            --UninitialisedServices;
+            if (UninitialisedServices == 0)
+            {
+                Debug.WriteLine("Characteristics finished setting up : " + Id);
+                Ready?.Invoke();
+            }
+        }
+
+        public ServiceBLE(IService pInput, SetupComplete ready)
+        {
+            mCharacteristics = new List<ICharacteristicBLE>();
+            if (ready != null)
+                Ready += ready;
+
             mService = pInput;
-            mSuccess = Build();
+            Build();
         }
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
     public class CharacteristicBLE : ICharacteristicBLE
     {
-        volatile private ICharacteristic mCharacteristic;
+        volatile public ICharacteristic mCharacteristic;
 
-        //volatile private GattCharacteristic mCharacteristic;
         public string Id
         {
             get
@@ -209,6 +239,8 @@ namespace rMultiplatform.BLE
             }
         }
         event ChangeEvent _ValueChanged;
+        public event SetupComplete Ready;
+
         public event ChangeEvent ValueChanged
         {
             add
@@ -220,7 +252,6 @@ namespace rMultiplatform.BLE
                 _ValueChanged -= value;
             }
         }
-
         public bool Send(string pInput)
         {
             byte[] bArray = Encoding.UTF8.GetBytes(pInput);
@@ -233,95 +264,52 @@ namespace rMultiplatform.BLE
         }
 
         //Event that is called when the value of the characteristic is changed
-        private void CharacteristicEvent_ValueChanged(object sender, Plugin.BLE.Abstractions.EventArgs.CharacteristicUpdatedEventArgs args)
+        private void CharacteristicEvent_ValueChanged (object sender, Plugin.BLE.Abstractions.EventArgs.CharacteristicUpdatedEventArgs args)
         {
             Debug.WriteLine("CharateristicEvent : " + args.ToString());
+            
+            if (args == null)
+                Debug.WriteLine("Args is null.");
+            if (args.Characteristic == null)
+                Debug.WriteLine("Args.Characteristic is null.");
+            if (args.Characteristic.Value == null)
+                Debug.WriteLine("Args.Characteristic.Value is null.");
+            if (_ValueChanged == null)
+                Debug.WriteLine("ValueChanged is null.");
 
             var buffer = args.Characteristic.Value;
             var charEvent = new CharacteristicEvent(buffer);
             _ValueChanged?.Invoke(sender, charEvent);
         }
-        public CharacteristicBLE(ICharacteristic pInput)
+        public CharacteristicBLE(ICharacteristic pInput, SetupComplete ready)
         {
-            _ValueChanged = null;
+            Ready += ready;
+
+            Debug.WriteLine("Setting up characteristic");
+
             mCharacteristic = pInput;
             mCharacteristic.ValueUpdated += CharacteristicEvent_ValueChanged;
 
-            try
-            {
-                mCharacteristic.StartUpdatesAsync().Wait();
-            }
-            catch (Exception e)
-            {
-                Debug.WriteLine(e.Message);
-            }
+            if (mCharacteristic.CanUpdate)
+                mCharacteristic.StartUpdatesAsync().ContinueWith(UpdateStarted);
+            else
+                Ready?.Invoke();
+
+            _ValueChanged = null;
+        }
+        private void UpdateStarted(Task obj)
+        {
+            Debug.WriteLine("Characteristic updates started.");
+            Ready?.Invoke();
         }
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-    public class ClientBLE : IClientBLE
+    public class ClientBLE : AClientBLE, IClientBLE
     {
-        public event VoidEvent DeviceListUpdated;
-
-        volatile public List<IDeviceBLE> mVisibleDevices;
         volatile private IBluetoothLE mDevice;
         volatile private IAdapter mAdapter;
 
         private static int index = 0;
-        private static Mutex mut = new Mutex();
-        
-        void MutexBlock(Action Function, string tag = "")
-        {
-            void GetMutex(string ltag = "")
-            {
-                Debug.WriteLine(ltag + " : Waiting");
-                mut.WaitOne();
-                Debug.WriteLine(ltag + " : Started");
-            }
-            void ReleaseMutex(string ltag = "")
-            {
-                Debug.WriteLine(ltag + " : Done");
-                mut.ReleaseMutex();
-                Debug.WriteLine(ltag + " : Released");
-            }
-
-            try
-            {
-                GetMutex(tag);
-                Task.Run(Function).Wait();
-                ReleaseMutex(tag);
-            }
-            catch (Exception e)
-            {
-                ReleaseMutex(tag);
-            }
-        }
-        void AddUniqueItem(IDeviceBLE pInput)
-        {
-            if (pInput.Name != null)
-                if (pInput.Name.Length > 0)
-                {
-                    bool add = true;
-                    foreach (var device in mVisibleDevices)
-                        if (device.Id == pInput.Id)
-                            add = false;
-                    if (add)
-                        mVisibleDevices.Add(pInput);
-                }
-        }
-
         private void DeviceWatcher_Added(object sender, Plugin.BLE.Abstractions.EventArgs.DeviceEventArgs args)
         {
             int indexer = index++;
@@ -333,16 +321,10 @@ namespace rMultiplatform.BLE
                 mVisibleDevices.Clear();
                 foreach (var item in mAdapter.DiscoveredDevices)
                     AddUniqueItem(new UnPairedDeviceBLE(item));
-            } , (indexer.ToString() + " Adding"));
+            }, (indexer.ToString() + " Adding"));
 
-            DeviceListUpdated.Invoke();
-        }
-        
-        public List<IDeviceBLE> ListDevices()
-        {
-            if (mVisibleDevices == null)
-                return new List<IDeviceBLE>();
-            return mVisibleDevices;
+            //
+            TriggerListUpdate();
         }
 
         private bool AcceptRescan = false;
@@ -362,8 +344,6 @@ namespace rMultiplatform.BLE
                 mAdapter.StopScanningForDevicesAsync().Wait();
             }, "Stop");
         }
-
-
         public void Rescan()
         {
             if (AcceptRescan)
@@ -379,69 +359,59 @@ namespace rMultiplatform.BLE
         {
             MutexBlock(() =>
             {
-                DeviceListUpdated?.Invoke();
                 AcceptRescan = true;
                 if (mAdapter.IsScanning == false)
                     mAdapter.StartScanningForDevicesAsync();
-            }, "Reset");
+            }, "Reset" );
         }
 
-        public IDeviceBLE Connect(IDeviceBLE pInput)
+        IDeviceBLE      ConnectingDevice = null;
+        PairedDeviceBLE Device = null;
+        private void ConnectionComplete ( Task obj )
         {
-            PairedDeviceBLE Device = null;
-            var inputType = pInput.GetType();
-            var searchType = typeof(UnPairedDeviceBLE);
-
-            if (inputType == searchType)
-            {
-                //Pair with the defice if needed.
-                var input = pInput as UnPairedDeviceBLE;
-
-                //Pair if the device is able to pair
-                try
-                {
-                    MutexBlock(() =>
-                    {
-                        //Stop existing 
-                        AcceptRescan = false;
-
-                        mAdapter.StopScanningForDevicesAsync().Wait();
-
-                        //var systemDevices = mAdapter.GetSystemConnectedOrPairedDevices();
-                        //foreach (var device in systemDevices)
-                        //    mAdapter.ConnectToDeviceAsync(device);
-
-                        mAdapter.ConnectToDeviceAsync(input.mDevice).Wait();
-
-                        //Add device
-                        Device = new PairedDeviceBLE(input.mDevice);
-                    }, "Connecting");
-                }
-                catch (DeviceConnectionException e)
-                {
-                    Debug.WriteLine(e.Message);
-                }
-                catch (Exception e)
-                {
-                    Debug.WriteLine(e.Message);
-                }
-            }
-            return Device;
+            Debug.WriteLine("Scanning stopped, building services and charateristics.");
+            Device = new PairedDeviceBLE((ConnectingDevice as UnPairedDeviceBLE).mDevice, () => { TriggerDeviceConnected(Device); });
         }
+        private void StopScanning ( Task obj )
+        {
+            Debug.WriteLine("Device connected, stopping scanning.");
+            //ConnectionComplete(obj);
+            mAdapter.StopScanningForDevicesAsync().ContinueWith(ConnectionComplete);
+        }
+
+        public void Connect ( IDeviceBLE pInput )
+        {
+            if (pInput == null)
+                return;
+
+            var inputType = pInput.GetType();
+            var searchType = typeof( UnPairedDeviceBLE );
+
+            Device = null;
+            if ( inputType == searchType )
+            {
+                //Pair if the device is able to pair
+                AcceptRescan = false;
+                ConnectingDevice = pInput;
+
+                Debug.WriteLine( "Connecting to new device." );
+                mAdapter.ConnectToDeviceAsync( (ConnectingDevice as UnPairedDeviceBLE).mDevice ).ContinueWith( StopScanning );
+            }
+        }
+
         public ClientBLE()
         {
             mVisibleDevices = new List<IDeviceBLE>();
 
             //Setup bluetoth basic adapter
-            mDevice = CrossBluetoothLE.Current;
-            mAdapter = CrossBluetoothLE.Current.Adapter;
-            mAdapter.ScanTimeout = 20000;
-            mAdapter.ScanMode = Plugin.BLE.Abstractions.Contracts.ScanMode.Balanced;
-            mAdapter.ScanTimeoutElapsed += MAdapter_ScanTimeoutElapsed;
+            mDevice                     =   CrossBluetoothLE.Current;
+            mAdapter                    =   CrossBluetoothLE.Current.Adapter;
+            mAdapter.ScanTimeout        =   20000;
+            mAdapter.ScanMode           =   Plugin.BLE.Abstractions.Contracts.ScanMode.Balanced;
+            mAdapter.ScanTimeoutElapsed +=  MAdapter_ScanTimeoutElapsed;
 
             //Add debug state change indications
             mDevice.StateChanged += (s, e) => {Debug.WriteLine($"The bluetooth state changed to {e.NewState}");};
-
             if (mDevice.IsOn && mDevice.IsAvailable)
                 mAdapter.DeviceDiscovered += DeviceWatcher_Added;
 
@@ -451,9 +421,8 @@ namespace rMultiplatform.BLE
 
         private void MAdapter_DeviceConnectionLost(object sender, Plugin.BLE.Abstractions.EventArgs.DeviceErrorEventArgs e)
         {
-            mAdapter.ConnectToDeviceAsync(e.Device);
+            mAdapter.ConnectToDeviceAsync(e.Device).Wait();
         }
-
         private void MAdapter_ScanTimeoutElapsed(object sender, EventArgs e)
         {
             Rescan();

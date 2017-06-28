@@ -95,9 +95,9 @@ namespace App_112GW
             Debug.WriteLine("Connected to device : " + pDevice.Name);
 
             //Add multimeter
-            Xamarin.Forms.Device.BeginInvokeOnMainThread( () =>
+            AddDevice(pDevice);
+            Device.BeginInvokeOnMainThread( () =>
             {
-                AddDevice(pDevice);
                 Content = UserGrid;
             });
         }

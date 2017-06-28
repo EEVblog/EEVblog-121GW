@@ -30,7 +30,6 @@ namespace rMultiplatform
             }
         }
 
-
         public StackLayout              MultimeterGrid;
         public MultimeterScreen         Screen;
         public MultimeterMenu           Menu;
@@ -49,14 +48,12 @@ namespace rMultiplatform
             mDevice = pDevice;
 
             // Setup events
-            var services = mDevice.Services;
-            foreach (var serv in services)
+            foreach (var serv in mDevice.Services)
                 foreach (var chari in serv.Characteristics)
-                    if (chari.Description.Length > 0)
-                    {
-                        Debug.WriteLine("Setting up event for : " + chari.Description);
-                        chari.ValueChanged += ValueChanged;
-                    }
+                {
+                    Debug.WriteLine("Setting up event for : " + chari.Description);
+                    chari.ValueChanged += ValueChanged;
+                }
 
             // 
             HorizontalOptions = LayoutOptions.Fill;

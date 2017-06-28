@@ -20,7 +20,6 @@ namespace rMultiplatform.BLE
             listView.ItemsSource = null;
             listView.ItemsSource = mClient.ListDevices();
         }
-
         public void Reset()
         {
             mClient.Reset();
@@ -39,6 +38,7 @@ namespace rMultiplatform.BLE
             mClient = null;
             mClient = new ClientBLE();
             mClient.DeviceListUpdated += UpdateDeviceList;
+            mClient.DeviceConnected += MClient_DeviceConnected;
             Reset();
 
             //
@@ -56,31 +56,28 @@ namespace rMultiplatform.BLE
             Content = listView;
         }
 
+        private void MClient_DeviceConnected(IDeviceBLE pDevice)
+        {
+            listView.SelectedItem = null;
+            if (pDevice != null)
+                Connected?.Invoke(pDevice);
+
+        }
+
         private void OnSelection(object sender, SelectedItemChangedEventArgs e)
         {
             var item = e.SelectedItem as IDeviceBLE;
-            var dev = Connect(item);
-            Connected?.Invoke(dev);
+            Connect(item);
         }
 
-        private IDeviceBLE Connect(IDeviceBLE Device)
+        private void Connect (IDeviceBLE Device)
         {
             if (Device == null)
-                return null;
+                return;
 
             //Wait for device to appear
             if (mClient != null)
-            {
-                var rtn = mClient.Connect(Device);
-                if ( rtn == null )
-                {
-                    listView.SelectedItem = null;
-                    return null;
-                }
-                else
-                    return rtn;
-            }
-            return null;
+                mClient.Connect(Device);
         }
     }
 }
