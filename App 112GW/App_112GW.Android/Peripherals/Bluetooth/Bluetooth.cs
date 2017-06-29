@@ -312,6 +312,8 @@ namespace rMultiplatform.BLE
         private static int index = 0;
         private void DeviceWatcher_Added(object sender, Plugin.BLE.Abstractions.EventArgs.DeviceEventArgs args)
         {
+            Debug.WriteLine("Device watcher detected : " + args.Device.Name);
+
             int indexer = index++;
             if (args.Device.Name == string.Empty || mVisibleDevices == null)
                 return;
@@ -323,7 +325,6 @@ namespace rMultiplatform.BLE
                     AddUniqueItem(new UnPairedDeviceBLE(item));
             }, (indexer.ToString() + " Adding"));
 
-            //
             TriggerListUpdate();
         }
 
@@ -375,7 +376,6 @@ namespace rMultiplatform.BLE
         private void StopScanning ( Task obj )
         {
             Debug.WriteLine("Device connected, stopping scanning.");
-            //ConnectionComplete(obj);
             mAdapter.StopScanningForDevicesAsync().ContinueWith(ConnectionComplete);
         }
 
@@ -421,10 +421,12 @@ namespace rMultiplatform.BLE
 
         private void MAdapter_DeviceConnectionLost(object sender, Plugin.BLE.Abstractions.EventArgs.DeviceErrorEventArgs e)
         {
+            Debug.WriteLine("Connection to device lost.");
             mAdapter.ConnectToDeviceAsync(e.Device).Wait();
         }
         private void MAdapter_ScanTimeoutElapsed(object sender, EventArgs e)
         {
+            Debug.WriteLine("Scan time elapsed.");
             Rescan();
         }
         ~ClientBLE()
