@@ -16,6 +16,7 @@ namespace rMultiplatform.BLE
     {
         volatile public DeviceInformation Information;
         public event SetupComplete Ready;
+        public event ChangeEvent Change;
 
         public string Id
         {
@@ -65,6 +66,7 @@ namespace rMultiplatform.BLE
         private List<IServiceBLE> mServices;
 
         public event SetupComplete Ready;
+        public event ChangeEvent Change;
 
         public string Id
         {
@@ -274,6 +276,7 @@ namespace rMultiplatform.BLE
             }, ((index++).ToString() + " Removed"));
             TriggerListUpdate();
         }
+
         private void DeviceWatcher_Removed  (DeviceWatcher sender, DeviceInformationUpdate  args)
         {
             if (sender != mDeviceWatcher)

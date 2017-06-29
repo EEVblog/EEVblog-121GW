@@ -46,14 +46,7 @@ namespace rMultiplatform
         {
             MyProcessor.mCallback += ProcessPacket; 
             mDevice = pDevice;
-
-            // Setup events
-            foreach (var serv in mDevice.Services)
-                foreach (var chari in serv.Characteristics)
-                {
-                    Debug.WriteLine("Setting up event for : " + chari.Description);
-                    chari.ValueChanged += ValueChanged;
-                }
+            mDevice.Change += ValueChanged;
 
             // 
             HorizontalOptions = LayoutOptions.Fill;
@@ -84,9 +77,9 @@ namespace rMultiplatform
             MultimeterGrid.Children.Add(Menu);
             MultimeterGrid.Children.Add(Plot);
 
-            Menu.IsVisible      = true;
-            Screen.IsVisible    = false;
-            Plot.IsVisible      = false;
+            Menu.IsVisible = true;
+            Screen.IsVisible = false;
+            Plot.IsVisible = false;
 
             Content = MultimeterGrid;
             SetView();

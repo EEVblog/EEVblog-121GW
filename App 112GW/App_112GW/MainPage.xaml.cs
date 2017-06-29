@@ -77,6 +77,7 @@ namespace App_112GW
 
         void AddDevice (IDeviceBLE pDevice)
 		{
+            Debug.WriteLine("ADDING DEVICE.");
             var NewDevice = new Multimeter(pDevice);
             Devices.Add(NewDevice);
             DeviceLayout.Children.Add(NewDevice);

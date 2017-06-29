@@ -56,14 +56,12 @@ namespace rMultiplatform.BLE
             Content = listView;
         }
 
+        List<Object> devucesl = new List<object>();
         private void MClient_DeviceConnected(IDeviceBLE pDevice)
         {
             listView.SelectedItem = null;
-            if (pDevice != null)
-                Connected?.Invoke(pDevice);
-
+            Connected?.Invoke(pDevice);
         }
-
         private void OnSelection(object sender, SelectedItemChangedEventArgs e)
         {
             var item = e.SelectedItem as IDeviceBLE;
@@ -78,6 +76,7 @@ namespace rMultiplatform.BLE
             //Wait for device to appear
             if (mClient != null)
                 mClient.Connect(Device);
+
         }
     }
 }

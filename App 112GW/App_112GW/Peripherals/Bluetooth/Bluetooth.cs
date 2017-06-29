@@ -28,6 +28,7 @@ namespace rMultiplatform.BLE
     public interface        IDeviceBLE
     {
         event SetupComplete Ready;
+        event ChangeEvent Change;
 
         string  Id { get; }
         string  Name { get; }
@@ -126,7 +127,7 @@ namespace rMultiplatform.BLE
                 ReleaseMutex(tag);
             }
         }
-        public void AddUniqueItem(IDeviceBLE pInput)
+        public bool AddUniqueItem(IDeviceBLE pInput)
         {
             if (pInput.Name != null)
                 if (pInput.Name.Length > 0)
@@ -137,7 +138,10 @@ namespace rMultiplatform.BLE
                             add = false;
                     if (add)
                         mVisibleDevices.Add(pInput);
+
+                    return add;
                 }
+            return false;
         }
         public List<IDeviceBLE> ListDevices()
         {
