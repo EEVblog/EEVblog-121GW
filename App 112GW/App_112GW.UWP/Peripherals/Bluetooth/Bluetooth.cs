@@ -62,7 +62,6 @@ namespace rMultiplatform.BLE
     public class PairedDeviceBLE : IDeviceBLE
     {
         volatile private BluetoothLEDevice mDevice;
-        private bool mSuccess;
         private List<IServiceBLE> mServices;
 
         public event SetupComplete Ready;
@@ -96,7 +95,7 @@ namespace rMultiplatform.BLE
             }
         }
 
-        private bool Build()
+        private void Build()
         {
             var servs = mDevice.GetGattServicesAsync().AsTask().Result.Services;
 
@@ -105,12 +104,13 @@ namespace rMultiplatform.BLE
             foreach (var service in servs)
                 mServices.Add(new ServiceBLE(service));
 
-            return true;
+            Ready?.Invoke();
         }
-        public PairedDeviceBLE(BluetoothLEDevice pInput)
+        public PairedDeviceBLE(BluetoothLEDevice pInput, SetupComplete ready)
         {
+            Ready = ready;
             mDevice = pInput;
-            mSuccess = Build();
+            Build();
         }
 
         public override string ToString()
@@ -301,14 +301,19 @@ namespace rMultiplatform.BLE
                 pInput.Information.Pairing.PairAsync().AsTask().ContinueWith((arg) => { GetDevice(pInput); });
             });
         }
+        
         private void GetDevice( UnPairedDeviceBLE input )
         {
             var mDeviceBLE = BluetoothLEDevice.FromIdAsync(input.Information.Id).AsTask().Result;
             if (mDeviceBLE == null)
                 return;
 
-            TriggerDeviceConnected(new PairedDeviceBLE(mDeviceBLE));
+            bool setup = false;
+            var NewPairedDevice = new PairedDeviceBLE(mDeviceBLE, () => { setup = true; });
+            if (setup)
+                TriggerDeviceConnected(NewPairedDevice);
         }
+
         public void Connect(IDeviceBLE pInput)
         {
             var inputType = pInput.GetType();
