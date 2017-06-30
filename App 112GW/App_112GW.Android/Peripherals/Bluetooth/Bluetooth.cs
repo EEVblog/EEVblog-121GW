@@ -92,10 +92,7 @@ namespace rMultiplatform.BLE
 
             //Setup 
             CrossBleAdapter.Current.ScanInterval ( new TimeSpan( 0, 0, 10 ) );
-            ccss = CrossBleAdapter.Current.Scan ( ) .Subscribe ( ScanResult => 
-            {
-                DeviceSubscriber_Added ( ScanResult );
-            });
+            ccss = CrossBleAdapter.Current.Scan ( ) .Subscribe ( ScanResult => { DeviceSubscriber_Added ( ScanResult ); } );
         }
 
         ~ClientBLE()

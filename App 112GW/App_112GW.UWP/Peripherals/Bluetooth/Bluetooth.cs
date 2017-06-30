@@ -18,28 +18,28 @@ namespace rMultiplatform.BLE
         public event SetupComplete Ready;
         public event ChangeEvent Change;
 
-        public string Id
+        public string   Id
         {
             get
             {
                 return Information.Id;
             }
         }
-        public string Name
+        public string   Name
         {
             get
             {
                 return Information.Name;
             }
         }
-        public bool Paired
+        public bool     Paired
         {
             get
             {
                 return Information.Pairing.IsPaired;
             }
         }
-        public bool CanPair
+        public bool     CanPair
         {
             get
             {
@@ -60,22 +60,6 @@ namespace rMultiplatform.BLE
         }
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     public class PairedDeviceBLE : IDeviceBLE
     {
         volatile private BluetoothLEDevice mDevice;
@@ -88,28 +72,28 @@ namespace rMultiplatform.BLE
             Change?.Invoke(o, v);
         }
 
-        public string Id
+        public  string  Id
         {
             get
             {
                 return mDevice.DeviceId;
             }
         }
-        public string Name
+        public  string  Name
         {
             get
             {
                 return mDevice.Name;
             }
         }
-        public bool Paired
+        public  bool    Paired
         {
             get
             {
                 return mDevice.DeviceInformation.Pairing.IsPaired;
             }
         }
-        public bool CanPair
+        public  bool    CanPair
         {
             get
             {
@@ -117,7 +101,7 @@ namespace rMultiplatform.BLE
             }
         }
 
-        private void Build()
+        private void    Build()
         {
             var servs = mDevice.GetGattServicesAsync().AsTask().Result.Services;
 
@@ -128,13 +112,13 @@ namespace rMultiplatform.BLE
 
             Ready?.Invoke();
         }
-        public PairedDeviceBLE(BluetoothLEDevice pInput, SetupComplete ready)
+
+        public PairedDeviceBLE(BluetoothLEDevice pInput, SetupComplete pReady)
         {
-            Ready = ready;
+            Ready = pReady;
             mDevice = pInput;
             Build();
         }
-
         public override string ToString()
         {
             return Name + "\n" + Id;
@@ -148,24 +132,10 @@ namespace rMultiplatform.BLE
         }
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
     public class ServiceBLE : IServiceBLE
     {
-        public event SetupComplete Ready;
-
-
         volatile private GattDeviceService mService;
+        public event SetupComplete Ready;
         private List<ICharacteristicBLE> mCharacteristics;
         public List<ICharacteristicBLE> Characteristics
         {
@@ -174,6 +144,7 @@ namespace rMultiplatform.BLE
                 return mCharacteristics;
             }
         }
+
         private bool mSuccess;
 
         public string Id
@@ -205,30 +176,25 @@ namespace rMultiplatform.BLE
         }
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     public class CharacteristicBLE : ICharacteristicBLE
     {
+        volatile private GattCharacteristic mCharacteristic;
+
+        private event ChangeEvent _ValueChanged;
+        public event ChangeEvent ValueChanged
+        {
+            add
+            {
+                _ValueChanged += value;
+            }
+            remove
+            {
+                _ValueChanged -= value;
+            }
+        }
+
         public event SetupComplete Ready;
 
-        volatile private GattCharacteristic mCharacteristic;
         public string Id
         {
             get
@@ -243,44 +209,35 @@ namespace rMultiplatform.BLE
                 return mCharacteristic.UserDescription;
             }
         }
-        event ChangeEvent _ValueChanged;
 
-        public event ChangeEvent ValueChanged
-        {
-            add
-            {
-                _ValueChanged += value;
-            }
-            remove
-            {
-                _ValueChanged -= value;
-            }
-        }
-
-        public bool Send(string pInput)
+        public bool Send ( string pInput )
         {
             var temp = mCharacteristic.WriteValueAsync(CryptographicBuffer.ConvertStringToBinary(pInput, BinaryStringEncoding.Utf8)).AsTask().Result;
             return true;
         }
-        public bool Send(byte[] pInput)
+        public bool Send ( byte[] pInput )
         {
-            var temp = mCharacteristic.WriteValueAsync(CryptographicBuffer.CreateFromByteArray(pInput)).AsTask().Result;
+            try
+            {
+                var temp = mCharacteristic.WriteValueAsync ( CryptographicBuffer.CreateFromByteArray ( pInput ) ).AsTask ( ).Result;
+            }
+            catch  { }
             return true;
         }
 
         //Event that is called when the value of the characteristic is changed
-        private void CharacteristicEvent_ValueChanged(GattCharacteristic sender, GattValueChangedEventArgs args)
+        private void CharacteristicEvent_ValueChanged ( GattCharacteristic sender, GattValueChangedEventArgs args )
         {
-            Debug.WriteLine("CharateristicEvent : " + args.ToString());
+            Debug.WriteLine ( "CharateristicEvent : " + args.ToString ( ) );
 
             var buffer = args.CharacteristicValue;
             byte[] data;
-            CryptographicBuffer.CopyToByteArray(buffer, out data);
+            CryptographicBuffer.CopyToByteArray ( buffer, out data );
 
-            var charEvent = new CharacteristicEvent(data);
-            _ValueChanged?.Invoke(sender, charEvent);
+            var charEvent = new CharacteristicEvent ( data );
+            _ValueChanged?.Invoke ( sender, charEvent );
         }
-        public CharacteristicBLE(GattCharacteristic pInput, ChangeEvent pEvent)
+        public CharacteristicBLE ( GattCharacteristic pInput, ChangeEvent pEvent )
         {
             _ValueChanged = pEvent;
             mCharacteristic = pInput;
@@ -289,53 +246,11 @@ namespace rMultiplatform.BLE
         }
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     public class ClientBLE : AClientBLE, IClientBLE
     {
         volatile private DeviceWatcher mDeviceWatcher;
         private static int index = 0;
-        private void DeviceWatcher_Added    (DeviceWatcher sender, DeviceInformation        args)
+        private void DeviceWatcher_Added    (DeviceWatcher sender, DeviceInformation args)
         {
             if (sender != mDeviceWatcher)
                 return;
@@ -413,21 +328,28 @@ namespace rMultiplatform.BLE
 
         public void Connect(IDeviceBLE pInput)
         {
-            var inputType = pInput.GetType();
-            var searchType = typeof(UnPairedDeviceBLE);
-            if ( inputType == searchType )
+            try
             {
-                //Pair with the defice if needed.
-                var input = pInput as UnPairedDeviceBLE;
+                var inputType = pInput.GetType();
+                var searchType = typeof(UnPairedDeviceBLE);
+                if (inputType == searchType)
+                {
+                    //Pair with the defice if needed.
+                    var input = pInput as UnPairedDeviceBLE;
 
-                //Pair if the device is able to pair
-                var id = input.Id;
+                    //Pair if the device is able to pair
+                    var id = input.Id;
 
-                //Only create device if it is paired
-                if (input.Paired)
-                    GetDevice(input);
-                else
-                    PairAsync(input);
+                    //Only create device if it is paired
+                    if (input.Paired)
+                        GetDevice(input);
+                    else
+                        PairAsync(input);
+                }
+            }
+            catch
+            {
+
             }
         }
 

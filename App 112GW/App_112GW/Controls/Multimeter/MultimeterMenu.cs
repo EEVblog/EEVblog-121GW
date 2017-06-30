@@ -15,6 +15,11 @@ namespace rMultiplatform
     {
         public event EventHandler   BackClicked;
         public event EventHandler   PlotClicked;
+        public event EventHandler   HoldClicked;
+        public event EventHandler   RelClicked;
+        public event EventHandler   ModeChanged;
+        public event EventHandler   RangeChanged;
+
         static bool                 SameType(object A, Type B)
         {
             return Object.ReferenceEquals(A.GetType(), B);
@@ -26,11 +31,13 @@ namespace rMultiplatform
                 return mPlotCheck.Checked;
             }
         }
+
+        private Button              mMode;
         private Button              mHold;
+        private Button              mRange;
         private Button              mRelative;
+
         private Label               mSerialNumber;
-        private Picker              mRange;
-        private Picker              mMode;
         private LabelledCheckbox    mPlotCheck;
         private LabelledBackButton  mBack;
 
@@ -124,31 +131,25 @@ namespace rMultiplatform
 
             //##################################################
             //Add range dropdown
-            mRange = new Picker()
+            mRange = new Button()
             {
-                Title = "Select Range"
+                Text = "Range",
+                BackgroundColor = Globals.FocusColor
             };
-            mRange.Items.Add("V");
-            mRange.Items.Add("mV");
-            mRange.Items.Add("uV");
-            mRange.Items.Add("nV");
-            mRange.Items.Add("Auto");
-            mRange.SelectedIndexChanged += PickerChange_Range;
+            mRange.Clicked += PickerChange_Range;
             AddView(mRange, 1, 0);
 
             //##################################################
             //Add Mode dropdown
-            mMode = new Picker()
+            mMode = new Button()
             {
-                Title = "Select Mode",
+                Text = "Mode",
                 HorizontalOptions = LayoutOptions.Fill
             };
 
             //##################################################
             //
-            mMode.Items.Add("DC");
-            mMode.Items.Add("AC");
-            mMode.SelectedIndexChanged += PickerChange_Mode;
+            mMode.Clicked += PickerChange_Mode;
             AddView(mMode, 1, 1);
 
             //##################################################
@@ -164,11 +165,18 @@ namespace rMultiplatform
             mRelative.TextColor = Globals.TextColor;
         }
 
+
         //The reactions to picker, checkbox, buttons events
         private void    ButtonPress_Hold       (object sender, EventArgs e)
-        {}
+        {
+            if (HoldClicked != null)
+                HoldClicked(sender, e);
+        }
         private void    ButtonPress_Relative   (object sender, EventArgs e)
-        {}
+        {
+            if (RelClicked != null)
+                RelClicked(sender, e);
+        }
         private void    ButtonPress_Back       (object sender, EventArgs e)
         {
             if (BackClicked != null)
@@ -180,8 +188,14 @@ namespace rMultiplatform
                 PlotClicked(mPlotCheck, e);
         }
         private void    PickerChange_Range     (object sender, EventArgs e)
-        {}
+        {
+            if (RangeChanged != null)
+                RangeChanged(sender, e);
+        }
         private void    PickerChange_Mode      (object sender, EventArgs e)
-        {}
+        {
+            if (ModeChanged != null)
+                ModeChanged(sender, e);
+        }
     }
 }

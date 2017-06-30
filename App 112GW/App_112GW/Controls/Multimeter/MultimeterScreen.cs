@@ -353,8 +353,8 @@ namespace rMultiplatform
             }
         }
 
-        SKBitmap                        mLayer;
-        SKCanvas                        mCanvas;
+        public SKBitmap                 mLayer;
+        public SKCanvas                 mCanvas;
         static List<ILayer>             mLayerCache;
         List<Layers>	                mSegments;
 		List<Layers>	                mSubSegments;
@@ -764,9 +764,35 @@ namespace rMultiplatform
 
                     //Calculate the position of the decimal point
                     mDecimalPosition = (int)Range / 10 + 1;
-
+                    
                     var DisplayString = value.SubValue.ToString();
-                    DisplayString.Insert(mDecimalPosition, ".");
+
+                    //Cannot insert a decimal point outside the range of the string
+                    if (mDecimalPosition < 5)
+                        DisplayString = DisplayString.Insert(mDecimalPosition + 1, ".");
+
+                    //Combine decimal points and charaters so that a decimal point 
+                    // doesn't occupy a full character
+                    bool beforepoint = true;
+                    string outstring = "";
+                    for (int i = 0; i < DisplayString.Length; ++i)
+                    {
+                        var c = DisplayString[i];
+                        if (c == '.')
+                            beforepoint = false;
+
+                        if (beforepoint)
+                            outstring += c;
+                        else
+                        {
+                            if (c == ' ')
+                                outstring += '0';
+                            else
+                                outstring += c;
+                        }
+                    }
+
+                    Debug.WriteLine("Decimal position : " + mDecimalPosition.ToString());
 
                     switch (_SubMode)
                     {
@@ -1096,7 +1122,7 @@ namespace rMultiplatform
         bool                    NeedClear = true;
         private void            Render (SKCanvas pSurface)
         {
-            if (NeedClear)
+            if ( NeedClear )
             {
                 if (CanvasSize.Width == 0 || CanvasSize.Height == 0)
                     return;
@@ -1142,8 +1168,8 @@ namespace rMultiplatform
                 rendrect.Right  = pSurface.DeviceClipBounds.Width;
                 rendrect.Bottom = pSurface.DeviceClipBounds.Height;
             }
-
             //Draw bitmap
+            pSurface.Clear();
             pSurface.DrawBitmap(mLayer, rendrect);
         }
 		static private void     SetSegment(char pInput, bool dp, Layers pSegment)

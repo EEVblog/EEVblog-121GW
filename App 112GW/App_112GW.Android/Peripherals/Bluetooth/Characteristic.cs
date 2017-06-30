@@ -11,6 +11,8 @@ namespace rMultiplatform.BLE
 {
     public class CharacteristicBLE : ICharacteristicBLE
     {
+        IGattCharacteristic mCharacteristic;
+
         string _Description, _Id;
         private IDisposable snv;
         private IDisposable wnr;
@@ -54,11 +56,15 @@ namespace rMultiplatform.BLE
         }
         public bool Send(byte[] pInput)
         {
-            return false;
+            if (mCharacteristic.CanWrite())
+                mCharacteristic.Write(pInput).Subscribe(obj => { Debug.WriteLine("Data written"); });
+            return true;
         }
 
         public CharacteristicBLE(IGattCharacteristic pInput, SetupComplete ready, ChangeEvent pEvent)
         {
+            mCharacteristic = pInput;
+
             _ValueChanged += pEvent;
             /////////////////////////////////////////////////////////////////////
             Ready += ready;

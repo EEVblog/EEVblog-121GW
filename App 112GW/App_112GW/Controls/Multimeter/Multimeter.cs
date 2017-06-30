@@ -17,6 +17,7 @@ namespace rMultiplatform
         void ProcessPacket(byte[] pInput)
         {
             var processor = new Packet112GW();
+
             try
             {
                 processor.ProcessPacket(pInput);
@@ -37,12 +38,12 @@ namespace rMultiplatform
         public ChartView                Plot;
         bool                            Item = true;
 
-        private void ValueChanged(object o, rMultiplatform.BLE.CharacteristicEvent v)
+        private void ValueChanged ( object o, BLE.CharacteristicEvent v )
         {
             Debug.WriteLine("Recieved: " + v.NewValue);
             MyProcessor.Recieve(v.Bytes);
         }
-        public Multimeter(BLE.IDeviceBLE pDevice)
+        public Multimeter ( BLE.IDeviceBLE pDevice )
         {
             MyProcessor.mCallback += ProcessPacket; 
             mDevice = pDevice;
@@ -58,12 +59,18 @@ namespace rMultiplatform
             // InitializeComponent ();
             Screen = new MultimeterScreen();
             Screen.BackgroundColor = Globals.BackgroundColor;
-            Screen.Clicked += BackClicked;
+            Screen.Clicked += Menu_BackClicked;
 
-            Menu = new MultimeterMenu();
+            var id = mDevice.Id;
+
+            Menu = new MultimeterMenu(id.Substring(id.Length - 5));
             Menu.BackgroundColor = Globals.BackgroundColor;
-            Menu.BackClicked += BackClicked;
-            Menu.PlotClicked += PlotClicked;
+            Menu.BackClicked    += Menu_BackClicked;
+            Menu.PlotClicked    += Menu_PlotClicked;
+            Menu.HoldClicked    += Menu_HoldClicked;
+            Menu.RelClicked     += Menu_RelClicked;
+            Menu.ModeChanged    += Menu_ModeChanged;
+            Menu.RangeChanged   += Menu_RangeChanged;
 
             Data = new ChartData(ChartData.ChartDataMode.eRolling, "Time (s)", "Volts (V)", 0.1f, 10.0f);
             Plot = new ChartView() { Padding = new ChartPadding(0.1) };
@@ -83,6 +90,35 @@ namespace rMultiplatform
 
             Content = MultimeterGrid;
             SetView();
+        }
+        private void SendData(byte[] pData)
+        {
+            foreach (var serv in mDevice.Services)
+                foreach(var chara in serv.Characteristics)
+                {
+                    chara.Send(pData);
+                }
+        }
+
+        private void Menu_RangeChanged(object sender, EventArgs e)
+        {
+            var data = Packet112GW.GetKeycode(Packet112GW.Keycode.RANGE);
+            SendData(data);
+        }
+        private void Menu_ModeChanged(object sender, EventArgs e)
+        {
+            var data = Packet112GW.GetKeycode(Packet112GW.Keycode.MODE);
+            SendData(data);
+        }
+        private void Menu_RelClicked(object sender, EventArgs e)
+        {
+            var data = Packet112GW.GetKeycode(Packet112GW.Keycode.REL);
+            SendData(data);
+        }
+        private void Menu_HoldClicked(object sender, EventArgs e)
+        {
+            var data = Packet112GW.GetKeycode(Packet112GW.Keycode.HOLD);
+            SendData(data);
         }
 
         protected override void OnSizeAllocated(double width, double height)
@@ -107,12 +143,12 @@ namespace rMultiplatform
 
             Plot.IsVisible = Menu.PlotEnabled;
         }
-        public void BackClicked(object sender, EventArgs e)
+        public void Menu_BackClicked(object sender, EventArgs e)
         {
             Item = !Item;
             SetView();
         }
-        public void PlotClicked(object sender, EventArgs e)
+        public void Menu_PlotClicked(object sender, EventArgs e)
         {
             SetView();
         }
