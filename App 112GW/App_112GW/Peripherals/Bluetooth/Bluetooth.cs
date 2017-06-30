@@ -139,6 +139,9 @@ namespace rMultiplatform.BLE
                     if (add)
                         mVisibleDevices.Add(pInput);
 
+                    if (add)
+                        TriggerListUpdate();
+
                     return add;
                 }
             return false;

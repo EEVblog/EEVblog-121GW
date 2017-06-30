@@ -38,7 +38,7 @@ namespace rMultiplatform.Droid
         {
             switch (args.Event.ActionMasked)
             {
-                case MotionEventActions.ButtonPress:
+                //case MotionEventActions.ButtonPress:
                 case MotionEventActions.Down:
                 case MotionEventActions.PointerDown:
                     effect.PressedHandler(sender, GetPoint(args));
@@ -54,7 +54,7 @@ namespace rMultiplatform.Droid
                 case MotionEventActions.PointerUp:
                 case MotionEventActions.Up:
                 case MotionEventActions.Cancel:
-                case MotionEventActions.ButtonRelease:
+                //case MotionEventActions.ButtonRelease:
                     effect.ReleasedHandler(sender, GetPoint(args));
                     break;
 

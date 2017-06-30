@@ -60,6 +60,22 @@ namespace rMultiplatform.BLE
         }
     }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     public class PairedDeviceBLE : IDeviceBLE
     {
         volatile private BluetoothLEDevice mDevice;
@@ -67,6 +83,10 @@ namespace rMultiplatform.BLE
 
         public event SetupComplete Ready;
         public event ChangeEvent Change;
+        private void InvokeChange(object o, CharacteristicEvent v)
+        {
+            Change?.Invoke(o, v);
+        }
 
         public string Id
         {
@@ -104,7 +124,7 @@ namespace rMultiplatform.BLE
             mServices = new List<IServiceBLE>();
             mServices.Clear();
             foreach (var service in servs)
-                mServices.Add(new ServiceBLE(service));
+                mServices.Add(new ServiceBLE(service, InvokeChange));
 
             Ready?.Invoke();
         }
@@ -127,6 +147,18 @@ namespace rMultiplatform.BLE
             }
         }
     }
+
+
+
+
+
+
+
+
+
+
+
+
 
     public class ServiceBLE : IServiceBLE
     {
@@ -155,23 +187,42 @@ namespace rMultiplatform.BLE
         {
             return Id;
         }
-        private bool Build()
+        private bool Build(ChangeEvent pEvent)
         {
             var items = mService.GetCharacteristicsAsync().AsTask().Result.Characteristics;
 
             mCharacteristics = new List<ICharacteristicBLE>();
             mCharacteristics.Clear();
             foreach (var item in items)
-                mCharacteristics.Add(new CharacteristicBLE(item));
+                mCharacteristics.Add(new CharacteristicBLE(item, pEvent));
 
             return true;
         }
-        public ServiceBLE(GattDeviceService pInput)
+        public ServiceBLE(GattDeviceService pInput, ChangeEvent pEvent)
         {
             mService = pInput;
-            mSuccess = Build();
+            mSuccess = Build(pEvent);
         }
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     public class CharacteristicBLE : ICharacteristicBLE
     {
@@ -229,14 +280,56 @@ namespace rMultiplatform.BLE
             var charEvent = new CharacteristicEvent(data);
             _ValueChanged?.Invoke(sender, charEvent);
         }
-        public CharacteristicBLE(GattCharacteristic pInput)
+        public CharacteristicBLE(GattCharacteristic pInput, ChangeEvent pEvent)
         {
-            _ValueChanged = null;
+            _ValueChanged = pEvent;
             mCharacteristic = pInput;
             mCharacteristic.WriteClientCharacteristicConfigurationDescriptorAsync(GattClientCharacteristicConfigurationDescriptorValue.Indicate).AsTask();
             mCharacteristic.ValueChanged += CharacteristicEvent_ValueChanged;
         }
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     public class ClientBLE : AClientBLE, IClientBLE
     {
@@ -254,6 +347,7 @@ namespace rMultiplatform.BLE
             var temp = new UnPairedDeviceBLE(args);
             MutexBlock(() =>
             {
+                Debug.WriteLine(args.Name);
                 AddUniqueItem(temp);
             }, ((index++).ToString() + " Adding"));
         }
@@ -273,7 +367,7 @@ namespace rMultiplatform.BLE
                     if (item.Id == removed_id)
                         (mVisibleDevices[i] as UnPairedDeviceBLE).Information.Update(args);
                 }
-            }, ((index++).ToString() + " Removed"));
+            }, ((index++).ToString() + " Updated"));
             TriggerListUpdate();
         }
 

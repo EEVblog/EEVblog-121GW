@@ -69,17 +69,12 @@ namespace rMultiplatform.BLE
             /////////////////////////////////////////////////////////////////////
             if (pInput.CanNotify())
             {
-                Mutex mut = new Mutex();
-                snv = pInput.SetNotificationValue(CharacteristicConfigDescriptorValue.Indicate).Subscribe( (temp) =>
+                wnr = pInput.RegisterAndNotify(CharacteristicConfigDescriptorValue.Indicate).Subscribe(obj =>
                 {
-                    Debug.WriteLine("Setting up notify. : " + temp.ToString());
-                    wnr = pInput.WhenNotificationReceived().Subscribe(obj =>
-                    {
-                        Debug.WriteLine("Charateristic Notify Event From : " + pInput.Service.Device.Uuid.ToString());
-                        var buffer = obj.Data;
-                        var charEvent = new CharacteristicEvent(buffer);
-                        _ValueChanged?.Invoke(obj, charEvent);
-                    });
+                    Debug.WriteLine("Charateristic Indicate Event From : " + pInput.Service.Device.Uuid.ToString());
+                    var buffer = obj.Data;
+                    var charEvent = new CharacteristicEvent(buffer);
+                    _ValueChanged?.Invoke(obj, charEvent);
                 });
             }
 
@@ -87,7 +82,7 @@ namespace rMultiplatform.BLE
             //if (pInput.CanRead())
             //{
             //    Debug.WriteLine("Setting up read.");
-            //    pInput.ReadInterval(new TimeSpan(0,0,0,0,500));
+            //    pInput.ReadInterval(new TimeSpan(0, 0, 0, 0, 500));
             //    wr = pInput.WhenRead().Subscribe(obj =>
             //    {
             //        Debug.WriteLine("Charateristic Read Event : " + _Id);
@@ -95,7 +90,7 @@ namespace rMultiplatform.BLE
             //        var charEvent = new CharacteristicEvent(buffer);
             //        _ValueChanged?.Invoke(obj, charEvent);
             //    });
-            //} 
+            //}
 
             ///////////////////////////////////////////////////////////////////////
             //if (pInput.CanWrite())
@@ -109,11 +104,9 @@ namespace rMultiplatform.BLE
             //        _ValueChanged?.Invoke(obj, charEvent);
             //    });
             //}
-            
+
             Ready?.Invoke();
         }
-
-
         private void UpdateStarted(Task obj)
         {
             Debug.WriteLine("Characteristic updates started.");
