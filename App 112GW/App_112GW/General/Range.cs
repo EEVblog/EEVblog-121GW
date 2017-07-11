@@ -70,6 +70,9 @@ namespace rMultiplatform
         public      Range   (double ValA, double ValB)
         {
             Update = true;
+
+            Minimum = 0;
+            Maximum = 1;
             Set(ValA, ValB);
         }
         public bool InRange (double Val)
@@ -102,8 +105,17 @@ namespace rMultiplatform
             //Shift the range to fit the value
             ShiftRange(diff);
         }
+
+        bool FirstScaling = true;
         public void RescaleRangeToFitValue(double Value)
         {
+            if (FirstScaling)
+            {
+                Minimum = Value;
+                Maximum = Value;
+                FirstScaling = false;
+            }
+
             if (Value > Maximum)
                 Maximum = (Value);
             else if (Value < Minimum)

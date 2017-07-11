@@ -86,13 +86,17 @@ namespace rMultiplatform.BLE
                 TriggerListUpdate();
         }
 
-        public ClientBLE ()
+        public ClientBLE()
         {
             mVisibleDevices = new List<IDeviceBLE>();
 
             //Setup 
-            CrossBleAdapter.Current.ScanInterval ( new TimeSpan( 0, 0, 10 ) );
-            ccss = CrossBleAdapter.Current.Scan ( ) .Subscribe ( ScanResult => { DeviceSubscriber_Added ( ScanResult ); } );
+            try
+            {
+                CrossBleAdapter.Current.ScanInterval(new TimeSpan(0, 0, 10));
+                ccss = CrossBleAdapter.Current.Scan().Subscribe(ScanResult => { DeviceSubscriber_Added(ScanResult); });
+            }
+            catch { }
         }
 
         ~ClientBLE()

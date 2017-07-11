@@ -7,6 +7,7 @@ using System.Resources;
 using SkiaSharp;
 using SkiaSharp.Views.Forms;
 using System.Runtime.CompilerServices;
+using System.Diagnostics;
 
 namespace rMultiplatform
 {
@@ -113,20 +114,7 @@ namespace rMultiplatform
             HeightRequest = h;
 
             //Null out the bitmap and canvas
-            mBitmap?.Dispose();
-            mBitmap = null;
-            mCanvas?.Dispose();
-            mCanvas = null;
-
-            //
             Rescale = true;
-
-            //As base class initialises first the onSizeAllocated can be triggered before padding is intiialised
-            if (Padding != null)
-                Padding.SetParentSize(Width, Height);
-
-            foreach (IChartRenderer Element in ChartElements)
-                Element.SetParentSize(Width, Height);
         }
 
         public void SaveCSV()
@@ -180,12 +168,18 @@ namespace rMultiplatform
             //Reinitialise the buffer canvas if it is undefined at all.
             if (mBitmap == null || mCanvas == null | Rescale)
             {
-                mBitmap = new SKBitmap((int)Width, (int)Height);
+                //As base class initialises first the onSizeAllocated can be triggered before padding is intiialised
+                if (Padding != null)
+                    Padding.SetParentSize(CanvasSize.Width, CanvasSize.Height);
+
+                foreach (IChartRenderer Element in ChartElements)
+                    Element.SetParentSize(CanvasSize.Width, CanvasSize.Height);
+
+                mBitmap = new SKBitmap((int)CanvasSize.Width, (int)CanvasSize.Height);
                 mCanvas = new SKCanvas(mBitmap);
-                mCanvas.Clear();
                 Rescale = false;
             }
-            canvas.Scale(CanvasSize.Width / (float)Width);
+            //canvas.Scale(CanvasSize.Width / (float)Width);
 
             //If the child elements are not registered with each other do that
             // before rendering
@@ -197,7 +191,7 @@ namespace rMultiplatform
             {
                 //This allows controls to rescale retrospectively'
                 var layer = mBitmap.Copy();
-                while (Element.Draw(mCanvas))
+                while ( Element.Draw(mCanvas) )
                 {
                     mCanvas.DrawBitmap(layer, 0, 0, mDrawPaint);
                     layer = mBitmap.Copy();
@@ -236,7 +230,7 @@ namespace rMultiplatform
                 InvalidateSurface();
             }
         }
-        private rMultiplatform.Touch mTouch;
+        private Touch mTouch;
         private void MTouch_Press(object sender, rMultiplatform.TouchActionEventArgs args)
         {
             State = eControlInputState.ePressed;
@@ -263,6 +257,8 @@ namespace rMultiplatform
             mTouch.Released += MTouch_Release;
             Effects.Add(mTouch);
         }
+       
+        
         //Initialises the object
         public Chart() : base()
         {

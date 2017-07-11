@@ -72,10 +72,11 @@ namespace rMultiplatform
     {
         public delegate bool ChartAxisDrawEvent(ChartAxisDrawEventArgs o);
         public delegate bool ChartAxisEvent(Object o);
+
         List<Range>                 AxisDataRanges;
+        List<SKColor>               AxisDataColors;
         List<ChartAxisEvent>        AxisDataEvents;
         List<ChartAxisDrawEvent>    AxisDrawEvents;
-        List<SKColor>               AxisDataColors;
 
         //Parent properties
         private ChartPadding _ParentPadding;
@@ -550,6 +551,12 @@ namespace rMultiplatform
             return null;
         }
 
+
+
+
+
+
+
         public bool         ChartDrawEvent  (ChartAxisDrawEventArgs e)
         {
             //No lock position set
@@ -584,6 +591,7 @@ namespace rMultiplatform
 
             return true;
         }
+        
         void                DrawTick        (ref SKCanvas c, float Position, float length, SKPaint TickPaint)
         {
             length /= 2;
@@ -609,16 +617,19 @@ namespace rMultiplatform
                     break;
             }
         }
+        
         void                DrawMajorTick   (ref SKCanvas c, float Position, int index)
         {
             SendEvent(ref c, MajorPaint.Color, Position, index, ChartAxisEventArgs.ChartAxisEventType.DrawMajorTick);
             DrawTick(ref c, Position, MajorTickLineSize, MajorPaint);
         }
+        
         void                DrawMinorTick   (ref SKCanvas c, float Position)
         {
             SendEvent(ref c, MinorPaint.Color, Position, 0, ChartAxisEventArgs.ChartAxisEventType.DrawMinorTick);
             DrawTick(ref c, Position, MinorTickLineSize, MinorPaint);
         }
+        
         void                DrawTickLabel   (ref SKCanvas c, double Value, float Position, float length, SKPaint TickPaint)
         {
             var hei = MajorPaint.TextSize /2;
@@ -645,6 +656,7 @@ namespace rMultiplatform
             pth.AddPoly(pts, false);
             c.DrawTextOnPath(txt, pth, 0, hei / 2, MajorPaint);
         }
+        
         void                DrawLabel       (ref SKCanvas c, float length)
         {
             var hei = (float)MajorPaint.TextSize;
@@ -715,6 +727,7 @@ namespace rMultiplatform
             if (ShowDataKey)
                 DrawColors(ref c, ref pts);
         }
+        
         void                DrawColors      (ref SKCanvas c, ref SKPoint[] p)
         {
             if (p.Length > 2)
@@ -731,7 +744,6 @@ namespace rMultiplatform
             var inc = 1.0f/((float)AxisDataColors.Count-1);
 
             //
-
             for (var i = 0; i < AxisDataColors.Count; i++)
             {
                 var x = pt1.X + dx * t;
@@ -780,7 +792,6 @@ namespace rMultiplatform
                     index++;
                 }
                 else
-                    //
                     DrawMinorTick(ref c, pos);
 
                 //
@@ -806,16 +817,13 @@ namespace rMultiplatform
                 var v = o as ChartAxis;
                 AxisDrawEvents.Add(v.ChartDrawEvent);
             }
-
             else if (o.GetType() == typeof(ChartData))
             {
                 var d = o as ChartData;
-
                 if (Orientation == AxisOrientation.Horizontal)
                 {
                     if (d.HorizontalLabel == Label)
                         AxisDataColors.Add(d.LineColor);
-
                     //
                     AxisDataRanges.Add(d.HorozontalSpan);
                 }
@@ -823,7 +831,6 @@ namespace rMultiplatform
                 {
                     if (d.VerticalLabel == Label)
                         AxisDataColors.Add(d.LineColor);
-
                     //
                     AxisDataRanges.Add(d.VerticalSpan);
                 }

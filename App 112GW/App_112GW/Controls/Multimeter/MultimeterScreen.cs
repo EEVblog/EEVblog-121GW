@@ -11,6 +11,7 @@ using System.Runtime.CompilerServices;
 
 using App_112GW;
 using System.Diagnostics;
+using System.Threading.Tasks;
 
 namespace rMultiplatform
 {
@@ -193,7 +194,7 @@ namespace rMultiplatform
 		}
 	}
 
-    public class MultimeterScreen : 
+    public class MultimeterScreen :
 #if __ANDROID__
         SKGLView
 #elif __IOS__
@@ -343,6 +344,26 @@ namespace rMultiplatform
             mOther.BackgroundColor = pInput;
         }
 
+
+        public new bool IsVisible
+        {
+            set
+            {
+                if (value == true)
+                {
+                    base.IsVisible = value;
+                    Invalidate();
+                }
+                else
+                {
+                    mCanvas?.Flush();
+                    base.IsVisible = value;
+                }
+            }
+        }
+
+
+
         public event EventHandler       Clicked;
         protected virtual   void        OnClicked   (EventArgs e)
         {
@@ -353,14 +374,13 @@ namespace rMultiplatform
             }
         }
 
+        Layers                          mOther;
         public SKBitmap                 mLayer;
         public SKCanvas                 mCanvas;
-        static List<ILayer>             mLayerCache;
-        List<Layers>	                mSegments;
-		List<Layers>	                mSubSegments;
         Layers                          mBargraph;
-        Layers                          mOther;
-
+        List<Layers>	                mSegments;
+        static List<ILayer>             mLayerCache;
+		List<Layers>	                mSubSegments;
         int                             mDecimalPosition;
 
         protected virtual void LayerChange(object o, EventArgs e)
@@ -1061,6 +1081,7 @@ namespace rMultiplatform
             mOther.Redraw();
             InvalidateSurface();
         }
+
         private void            Invalidate()
         {
             InvalidateSurface();
@@ -1124,12 +1145,12 @@ namespace rMultiplatform
         {
             if ( NeedClear )
             {
-                if (CanvasSize.Width == 0 || CanvasSize.Height == 0)
+                if ( CanvasSize.Width == 0 || CanvasSize.Height == 0 )
                     return;
                 NeedClear = false;
 
                 //Cancel render if canvas doesn't exist
-                if (mDrawRectangle.Width == 0 || mDrawRectangle.Height == 0)
+                if ( mDrawRectangle.Width == 0 || mDrawRectangle.Height == 0 )
                     Rescale();
 
                 //Setup a clear bitmap
@@ -1161,7 +1182,7 @@ namespace rMultiplatform
 
             //Shift canvas as required
             var offset_x = (float) Width - rendrect.Width;
-            if (offset_x > 0)
+            if ( offset_x > 0 )
                 rendrect.Offset(offset_x / 2, 0);
             else
             {

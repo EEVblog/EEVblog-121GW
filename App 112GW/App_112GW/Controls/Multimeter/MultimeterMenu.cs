@@ -165,7 +165,6 @@ namespace rMultiplatform
             mRelative.TextColor = Globals.TextColor;
         }
 
-
         //The reactions to picker, checkbox, buttons events
         private void    ButtonPress_Hold       (object sender, EventArgs e)
         {

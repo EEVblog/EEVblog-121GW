@@ -75,8 +75,8 @@ namespace rMultiplatform
             Data = new ChartData(ChartData.ChartDataMode.eRolling, "Time (s)", "Volts (V)", 0.1f, 10.0f);
             Plot = new ChartView() { Padding = new ChartPadding(0.1) };
             Plot.AddGrid(new ChartGrid());
-            Plot.AddAxis(new ChartAxis(5, 5, 0, 20) {   Label = "Time (s)",     Orientation = ChartAxis.AxisOrientation.Horizontal, AxisLocation = 0.9, LockToAxisLabel = "Volts (V)",  LockAlignment = ChartAxis.AxisLock.eMiddle });
-            Plot.AddAxis(new ChartAxis(5, 5, 0, 0)  {   Label = "Volts (V)",    Orientation = ChartAxis.AxisOrientation.Vertical,   AxisLocation = 0.1, LockToAxisLabel = "Time (s)",   LockAlignment = ChartAxis.AxisLock.eStart });
+            Plot.AddAxis(new ChartAxis(5, 5, 0, 20) {   Label = "Time (s)",     Orientation = ChartAxis.AxisOrientation.Horizontal, AxisLocation = 0.9, LockToAxisLabel = "Volts (V)",  LockAlignment = ChartAxis.AxisLock.eMiddle, ShowDataKey = false });
+            Plot.AddAxis(new ChartAxis(5, 5, 0, 0)  {   Label = "Volts (V)",    Orientation = ChartAxis.AxisOrientation.Vertical,   AxisLocation = 0.1, LockToAxisLabel = "Time (s)", LockIndex = 1});
             Plot.AddData(Data);
 
             MultimeterGrid = new StackLayout();
@@ -95,9 +95,7 @@ namespace rMultiplatform
         {
             foreach (var serv in mDevice.Services)
                 foreach(var chara in serv.Characteristics)
-                {
                     chara.Send(pData);
-                }
         }
 
         private void Menu_RangeChanged(object sender, EventArgs e)
@@ -121,27 +119,32 @@ namespace rMultiplatform
             SendData(data);
         }
 
+        private void SetView()
+        {
+            try
+            {
+                switch (Item)
+                {
+                    case true:
+                        Menu.IsVisible = true;
+                        Screen.IsVisible = false;
+                        break;
+                    case false:
+                        Menu.IsVisible = false;
+                        Screen.IsVisible = true;
+                        break;
+                }
+
+                Plot.IsVisible = Menu.PlotEnabled;
+            }
+            catch (Exception Msg)
+            {
+                Debug.WriteLine(Msg.Message);
+            }
+        }
         protected override void OnSizeAllocated(double width, double height)
         {
             base.OnSizeAllocated(width, height);
-        }
-        private void SetView()
-        {
-            switch (Item)
-            {
-                case true:
-                    Menu.IsVisible = true;
-                    Screen.IsVisible = false;
-                    break;
-                case false:
-                    Menu.IsVisible = false;
-                    Screen.IsVisible = true;
-                    break;
-                default:
-                    break;
-            }
-
-            Plot.IsVisible = Menu.PlotEnabled;
         }
         public void Menu_BackClicked(object sender, EventArgs e)
         {

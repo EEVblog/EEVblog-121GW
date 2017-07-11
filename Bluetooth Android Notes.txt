@@ -1,0 +1,51 @@
+
+==========================================================================================
+Wifi off tests
+Test 1 - 	invalid due to no characteristic updates.
+==========================================================================================
+Wifi off tests
+Test 2 - 	invalid due to no characteristic updates.
+==========================================================================================
+Wifi off tests
+Test 3 - 	characteristics recieved for first device. 4f
+		characteristics continue when adding device until device added
+		after this point both devices don't communicate.
+==========================================================================================
+Wifi off tests
+Test 4 - 	characteristics recieved for first device. 4f
+		characteristics continue when adding device until device added
+		after this point no communication occurded.
+
+==========================================================================================
+Android 6+ tests
+Motarola XT1580 phone test:
+Test 5 - 	Tested on Motarola XT1580 android 6.0, bluetooth 
+		Started with devices paired	//Doesn't fix
+		Removed balenced scanmode	//Doesn't fix
+		May have to upgrade target version of app
+
+==========================================================================================
+Android 6+ tests
+Test 6 - 	Reverted changes, both devices added successfully, but on second device
+		characteristic events stop and none are triggered.
+
+==========================================================================================	
+Remaking adapter each time
+Test 7 - 	No differance in functionality
+
+==========================================================================================	
+Test 8 -	No blocking code in android, not a thread issue.
+
+==========================================================================================
+Upcomming bluetooth changes:
+	- 	Doesn't work with android 6, add support
+	- 	Errors with multiple devices, add support
+	-	Need to be able to reset bluetooth adapter when it locks up (android issue)
+	-	Make bluetooth LE library
+
+==========================================================================================
+Test 9 - 	Android 5.1 doesn't work with multiple devices
+		Android 6+ requires setting changed in settings. location must be enabled to
+		 discover devices.
+
+==========================================================================================

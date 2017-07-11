@@ -45,8 +45,8 @@ namespace rMultiplatform
             }
         }
 
-        private SKPaint _IdleStyle;
-        public SKPaint IdleStyle
+        private SKPaint     _IdleStyle;
+        public SKPaint      IdleStyle
         {
             get
             {
@@ -58,9 +58,8 @@ namespace rMultiplatform
                 InvalidateSurface();
             }
         }
-
-        private SKPaint _PressStyle;
-        public SKPaint PressStyle
+        private SKPaint     _PressStyle;
+        public SKPaint      PressStyle
         {
             get
             {
@@ -72,9 +71,8 @@ namespace rMultiplatform
                 InvalidateSurface();
             }
         }
-
-        private SKPaint _HoverStyle;
-        public SKPaint HoverStyle
+        private SKPaint     _HoverStyle;
+        public SKPaint      HoverStyle
         {
             get
             {
@@ -86,8 +84,7 @@ namespace rMultiplatform
                 InvalidateSurface();
             }
         }
-
-        public new SKColor BackgroundColor
+        public new SKColor  BackgroundColor
         {
             set
             {
@@ -254,7 +251,7 @@ namespace rMultiplatform
             set;
         }
 #if __ANDROID__
-        protected override void     OnPaintSurface(SKPaintGLSurfaceEventArgs e)
+        protected override void OnPaintSurface(SKPaintGLSurfaceEventArgs e)
 #elif __IOS__
         protected override void     OnPaintSurface(SKPaintGLSurfaceEventArgs e)
 #else
@@ -318,16 +315,16 @@ namespace rMultiplatform
 
     public class GeneralControl : ContentView
     {
-        private rMultiplatform.Touch mTouch;
-        private void MTouch_Press(object sender, rMultiplatform.TouchActionEventArgs args)
+        private Touch mTouch;
+        private void MTouch_Press   (object sender, TouchActionEventArgs args)
         {
             mRenderer.State = GeneralControlRenderer.eControlInputState.ePressed;
         }
-        private void MTouch_Hover(object sender, rMultiplatform.TouchActionEventArgs args)
+        private void MTouch_Hover   (object sender, TouchActionEventArgs args)
         {
             mRenderer.State = GeneralControlRenderer.eControlInputState.eHover;
         }
-        private void MTouch_Release(object sender, rMultiplatform.TouchActionEventArgs args)
+        private void MTouch_Release (object sender, TouchActionEventArgs args)
         {
             
             if (mRenderer.State == GeneralControlRenderer.eControlInputState.ePressed)
@@ -423,6 +420,12 @@ namespace rMultiplatform
         }
 
         protected event EventHandler Clicked;
+
+        private void ClickEvent()
+        {
+            if (Clicked != null)
+                Clicked(this, EventArgs.Empty);
+        }
         private async void OnClickedAsync()
         {
             mRenderer.State = GeneralControlRenderer.eControlInputState.eNone;
@@ -435,7 +438,8 @@ namespace rMultiplatform
             OnClickedAsync();
         }
 
-        public  GeneralControl(SKPoint[] pPoints)
+
+        public GeneralControl(SKPoint[] pPoints)
         {
             //
             HorizontalOptions   = LayoutOptions.Start;
