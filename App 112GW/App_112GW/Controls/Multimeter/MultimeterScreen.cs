@@ -195,9 +195,9 @@ namespace rMultiplatform
 	}
 
     public class MultimeterScreen :
-#if __ANDROID__
+#if __ANDROID__ && ! SOFTWARE_DRAW
         SKGLView
-#elif __IOS__
+#elif __IOS__ && ! SOFTWARE_DRAW
         SKGLView
 #else
         SKCanvasView
@@ -218,7 +218,7 @@ namespace rMultiplatform
             }
         }
 
-        private rMultiplatform.Touch mTouch;
+        private Touch mTouch;
 
         public enum eControlInputState
         {
@@ -345,33 +345,21 @@ namespace rMultiplatform
         }
 
 
-        public new bool IsVisible
-        {
-            set
-            {
-                if (value == true)
-                {
-                    base.IsVisible = value;
-                    Invalidate();
-                }
-                else
-                {
-                    mCanvas?.Flush();
-                    base.IsVisible = value;
-                }
-            }
-        }
+        //public new bool IsVisible
+        //{
+        //    set
+        //    {
+        //        base.IsVisible = value;
+        //        //Invalidate();
+        //    }
+        //}
 
 
 
         public event EventHandler       Clicked;
         protected virtual   void        OnClicked   (EventArgs e)
         {
-            EventHandler handler = Clicked;
-            if (handler != null)
-            {
-                handler(this, e);
-            }
+            Clicked?.Invoke(this, e);
         }
 
         Layers                          mOther;
@@ -1217,9 +1205,9 @@ namespace rMultiplatform
             }
 		}
 
-#if __ANDROID__
+#if __ANDROID__ && ! SOFTWARE_DRAW
         protected override void OnPaintSurface(SKPaintGLSurfaceEventArgs e)
-#elif __IOS__
+#elif __IOS__ && ! SOFTWARE_DRAW
         protected override void OnPaintSurface(SKPaintGLSurfaceEventArgs e)
 #else
         protected override void OnPaintSurface(SKPaintSurfaceEventArgs e)

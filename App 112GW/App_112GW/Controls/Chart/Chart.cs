@@ -23,16 +23,16 @@ namespace rMultiplatform
 
         //Return true when redraw is required
         bool Draw           (SKCanvas c);
-        void SetParentSize  (double w, double h);
+        void SetParentSize  (double w, double h, double scale = 1.0);
 
         bool RegisterParent(Object c);
         void InvalidateParent();
     };
 
     public class Chart :
-#if __ANDROID__
+#if __ANDROID__ && ! SOFTWARE_DRAW
         SKGLView
-#elif __IOS__
+#elif __IOS__ && ! SOFTWARE_DRAW
         SKGLView
 #else
         SKCanvasView
@@ -155,9 +155,9 @@ namespace rMultiplatform
 
             RequireRegister = false;
         }
-#if __ANDROID__
+#if __ANDROID__ && ! SOFTWARE_DRAW
         protected override void OnPaintSurface(SKPaintGLSurfaceEventArgs e)
-#elif __IOS__
+#elif __IOS__ && ! SOFTWARE_DRAW
         protected override void OnPaintSurface(SKPaintGLSurfaceEventArgs e)
 #else
         protected override void OnPaintSurface(SKPaintSurfaceEventArgs e)
@@ -168,28 +168,34 @@ namespace rMultiplatform
             //Reinitialise the buffer canvas if it is undefined at all.
             if (mBitmap == null || mCanvas == null | Rescale)
             {
+                //Check aspect
+                var aspect = Height / Width;
+                var aspectl = aspect * 0.9;
+                var aspecth = aspect * 1.1;
+                if (!(aspectl <= aspect && aspect <= aspecth))
+                    return;
+
                 //As base class initialises first the onSizeAllocated can be triggered before padding is intiialised
                 if (Padding != null)
-                    Padding.SetParentSize(CanvasSize.Width, CanvasSize.Height);
+                    Padding.SetParentSize(CanvasSize.Width, CanvasSize.Height, CanvasSize.Width / Width);
 
                 foreach (IChartRenderer Element in ChartElements)
-                    Element.SetParentSize(CanvasSize.Width, CanvasSize.Height);
+                    Element.SetParentSize(CanvasSize.Width, CanvasSize.Height, CanvasSize.Width / Width);
 
                 mBitmap = new SKBitmap((int)CanvasSize.Width, (int)CanvasSize.Height);
                 mCanvas = new SKCanvas(mBitmap);
                 Rescale = false;
             }
-            //canvas.Scale(CanvasSize.Width / (float)Width);
 
-            //If the child elements are not registered with each other do that
+            // If the child elements are not registered with each other do that
             // before rendering
             if (RequireRegister)
                 Register();
 
-            //Let all child elements render, layers are already sorted
+            // Let all child elements render, layers are already sorted
             foreach ( var Element in ChartElements )
             {
-                //This allows controls to rescale retrospectively'
+                // This allows controls to rescale retrospectively'
                 var layer = mBitmap.Copy();
                 while ( Element.Draw(mCanvas) )
                 {
@@ -258,7 +264,6 @@ namespace rMultiplatform
             Effects.Add(mTouch);
         }
        
-        
         //Initialises the object
         public Chart() : base()
         {

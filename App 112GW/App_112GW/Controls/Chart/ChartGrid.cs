@@ -93,7 +93,7 @@ namespace rMultiplatform
             //There may be multiple grids?
             return false;
         }
-        public void             SetParentSize(double w, double h)
+        public void             SetParentSize(double w, double h, double scale)
         {
             ParentWidth = w;
             ParentHeight = h;

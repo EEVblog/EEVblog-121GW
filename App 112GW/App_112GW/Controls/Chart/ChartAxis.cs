@@ -247,9 +247,9 @@ namespace rMultiplatform
                 switch (Orientation)
                 {
                     case AxisOrientation.Vertical:
-                        return ParentPadding.H;
+                        return ParentPadding.PaddedHeight;
                     case AxisOrientation.Horizontal:
-                        return ParentPadding.W;
+                        return ParentPadding.PaddedWidth;
                 }
                 return 0;
             }
@@ -261,9 +261,9 @@ namespace rMultiplatform
                 switch (Orientation)
                 {
                     case AxisOrientation.Vertical:
-                        return ParentPadding.T;
+                        return ParentPadding.GetTopPosition;
                     case AxisOrientation.Horizontal:
-                        return ParentPadding.L;
+                        return ParentPadding.GetLeftPosition;
                 }
                 return 0;
             }
@@ -275,9 +275,9 @@ namespace rMultiplatform
                 switch (Orientation)
                 {
                     case AxisOrientation.Vertical:
-                        return ParentPadding.B;
+                        return ParentPadding.GetBottomPosition;
                     case AxisOrientation.Horizontal:
-                        return ParentPadding.R;
+                        return ParentPadding.GetRightPosition;
                 }
                 return 0;
             }
@@ -374,9 +374,9 @@ namespace rMultiplatform
         }
         public enum         AxisLock
         {
-            eStart = 0,
+            eStart  = 0,
             eMiddle = 999999998,
-            eEnd = 999999999
+            eEnd    = 999999999
         }
         public AxisLock     LockAlignment
         {
@@ -453,6 +453,8 @@ namespace rMultiplatform
         public bool         ShowDataKey;
 
         //
+        float MajorTextSize = 12;
+        float MinorTextSize = 10;
         public ChartAxis       (double MainTicks, double MinorTicks, double Minimum, double Maximum)
             : base(Minimum, Maximum)
         {
@@ -465,15 +467,21 @@ namespace rMultiplatform
             //
             MinorPaint = new SKPaint();
             MinorPaint.StrokeWidth = 1;
+            MinorPaint.StrokeCap = SKStrokeCap.Round;
+            MinorPaint.TextSize = MinorTextSize;
+            MinorPaint.IsAntialias = true;
+            MinorPaint.Typeface = SKTypeface.FromFamilyName("tahoma", SKTypefaceStyle.Normal);
 
             MajorPaint = new SKPaint();
-            MajorPaint.StrokeWidth = 4;
+            MajorPaint.StrokeWidth = 2;
             MajorPaint.StrokeCap = SKStrokeCap.Round;
-            MajorPaint.TextSize = 16;
-            MajorPaint.FakeBoldText = true;
+            MajorPaint.TextSize = MajorTextSize;
+            MajorPaint.IsAntialias = true;
+            MajorPaint.Typeface = SKTypeface.FromFamilyName("tahoma", SKTypefaceStyle.Normal);
 
             ColorPaint = new SKPaint();
             ColorPaint.StrokeWidth = 4;
+            ColorPaint.IsAntialias = true;
             ColorPaint.StrokeCap = SKStrokeCap.Round;
             ColorPaint.TextSize = 10;
 
@@ -489,8 +497,8 @@ namespace rMultiplatform
             //Must be set last as it depends on above
             AxisLocation = 0.5;
             CircleRadius = SpaceWidth * 2;
-            MajorTickLineSize = 20;
-            MinorTickLineSize = 5;
+            MajorTickLineSize = 5;
+            MinorTickLineSize = 3;
 
             //
             AxisDrawEvents = new List<ChartAxisDrawEvent>();
@@ -550,13 +558,7 @@ namespace rMultiplatform
             }
             return null;
         }
-
-
-
-
-
-
-
+        
         public bool         ChartDrawEvent  (ChartAxisDrawEventArgs e)
         {
             //No lock position set
@@ -629,37 +631,107 @@ namespace rMultiplatform
             SendEvent(ref c, MinorPaint.Color, Position, 0, ChartAxisEventArgs.ChartAxisEventType.DrawMinorTick);
             DrawTick(ref c, Position, MinorTickLineSize, MinorPaint);
         }
-        
-        void                DrawTickLabel   (ref SKCanvas c, double Value, float Position, float length, SKPaint TickPaint)
+
+        float _LabelPadding = 0;
+        float _AxisLabelPadding = 0;
+
+        float TotalPadding
         {
-            var hei = MajorPaint.TextSize /2;
+            get
+            {
+                return _LabelPadding + _AxisLabelPadding;
+            }
+            set
+            {
+                if (value == 0)
+                {
+                    _LabelPadding = 0;
+                    _AxisLabelPadding = 0;
+                }
+            }
+        }
+
+
+        float LabelPadding
+        {
+            get
+            {
+                return _LabelPadding;
+            }
+            set
+            {
+                _LabelPadding = value;
+                TotalPadding = _LabelPadding + _AxisLabelPadding;
+            }
+        }
+        float AxisLabelPadding
+        {
+            get
+            {
+                return _AxisLabelPadding;
+            }
+            set
+            {
+                _AxisLabelPadding = value;
+                TotalPadding = _LabelPadding + _AxisLabelPadding;
+            }
+        }
+
+        float GetAxisLabelPosition()
+        {
+            switch (Orientation)
+            {
+                case AxisOrientation.Vertical:
+                    return ParentPadding.GetLeftPosition;
+                case AxisOrientation.Horizontal:
+                    return ParentPadding.GetBottomPosition;
+            }
+            return 0;
+        }
+        void DrawTickLabel   (ref SKCanvas c, double Value, float Position, float length, SKPaint TickPaint)
+        {
+            var hei = MinorPaint.TextSize /2;
+
             var txt = String.Format("{0:0.00}", Value);
-            var wid = MajorPaint.MeasureText(txt) + SpaceWidth;
+            var wid = MinorPaint.MeasureText(txt) + SpaceWidth;
             var pth = new SKPath();
+            var tot_wid = wid + SpaceWidth*2;
+            if (tot_wid > LabelPadding)
+                LabelPadding = tot_wid;
+
             SKPoint pt1, pt2;
 
             length /= 2;
             switch (Orientation)
             {
                 case AxisOrientation.Vertical:
-                    pt1 = new SKPoint(_AxisLocation - (wid + SpaceWidth), Position - hei);
-                    pt2 = new SKPoint(_AxisLocation - (SpaceWidth),       Position - hei);
+                    if (TotalPadding > ParentPadding.L)
+                        ParentPadding.L = TotalPadding;
+
+                    pt1 = new SKPoint(GetAxisLabelPosition() - tot_wid, Position);
+                    pt2 = new SKPoint(GetAxisLabelPosition() - SpaceWidth,   Position);
                     break;
                 case AxisOrientation.Horizontal:
-                    pt1 = new SKPoint(Position - hei,                   _AxisLocation + wid + SpaceWidth);
-                    pt2 = new SKPoint(Position - hei,                   _AxisLocation + SpaceWidth);
+                    if (TotalPadding > ParentPadding.B)
+                        ParentPadding.B = TotalPadding;
+
+                    pt1 = new SKPoint(Position, GetAxisLabelPosition() + tot_wid);
+                    pt2 = new SKPoint(Position, GetAxisLabelPosition() + SpaceWidth);
                     break;
                 default:
                     return;
             }
             var pts = new SKPoint[] { pt1, pt2 };
             pth.AddPoly(pts, false);
-            c.DrawTextOnPath(txt, pth, 0, hei / 2, MajorPaint);
+            c.DrawTextOnPath(txt, pth, 0, hei / 2, MinorPaint);
         }
-        
-        void                DrawLabel       (ref SKCanvas c, float length)
+
+        void DrawLabel       (ref SKCanvas c, float length)
         {
-            var hei = (float)MajorPaint.TextSize;
+            var hei = MajorPaint.TextSize;
+            if (hei > AxisLabelPadding)
+                AxisLabelPadding = hei + SpaceWidth;
+
             var txt = Convert.ToString(Label);
             var wid = MajorPaint.MeasureText(txt) + SpaceWidth;
 
@@ -668,15 +740,15 @@ namespace rMultiplatform
 
             float xmakoffset = 0, ymakoffset = 0, xfilloffset = 0, yfilloffset = 0;
             float xfillsoffset = 0, yfillsoffset = 0;
-            var offset = MajorTickLineSize / 2.0f;
+            var offset = 0;
 
             length /= 2;
             switch (Orientation)
             {
                 case AxisOrientation.Vertical:
                     {
-                        offset += hei;
-                        var x = _AxisLocation + offset;
+                        offset = (int)LabelPadding + (int)SpaceWidth;
+                        var x = GetAxisLabelPosition() - offset;
                         var ys = (float)(AxisStart + 2 * SpaceWidth);
 
                         pt2 = new SKPoint(x, ys);
@@ -693,9 +765,9 @@ namespace rMultiplatform
                     break;
                 case AxisOrientation.Horizontal:
                     {
-                        offset += hei / 2.0f;
+                        offset = (int)TotalPadding - (int)SpaceWidth;
                         var xs = (float)AxisEnd - SpaceWidth * 2;
-                        var y = _AxisLocation - offset;
+                        var y = GetAxisLabelPosition() + offset;
 
                         pt1 = new SKPoint(xs - wid, y);
                         pt2 = new SKPoint(xs,       y);
@@ -727,7 +799,7 @@ namespace rMultiplatform
             if (ShowDataKey)
                 DrawColors(ref c, ref pts);
         }
-        
+
         void                DrawColors      (ref SKCanvas c, ref SKPoint[] p)
         {
             if (p.Length > 2)
@@ -746,18 +818,18 @@ namespace rMultiplatform
             //
             for (var i = 0; i < AxisDataColors.Count; i++)
             {
-                var x = pt1.X + dx * t;
-                var y = pt1.Y + dy * t;
+                //var x = pt1.X + dx * t;
+                //var y = pt1.Y + dy * t;
 
-                ColorPaint.IsStroke = true;
-                ColorPaint.Color = App_112GW.Globals.BackgroundColor.ToSKColor();
-                c.DrawCircle(x, y, CircleRadius, ColorPaint);
+                //ColorPaint.IsStroke = true;
+                //ColorPaint.Color = App_112GW.Globals.BackgroundColor.ToSKColor();
+                //c.DrawCircle(x, y, CircleRadius, ColorPaint);
 
-                ColorPaint.IsStroke = false;
-                ColorPaint.Color = AxisDataColors[i];
-                c.DrawCircle(x, y, CircleRadius, ColorPaint);
+                //ColorPaint.IsStroke = false;
+                //ColorPaint.Color = AxisDataColors[i];
+                //c.DrawCircle(x, y, CircleRadius, ColorPaint);
 
-                t += inc;
+                //t += inc;
             }
         }
 
@@ -799,10 +871,16 @@ namespace rMultiplatform
             }
             return redraw;
         }
-        void                IChartRenderer.SetParentSize (double w, double h)
+        float Scale = 1.0f;
+        void                IChartRenderer.SetParentSize (double w, double h, double scale)
         {
-            ParentWidth = w;
-            ParentHeight = h;
+            Scale               = (float)scale;
+            MinorPaint.TextSize = MinorTextSize * Scale;
+            MajorPaint.TextSize = MajorTextSize * Scale;
+            SpaceWidth          = MajorPaint.MeasureText(" ");
+            TotalPadding        = 0;
+            ParentWidth         = w;
+            ParentHeight        = h;
             CalculateScales();
         }
 
@@ -867,11 +945,14 @@ namespace rMultiplatform
         }
         public bool         RegisterParent(object c)
         {
+            Parent = c as Chart;
             return false;
         }
-        public void         InvalidateParent()
+
+        private Chart Parent;
+        public void InvalidateParent()
         {
-            throw new NotImplementedException();
+            Parent.InvalidateSurface();
         }
     }
 }

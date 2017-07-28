@@ -57,7 +57,7 @@ namespace rMultiplatform
             c.DrawLine(Point1.X, Point1.Y, Point2.X, Point2.Y, Paint);
             return true;
         }
-        public void         SetParentSize (double w, double h){}
+        public void         SetParentSize (double w, double h, double scale) {}
         public bool         Register (Object o)
         { return true; }
         public List<Type>   RequireRegistration(){return null;}

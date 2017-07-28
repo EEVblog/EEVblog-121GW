@@ -1,6 +1,7 @@
 ﻿using App_112GW;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 using Xamarin.Forms;
 
@@ -10,6 +11,7 @@ namespace rMultiplatform
     {
         public event EventHandler SaveClicked;
         public event EventHandler BackClicked;
+        public event EventHandler FullscreenClicked;
         static bool SameType(object A, Type B)
         {
             return Object.ReferenceEquals(A.GetType(), B);
@@ -17,6 +19,7 @@ namespace rMultiplatform
 
         private Button              mSave;
         private LabelledBackButton  mBack;
+        private Button mFullscreen;
 
         private void AddView(View pInput, int pX, int pY, int pXSpan = 1, int pYSpan = 1)
         {
@@ -38,7 +41,8 @@ namespace rMultiplatform
             //##################################################
             //The grid is currently 2x5
             //Setup Grid rows
-            RowDefinitions.Add ( new RowDefinition { Height = new GridLength(1, GridUnitType.Star) } );
+            RowDefinitions.Add  (   new RowDefinition { Height = new GridLength(1, GridUnitType.Star) } );
+            RowDefinitions.Add  (   new RowDefinition { Height = new GridLength(1, GridUnitType.Star) });
 
             //##################################################
             //Setup Grid columns
@@ -60,16 +64,26 @@ namespace rMultiplatform
             mSave = new Button() { Text = "Save" };
             mSave.Clicked += ButtonPress_Save;
 
+            mFullscreen = new Button() { Text = "Fullscreen" };
+            mFullscreen.Clicked += ButtonPress_Fullscreen;
+
             //
             AddView(mBack, 0, 0);
             AddView(mSave, 1, 0);
+            AddView(mFullscreen, 1, 1);
             //##################################################
             BackgroundColor         = Globals.BackgroundColor;
             mSave.BackgroundColor   = Globals.BackgroundColor;
             mSave.TextColor         = Globals.TextColor;
         }
 
+
         //The reactions to picker, checkbox, buttons events
+        private void ButtonPress_Fullscreen(object sender, EventArgs e)
+        {
+            Debug.WriteLine("ButtonPress_Fullscreen.");
+            FullscreenClicked?.Invoke(sender, e);
+        }
         private void ButtonPress_Save (object sender, EventArgs e)
         {
             SaveClicked?.Invoke(sender, e);

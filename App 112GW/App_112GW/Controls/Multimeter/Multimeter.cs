@@ -12,16 +12,19 @@ namespace rMultiplatform
 {
     public partial class Multimeter : ContentView
     {
+        public event EventHandler RequestMaximise;
+        public event EventHandler RequestRestore;
+
         private BLE.IDeviceBLE mDevice;
         PacketProcessor MyProcessor = new PacketProcessor(0xF2, 26);
         void ProcessPacket(byte[] pInput)
         {
             var processor = new Packet112GW();
-
             try
             {
                 processor.ProcessPacket(pInput);
-                Data.Sample((float)processor.MainValue);
+                Data.Sample(processor.MainValue);
+
                 Screen.Update(processor);
                 Screen.InvalidateSurface();
             }
@@ -36,13 +39,15 @@ namespace rMultiplatform
         public MultimeterMenu           Menu;
         public ChartData                Data;
         public ChartView                Plot;
-        bool                            Item = true;
 
-        private void ValueChanged ( object o, BLE.CharacteristicEvent v )
+        enum ActiveItem
         {
-            Debug.WriteLine("Recieved: " + v.NewValue);
-            MyProcessor.Recieve(v.Bytes);
+            Screen,
+            Menu,
+            FullscreenPlot
         }
+        ActiveItem Item = ActiveItem.Screen;
+
         public Multimeter ( BLE.IDeviceBLE pDevice )
         {
             MyProcessor.mCallback += ProcessPacket; 
@@ -55,41 +60,70 @@ namespace rMultiplatform
 
             // Assures that a non-zero height is allocated
             MinimumHeightRequest = 200;
+            
+            Screen                  =   new MultimeterScreen();
+            Screen.BackgroundColor  =   Globals.BackgroundColor;
+            Screen.Clicked          +=  Menu_BackClicked;
 
-            // InitializeComponent ();
-            Screen = new MultimeterScreen();
-            Screen.BackgroundColor = Globals.BackgroundColor;
-            Screen.Clicked += Menu_BackClicked;
+            var id                  =   mDevice.Id;
+            Menu                    =   new MultimeterMenu(id.Substring(id.Length - 5));
+            Menu.BackgroundColor    =   Globals.BackgroundColor;
+            Menu.BackClicked        +=  Menu_BackClicked;
+            Menu.PlotClicked        +=  Menu_PlotClicked;
+            Menu.HoldClicked        +=  Menu_HoldClicked;
+            Menu.RelClicked         +=  Menu_RelClicked;
+            Menu.ModeChanged        +=  Menu_ModeChanged;
+            Menu.RangeChanged       +=  Menu_RangeChanged;
 
-            var id = mDevice.Id;
-
-            Menu = new MultimeterMenu(id.Substring(id.Length - 5));
-            Menu.BackgroundColor = Globals.BackgroundColor;
-            Menu.BackClicked    += Menu_BackClicked;
-            Menu.PlotClicked    += Menu_PlotClicked;
-            Menu.HoldClicked    += Menu_HoldClicked;
-            Menu.RelClicked     += Menu_RelClicked;
-            Menu.ModeChanged    += Menu_ModeChanged;
-            Menu.RangeChanged   += Menu_RangeChanged;
-
-            Data = new ChartData(ChartData.ChartDataMode.eRolling, "Time (s)", "Volts (V)", 0.1f, 10.0f);
+            Data = new ChartData(ChartData.ChartDataMode.eRescaling, "Time (s)", "Volts (V)", 10f);
             Plot = new ChartView() { Padding = new ChartPadding(0.1) };
             Plot.AddGrid(new ChartGrid());
-            Plot.AddAxis(new ChartAxis(5, 5, 0, 20) {   Label = "Time (s)",     Orientation = ChartAxis.AxisOrientation.Horizontal, AxisLocation = 0.9, LockToAxisLabel = "Volts (V)",  LockAlignment = ChartAxis.AxisLock.eMiddle, ShowDataKey = false });
-            Plot.AddAxis(new ChartAxis(5, 5, 0, 0)  {   Label = "Volts (V)",    Orientation = ChartAxis.AxisOrientation.Vertical,   AxisLocation = 0.1, LockToAxisLabel = "Time (s)", LockIndex = 1});
+            Plot.AddAxis(new ChartAxis(5, 5, 0, 20) {   Label = "Time (s)",     Orientation = ChartAxis.AxisOrientation.Horizontal, LockToAxisLabel = "Volts (V)",  LockAlignment = ChartAxis.AxisLock.eEnd, ShowDataKey = false });
+            Plot.AddAxis(new ChartAxis(5, 5, 0, 0)  {   Label = "Volts (V)",    Orientation = ChartAxis.AxisOrientation.Vertical,   LockToAxisLabel = "Time (s)", LockAlignment = ChartAxis.AxisLock.eStart});
             Plot.AddData(Data);
+            Plot.FullscreenClicked += Plot_FullScreenClicked;
 
             MultimeterGrid = new StackLayout();
             MultimeterGrid.Children.Add(Screen);
             MultimeterGrid.Children.Add(Menu);
             MultimeterGrid.Children.Add(Plot);
 
-            Menu.IsVisible = true;
-            Screen.IsVisible = false;
-            Plot.IsVisible = false;
-
             Content = MultimeterGrid;
             SetView();
+        }
+
+        bool Visible = true;
+        public void HideVisibleState()
+        {
+            Visible = IsVisible;
+            IsVisible = false;
+        }
+        public void RestoreVisibleState()
+        {
+            IsVisible = Visible;
+        }
+
+        ActiveItem LastActive;
+        private void Plot_FullScreenClicked(object sender, EventArgs e)
+        {
+            if (Item == ActiveItem.FullscreenPlot)
+            {
+                RequestRestore?.Invoke(this, e);
+                Item = LastActive;
+            }
+            else
+            {
+                RequestMaximise?.Invoke(this, e);
+                LastActive = Item;
+                Item = ActiveItem.FullscreenPlot;
+            }
+            SetView();
+        }
+
+        private void ValueChanged ( object o, BLE.CharacteristicEvent v )
+        {
+            Debug.WriteLine("Recieved: " + v.NewValue);
+            MyProcessor.Recieve(v.Bytes);
         }
         private void SendData(byte[] pData)
         {
@@ -121,25 +155,23 @@ namespace rMultiplatform
 
         private void SetView()
         {
-            try
+            switch (Item)
             {
-                switch (Item)
-                {
-                    case true:
-                        Menu.IsVisible = true;
-                        Screen.IsVisible = false;
-                        break;
-                    case false:
-                        Menu.IsVisible = false;
-                        Screen.IsVisible = true;
-                        break;
-                }
-
-                Plot.IsVisible = Menu.PlotEnabled;
-            }
-            catch (Exception Msg)
-            {
-                Debug.WriteLine(Msg.Message);
+                case ActiveItem.Menu:
+                    Menu.IsVisible = true;
+                    Screen.IsVisible = false;
+                    Plot.IsVisible = Menu.PlotEnabled;
+                    break;
+                case ActiveItem.Screen:
+                    Screen.IsVisible = true;
+                    Menu.IsVisible = false;
+                    Plot.IsVisible = Menu.PlotEnabled;
+                    break;
+                case ActiveItem.FullscreenPlot:
+                    Plot.IsVisible = true;
+                    Screen.IsVisible = false;
+                    Menu.IsVisible = false;
+                    break;
             }
         }
         protected override void OnSizeAllocated(double width, double height)
@@ -148,7 +180,20 @@ namespace rMultiplatform
         }
         public void Menu_BackClicked(object sender, EventArgs e)
         {
-            Item = !Item;
+            switch (Item)
+            {
+                case ActiveItem.Menu:
+                    Item = ActiveItem.Screen;
+                    break;
+                case ActiveItem.Screen:
+                    Item = ActiveItem.Menu;
+                    break;
+                case ActiveItem.FullscreenPlot:
+                    Item = ActiveItem.Screen;
+                    break;
+            }
+
+            
             SetView();
         }
         public void Menu_PlotClicked(object sender, EventArgs e)

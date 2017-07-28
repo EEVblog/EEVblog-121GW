@@ -27,8 +27,8 @@ namespace rMultiplatform
             var x = pInput.X;
             var y = pInput.Y;
 
-            if (L <= x && x <= R)
-                if (T <= y && y <= B)
+            if (GetLeftPosition <= x && x <= GetRightPosition)
+                if (GetTopPosition <= y && y <= GetBottomPosition)
                     return true;
 
             return false;
@@ -70,7 +70,7 @@ namespace rMultiplatform
                 return ParentWidth * (1 - mLeft - mRight);
             }
         }
-        public float PaddedHeigth
+        public float PaddedHeight
         {
             get
             {
@@ -83,28 +83,52 @@ namespace rMultiplatform
         {
             get
             {
-                return GetLeftPosition;
+                return mLeft * ParentWidth;
+            }
+            set
+            {
+                var ratio = value / ParentWidth;
+                mLeft = ratio;
+                InvalidateParent();
             }
         }
         public float R
         {
             get
             {
-                return GetRightPosition;
+                return mRight * ParentWidth;
+            }
+            set
+            {
+                var ratio = value / ParentWidth;
+                mRight = ratio;
+                InvalidateParent();
             }
         }
         public float T
         {
             get
             {
-                return GetTopPosition;
+                return mTop * ParentHeight;
+            }
+            set
+            {
+                var ratio = value / ParentHeight;
+                mTop = ratio;
+                InvalidateParent();
             }
         }
         public float B
         {
             get
             {
-                return GetBottomPosition;
+                return mBottom * ParentHeight;
+            }
+            set
+            {
+                var ratio = value / ParentHeight;
+                mBottom = ratio;
+                InvalidateParent();
             }
         }
         public float W
@@ -118,7 +142,7 @@ namespace rMultiplatform
         {
             get
             {
-                return PaddedHeigth;
+                return PaddedHeight;
             }
         }
 
@@ -157,7 +181,7 @@ namespace rMultiplatform
 
             //Make sure point is in the boundaries of the object.
             if (WithinPadding(p1))
-              if (WithinPadding(p2))
+                if (WithinPadding(p2))
                     return (p1, p2);
 
             return (p1, p2);
@@ -172,7 +196,7 @@ namespace rMultiplatform
 
             //Make sure point is in the boundaries of the object.
             if (WithinPadding(p1))
-              if (WithinPadding(p2))
+                if (WithinPadding(p2))
                     return (p1, p2);
 
             return (p1, p2);
@@ -194,7 +218,7 @@ namespace rMultiplatform
                 c.DrawRect(Rectangle, new SKPaint() {StrokeWidth = 2, IsStroke = true, Color = SKColors.White});
             return false;
         }
-        public void SetParentSize(double w, double h)
+        public void SetParentSize(double w, double h, double scale)
         {
             ParentWidth = (float)w;
             ParentHeight = (float)h;

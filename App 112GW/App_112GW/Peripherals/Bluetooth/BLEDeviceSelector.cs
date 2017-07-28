@@ -17,12 +17,26 @@ namespace rMultiplatform.BLE
         ListView listView;
         void UpdateDeviceList()
         {
-            listView.ItemsSource = null;
-            listView.ItemsSource = mClient.ListDevices();
+            try
+            {
+                if (listView.ItemsSource == null)
+                    listView.ItemsSource = mClient.ListDevices();
+            }
+            catch
+            {
+                Debug.WriteLine("Error Caught : void UpdateDeviceList()");
+            }
         }
         public void Reset()
         {
-            mClient.Reset();
+            try
+            {
+                mClient.Reset();
+            }
+            catch
+            {
+                Debug.WriteLine("Error Caught : public void Reset()");
+            }
         }
 
         IClientBLE mClient;
@@ -39,7 +53,7 @@ namespace rMultiplatform.BLE
             mClient = new ClientBLE();
             mClient.DeviceListUpdated += UpdateDeviceList;
             mClient.DeviceConnected += MClient_DeviceConnected;
-            Reset();
+           // Reset();
 
             //
             var template = new DataTemplate(typeof(TextCell));
@@ -59,8 +73,15 @@ namespace rMultiplatform.BLE
         List<Object> devucesl = new List<object>();
         private void MClient_DeviceConnected(IDeviceBLE pDevice)
         {
-            listView.SelectedItem = null;
-            Connected?.Invoke(pDevice);
+            try
+            {
+                listView.SelectedItem = null;
+                Connected?.Invoke(pDevice);
+            }
+            catch
+            {
+                Debug.WriteLine("Error Caught : private void MClient_DeviceConnected(IDeviceBLE pDevice)");
+            }
         }
         private void OnSelection(object sender, SelectedItemChangedEventArgs e)
         {

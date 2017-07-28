@@ -168,33 +168,27 @@ namespace rMultiplatform
         //The reactions to picker, checkbox, buttons events
         private void    ButtonPress_Hold       (object sender, EventArgs e)
         {
-            if (HoldClicked != null)
-                HoldClicked(sender, e);
+            HoldClicked?.Invoke(sender, e);
         }
         private void    ButtonPress_Relative   (object sender, EventArgs e)
         {
-            if (RelClicked != null)
-                RelClicked(sender, e);
+            RelClicked?.Invoke(sender, e);
         }
         private void    ButtonPress_Back       (object sender, EventArgs e)
         {
-            if (BackClicked != null)
-                BackClicked(sender, e);
+            BackClicked?.Invoke(sender, e);
         }
         private void    CheckboxChange_Plot    (object sender, EventArgs e)
         {
-            if (PlotClicked != null)
-                PlotClicked(mPlotCheck, e);
+            PlotClicked?.Invoke(mPlotCheck, e);
         }
         private void    PickerChange_Range     (object sender, EventArgs e)
         {
-            if (RangeChanged != null)
-                RangeChanged(sender, e);
+            RangeChanged?.Invoke(sender, e);
         }
         private void    PickerChange_Mode      (object sender, EventArgs e)
         {
-            if (ModeChanged != null)
-                ModeChanged(sender, e);
+            ModeChanged?.Invoke(sender, e);
         }
     }
 }

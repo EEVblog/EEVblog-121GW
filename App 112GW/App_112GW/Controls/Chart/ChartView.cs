@@ -5,10 +5,22 @@ namespace rMultiplatform
 {
     public partial class ChartView : ContentView
     {
-        bool                Item = true;
-        public StackLayout  mChartGrid;
-        private Chart       mChart;
-        public ChartMenu    mMenu;
+        public event EventHandler FullscreenClicked
+        {
+            add
+            {
+                mMenu.FullscreenClicked += value;
+            }
+            remove
+            {
+                mMenu.FullscreenClicked -= value;
+            }
+        }
+        
+        bool                    Item = true;
+        public  StackLayout     mChartGrid;
+        private Chart           mChart;
+        public  ChartMenu       mMenu;
 
         //Wrappers for the supported chart elements
         public void AddAxis(ChartAxis pInput)
@@ -39,24 +51,21 @@ namespace rMultiplatform
 
         public ChartView()
         {
-            mChartGrid = new StackLayout();
+            mChart                  = new Chart();
+            mMenu                   = new ChartMenu();
+            mChartGrid              = new StackLayout();
 
-            // 
-            HorizontalOptions = LayoutOptions.Fill;
-            VerticalOptions = LayoutOptions.StartAndExpand;
+            HorizontalOptions       = LayoutOptions.Fill;
+            VerticalOptions         = LayoutOptions.StartAndExpand;
 
             // Assures that a non-zero height is allocated
-            MinimumHeightRequest = 200;
-
-            //
-            mMenu = new ChartMenu();
-            mChart = new Chart();
+            MinimumHeightRequest    = 200;
 
             //Setup the events
-            mMenu.BackClicked += ViewToggle;
-            mChart.Clicked += ViewToggle;
-            mMenu.SaveClicked += DataSave;
-
+            mMenu.BackClicked   += ViewToggle;
+            mChart.Clicked      += ViewToggle;
+            mMenu.SaveClicked   += DataSave;
+            FullscreenClicked   += ViewToggle;
 
             //Add 
             mChartGrid.Children.Add(mMenu);

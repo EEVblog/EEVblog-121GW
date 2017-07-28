@@ -88,7 +88,7 @@ namespace rMultiplatform.BLE
 
         public ClientBLE()
         {
-            mVisibleDevices = new List<IDeviceBLE>();
+            mVisibleDevices = new System.Collections.ObjectModel.ObservableCollection<IDeviceBLE>();
 
             //Setup 
             try

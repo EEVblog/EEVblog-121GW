@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Xamarin.Forms;
+using System.Collections.ObjectModel;
 
 namespace rMultiplatform.BLE
 {
@@ -74,13 +75,13 @@ namespace rMultiplatform.BLE
         void Reset();
 
         //Does not return a usable device, it must be paired first
-        List<IDeviceBLE> ListDevices();
+        ObservableCollection<IDeviceBLE> ListDevices();
         void Connect(IDeviceBLE pInput);
     }
 
     public abstract class AClientBLE
     {
-        volatile public List<IDeviceBLE> mVisibleDevices;
+        volatile public ObservableCollection<IDeviceBLE> mVisibleDevices;
 
         private Mutex mut = new Mutex();
         public event VoidEvent DeviceListUpdated;
@@ -88,7 +89,7 @@ namespace rMultiplatform.BLE
 
         public void TriggerListUpdate()
         {
-            Device.BeginInvokeOnMainThread(() =>
+            RunMainThread(() =>
             {
                 DeviceListUpdated?.Invoke();
             });
@@ -122,42 +123,60 @@ namespace rMultiplatform.BLE
                 Task.Run(Function).Wait();
                 ReleaseMutex(tag);
             }
-            catch (Exception e)
+            catch
             {
                 ReleaseMutex(tag);
             }
         }
+
         public bool AddUniqueItem(IDeviceBLE pInput)
         {
-            if (pInput.Name != null)
-                if (pInput.Name.Length > 0)
-                {
-                    bool add = true;
-                    foreach (var device in mVisibleDevices)
-                        if (device.Id == pInput.Id)
-                            add = false;
-                    if (add)
-                        mVisibleDevices.Add(pInput);
+            try
+            {
 
-                    if (add)
-                        TriggerListUpdate();
+                if (pInput.Name != null)
+                    if (pInput.Name.Length > 0)
+                    {
+                        bool add = true;
+                        foreach (var device in mVisibleDevices)
+                            if (device.Id == pInput.Id)
+                                add = false;
+                        if (add)
+                            mVisibleDevices.Add(pInput);
 
-                    return add;
-                }
+                        if (add)
+                            TriggerListUpdate();
+
+                        return add;
+                    }
+            }
+            catch
+            {
+                Debug.WriteLine("Error Caught : public bool AddUniqueItem(IDeviceBLE pInput)");
+                return false;
+            }
             return false;
+
         }
-        public List<IDeviceBLE> ListDevices()
+        public ObservableCollection<IDeviceBLE> ListDevices()
         {
             if (mVisibleDevices == null)
-                return new List<IDeviceBLE>();
+                return new ObservableCollection<IDeviceBLE>();
             return mVisibleDevices;
         }
         public void RunMainThread(Action input)
         {
             Device.BeginInvokeOnMainThread(() =>
             {
-                input?.Invoke();
-            });
+                try
+                {
+                    input?.Invoke();
+                }
+                catch
+                {
+                    Debug.WriteLine("Error Caught :  public void RunMainThread(Action input)");
+                }
+        });
         }
     }
 }

@@ -10,13 +10,14 @@ using SkiaSharp.Views.Forms;
 using System.Runtime.CompilerServices;
 using App_112GW;
 using System.Threading.Tasks;
+using System.Diagnostics;
 
 namespace rMultiplatform
 {
     public class GeneralControlRenderer :
-#if __ANDROID__
+#if __ANDROID__ && ! SOFTWARE_DRAW
         SKGLView
-#elif __IOS__
+#elif __IOS__ && ! SOFTWARE_DRAW
         SKGLView
 #else
         SKCanvasView
@@ -250,9 +251,9 @@ namespace rMultiplatform
             get;
             set;
         }
-#if __ANDROID__
+#if __ANDROID__ && ! SOFTWARE_DRAW
         protected override void OnPaintSurface(SKPaintGLSurfaceEventArgs e)
-#elif __IOS__
+#elif __IOS__ && ! SOFTWARE_DRAW
         protected override void     OnPaintSurface(SKPaintGLSurfaceEventArgs e)
 #else
         protected override void     OnPaintSurface(SKPaintSurfaceEventArgs e)
@@ -423,21 +424,18 @@ namespace rMultiplatform
 
         private void ClickEvent()
         {
-            if (Clicked != null)
-                Clicked(this, EventArgs.Empty);
+            Clicked?.Invoke ( this, EventArgs.Empty );
         }
-        private async void OnClickedAsync()
+        private void OnClickedAsync()
         {
             mRenderer.State = GeneralControlRenderer.eControlInputState.eNone;
-            await Task.Delay(100);
-            if (Clicked != null)
-                Clicked(this, EventArgs.Empty);
+            Task.Delay(100).ContinueWith
+            ((obj) => { Device.BeginInvokeOnMainThread(() => { ClickEvent(); }); });
         }
         protected virtual void OnClicked(object o, EventArgs e)
         {
             OnClickedAsync();
         }
-
 
         public GeneralControl(SKPoint[] pPoints)
         {
@@ -448,11 +446,11 @@ namespace rMultiplatform
             Content             = mRenderer;
 
             //
-            BorderWidth = Globals.BorderWidth;
-            BackgroundColor = Globals.BackgroundColor;
-            PressColor = Globals.FocusColor;
-            HoverColor = Globals.HighlightColor;
-            IdleColor = Globals.TextColor;
+            BackgroundColor     = Globals.BackgroundColor;
+            BorderWidth         = Globals.BorderWidth;
+            PressColor          = Globals.FocusColor;
+            HoverColor          = Globals.HighlightColor;
+            IdleColor           = Globals.TextColor;
 
             SetupTouch();
         }

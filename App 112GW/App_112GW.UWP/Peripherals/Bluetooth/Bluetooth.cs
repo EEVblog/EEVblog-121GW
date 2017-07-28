@@ -252,63 +252,87 @@ namespace rMultiplatform.BLE
         private static int index = 0;
         private void DeviceWatcher_Added    (DeviceWatcher sender, DeviceInformation args)
         {
-            if (sender != mDeviceWatcher)
-                return;
-            if (args.Name == string.Empty)
-                return;
-            if (mVisibleDevices == null)
-                return;
-
-            var temp = new UnPairedDeviceBLE(args);
-            MutexBlock(() =>
+            try
             {
-                Debug.WriteLine(args.Name);
-                AddUniqueItem(temp);
-            }, ((index++).ToString() + " Adding"));
+                if (sender != mDeviceWatcher)
+                    return;
+                if (args.Name == string.Empty)
+                    return;
+                if (mVisibleDevices == null)
+                    return;
+
+                var temp = new UnPairedDeviceBLE(args);
+                MutexBlock(() =>
+                {
+                    Debug.WriteLine(args.Name);
+                    AddUniqueItem(temp);
+                }, ((index++).ToString() + " Adding"));
+            }
+            catch { Debug.WriteLine("Caught Error : private void DeviceWatcher_Added    (DeviceWatcher sender, DeviceInformation args)"); }
         }
         private void DeviceWatcher_Updated(DeviceWatcher sender, DeviceInformationUpdate args)
         {
-            if (sender != mDeviceWatcher)
-                return;
-            if (mVisibleDevices == null)
-                return;
+            try
+            { 
+                if (sender != mDeviceWatcher)
+                    return;
+                if (mVisibleDevices == null)
+                    return;
 
-            MutexBlock(() =>
-            {
-                var removed_id = args.Id;
-                for (int i = 0; i < mVisibleDevices.Count; i++)
+                MutexBlock(() =>
                 {
-                    var item = mVisibleDevices[i];
-                    if (item.Id == removed_id)
-                        (mVisibleDevices[i] as UnPairedDeviceBLE).Information.Update(args);
-                }
-            }, ((index++).ToString() + " Updated"));
-            TriggerListUpdate();
+                    var removed_id = args.Id;
+                    for (int i = 0; i < mVisibleDevices.Count; i++)
+                    {
+                        var item = mVisibleDevices[i];
+                        if (item.Id == removed_id)
+                            (mVisibleDevices[i] as UnPairedDeviceBLE).Information.Update(args);
+                    }
+                }, ((index++).ToString() + " Updated"));
+                TriggerListUpdate();
+            }
+            catch
+            {
+                Debug.WriteLine("Caught Error : private void DeviceWatcher_Updated(DeviceWatcher sender, DeviceInformationUpdate args)");
+            }
         }
 
         private void DeviceWatcher_Removed  (DeviceWatcher sender, DeviceInformationUpdate  args)
         {
-            if (sender != mDeviceWatcher)
-                return;
-            if (mVisibleDevices == null)
-                return;
-
-            MutexBlock(() =>
+            try
             {
+                if (sender != mDeviceWatcher)
+                    return;
+                if (mVisibleDevices == null)
+                    return;
+
+                MutexBlock(() =>
+                {
                 var removed_id = args.Id;
                 for (int i = 0; i < mVisibleDevices.Count; i++)
                 {
                     var item = mVisibleDevices[i];
                     if (item.Id == removed_id)
-                        mVisibleDevices.RemoveAt(i);
-                }
-            }, ((index++).ToString() + " Removed"));
-            TriggerListUpdate();
-        }
+                    {
+                        RunMainThread(() =>
+                        {
+                            mVisibleDevices.Remove(item);
+                        });
+                            
+                        }
+                    }
+                }, ((index++).ToString() + " Removed"));
+                TriggerListUpdate();
+            }
+            catch
+            {
+                Debug.WriteLine("Caught Error : private void DeviceWatcher_Removed  (DeviceWatcher sender, DeviceInformationUpdate  args)");
+            }
+}
 
         private void PairAsync ( UnPairedDeviceBLE pInput )
         {
-            Device.BeginInvokeOnMainThread(() =>
+            RunMainThread(() =>
             {
                 pInput.Information.Pairing.PairAsync().AsTask().ContinueWith((arg) => { GetDevice(pInput); });
             });
@@ -349,31 +373,37 @@ namespace rMultiplatform.BLE
             }
             catch
             {
-
+                Debug.WriteLine("Caught Error : public void Connect(IDeviceBLE pInput)");
             }
         }
 
         public ClientBLE()
         {
-            mVisibleDevices = new List<IDeviceBLE>();
+            try
+            {
+                mVisibleDevices = new System.Collections.ObjectModel.ObservableCollection<IDeviceBLE>();
+                //Get all devices paired and not.
+                string query1 = "(" + BluetoothLEDevice.GetDeviceSelectorFromPairingState(true) + ")";
+                string query2 = "(" + BluetoothLEDevice.GetDeviceSelectorFromPairingState(false) + ")";
+                var query = query1 + " OR " + query2;
 
-            //Get all devices paired and not.
-            string query1 = "(" + BluetoothLEDevice.GetDeviceSelectorFromPairingState(true) + ")";
-            string query2 = "(" + BluetoothLEDevice.GetDeviceSelectorFromPairingState(false) + ")";
-            var query = query1 + " OR " + query2;
+                //Create device watcher
+                mDeviceWatcher = DeviceInformation.CreateWatcher(query, new string[]{ "System.Devices.Aep.DeviceAddress", "System.Devices.Aep.IsConnected" }, DeviceInformationKind.AssociationEndpoint);
 
-            //Create device watcher
-            mDeviceWatcher = DeviceInformation.CreateWatcher(query, new string[]{ "System.Devices.Aep.DeviceAddress", "System.Devices.Aep.IsConnected" }, DeviceInformationKind.AssociationEndpoint);
+                // Register event handlers before starting the watcher.
+                // Added, Updated and Removed are required to get all nearby devices
+                mDeviceWatcher.Added += DeviceWatcher_Added;
+                mDeviceWatcher.Updated += DeviceWatcher_Updated;
+                mDeviceWatcher.Removed += DeviceWatcher_Removed;
+                mDeviceWatcher.Stopped += MDeviceWatcher_Stopped;
 
-            // Register event handlers before starting the watcher.
-            // Added, Updated and Removed are required to get all nearby devices
-            mDeviceWatcher.Added += DeviceWatcher_Added;
-            mDeviceWatcher.Updated += DeviceWatcher_Updated;
-            mDeviceWatcher.Removed += DeviceWatcher_Removed;
-            mDeviceWatcher.Stopped += MDeviceWatcher_Stopped;
-
-            // Start the watcher.
-            mDeviceWatcher.Start();
+                // Start the watcher.
+                mDeviceWatcher.Start();
+            }
+            catch
+            {
+                Debug.WriteLine("Caught Error : public ClientBLE()");
+            }
         }
         ~ClientBLE()
         {
@@ -396,7 +426,9 @@ namespace rMultiplatform.BLE
             {
                 mDeviceWatcher.Start();
             }
-            catch { }
+            catch
+            {
+            }
         }
         public void Stop()
         {

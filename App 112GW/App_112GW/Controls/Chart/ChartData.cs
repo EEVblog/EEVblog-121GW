@@ -7,6 +7,8 @@ using SkiaSharp.Views.Forms;
 using System.Collections.Generic;
 using System.Text;
 using App_112GW;
+using System.Diagnostics;
+using System.Threading;
 
 namespace rMultiplatform
 {
@@ -37,6 +39,7 @@ namespace rMultiplatform
         //
         public void ToCSV()
         {
+            DataMux.WaitOne();
             if (Data.Count > 1)
             {
                 string output = "";
@@ -44,6 +47,7 @@ namespace rMultiplatform
                     output += item.X.ToString() + ", " + item.Y.ToString() + "\r\n";
                 Files.SaveFile(output);
             }
+            DataMux.ReleaseMutex();
         }
 
         //
@@ -141,17 +145,14 @@ namespace rMultiplatform
         public Range    VerticalSpan;
         
         //
-        float           Time;
-        float           SampleTime;
         float           TimeSpan;
         ChartDataMode   Mode;
 
         //
-        public      ChartData (ChartDataMode pMode, string pHorzLabel, string pVertLabel, float pSampleTime, float pTimeSpan)
+        public      ChartData (ChartDataMode pMode, string pHorzLabel, string pVertLabel, float pTimeSpan)
         {
             Mode = pMode;
             TimeSpan = pTimeSpan;
-            SampleTime = pSampleTime;
 
             //
             HorizontalLabel = pHorzLabel;
@@ -210,24 +211,39 @@ namespace rMultiplatform
             c.DrawPath(path, DrawPaint);
             return false;
         }
-        public void Sample (float pPoint)
+
+        Mutex DataMux = new Mutex();
+        
+        DateTime start = DateTime.Now;
+        public void Sample (double pPoint)
         {
+            TimeSpan    t_diff  = DateTime.Now.Subtract(start);
+            double      ms_diff = t_diff.TotalMilliseconds / 1000;
+            Debug.WriteLine("Sample Time : " + ms_diff.ToString());
+
             switch (Mode)
             {
                 case ChartDataMode.eRolling:
-                    if (Time > HorozontalSpan.Maximum)
+                    if (ms_diff > HorozontalSpan.Maximum)
                     {
-                        Data.RemoveAt(0);
-                        HorozontalSpan.ShiftRange(SampleTime);
+                        DataMux.WaitOne();
+                        if (Data.Count > 0)
+                            Data.RemoveAt(0);
+                        DataMux.ReleaseMutex();
+
+                        HorozontalSpan.ShiftRangeToFitValue(ms_diff);
                     }
                     break;
                 case ChartDataMode.eRescaling:
-                    HorozontalSpan.RescaleRangeToFitValue(Time);
+                    HorozontalSpan.RescaleRangeToFitValue(ms_diff);
                     break;
                 case ChartDataMode.eScreen:
-                    if (Time > HorozontalSpan.Maximum)
+                    if (ms_diff > HorozontalSpan.Maximum)
                     {
+                        DataMux.WaitOne();
                         Data.Clear();
+                        DataMux.ReleaseMutex();
+
                         VerticalSpan.Set(0, 0);
                         HorozontalSpan.ShiftRange(HorozontalSpan.Distance);
                     }
@@ -238,10 +254,11 @@ namespace rMultiplatform
             VerticalSpan.RescaleRangeToFitValue(pPoint);
 
             //
-            Data.Add(new SKPoint(Time, pPoint));
+            DataMux.WaitOne();
+            Data.Add(new SKPoint((float)ms_diff, (float)pPoint));
+            DataMux.ReleaseMutex();
 
             InvalidateParent();
-            Time += SampleTime;
         }
 
         //Required functions by interface defition
@@ -272,7 +289,7 @@ namespace rMultiplatform
             Types.Add(typeof(ChartAxis));
             return Types;
         }
-        public void SetParentSize(double w, double h)
+        public void SetParentSize(double w, double h, double scale)
         {
             //Doesn't do anything
         }

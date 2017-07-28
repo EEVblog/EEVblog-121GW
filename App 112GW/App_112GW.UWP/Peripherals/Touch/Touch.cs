@@ -57,15 +57,15 @@ namespace rMultiplatform.UWP
         // Common handlers
         void ReleasedHandler(object sender, PointerRoutedEventArgs args)
         {
-            effect.ReleasedHandler(sender, GetPoint(sender, args));
+            effect.ReleasedHandler(sender, GetPoint(sender, args), args.Pointer.PointerId);
         }
         void MoveHandler    (object sender, PointerRoutedEventArgs args)
         {
-            effect.MoveHandler(sender, GetPoint(sender, args));
+            effect.MoveHandler(sender, GetPoint(sender, args), args.Pointer.PointerId);
         }
         void PressedHandler (object sender, PointerRoutedEventArgs args)
         {
-            effect.PressedHandler(sender, GetPoint(sender, args));
+            effect.PressedHandler(sender, GetPoint(sender, args), args.Pointer.PointerId);
         }
     }
 }

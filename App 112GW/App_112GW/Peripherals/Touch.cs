@@ -9,6 +9,7 @@ using SkiaSharp.Views.Forms;
 using System.ComponentModel;
 using Xamarin.Forms.PlatformConfiguration;
 using Xamarin.Forms.Platform;
+using System.Diagnostics;
 
 namespace rMultiplatform
 {
@@ -22,8 +23,8 @@ namespace rMultiplatform
             eReleased
         };
 
-        protected Point       Position;
-        public eTouchType     TouchType
+        public Point            Position;
+        public eTouchType       TouchType
         {
             private set;
             get;
@@ -54,11 +55,18 @@ namespace rMultiplatform
             return new TouchPoint(pInput, TouchPoint.eTouchType.eReleased);
         }
     }
+
+
     public class TouchActionEventArgs : EventArgs
     {
-        public TouchActionEventArgs(TouchPoint location)
+        public TouchActionEventArgs(TouchPoint pLocation, uint pID)
         {
-            Location = location;
+            Location = pLocation;
+            ID = pID;
+        }
+        public uint ID
+        {
+            private set; get;
         }
         public TouchPoint Location
         {
@@ -150,19 +158,20 @@ namespace rMultiplatform
         //Common handlers
         public void RaiseAction(TouchActionEventArgs Action)
         {
+            Debug.WriteLine(Action.Location.TouchType.ToString() + " event detected from " + Action.ID.ToString() + " at " + Action.Location.Position + ".");
             OnTouchAction(Element, Action);
         }
-        public void ReleasedHandler(object sender, Point pt)
+        public void ReleasedHandler(object sender, Point pt, uint ID)
         {
-            RaiseAction(new TouchActionEventArgs(TouchPointFactory.Released(pt)));
+            RaiseAction(new TouchActionEventArgs(TouchPointFactory.Released(pt), ID));
         }
-        public void MoveHandler(object sender, Point pt)
+        public void MoveHandler(object sender, Point pt, uint ID)
         {
-            RaiseAction(new TouchActionEventArgs(TouchPointFactory.Moved(pt)));
+            RaiseAction(new TouchActionEventArgs(TouchPointFactory.Moved(pt), ID));
         }
-        public void PressedHandler(object sender, Point pt)
+        public void PressedHandler(object sender, Point pt, uint ID)
         {
-            RaiseAction(new TouchActionEventArgs(TouchPointFactory.Pressed(pt)));
+            RaiseAction(new TouchActionEventArgs(TouchPointFactory.Pressed(pt), ID));
         }
     }
 }
