@@ -56,9 +56,6 @@ namespace rMultiplatform.Droid
                 case MotionEventActions.Cancel:
                     effect.ReleasedHandler(sender, GetPoint(args), (uint)args.Event.GetPointerId(args.Event.ActionIndex));
                     break;
-
-                default:
-                    break;
             }
         }
 
