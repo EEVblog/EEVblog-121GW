@@ -46,6 +46,7 @@
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Controls\Multimeter\MultimeterScreen.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Image\SVGLayer\SVGLayer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Peripherals\Multitouch.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Peripherals\Touch.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)General\VariableMonitor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Packet\Packet112GW.cs" />
@@ -379,7 +380,6 @@
     <Folder Include="$(MSBuildThisFileDirectory)Controls\Labelled Controls\" />
     <Folder Include="$(MSBuildThisFileDirectory)Image\Layers\" />
     <Folder Include="$(MSBuildThisFileDirectory)Image\PNG%27s\" />
-    <Folder Include="$(MSBuildThisFileDirectory)Peripherals\" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Image\PNG%27s\!bar_range.png">
