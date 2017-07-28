@@ -114,7 +114,7 @@ namespace rMultiplatform
 
         //Processes platform agnostic input
         private TouchPoint.eTouchType PreviousType;
-        public void             OnTouchAction(Element e, TouchActionEventArgs a)
+        public void OnTouchAction(Element e, TouchActionEventArgs a)
         {
             var type = a.Location.TouchType;
             var change = type != PreviousType;

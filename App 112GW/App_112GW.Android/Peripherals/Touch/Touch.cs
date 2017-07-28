@@ -41,21 +41,20 @@ namespace rMultiplatform.Droid
                 //case MotionEventActions.ButtonPress:
                 case MotionEventActions.Down:
                 case MotionEventActions.PointerDown:
-                    effect.PressedHandler(sender, GetPoint(args));
+                    effect.PressedHandler(sender, GetPoint(args), (uint)args.Event.GetPointerId(args.Event.ActionIndex));
                     break;
 
                 case MotionEventActions.Move:
                 case MotionEventActions.HoverMove:
                 case MotionEventActions.HoverEnter:
-                    effect.MoveHandler(sender, GetPoint(args));
+                    effect.MoveHandler(sender, GetPoint(args), (uint)args.Event.GetPointerId(args.Event.ActionIndex));
                     break;
 
                 case MotionEventActions.HoverExit:
                 case MotionEventActions.PointerUp:
                 case MotionEventActions.Up:
                 case MotionEventActions.Cancel:
-                //case MotionEventActions.ButtonRelease:
-                    effect.ReleasedHandler(sender, GetPoint(args));
+                    effect.ReleasedHandler(sender, GetPoint(args), (uint)args.Event.GetPointerId(args.Event.ActionIndex));
                     break;
 
                 default:
