@@ -85,12 +85,20 @@ namespace rMultiplatform
             {
                 return _PointA;
             }
+            private set
+            {
+                _PointA = value;
+            }
         }
         public Point PointB
         {
             get
             {
                 return _PointB;
+            }
+            private set
+            {
+                _PointB = value;
             }
         }
 
@@ -99,17 +107,41 @@ namespace rMultiplatform
             get;
             private set;
         }
+
+        private double _Distance;
         public double Distance
         {
-            get;
-            private set;
+            get { return _Distance; }
         }
 
-        double DistanceDelta;
-        double AngleDelta;
+        public Point Center
+        {
+            get
+            {
+                var cx = (PointA.X + PointB.X) / 2;
+                var cy = (PointA.Y + PointB.Y) / 2;
+
+                Debug.WriteLine("cx=" + cx + " cy=" + cy);
+
+                return new Point(cx, cy);
+            }
+        }
+        public double Zoom
+        {
+            get
+            {
+                return 1 + (DistanceDelta / Distance) * 0.5;
+            }
+        }
+
+        public double DistanceDelta;
+        public double AngleDelta;
 
         public bool Set(Point A, Point B)
         {
+            PointA = A;
+            PointB = B;
+
             var x1 = A.X;
             var y1 = A.Y;
             var x2 = B.X;
@@ -120,32 +152,51 @@ namespace rMultiplatform
             var distance = Math.Sqrt(deltax * deltax + deltay * deltay);
             var angle = Math.Atan(deltay / deltax);
 
-            if (Distance == 0)
+            if (distance > 0)
             {
-                Distance = distance;
-                Angle = angle;
-            }
-            else
-            {
-                DistanceDelta = distance - Distance;
-                Distance = distance;
-                AngleDelta = angle - Angle;
-                Angle = angle;
+                if (Distance == 0)
+                {
+                    _Distance = distance;
+                    Angle = angle;
 
-                if (Distance > 0)
-                    return true;
+
+                    DistanceDelta = 0;
+                    AngleDelta = 0;
+                }
+                else
+                {
+                    DistanceDelta = distance - Distance;
+                    _Distance = distance;
+                    AngleDelta = angle - Angle;
+                    Angle = angle;
+
+                    if (DistanceDelta != 0)
+                        return true;
+                }
             }
             return false;
         }
         public void Clear()
         {
-            Distance = 0;
+            _Distance = 0;
         }
 
 
 
         public TouchPinch ()
         {}
+    }
+
+    public class TouchPinchActionEventArgs : EventArgs
+    {
+        public TouchPinchActionEventArgs(TouchPinch pPinch)
+        {
+            Pinch = pPinch;
+        }
+        public TouchPinch Pinch
+        {
+            private set; get;
+        }
     }
 
     public class TouchCursor
@@ -201,12 +252,13 @@ namespace rMultiplatform
     public class Touch : RoutingEffect
     {
         public delegate void    TouchActionEventHandler(object sender, TouchActionEventArgs args);
+        public delegate void    TouchPinchActionEventHandler(object sender, TouchPinchActionEventArgs args);
         public event            TouchActionEventHandler     Pressed;
         public event            TouchActionEventHandler     Released;
         public event            TouchActionEventHandler     Hover;
         public event            TouchActionEventHandler     PressedMoved;
 
-        public event TouchActionEventHandler Pinch;
+        public event TouchPinchActionEventHandler Pinch;
         public event TouchActionEventHandler Swipe;
 
         public double MultitouchThreshold = 5;
@@ -216,28 +268,28 @@ namespace rMultiplatform
         TouchPinch PinchProcessor = new TouchPinch();
 
         //Adds a cursor to the map if it doesn't already exist
+        bool PinchMode = false;
         void ProcessCursor(TouchActionEventArgs args)
         {
             if (!Cursors.ContainsKey(args.ID))
                 Cursors.Add(args.ID, new TouchCursor(args.Location));
             else
             {
+                var item = Cursors[args.ID];
+                item.Position = args.Location.Position;
                 switch (Cursors.Count)
                 {
                     case 1:
-                        var item = Cursors[args.ID];
-                        item.Position = args.Location.Position;
-
-                        Debug.WriteLine("Swipe " + item.Delta.ToString());
                         if (item.Delta > MultitouchThreshold)
                         {
 
                         }
                         break;
                     case 2:
-                        if(PinchProcessor.Set(Cursors.ElementAt(0).Value.Position, Cursors.ElementAt(1).Value.Position))
+                        PinchMode = true;
+                        if (PinchProcessor.Set(Cursors.ElementAt(0).Value.Position, Cursors.ElementAt(1).Value.Position))
                         {
-                            Debug.WriteLine("Pinch " + item.Delta.ToString());
+                            Pinch?.Invoke(this, new TouchPinchActionEventArgs(PinchProcessor));
                         }
                         break;
                     default:
@@ -248,8 +300,7 @@ namespace rMultiplatform
         void RemoveCursor(TouchActionEventArgs args)
         {
             PinchProcessor.Clear();
-            if (!Cursors.ContainsKey(args.ID))
-                Cursors.Remove(args.ID);
+            Cursors.Remove(args.ID);
         }
 
 
@@ -269,6 +320,7 @@ namespace rMultiplatform
         //Calls the safe event function for the event
         private void SafeHover(Element element, TouchActionEventArgs args)
         {
+           // ProcessCursor(args);
             SafeEvent(Hover, element, args);
         }
         private void SafePressed(Element element, TouchActionEventArgs args)
@@ -276,15 +328,19 @@ namespace rMultiplatform
             ProcessCursor(args);
             SafeEvent(Pressed, element, args);
         }
-        private void SafeReleased(Element element, TouchActionEventArgs args)
-        {
-            RemoveCursor(args);
-            SafeEvent(Released, element, args);
-        }
         private void SafePressedMove(Element element, TouchActionEventArgs args)
         {
             ProcessCursor(args);
             SafeEvent(PressedMoved, element, args);
+        }
+        private void SafeReleased(Element element, TouchActionEventArgs args)
+        {
+            if (Cursors.Count == 1 && !PinchMode)
+                SafeEvent(Released, element, args);
+
+            RemoveCursor(args);
+            if (Cursors.Count == 0)
+                PinchMode = false;
         }
 
         //Processes platform agnostic input
@@ -327,7 +383,6 @@ namespace rMultiplatform
         //Common handlers
         public void RaiseAction(TouchActionEventArgs Action)
         {
-            Debug.WriteLine(Action.Location.TouchType.ToString() + " event detected from " + Action.ID.ToString() + " at " + Action.Location.Position + ".");
             OnTouchAction(Element, Action);
         }
         public void ReleasedHandler(object sender, Point pt, uint ID)

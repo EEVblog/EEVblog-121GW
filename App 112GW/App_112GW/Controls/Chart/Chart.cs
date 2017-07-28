@@ -261,9 +261,27 @@ namespace rMultiplatform
             mTouch.Pressed += MTouch_Press;
             mTouch.Hover += MTouch_Hover;
             mTouch.Released += MTouch_Release;
+            mTouch.Pinch += MTouch_Pinch;
             Effects.Add(mTouch);
         }
-       
+
+
+        float CurrentScale = 1.0f;
+        private void MTouch_Pinch(object sender, TouchPinchActionEventArgs args)
+        {
+            var zoomfactor = (float)args.Pinch.Zoom;
+            if ( CurrentScale * zoomfactor >= 1.0f )
+            {
+                var center = args.Pinch.Center.ToSKPoint();
+                center.X += mCanvas.LocalClipBounds.Left;
+                center.Y += mCanvas.LocalClipBounds.Top;
+
+                CurrentScale *= zoomfactor;
+                mCanvas.SetMatrix ( SKMatrix.MakeScale ( CurrentScale , CurrentScale , center.X , center.Y ) );
+                InvalidateSurface ( );
+            }
+        }
+
         //Initialises the object
         public Chart() : base()
         {
