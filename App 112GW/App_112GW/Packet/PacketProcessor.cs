@@ -15,10 +15,10 @@ namespace rMultiplatform
         private List<byte> mBuffer;
         public PacketProcessor(byte start, int length)
         { 
-            mBuffer = new List<byte>();
-            mStart = start;
-            mLength = length;
-            mCount = 0;
+            mBuffer     = new List<byte>();
+            mStart      = start;
+            mLength     = length;
+            mCount      = 0;
             mStartFound = false;
         }
         public void Recieve(byte[] pBytes)

@@ -133,7 +133,6 @@ namespace rMultiplatform.BLE
         {
             try
             {
-
                 if (pInput.Name != null)
                     if (pInput.Name.Length > 0)
                     {
