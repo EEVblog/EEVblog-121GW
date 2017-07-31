@@ -58,15 +58,13 @@ namespace rMultiplatform
 
         public Multimeter ( BLE.IDeviceBLE pDevice )
         {
-            if (pDevice != null)
-            {
-                MyProcessor.mCallback += ProcessPacket;
-                mDevice = pDevice;
-                mDevice.Change += ValueChanged;
-            }
+            if (pDevice == null)
+                stateTimer = new Timer(TestCallback, null, 1000, 1000);
             else
             {
-                stateTimer = new Timer(TestCallback, null, 1000, 250);
+                mDevice = pDevice;
+                mDevice.Change += ValueChanged;
+                MyProcessor.mCallback += ProcessPacket;
             }
 
             // 

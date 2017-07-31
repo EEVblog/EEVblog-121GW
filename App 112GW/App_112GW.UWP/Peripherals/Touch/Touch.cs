@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Linq;
 using Windows.UI.Input;
 using Windows.UI.Xaml;
@@ -50,8 +51,9 @@ namespace rMultiplatform.UWP
         //Shared handler functions
         private Point GetPoint(object sender, PointerRoutedEventArgs args)
         {
-            var pp = args.GetCurrentPoint(sender as UIElement).Position;
-            return new Point(pp.X, pp.Y);
+            var sendr = sender as UIElement;
+            var pp = args.GetCurrentPoint(sendr).Position;
+            return new Point(pp.X * 2, pp.Y * 2);
         }
 
         // Common handlers

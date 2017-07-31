@@ -78,113 +78,126 @@ namespace rMultiplatform
 
     public class TouchPinch
     {
-        private Point _PointA, _PointB;
-        public Point PointA
+        private Point   _PointA;
+        private Point   _PointB;
+        public Point    PointA
+        {
+            get { return _PointA; }
+            private set { _PointA = value; }
+        }
+        public Point    PointB
+        {
+            get             { return _PointB; }
+            private set     { _PointB = value; }
+        }
+        private double  _XDistance;
+        public double   XDistance
+        {
+            get         { return _XDistance;  }
+            private set
+            {
+                var dist = Math.Abs(value);
+                XDistanceDelta = dist - _XDistance;
+                _XDistance = dist;
+                ZoomX = 1 + XDistanceDelta / _XDistance;
+            }
+        }
+        private double  _YDistance;
+        public double   YDistance
+        {
+            get         { return _YDistance;  }
+            private set
+            {
+                var dist = Math.Abs(value);
+                YDistanceDelta = dist - _YDistance;
+                _YDistance = dist;
+                ZoomY = 1 + YDistanceDelta / _YDistance;
+            }
+        }
+        public double   Distance
         {
             get
             {
-                return _PointA;
-            }
-            private set
-            {
-                _PointA = value;
+                return Math.Sqrt(XDistance * XDistance + YDistance * YDistance);
             }
         }
-        public Point PointB
+        public double   Angle
         {
             get
             {
-                return _PointB;
-            }
-            private set
-            {
-                _PointB = value;
+                var angle = Math.Atan(YDistance / XDistance);
+                return angle;
             }
         }
-
-        public double Angle
-        {
-            get;
-            private set;
-        }
-
-        private double _Distance;
-        public double Distance
-        {
-            get { return _Distance; }
-        }
-
-        public Point Center
+        public Point    Center
         {
             get
             {
                 var cx = (PointA.X + PointB.X) / 2;
                 var cy = (PointA.Y + PointB.Y) / 2;
-
-                Debug.WriteLine("cx=" + cx + " cy=" + cy);
-
                 return new Point(cx, cy);
             }
         }
-        public double Zoom
+
+        private double _ZoomX;
+        public double   ZoomX
         {
             get
             {
-                return 1 + (DistanceDelta / Distance) * 0.5;
+                return _ZoomX;
+            }
+            private set
+            {
+                _ZoomX = value;
+            }
+        }
+        private double _ZoomY;
+        public double   ZoomY
+        {
+            get
+            {
+                return _ZoomY;
+            }
+            private set
+            {
+                _ZoomY = value;
+            }
+        }
+        public bool     Threshold
+        {
+            get
+            {
+                return (XDistanceDelta != 0 || YDistanceDelta != 0);
             }
         }
 
-        public double DistanceDelta;
-        public double AngleDelta;
+        private bool    Ready;
+        public double   XDistanceDelta    { get; private set; }
+        public double   YDistanceDelta    { get; private set; }
 
         public bool Set(Point A, Point B)
         {
+            ////////////////////////
             PointA = A;
             PointB = B;
-
-            var x1 = A.X;
-            var y1 = A.Y;
-            var x2 = B.X;
-            var y2 = B.Y;
-
-            var deltax = x2 - x1;
-            var deltay = y2 - y1;
-            var distance = Math.Sqrt(deltax * deltax + deltay * deltay);
-            var angle = Math.Atan(deltay / deltax);
-
-            if (distance > 0)
-            {
-                if (Distance == 0)
-                {
-                    _Distance = distance;
-                    Angle = angle;
-
-
-                    DistanceDelta = 0;
-                    AngleDelta = 0;
-                }
-                else
-                {
-                    DistanceDelta = distance - Distance;
-                    _Distance = distance;
-                    AngleDelta = angle - Angle;
-                    Angle = angle;
-
-                    if (DistanceDelta != 0)
-                        return true;
-                }
-            }
+            ////////////////////////
+            XDistance = B.X - A.X;
+            YDistance = B.Y - A.Y;
+            ////////////////////////
+            if (Ready)  return true;
+            else        Ready = true;
+            ////////////////////////
             return false;
+            ////////////////////////
         }
         public void Clear()
         {
-            _Distance = 0;
+            Ready = false;
         }
-
-
-
         public TouchPinch ()
-        {}
+        {
+            Ready = false;
+        }
     }
 
     public class TouchPinchActionEventArgs : EventArgs
@@ -198,6 +211,16 @@ namespace rMultiplatform
             private set; get;
         }
     }
+    public class TouchPanActionEventArgs : EventArgs
+    {
+        public double Dx, Dy;
+        public TouchPanActionEventArgs(double dx, double dy)
+        {
+            Dx = dx;
+            Dy = dy;
+        }
+    }
+
 
     public class TouchCursor
     {
@@ -253,12 +276,16 @@ namespace rMultiplatform
     {
         public delegate void    TouchActionEventHandler(object sender, TouchActionEventArgs args);
         public delegate void    TouchPinchActionEventHandler(object sender, TouchPinchActionEventArgs args);
+        public delegate void    TouchPanActionEventHandler(object sender, TouchPanActionEventArgs args);
+
+
         public event            TouchActionEventHandler     Pressed;
         public event            TouchActionEventHandler     Released;
         public event            TouchActionEventHandler     Hover;
         public event            TouchActionEventHandler     PressedMoved;
 
         public event TouchPinchActionEventHandler Pinch;
+        public event TouchPanActionEventHandler Pan;
         public event TouchActionEventHandler Swipe;
 
         public double MultitouchThreshold = 5;
@@ -269,30 +296,41 @@ namespace rMultiplatform
 
         //Adds a cursor to the map if it doesn't already exist
         bool PinchMode = false;
+        bool PanMode = false;
         void ProcessCursor(TouchActionEventArgs args)
         {
             if (!Cursors.ContainsKey(args.ID))
                 Cursors.Add(args.ID, new TouchCursor(args.Location));
             else
             {
-                var item = Cursors[args.ID];
-                item.Position = args.Location.Position;
+                var item1 = Cursors[args.ID];
+                TouchCursor item2 = item1;
+                foreach (var cursor in Cursors)
+                    if (cursor.Key != args.ID)
+                        item2 = cursor.Value;
+
+                var dx = args.Location.Position.X - item1.Position.X;
+                var dy = args.Location.Position.Y - item1.Position.Y;
+                item1.Position = args.Location.Position;
                 switch (Cursors.Count)
                 {
-                    case 1:
-                        if (item.Delta > MultitouchThreshold)
-                        {
-
-                        }
+                    case 0:
                         break;
-                    case 2:
-                        PinchMode = true;
-                        if (PinchProcessor.Set(Cursors.ElementAt(0).Value.Position, Cursors.ElementAt(1).Value.Position))
+                    case 1:
+                        if (Math.Abs(dx) < 3 && Math.Abs(dy) < 3 && !PanMode)
+                            PanMode = false;
+                        else
                         {
-                            Pinch?.Invoke(this, new TouchPinchActionEventArgs(PinchProcessor));
+                            PanMode = true;
+                            Pan?.Invoke(this, new TouchPanActionEventArgs(dx, dy));
                         }
                         break;
                     default:
+                        PinchMode = true;
+                        if (PinchProcessor.Set(item1.Position, item2.Position))
+                        {
+                            Pinch?.Invoke(this, new TouchPinchActionEventArgs(PinchProcessor));
+                        }
                         break;
                 }
             }
@@ -325,6 +363,7 @@ namespace rMultiplatform
         }
         private void SafePressed(Element element, TouchActionEventArgs args)
         {
+            PanMode = false;
             ProcessCursor(args);
             SafeEvent(Pressed, element, args);
         }
@@ -335,7 +374,7 @@ namespace rMultiplatform
         }
         private void SafeReleased(Element element, TouchActionEventArgs args)
         {
-            if (Cursors.Count == 1 && !PinchMode)
+            if (Cursors.Count == 1 && !PinchMode && !PanMode)
                 SafeEvent(Released, element, args);
 
             RemoveCursor(args);

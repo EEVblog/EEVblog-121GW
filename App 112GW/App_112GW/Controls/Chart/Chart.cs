@@ -24,8 +24,7 @@ namespace rMultiplatform
         //Return true when redraw is required
         bool Draw           (SKCanvas c);
         void SetParentSize  (double w, double h, double scale = 1.0);
-
-        bool RegisterParent(Object c);
+        bool RegisterParent (Object c);
         void InvalidateParent();
     };
 
@@ -69,15 +68,12 @@ namespace rMultiplatform
                         InvalidateSurface();
                     }
                 }
-
             }
             get
             {
                 for (var a = 0; a < ChartElements.Count; a++)
                     if (a.GetType() == typeof(ChartPadding))
-                    {
                         return ChartElements[a] as ChartPadding;
-                    }
                 return null;
             }
         }
@@ -213,11 +209,7 @@ namespace rMultiplatform
         public event EventHandler Clicked;
         private void OnClicked(EventArgs e)
         {
-            EventHandler handler = Clicked;
-            if (handler != null)
-            {
-                handler(this, e);
-            }
+            Clicked?.Invoke(this, e);
         }
         public enum eControlInputState
         {
@@ -233,26 +225,22 @@ namespace rMultiplatform
             set
             {
                 _State = value;
-                InvalidateSurface();
             }
         }
         private Touch mTouch;
         private void MTouch_Press(object sender, rMultiplatform.TouchActionEventArgs args)
         {
             State = eControlInputState.ePressed;
-            //ChangeColors();
         }
         private void MTouch_Hover(object sender, rMultiplatform.TouchActionEventArgs args)
         {
             State = eControlInputState.eHover;
-            //ChangeColors();
         }
         private void MTouch_Release(object sender, rMultiplatform.TouchActionEventArgs args)
         {
             if (State == eControlInputState.ePressed)
                 OnClicked(EventArgs.Empty);
             State = eControlInputState.eNone;
-            //ChangeColors();
         }
         private void SetupTouch()
         {
@@ -262,24 +250,35 @@ namespace rMultiplatform
             mTouch.Hover += MTouch_Hover;
             mTouch.Released += MTouch_Release;
             mTouch.Pinch += MTouch_Pinch;
+            mTouch.Pan += MTouch_Pan;
             Effects.Add(mTouch);
         }
 
+        private void MTouch_Pan(object sender, TouchPanActionEventArgs args)
+        {
+            foreach (IChartRenderer Element in ChartElements)
+                if (Element.GetType() == typeof(ChartAxis))
+                {
+                    var element = (Element as ChartAxis);
+                    if (element.Orientation == ChartAxis.AxisOrientation.Horizontal)
+                        element.Pan(args.Dx, args.Dy);
+                }
+        }
 
-        float CurrentScale = 1.0f;
         private void MTouch_Pinch(object sender, TouchPinchActionEventArgs args)
         {
-            var zoomfactor = (float)args.Pinch.Zoom;
-            if ( CurrentScale * zoomfactor >= 1.0f )
-            {
-                var center = args.Pinch.Center.ToSKPoint();
-                center.X += mCanvas.LocalClipBounds.Left;
-                center.Y += mCanvas.LocalClipBounds.Top;
+            var zoomX = (float)args.Pinch.ZoomX;
+            var zoomY = (float)args.Pinch.ZoomY;
+            var zoomCenter = args.Pinch.Center;
 
-                CurrentScale *= zoomfactor;
-                mCanvas.SetMatrix ( SKMatrix.MakeScale ( CurrentScale , CurrentScale , center.X , center.Y ) );
-                InvalidateSurface ( );
-            }
+            foreach (IChartRenderer Element in ChartElements)
+                if (Element.GetType() == typeof(ChartAxis))
+                {
+                    var element = (Element as ChartAxis);
+                    if (element.Orientation == ChartAxis.AxisOrientation.Horizontal)
+                        element.Zoom(zoomX, zoomY, zoomCenter.ToSKPoint());
+                }
+
         }
 
         //Initialises the object
