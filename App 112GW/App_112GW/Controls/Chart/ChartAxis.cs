@@ -75,8 +75,36 @@ namespace rMultiplatform
         public delegate bool ChartAxisEvent(Object o);
 
         private bool _VisibleRangeEnabled;
+        
 
-        private Range _VisibleRange;
+        private double VisibleMinimum
+        {
+            set
+            {
+                _VisibleRange.Minimum = value;
+            }
+        }
+        private double VisibleMaximum
+        {
+            set
+            {
+                _VisibleRange.Maximum = value;
+            }
+        }
+        void DisableCroppedRange()
+        {
+            _VisibleRangeEnabled = false;
+            CalculateScales();
+        }
+        void EnableCroppedRange()
+        {
+            _VisibleRangeEnabled = true;
+            CalculateScales();
+            InvalidateParent();
+        }
+
+
+        private Range _VisibleRange = new Range(0, 0);
         public Range VisibleRange
         {
             get
@@ -123,23 +151,19 @@ namespace rMultiplatform
             var lower = VisibleRange.Minimum + dist;
             var upper = VisibleRange.Maximum + dist;
 
-            bool Valid = true;
             if (lower < Minimum)
             {
                 lower = Minimum;
                 upper = Minimum + VisibleRange.Distance;
             }
             else if (upper > Maximum)
-            {
-                Valid = false;
-                _VisibleRangeEnabled = false;
+            {  
                 lower = Maximum - VisibleRange.Distance;
                 upper = Maximum;
             }
-
-            if (Valid)
-                VisibleRange = new Range(lower, upper);
-            InvalidateParent();
+            VisibleMinimum = lower;
+            VisibleMaximum = upper;
+            EnableCroppedRange();
         }
 
         public void Zoom(double X, double Y, SKPoint About)
@@ -148,16 +172,14 @@ namespace rMultiplatform
             double about = 0;
             switch (Orientation)
             {
-                case AxisOrientation.Vertical:
-                    zoom = Y;
-                    about = GetPoint(About.Y);
-                    break;
-                case AxisOrientation.Horizontal:
-                    zoom = X;
-                    about = GetPoint(About.X);
-                    break;
-                default:
-                    break;
+            case AxisOrientation.Vertical:
+                zoom = Y;
+                about = GetPoint(About.Y);
+                break;
+            case AxisOrientation.Horizontal:
+                zoom = X;
+                about = GetPoint(About.X);
+                break;
             }
             if (zoom == 1.0)
                 return;
@@ -166,29 +188,27 @@ namespace rMultiplatform
             {
                 Range temp = new Range(VisibleRange.Minimum, VisibleRange.Maximum);
 
-                var l = Dist(about, VisibleRange.Minimum);
-                var h = Dist(VisibleRange.Maximum, about);
+                var l = Dist(about, VisibleRange.Minimum) / zoom;
+                var h = Dist(about, VisibleRange.Maximum) / zoom;
 
-                l /= zoom;
-                h /= zoom;
-
-
-                bool Valid = true;
                 var lower = about - l;
                 var upper = about + h;
 
+                int c = 0;
                 if (lower < Minimum)
+                {
+                    ++c;
                     lower = Minimum;
-
+                }
                 if (upper > Maximum)
                 {
-                    Valid = false;
-                    _VisibleRangeEnabled = false;
+                    ++c;
                     upper = Maximum;
                 }
+                if (c == 2)
+                    DisableCroppedRange();
 
-                if (Valid)
-                    VisibleRange = new Range(lower, upper);
+                VisibleRange = new Range(lower, upper);
             }
             InvalidateParent();
         }

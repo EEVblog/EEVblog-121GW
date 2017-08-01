@@ -6,6 +6,7 @@ using Xamarin.Forms;
 using Xamarin.Forms.Platform.Android;
 
 using Android.Views;
+using System.Diagnostics;
 
 [assembly: ResolutionGroupName("rMultiplatform")]
 [assembly: ExportEffect(typeof(rMultiplatform.Droid.Touch), "Touch")]
@@ -36,33 +37,38 @@ namespace rMultiplatform.Droid
         //Android only, routed args
         void CommonHandler(object sender, Android.Views.View.TouchEventArgs args)
         {
-            switch (args.Event.ActionMasked)
+            var evnt = args.Event;
+            var actn = args.Event.Action;
+            // Get the pointer index
+            int pointer_count = evnt.PointerCount;
+
+            // Get the id to identify a finger over the course of its progress
+            switch (actn & MotionEventActions.Mask)
             {
-                //case MotionEventActions.ButtonPress:
                 case MotionEventActions.Down:
                 case MotionEventActions.PointerDown:
-                    effect.PressedHandler(sender, GetPoint(args), (uint)args.Event.GetPointerId(args.Event.ActionIndex));
+                    for (var i = 0; i < pointer_count; ++i)
+                        effect.PressedHandler(sender, GetPoint(args, i), (uint)i);
                     break;
-
                 case MotionEventActions.Move:
                 case MotionEventActions.HoverMove:
                 case MotionEventActions.HoverEnter:
-                    effect.MoveHandler(sender, GetPoint(args), (uint)args.Event.GetPointerId(args.Event.ActionIndex));
+                    for (var i = 0; i < pointer_count; ++i)
+                        effect.MoveHandler(sender, GetPoint(args, i), (uint)i);
                     break;
-
                 case MotionEventActions.HoverExit:
                 case MotionEventActions.PointerUp:
                 case MotionEventActions.Up:
                 case MotionEventActions.Cancel:
-                    effect.ReleasedHandler(sender, GetPoint(args), (uint)args.Event.GetPointerId(args.Event.ActionIndex));
+                    for (var i = 0; i < pointer_count; ++i)
+                        effect.ReleasedHandler(sender, GetPoint(args, i), (uint)i);
                     break;
             }
         }
 
         //Shared handler functions
-        private Point GetPoint(Android.Views.View.TouchEventArgs args)
+        private Point GetPoint(Android.Views.View.TouchEventArgs args, int index)
         {
-            int index = args.Event.ActionIndex;
             MotionEvent.PointerCoords temp = new MotionEvent.PointerCoords();
             args.Event.GetPointerCoords(index, temp);
             return new Point(temp.X, temp.Y);
