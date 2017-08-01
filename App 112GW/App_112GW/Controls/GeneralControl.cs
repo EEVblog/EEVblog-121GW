@@ -268,9 +268,11 @@ namespace rMultiplatform
         }
 
         SKPath path = new SKPath();
+        float CanvasScaling = 1.0f;
         protected override void OnSizeAllocated(double width, double height)
         {
             //Add points to paths
+            path.Reset();
             path.AddPoly(mPoints, false);
 
             //Move to centre origin to make rotations correct
@@ -290,6 +292,8 @@ namespace rMultiplatform
 
             var xscale = (float)Width * Scale / rect_scale.Width;
             var yscale = (float)Height * Scale / rect_scale.Height;
+
+
             path.Transform(SKMatrix.MakeScale(xscale, yscale));
             path.Offset((float)Width * Scale / 2, (float)Height * Scale / 2);
             base.OnSizeAllocated(width, height);
@@ -303,39 +307,43 @@ namespace rMultiplatform
         protected override void     OnPaintSurface(SKPaintSurfaceEventArgs e)
 #endif
         {
-            var can = e.Surface.Canvas;
-
-            can.Clear(BackgroundColor);
-            can.DrawRect(FitRectange(can.DeviceClipBounds), curStyle);
-
+            var Canvas = e.Surface.Canvas;
+            Canvas.Clear(BackgroundColor);
+            Canvas.DrawRect(FitRectange(Canvas.DeviceClipBounds), curStyle);
             if (ShowPoly)
             {
-                var width = (float)Width;
-                can.Scale(CanvasSize.Width / width);
-                can.DrawPath(path, curStyle);
+                if (CanvasSize.Width == 0)
+                {
+                    InvalidateMeasure();
+                    return;
+                }
+                CanvasScaling = CanvasSize.Width / (float)Width;
+                Canvas.Scale(CanvasScaling);
+                Canvas.DrawPath(path, curStyle);
             }
         }
     }
 
     public class GeneralControl : ContentView
     {
-        private GeneralControlRenderer.eControlInputState   mState;
-        private Touch                                       mTouch;
         public GeneralControlRenderer                       mRenderer;
-        bool ShowPoly;
-        float OffsetAngle;
+        private Touch                                       mTouch;
 
-        private void MTouch_Press   (object sender, TouchActionEventArgs args)
+        private GeneralControlRenderer.eControlInputState   mState;
+        bool                                                ShowPoly;
+        float                                               OffsetAngle;
+
+        private void        MTouch_Press   (object sender, TouchActionEventArgs args)
         {
             if (mRenderer != null)
                 mRenderer.State = GeneralControlRenderer.eControlInputState.ePressed;
         }
-        private void MTouch_Hover   (object sender, TouchActionEventArgs args)
+        private void        MTouch_Hover   (object sender, TouchActionEventArgs args)
         {
             if (mRenderer != null)
                 mRenderer.State = GeneralControlRenderer.eControlInputState.eHover;
         }
-        private void MTouch_Release (object sender, TouchActionEventArgs args)
+        private void        MTouch_Release (object sender, TouchActionEventArgs args)
         {
             if (mRenderer == null)
                 return;
@@ -345,7 +353,7 @@ namespace rMultiplatform
             mRenderer.State = GeneralControlRenderer.eControlInputState.eNone;
         }
 
-        private void SetupTouch()
+        private void        SetupTouch()
         {
             //Add the gesture recognizer 
             mTouch = new rMultiplatform.Touch();
@@ -354,7 +362,7 @@ namespace rMultiplatform
             mTouch.Released += MTouch_Release;
             Effects.Add(mTouch);
         }
-        public SKPaint  IdleStyle
+        public SKPaint      IdleStyle
         {
             set
             {
@@ -365,7 +373,7 @@ namespace rMultiplatform
                 return mRenderer.IdleStyle;
             }
         }
-        public SKPaint  PressStyle
+        public SKPaint      PressStyle
         {
             set
             {
@@ -376,7 +384,7 @@ namespace rMultiplatform
                 return mRenderer.PressStyle;
             }
         }
-        public SKPaint  HoverStyle
+        public SKPaint      HoverStyle
         {
             set
             {
@@ -388,7 +396,7 @@ namespace rMultiplatform
             }
         }
 
-        public int      BorderWidth
+        public int          BorderWidth
         {
             set
             {
@@ -397,28 +405,28 @@ namespace rMultiplatform
                 HoverStyle.StrokeWidth = value;
             }
         }
-        public Color    IdleColor
+        public Color        IdleColor
         {
             set
             {
                 IdleStyle.Color = value.ToSKColor();
             }
         }
-        public Color    PressColor
+        public Color        PressColor
         {
             set
             {
                 PressStyle.Color = value.ToSKColor();
             }
         }
-        public Color    HoverColor
+        public Color        HoverColor
         {
             set
             {
                 HoverStyle.Color = value.ToSKColor();
             }
         }
-        public new Color BackgroundColor
+        public new Color    BackgroundColor
         {
             set
             {
@@ -431,17 +439,9 @@ namespace rMultiplatform
         }
 
         protected event EventHandler Clicked;
-        private void ClickEvent()
+        protected void      OnClicked(object o, EventArgs e)
         {
-            Clicked?.Invoke ( this, EventArgs.Empty );
-        }
-        private void OnClickedAsync()
-        {
-            Task.Delay(100).ContinueWith((obj) => { Device.BeginInvokeOnMainThread(() => { ClickEvent(); }); });
-        }
-        protected void OnClicked(object o, EventArgs e)
-        {
-            OnClickedAsync();
+            Task.Delay(100).ContinueWith((obj) => { Device.BeginInvokeOnMainThread(() => { Clicked?.Invoke(this, EventArgs.Empty); }); });
         }
 
         SKPoint[] mPoints;
@@ -457,9 +457,9 @@ namespace rMultiplatform
         {
             if (mRenderer != null)
             {
-                mState = mRenderer.State;
+                mState      = mRenderer.State;
                 OffsetAngle = mRenderer.OffsetAngle;
-                ShowPoly = mRenderer.ShowPoly;
+                ShowPoly    = mRenderer.ShowPoly;
             }
             Content = null;
             mRenderer = null;
@@ -473,7 +473,6 @@ namespace rMultiplatform
             mRenderer.SetPoints(mPoints);
             Content = mRenderer;
 
-            //
             BackgroundColor = Globals.BackgroundColor;
             BorderWidth = Globals.BorderWidth;
             PressColor = Globals.FocusColor;
@@ -481,7 +480,6 @@ namespace rMultiplatform
             IdleColor = Globals.TextColor;
         }
 
-        //Keep control square
         protected override void OnSizeAllocated(double width, double height)
         {
             width = height;

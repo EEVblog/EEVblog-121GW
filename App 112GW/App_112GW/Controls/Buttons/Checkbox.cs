@@ -39,7 +39,7 @@ namespace rMultiplatform
                 new SKPoint((float)20, (float)(10))})
         {
             Clicked += CheckboxClick;
-            mRenderer.OffsetAngle = (135);
+            mRenderer.OffsetAngle = 135;
         }
     }
 }
