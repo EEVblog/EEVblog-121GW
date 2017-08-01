@@ -132,7 +132,7 @@ namespace rMultiplatform
                 AngleDelta = angle - Angle;
                 Angle = angle;
 
-                if (Distance > 0)
+                if (DistanceDelta > 0)
                     return true;
             }
             return false;
@@ -142,7 +142,7 @@ namespace rMultiplatform
             Distance = 0;
         }
 
-
+          
 
         public TouchPinch ()
         {}
