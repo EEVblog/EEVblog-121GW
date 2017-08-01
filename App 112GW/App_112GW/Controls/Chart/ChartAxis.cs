@@ -88,7 +88,7 @@ namespace rMultiplatform
             }
             set
             {
-                _VisibleRangeEnabled = true;
+                _VisibleRangeEnabled = false;
                 _VisibleRange = value;
                 CalculateScales();
             }
@@ -130,6 +130,7 @@ namespace rMultiplatform
             }
             else if (upper > Maximum)
             {
+                _VisibleRangeEnabled = false;
                 lower = Maximum - VisibleRange.Distance;
                 upper = Maximum;
             }
@@ -223,15 +224,12 @@ namespace rMultiplatform
             var rangesize = VisibleRange.Distance;
             var viewsize = AxisSize;
             var scale = viewsize / rangesize;
-
-            //
+            
             _MainTickDistance = VisibleRange.Distance / _MainTicks;
             _MinorTickDistance = MainTickDistance / _MinorTicks;
-
             MainTickDrawDistance = Math.Abs(_MainTickDistance) * scale;
             MinorTickDrawDistance = Math.Abs(_MinorTickDistance) * scale;
-
-            //
+            
             AxisLocation    = _AxisLocationScaler;
         }
 

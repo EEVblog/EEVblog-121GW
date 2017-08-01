@@ -219,10 +219,7 @@ namespace rMultiplatform
             Dx = dx;
             Dy = dy;
         }
-
-
-
-        public TouchPinch ()
+        public TouchPanActionEventArgs()
         {}
     }
 
