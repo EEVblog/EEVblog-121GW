@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Xamarin.Forms.Themes;
+using System.Threading;
 using Xamarin.Forms;
 using App_112GW;
 using System.Diagnostics;
@@ -34,6 +35,8 @@ namespace rMultiplatform
             }
         }
 
+        Timer stateTimer;
+
         public StackLayout              MultimeterGrid;
         public MultimeterScreen         Screen;
         public MultimeterMenu           Menu;
@@ -47,12 +50,22 @@ namespace rMultiplatform
             FullscreenPlot
         }
         ActiveItem Item = ActiveItem.Screen;
+        Random RandomGen = new Random();
+        private void TestCallback(object state)
+        {
+            Data.Sample((RandomGen.NextDouble() - 0.5) * 2.0);
+        }
 
         public Multimeter ( BLE.IDeviceBLE pDevice )
         {
-            MyProcessor.mCallback += ProcessPacket; 
-            mDevice = pDevice;
-            mDevice.Change += ValueChanged;
+            if (pDevice == null)
+                stateTimer = new Timer(TestCallback, null, 1000, 1000);
+            else
+            {
+                mDevice = pDevice;
+                mDevice.Change += ValueChanged;
+                MyProcessor.mCallback += ProcessPacket;
+            }
 
             // 
             HorizontalOptions = LayoutOptions.Fill;
@@ -65,8 +78,15 @@ namespace rMultiplatform
             Screen.BackgroundColor  =   Globals.BackgroundColor;
             Screen.Clicked          +=  Menu_BackClicked;
 
-            var id                  =   mDevice.Id;
-            Menu                    =   new MultimeterMenu(id.Substring(id.Length - 5));
+            string id;
+            if (pDevice == null)
+                Menu = new MultimeterMenu();
+            else
+            {
+                id = pDevice.Id;
+                Menu = new MultimeterMenu(id.Substring(id.Length - 5));
+            }
+
             Menu.BackgroundColor    =   Globals.BackgroundColor;
             Menu.BackClicked        +=  Menu_BackClicked;
             Menu.PlotClicked        +=  Menu_PlotClicked;
@@ -158,19 +178,19 @@ namespace rMultiplatform
             switch (Item)
             {
                 case ActiveItem.Menu:
-                    Menu.IsVisible = true;
-                    Screen.IsVisible = false;
-                    Plot.IsVisible = Menu.PlotEnabled;
+                    Menu.IsVisible      = true;
+                    Screen.IsVisible    = false;
+                    Plot.IsVisible      = Menu.PlotEnabled;
                     break;
                 case ActiveItem.Screen:
-                    Screen.IsVisible = true;
-                    Menu.IsVisible = false;
-                    Plot.IsVisible = Menu.PlotEnabled;
+                    Screen.IsVisible    = true;
+                    Menu.IsVisible      = false;
+                    Plot.IsVisible      = Menu.PlotEnabled;
                     break;
                 case ActiveItem.FullscreenPlot:
-                    Plot.IsVisible = true;
-                    Screen.IsVisible = false;
-                    Menu.IsVisible = false;
+                    Plot.IsVisible      = true;
+                    Screen.IsVisible    = false;
+                    Menu.IsVisible      = false;
                     break;
             }
         }
@@ -192,8 +212,6 @@ namespace rMultiplatform
                     Item = ActiveItem.Screen;
                     break;
             }
-
-            
             SetView();
         }
         public void Menu_PlotClicked(object sender, EventArgs e)

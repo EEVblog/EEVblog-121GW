@@ -58,8 +58,10 @@ namespace App_112GW
 
             BLESelectDevice = new BLEDeviceSelector();
             BLESelectDevice.Connected += Connected;
-            Content = BLESelectDevice;
-		}
+
+            //Content = BLESelectDevice;
+            Content = UserGrid;
+        }
         public  MainPage ()
 		{
 			InitializeComponent();
@@ -67,8 +69,12 @@ namespace App_112GW
         }
         void    SelectDevice (object o, EventArgs e)
         {
-            BLESelectDevice.Reset();
-            Content = BLESelectDevice;
+            //Production Code
+            //BLESelectDevice.Reset();
+            //Content = BLESelectDevice;
+
+            //Mock Code
+            AddDevice(null);
         }
 
         //Only maintains aspect ratio

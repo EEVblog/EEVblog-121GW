@@ -50,7 +50,7 @@ namespace rMultiplatform
 
         public double Distance
         {
-            get{return Maximum - Minimum;}
+            get { return Maximum - Minimum; }
         }
         public void Set     (double ValA, double ValB)
         {

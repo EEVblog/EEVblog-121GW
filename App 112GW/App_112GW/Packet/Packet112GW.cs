@@ -139,7 +139,6 @@ namespace rMultiplatform
                 var msb = (int)pData[2];
                 var lsb = (int)pData[3];
                 var val = (double)((int)((msb << 8) | lsb));
-
                 return val / Math.Pow(10.0, ( 5 - (double)MainRangeValue));
             }
         }

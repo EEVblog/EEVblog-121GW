@@ -9,6 +9,7 @@ using SkiaSharp.Views.Forms;
 using System.Runtime.CompilerServices;
 
 using App_112GW;
+using System.Diagnostics;
 
 namespace rMultiplatform
 {
@@ -73,11 +74,124 @@ namespace rMultiplatform
         public delegate bool ChartAxisDrawEvent(ChartAxisDrawEventArgs o);
         public delegate bool ChartAxisEvent(Object o);
 
+        private bool _VisibleRangeEnabled;
+
+        private Range _VisibleRange;
+        public Range VisibleRange
+        {
+            get
+            {
+                if (_VisibleRangeEnabled)
+                    return _VisibleRange;
+                else
+                    return new Range(Minimum,Maximum);
+            }
+            set
+            {
+                _VisibleRangeEnabled = true;
+                _VisibleRange = value;
+                CalculateScales();
+            }
+        }
+
+        double Dist (double A, double B)
+        {
+            if (A > B)
+                return A - B;
+            return B - A;
+        }
+
+
+
+        public void Pan(double X, double Y)
+        {
+            double dist = 1.0f;
+            switch (Orientation)
+            {
+                case AxisOrientation.Vertical:
+                    dist = -GetScalePoint(Y);
+                    break;
+                case AxisOrientation.Horizontal:
+                    dist =- GetScalePoint(X);
+                    break;
+                default:
+                    break;
+            }
+            if (dist == 1.0)
+                return;
+
+            var lower = VisibleRange.Minimum + dist;
+            var upper = VisibleRange.Maximum + dist;
+
+            if (lower < Minimum)
+            {
+                lower = Minimum;
+                upper = Minimum + VisibleRange.Distance;
+            }
+            else if (upper > Maximum)
+            {
+                lower = Maximum - VisibleRange.Distance;
+                upper = Maximum;
+            }
+
+
+            VisibleRange = new Range(lower, upper);
+            InvalidateParent();
+        }
+
+        public void Zoom(double X, double Y, SKPoint About)
+        {
+            double zoom = 1.0f;
+            double about = 0;
+            switch (Orientation)
+            {
+                case AxisOrientation.Vertical:
+                    zoom = Y;
+                    about = GetPoint(About.Y);
+                    break;
+                case AxisOrientation.Horizontal:
+                    zoom = X;
+                    about = GetPoint(About.X);
+                    break;
+                default:
+                    break;
+            }
+            if (zoom == 1.0)
+                return;
+
+            if (VisibleRange.Minimum <= about && about <= VisibleRange.Maximum)
+            {
+                Range temp = new Range(VisibleRange.Minimum, VisibleRange.Maximum);
+
+                var l = Dist(about, VisibleRange.Minimum);
+                var h = Dist(VisibleRange.Maximum, about);
+
+                l /= zoom;
+                h /= zoom;
+
+
+                var lower = about - l;
+                var upper = about + h;
+
+                if (lower < Minimum)
+                {
+                    lower = Minimum;
+                }
+                if (upper > Maximum)
+                {
+                    _VisibleRangeEnabled = false;
+                    upper = Maximum;
+                }
+                VisibleRange = new Range(lower, upper);
+            }
+            InvalidateParent();
+        }
+
         List<Range>                 AxisDataRanges;
         List<SKColor>               AxisDataColors;
         List<ChartAxisEvent>        AxisDataEvents;
         List<ChartAxisDrawEvent>    AxisDrawEvents;
-
+        
         //Parent properties
         private ChartPadding _ParentPadding;
         private ChartPadding ParentPadding
@@ -92,7 +206,6 @@ namespace rMultiplatform
                 return _ParentPadding;
             }
         }
-            
         private double      ParentWidth;
         private double      ParentHeight;
 
@@ -107,12 +220,12 @@ namespace rMultiplatform
         private double      MinorTickDrawDistance;
         private void        CalculateScales()
         {
-            var rangesize = Distance;
+            var rangesize = VisibleRange.Distance;
             var viewsize = AxisSize;
             var scale = viewsize / rangesize;
 
             //
-            _MainTickDistance = Distance / _MainTicks;
+            _MainTickDistance = VisibleRange.Distance / _MainTicks;
             _MinorTickDistance = MainTickDistance / _MinorTicks;
 
             MainTickDrawDistance = Math.Abs(_MainTickDistance) * scale;
@@ -312,20 +425,40 @@ namespace rMultiplatform
         {
             get
             {
-                if (MinorTickDistance < 0)
-                    return Maximum;
+                if (_VisibleRangeEnabled)
+                {
+                    if (MinorTickDistance < 0)
+                        return VisibleRange.Maximum;
+                    else
+                        return VisibleRange.Minimum;
+                }
                 else
-                    return Minimum;
+                {
+                    if (MinorTickDistance < 0)
+                        return Maximum;
+                    else
+                        return Minimum;
+                }
             }
         }
         private double      EndPoint
         {
             get
             {
-                if (MinorTickDistance < 0)
-                    return Minimum;
+                if (_VisibleRangeEnabled)
+                {
+                    if (MinorTickDistance < 0)
+                        return VisibleRange.Minimum;
+                    else
+                        return VisibleRange.Maximum;
+                }
                 else
-                    return Maximum;
+                {
+                    if (MinorTickDistance < 0)
+                        return Minimum;
+                    else
+                        return Maximum;
+                }
             }
         }
         private bool        Inverting
@@ -501,16 +634,16 @@ namespace rMultiplatform
             MinorTickLineSize = 3;
 
             //
-            AxisDrawEvents = new List<ChartAxisDrawEvent>();
-            AxisDataEvents = new List<ChartAxisEvent>();
-            AxisDataColors = new List<SKColor>();
-            AxisDataRanges = new List<Range>();
-            Rerange = true;
-            ShowDataKey = true;
+            AxisDrawEvents  = new List<ChartAxisDrawEvent>();
+            AxisDataEvents  = new List<ChartAxisEvent>();
+            AxisDataColors  = new List<SKColor>();
+            AxisDataRanges  = new List<Range>();
+            Rerange         = true;
+            ShowDataKey     = false;
         }
-        public double       GetCoordinate   (double Value)
+        public double GetCoordinate (double Value)
         {
-            var scale = (AxisSize / Distance);
+            var scale = (AxisSize / VisibleRange.Distance);
 
             //Handle axis inversion
             if (Inverting)
@@ -524,6 +657,29 @@ namespace rMultiplatform
             Value += AxisStart;
             
             return Value;
+        }
+        public bool GetCoordinate(double Value, out double Output)
+        {
+            if (VisibleRange.Minimum <= Value)
+                Output = VisibleRange.Minimum;
+            if (Value >= VisibleRange.Maximum)
+                Output = VisibleRange.Maximum;
+            Output = GetCoordinate(Value);
+            return true;
+        }
+        public double GetScalePoint(double Value)
+        {
+            var scale = (AxisSize / VisibleRange.Distance);
+            return Value /= scale;
+        }
+        public double GetPoint(double Value)
+        {
+            var scale = (AxisSize / VisibleRange.Distance);
+            double value = Value;
+            value -= AxisStart;
+            value /= scale;
+            value += StartPoint;
+            return value;
         }
 
         //Draws horozontal and vertical tick labels centred about the axis position
@@ -544,13 +700,12 @@ namespace rMultiplatform
             }
         }
         
-        public ChartDataEventReturn 
-            ChartDataEvent(ChartDataEventArgs e)
+        public ChartDataEventReturn ChartDataEvent(ChartDataEventArgs e, ref Range VisRange)
         {
             if (e.Orientation == Orientation)
             {
+                VisRange = VisibleRange;
                 var temp = Combine(AxisDataRanges);
-
                 Maximum = temp.Maximum;
                 Minimum = temp.Minimum;
                 CalculateScales();
@@ -593,7 +748,7 @@ namespace rMultiplatform
 
             return true;
         }
-        
+
         void                DrawTick        (ref SKCanvas c, float Position, float length, SKPaint TickPaint)
         {
             length /= 2;
@@ -632,10 +787,9 @@ namespace rMultiplatform
             DrawTick(ref c, Position, MinorTickLineSize, MinorPaint);
         }
 
-        float _LabelPadding = 0;
-        float _AxisLabelPadding = 0;
-
-        float TotalPadding
+        float   _LabelPadding = 0;
+        float   _AxisLabelPadding = 0;
+        float   TotalPadding
         {
             get
             {
@@ -650,9 +804,7 @@ namespace rMultiplatform
                 }
             }
         }
-
-
-        float LabelPadding
+        float   LabelPadding
         {
             get
             {
@@ -664,7 +816,7 @@ namespace rMultiplatform
                 TotalPadding = _LabelPadding + _AxisLabelPadding;
             }
         }
-        float AxisLabelPadding
+        float   AxisLabelPadding
         {
             get
             {
@@ -676,8 +828,7 @@ namespace rMultiplatform
                 TotalPadding = _LabelPadding + _AxisLabelPadding;
             }
         }
-
-        float GetAxisLabelPosition()
+        float   GetAxisLabelPosition()
         {
             switch (Orientation)
             {
@@ -688,6 +839,7 @@ namespace rMultiplatform
             }
             return 0;
         }
+
         void DrawTickLabel   (ref SKCanvas c, double Value, float Position, float length, SKPaint TickPaint)
         {
             var hei = MinorPaint.TextSize /2;
@@ -725,8 +877,7 @@ namespace rMultiplatform
             pth.AddPoly(pts, false);
             c.DrawTextOnPath(txt, pth, 0, hei / 2, MinorPaint);
         }
-
-        void DrawLabel       (ref SKCanvas c, float length)
+        void DrawLabel (ref SKCanvas c, float length)
         {
             var hei = MajorPaint.TextSize;
             if (hei > AxisLabelPadding)
@@ -765,20 +916,16 @@ namespace rMultiplatform
                     break;
                 case AxisOrientation.Horizontal:
                     {
-                        offset = (int)TotalPadding - (int)SpaceWidth;
-                        var xs = (float)AxisEnd - SpaceWidth * 2;
-                        var y = GetAxisLabelPosition() + offset;
-
-                        pt1 = new SKPoint(xs - wid, y);
-                        pt2 = new SKPoint(xs,       y);
-
-                        ymakoffset = - (CircleRadius + hei + SpaceWidth);
-
-                        yfilloffset = -hei;
-                        xfilloffset = SpaceWidth;
-
-                        yfillsoffset = SpaceWidth;
-                        xfillsoffset = -SpaceWidth;
+                        offset          = (int)TotalPadding - (int)SpaceWidth;
+                        var xs          = (float)AxisEnd - SpaceWidth * 2;
+                        var y           = GetAxisLabelPosition() + offset;
+                        pt1             = new SKPoint(xs - wid, y);
+                        pt2             = new SKPoint(xs,       y);
+                        ymakoffset      = - (CircleRadius + hei + SpaceWidth);
+                        yfilloffset     = -hei;
+                        xfilloffset     = SpaceWidth;
+                        yfillsoffset    = SpaceWidth;
+                        xfillsoffset    = -SpaceWidth;
                     }
                     break;
                 default:
@@ -796,40 +943,39 @@ namespace rMultiplatform
             pts = pth.Points;
 
             //
-            if (ShowDataKey)
-                DrawColors(ref c, ref pts);
+            DrawColors(ref c, ref pts);
         }
-
-        void                DrawColors      (ref SKCanvas c, ref SKPoint[] p)
+        void DrawColors (ref SKCanvas c, ref SKPoint[] p)
         {
-            if (p.Length > 2)
-                throw (new Exception("Must contain two points."));
-
-            //
-            var pt1 = p[0];
-            var pt2 = p[1];
-            var dx  = pt2.X - pt1.X;
-            var dy  = pt2.Y - pt1.Y;
-
-            //
-            var t = 0.0f;
-            var inc = 1.0f/((float)AxisDataColors.Count-1);
-
-            //
-            for (var i = 0; i < AxisDataColors.Count; i++)
+            if (ShowDataKey)
             {
-                //var x = pt1.X + dx * t;
-                //var y = pt1.Y + dy * t;
+                if (p.Length > 2)
+                    throw (new Exception("Must contain two points."));
 
-                //ColorPaint.IsStroke = true;
-                //ColorPaint.Color = App_112GW.Globals.BackgroundColor.ToSKColor();
-                //c.DrawCircle(x, y, CircleRadius, ColorPaint);
+                //
+                var pt1 = p[0];
+                var pt2 = p[1];
+                var dx = pt2.X - pt1.X;
+                var dy = pt2.Y - pt1.Y;
 
-                //ColorPaint.IsStroke = false;
-                //ColorPaint.Color = AxisDataColors[i];
-                //c.DrawCircle(x, y, CircleRadius, ColorPaint);
+                //
+                var inc = 1.0f / ((float)AxisDataColors.Count - 1);
+                var t = 0.0f;
+                for (var i = 0; i < AxisDataColors.Count; i++)
+                {
+                    var x = pt1.X + dx * t;
+                    var y = pt1.Y + dy * t;
 
-                //t += inc;
+                    ColorPaint.IsStroke = true;
+                    ColorPaint.Color = App_112GW.Globals.BackgroundColor.ToSKColor();
+                    c.DrawCircle(x, y, CircleRadius, ColorPaint);
+
+                    ColorPaint.IsStroke = false;
+                    ColorPaint.Color = AxisDataColors[i];
+                    c.DrawCircle(x, y, CircleRadius, ColorPaint);
+
+                    t += inc;
+                }
             }
         }
 

@@ -53,7 +53,7 @@ namespace rMultiplatform
         public          MultimeterMenu   (string pSerialNumber = "SN0000")
         {
             //##################################################
-            HorizontalOptions = LayoutOptions.Fill;
+            HorizontalOptions   = LayoutOptions.Fill;
             VerticalOptions     = LayoutOptions.StartAndExpand;
             Padding             = 10;
 

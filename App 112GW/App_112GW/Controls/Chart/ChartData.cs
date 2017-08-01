@@ -24,7 +24,8 @@ namespace rMultiplatform
     };
     public class ChartDataEventReturn
     {
-        public delegate double GetCoordinate(double Value);
+        //public delegate double GetCoordinate(double Value);
+        public delegate bool GetCoordinate(double Value, out double Output);
         public GetCoordinate Function;
         public ChartDataEventReturn(GetCoordinate pFunction)
         {
@@ -33,7 +34,7 @@ namespace rMultiplatform
     }
     public class ChartData : IChartRenderer
     {
-        public delegate ChartDataEventReturn ChartDataEvent(ChartDataEventArgs e);
+        public delegate ChartDataEventReturn ChartDataEvent(ChartDataEventArgs e, ref Range VisRange);
         public          List<ChartDataEvent> Registrants;
 
         //
@@ -179,17 +180,20 @@ namespace rMultiplatform
                 return false;
 
 
-                //Scale vertical axis
+            //Scale vertical axis
             var vert = VerticalSpan;
             var horz = HorozontalSpan;
 
             //Rescale axis
+            Range VisX = null;
+            Range VisY = null;
+
             ChartDataEventReturn x = null, y = null, temp;
             foreach (var axis in Registrants)
             {
-                if((temp = axis(new ChartDataEventArgs(ChartAxis.AxisOrientation.Horizontal, horz))) != null)
+                if((temp = axis(new ChartDataEventArgs(ChartAxis.AxisOrientation.Horizontal, horz), ref VisX)) != null)
                     x = temp;
-                if ((temp = axis(new ChartDataEventArgs(ChartAxis.AxisOrientation.Vertical, vert))) != null)
+                else if ((temp = axis(new ChartDataEventArgs(ChartAxis.AxisOrientation.Vertical, vert), ref VisY)) != null)
                     y = temp;
             }
 
@@ -198,16 +202,18 @@ namespace rMultiplatform
                 throw (new Exception("Graph object must contain an horizontal and vertical axis to plot data."));
 
             //
-            var data = Data.ToArray();
-            for (int i = 0; i < data.Length; i++)
+            var output = new List<SKPoint>();
+            foreach(var data in Data)
             {
-                data[i].X = (float)x.Function(data[i].X);
-                data[i].Y = (float)y.Function(data[i].Y);
+                double xl, yl;
+                if (VisX.InRange(data.X))
+                    if (x.Function(data.X, out xl) && y.Function(data.Y, out yl))
+                        output.Add(new SKPoint((float)xl, (float)yl));
             }
 
             //
             var path = new SKPath();
-            path.AddPoly(data, false);
+            path.AddPoly(output.ToArray(), false);
             c.DrawPath(path, DrawPaint);
             return false;
         }
@@ -219,8 +225,6 @@ namespace rMultiplatform
         {
             TimeSpan    t_diff  = DateTime.Now.Subtract(start);
             double      ms_diff = t_diff.TotalMilliseconds / 1000;
-            Debug.WriteLine("Sample Time : " + ms_diff.ToString());
-
             switch (Mode)
             {
                 case ChartDataMode.eRolling:
@@ -252,8 +256,6 @@ namespace rMultiplatform
 
             //Rescale vertical
             VerticalSpan.RescaleRangeToFitValue(pPoint);
-
-            //
             DataMux.WaitOne();
             Data.Add(new SKPoint((float)ms_diff, (float)pPoint));
             DataMux.ReleaseMutex();
