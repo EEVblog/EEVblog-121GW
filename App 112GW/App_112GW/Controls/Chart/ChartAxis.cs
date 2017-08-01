@@ -88,7 +88,7 @@ namespace rMultiplatform
             }
             set
             {
-                _VisibleRangeEnabled = false;
+                _VisibleRangeEnabled = true;
                 _VisibleRange = value;
                 CalculateScales();
             }
@@ -123,6 +123,7 @@ namespace rMultiplatform
             var lower = VisibleRange.Minimum + dist;
             var upper = VisibleRange.Maximum + dist;
 
+            bool Valid = true;
             if (lower < Minimum)
             {
                 lower = Minimum;
@@ -130,13 +131,14 @@ namespace rMultiplatform
             }
             else if (upper > Maximum)
             {
+                Valid = false;
                 _VisibleRangeEnabled = false;
                 lower = Maximum - VisibleRange.Distance;
                 upper = Maximum;
             }
 
-
-            VisibleRange = new Range(lower, upper);
+            if (Valid)
+                VisibleRange = new Range(lower, upper);
             InvalidateParent();
         }
 
@@ -171,6 +173,7 @@ namespace rMultiplatform
                 h /= zoom;
 
 
+                bool Valid = true;
                 var lower = about - l;
                 var upper = about + h;
 
@@ -179,10 +182,13 @@ namespace rMultiplatform
 
                 if (upper > Maximum)
                 {
+                    Valid = false;
                     _VisibleRangeEnabled = false;
                     upper = Maximum;
                 }
-                VisibleRange = new Range(lower, upper);
+
+                if (Valid)
+                    VisibleRange = new Range(lower, upper);
             }
             InvalidateParent();
         }

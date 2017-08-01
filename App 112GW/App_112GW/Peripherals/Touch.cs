@@ -353,7 +353,7 @@ namespace rMultiplatform
             if (EventFunction != null)
                 Device.BeginInvokeOnMainThread(() =>
                 {
-                    EventFunction(element, args);
+                    EventFunction?.Invoke(element, args);
                 });
         }
 
