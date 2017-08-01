@@ -219,6 +219,8 @@ namespace rMultiplatform
             Dx = dx;
             Dy = dy;
         }
+        public TouchPanActionEventArgs()
+        {}
     }
 
 
