@@ -174,9 +174,8 @@ namespace rMultiplatform
                 var upper = about + h;
 
                 if (lower < Minimum)
-                {
                     lower = Minimum;
-                }
+
                 if (upper > Maximum)
                 {
                     _VisibleRangeEnabled = false;
