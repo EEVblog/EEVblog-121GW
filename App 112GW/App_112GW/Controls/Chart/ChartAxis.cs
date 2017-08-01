@@ -95,6 +95,7 @@ namespace rMultiplatform
         {
             _VisibleRangeEnabled = false;
             CalculateScales();
+            InvalidateParent();
         }
         void EnableCroppedRange()
         {
@@ -129,28 +130,15 @@ namespace rMultiplatform
             return B - A;
         }
 
-
-
         public void Pan(double X, double Y)
         {
             double dist = 1.0f;
-            switch (Orientation)
-            {
-                case AxisOrientation.Vertical:
-                    dist = -GetScalePoint(Y);
-                    break;
-                case AxisOrientation.Horizontal:
-                    dist =- GetScalePoint(X);
-                    break;
-                default:
-                    break;
-            }
+            dist = -GetScalePoint((Orientation == AxisOrientation.Vertical) ? Y : X);
             if (dist == 1.0)
                 return;
 
             var lower = VisibleRange.Minimum + dist;
             var upper = VisibleRange.Maximum + dist;
-
             if (lower < Minimum)
             {
                 lower = Minimum;
@@ -170,47 +158,48 @@ namespace rMultiplatform
         {
             double zoom = 1.0f;
             double about = 0;
-            switch (Orientation)
+            if (Orientation == AxisOrientation.Vertical)
             {
-            case AxisOrientation.Vertical:
                 zoom = Y;
                 about = GetPoint(About.Y);
-                break;
-            case AxisOrientation.Horizontal:
+            }
+            else
+            {
                 zoom = X;
                 about = GetPoint(About.X);
-                break;
             }
             if (zoom == 1.0)
                 return;
 
             if (VisibleRange.Minimum <= about && about <= VisibleRange.Maximum)
             {
-                Range temp = new Range(VisibleRange.Minimum, VisibleRange.Maximum);
-
                 var l = Dist(about, VisibleRange.Minimum) / zoom;
                 var h = Dist(about, VisibleRange.Maximum) / zoom;
-
                 var lower = about - l;
                 var upper = about + h;
-
                 int c = 0;
-                if (lower < Minimum)
+
+                //Clip upper and lower bounds
+                //If zoomed out to full range re-enable normal mode.
+                if (lower <= Minimum)
                 {
                     ++c;
                     lower = Minimum;
                 }
-                if (upper > Maximum)
+                if (upper >= Maximum)
                 {
                     ++c;
                     upper = Maximum;
                 }
                 if (c == 2)
                     DisableCroppedRange();
-
-                VisibleRange = new Range(lower, upper);
+                else
+                {
+                    VisibleMinimum = lower;
+                    VisibleMaximum = upper;
+                    EnableCroppedRange();
+                }
             }
-            InvalidateParent();
         }
 
         List<Range>                 AxisDataRanges;

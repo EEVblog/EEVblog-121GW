@@ -21,6 +21,19 @@ namespace rMultiplatform
         private LabelledBackButton  mBack;
         private Button mFullscreen;
 
+        public new bool IsVisible
+        {
+            set
+            {
+                if (value)
+                    mBack.ControlView.Enable();
+                else
+                    mBack.ControlView.Disable();
+                base.IsVisible = value;
+            }
+        }
+
+
         private void AddView(View pInput, int pX, int pY, int pXSpan = 1, int pYSpan = 1)
         {
             Children.Add(pInput);

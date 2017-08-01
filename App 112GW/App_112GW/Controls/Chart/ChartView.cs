@@ -51,23 +51,20 @@ namespace rMultiplatform
 
         public ChartView()
         {
-            mChart                  = new Chart();
-            mMenu                   = new ChartMenu();
-            mChartGrid              = new StackLayout();
+            mChart              = new Chart();
+            mMenu               = new ChartMenu();
+            mChartGrid          = new StackLayout();
 
-            HorizontalOptions       = LayoutOptions.Fill;
-            VerticalOptions         = LayoutOptions.StartAndExpand;
-
-            // Assures that a non-zero height is allocated
-            MinimumHeightRequest    = 200;
+            VerticalOptions     = LayoutOptions.StartAndExpand;
+            HorizontalOptions   = LayoutOptions.Fill;
 
             //Setup the events
             mMenu.BackClicked   += ViewToggle;
-            mChart.Clicked      += ViewToggle;
             mMenu.SaveClicked   += DataSave;
+            mChart.Clicked      += ViewToggle;
             FullscreenClicked   += ViewToggle;
 
-            //Add 
+            //Add
             mChartGrid.Children.Add(mMenu);
             mChartGrid.Children.Add(mChart);
 
@@ -78,7 +75,6 @@ namespace rMultiplatform
         }
         protected override void OnSizeAllocated(double width, double height)
         {
-            HeightRequest = 200;
             base.OnSizeAllocated(width, height);
         }
         private void SetView()

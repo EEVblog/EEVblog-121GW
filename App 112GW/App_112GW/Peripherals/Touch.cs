@@ -376,7 +376,7 @@ namespace rMultiplatform
         }
         private void SafeReleased(Element element, TouchActionEventArgs args)
         {
-            if (Cursors.Count == 1 && !PinchMode && !PanMode)
+            if (!PinchMode && !PanMode)
                 SafeEvent(Released, element, args);
 
             RemoveCursor(args);

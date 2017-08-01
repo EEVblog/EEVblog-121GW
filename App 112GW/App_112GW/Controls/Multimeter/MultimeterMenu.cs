@@ -32,14 +32,32 @@ namespace rMultiplatform
             }
         }
 
+        private Label mSerialNumber;
+        private LabelledCheckbox mPlotCheck;
+        private LabelledBackButton mBack;
+        public new bool IsVisible
+        {
+            set
+            {
+                if (value)
+                {
+                    mPlotCheck.ControlView.Enable();
+                    mBack.ControlView.Enable();
+                }
+                else
+                {
+                    mPlotCheck.ControlView.Disable();
+                    mBack.ControlView.Disable();
+                }
+                base.IsVisible = value;
+            }
+        }
+
         private Button              mMode;
         private Button              mHold;
         private Button              mRange;
         private Button              mRelative;
 
-        private Label               mSerialNumber;
-        private LabelledCheckbox    mPlotCheck;
-        private LabelledBackButton  mBack;
 
         private void    AddView    (View pInput, int pX, int pY, int pXSpan = 1, int pYSpan = 1)
         {
@@ -97,7 +115,6 @@ namespace rMultiplatform
             mBack = new LabelledBackButton("Back")
             {
                 BorderWidth             = Globals.BorderWidth,
-
                 LabelSide               = LabelledControl.eLabelSide.Right,
                 HorizontalOptions       = LayoutOptions.StartAndExpand,
                 Padding                 = 0
@@ -134,7 +151,6 @@ namespace rMultiplatform
             mRange = new Button()
             {
                 Text = "Range",
-                BackgroundColor = Globals.FocusColor
             };
             mRange.Clicked += PickerChange_Range;
             AddView(mRange, 1, 0);
@@ -154,15 +170,15 @@ namespace rMultiplatform
 
             //##################################################
             //
-            BackgroundColor = Globals.BackgroundColor;
-            mMode.BackgroundColor = Globals.BackgroundColor;
-            mMode.TextColor = Globals.TextColor;
-            mRange.BackgroundColor = Globals.BackgroundColor;
-            mRange.TextColor = Globals.TextColor;
-            mHold.BackgroundColor = Globals.BackgroundColor;
-            mHold.TextColor = Globals.TextColor;
-            mRelative.BackgroundColor = Globals.BackgroundColor;
-            mRelative.TextColor = Globals.TextColor;
+            BackgroundColor             = Globals.BackgroundColor;
+            mMode.BackgroundColor       = Globals.BackgroundColor;
+            mMode.TextColor             = Globals.TextColor;
+            mRange.BackgroundColor      = Globals.BackgroundColor;
+            mRange.TextColor            = Globals.TextColor;
+            mHold.BackgroundColor       = Globals.BackgroundColor;
+            mHold.TextColor             = Globals.TextColor;
+            mRelative.BackgroundColor   = Globals.BackgroundColor;
+            mRelative.TextColor         = Globals.TextColor;
         }
 
         //The reactions to picker, checkbox, buttons events

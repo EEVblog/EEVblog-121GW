@@ -22,17 +22,6 @@ namespace rMultiplatform
             SetColumnSpan(pInput, pXSpan);
             SetRowSpan(pInput, pYSpan);
         }
-        void Update()
-        {
-            if (LabelView == null)
-                return;
-            if (ControlView == null)
-                return;
-            if (Label == null)
-                return;
-
-            //Update functions here
-        }
 
         private string _Label;
         public string   Label
@@ -40,7 +29,6 @@ namespace rMultiplatform
             set
             {
                 _Label = value;
-                Update();
             }
             get
             {
@@ -92,7 +80,6 @@ namespace rMultiplatform
             set
             {
                 _ControlView = value;
-                Update();
             }
             get
             {

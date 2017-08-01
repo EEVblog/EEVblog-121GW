@@ -15,186 +15,186 @@ using System.Threading.Tasks;
 
 namespace rMultiplatform
 {
-	public class SevenSegment
-	{
-		private enum		SevenSegmentLetters
-		{
-			ea = 95,
-			eb = 124,
-			ec = 88,
-			ed = 94,
-			ee = 123,
-			ef = 113,
-			eg = 111,
-			eh = 116,
-			ei = 4,
-			ej = 14,
-			ek = 122,
-			el = 6,
-			em = 20,
-			en = 84,
-			eo = 92,
-			ep = 115,
-			eq = 103,
-			er = 80,
-			es = 109,
-			et = 120,
-			eu = 28,
-			ev = 98,
-			ew = 42,
-			ex = 100,
-			ey = 110,
-			ez = 91,
-			e0 = 0x3F,
-			e1 = 0x6,
-			e2 = 0x5B,
-			e3 = 0x4F,
-			e4 = 0x66,
-			e5 = 0x6D,
-			e6 = 0x7d,
-			e7 = 0x7,
-			e8 = 0x7F,
-			e9 = 0x6F,
-			eA = 0x77,
-			eB = 0x7F,
-			eC = 0x39,
-			eD = 0x3F,
-			eE = 0x79,
-			eF = 0x71,
-			eG = 0x3D,
-			eH = 0x76,
-			eI = 0x06,
-			eJ = 0x1E,
-			eK = 0x57,
-			eL = 0x38,
-			eM = 0x76,
-			eN = 0x76,
-			eO = 0x3F,
-			eP = 0x73,
-			eQ = 0x3F,
-			eR = 0x77,
-			eS = 0x6D,
-			eT = 0x31,
-			eU = 0x3E,
-			eV = 0x3E,
-			eW = 0x7E,
-			eX = 0x76,
-			eY = 0x66,
-			eZ = 0x5B,
-			eDot = 0x80
-		};
-		private static char	ToUpper		(char pCHR)
-		{
-			const char a = 'a';
-			const char A = 'A';
-			if (('a' <= pCHR) && (pCHR <= 'z'))
-				return (char)((pCHR - a) + A);
+    public class SevenSegment
+    {
+        private enum SevenSegmentLetters
+        {
+            ea = 95,
+            eb = 124,
+            ec = 88,
+            ed = 94,
+            ee = 123,
+            ef = 113,
+            eg = 111,
+            eh = 116,
+            ei = 4,
+            ej = 14,
+            ek = 122,
+            el = 6,
+            em = 20,
+            en = 84,
+            eo = 92,
+            ep = 115,
+            eq = 103,
+            er = 80,
+            es = 109,
+            et = 120,
+            eu = 28,
+            ev = 98,
+            ew = 42,
+            ex = 100,
+            ey = 110,
+            ez = 91,
+            e0 = 0x3F,
+            e1 = 0x6,
+            e2 = 0x5B,
+            e3 = 0x4F,
+            e4 = 0x66,
+            e5 = 0x6D,
+            e6 = 0x7d,
+            e7 = 0x7,
+            e8 = 0x7F,
+            e9 = 0x6F,
+            eA = 0x77,
+            eB = 0x7F,
+            eC = 0x39,
+            eD = 0x3F,
+            eE = 0x79,
+            eF = 0x71,
+            eG = 0x3D,
+            eH = 0x76,
+            eI = 0x06,
+            eJ = 0x1E,
+            eK = 0x57,
+            eL = 0x38,
+            eM = 0x76,
+            eN = 0x76,
+            eO = 0x3F,
+            eP = 0x73,
+            eQ = 0x3F,
+            eR = 0x77,
+            eS = 0x6D,
+            eT = 0x31,
+            eU = 0x3E,
+            eV = 0x3E,
+            eW = 0x7E,
+            eX = 0x76,
+            eY = 0x66,
+            eZ = 0x5B,
+            eDot = 0x80
+        };
+        private static char ToUpper(char pCHR)
+        {
+            const char a = 'a';
+            const char A = 'A';
+            if (('a' <= pCHR) && (pCHR <= 'z'))
+                return (char)((pCHR - a) + A);
 
-			return pCHR;
-		}
-		private static int	ToSegment	(char pCHR)
-		{
-			switch (pCHR)
-			{
+            return pCHR;
+        }
+        private static int ToSegment(char pCHR)
+        {
+            switch (pCHR)
+            {
 
-				case '0': return (int)SevenSegmentLetters.e0;
-				case '1': return (int)SevenSegmentLetters.e1;
-				case '2': return (int)SevenSegmentLetters.e2;
-				case '3': return (int)SevenSegmentLetters.e3;
-				case '4': return (int)SevenSegmentLetters.e4;
-				case '5': return (int)SevenSegmentLetters.e5;
-				case '6': return (int)SevenSegmentLetters.e6;
-				case '7': return (int)SevenSegmentLetters.e7;
-				case '8': return (int)SevenSegmentLetters.e8;
-				case '9': return (int)SevenSegmentLetters.e9;
-				case 'a': return (int)SevenSegmentLetters.ea;
-				case 'b': return (int)SevenSegmentLetters.eb;
-				case 'c': return (int)SevenSegmentLetters.ec;
-				case 'd': return (int)SevenSegmentLetters.ed;
-				case 'e': return (int)SevenSegmentLetters.ee;
-				case 'f': return (int)SevenSegmentLetters.ef;
-				case 'g': return (int)SevenSegmentLetters.eg;
-				case 'h': return (int)SevenSegmentLetters.eh;
-				case 'i': return (int)SevenSegmentLetters.ei;
-				case 'j': return (int)SevenSegmentLetters.ej;
-				case 'k': return (int)SevenSegmentLetters.ek;
-				case 'l': return (int)SevenSegmentLetters.el;
-				case 'm': return (int)SevenSegmentLetters.em;
-				case 'n': return (int)SevenSegmentLetters.en;
-				case 'o': return (int)SevenSegmentLetters.eo;
-				case 'p': return (int)SevenSegmentLetters.ep;
-				case 'q': return (int)SevenSegmentLetters.eq;
-				case 'r': return (int)SevenSegmentLetters.er;
-				case 's': return (int)SevenSegmentLetters.es;
-				case 't': return (int)SevenSegmentLetters.et;
-				case 'u': return (int)SevenSegmentLetters.eu;
-				case 'v': return (int)SevenSegmentLetters.ev;
-				case 'w': return (int)SevenSegmentLetters.ew;
-				case 'x': return (int)SevenSegmentLetters.ex;
-				case 'y': return (int)SevenSegmentLetters.ey;
-				case 'z': return (int)SevenSegmentLetters.ez;
-				case 'A': return (int)SevenSegmentLetters.eA;
-				case 'B': return (int)SevenSegmentLetters.eB;
-				case 'C': return (int)SevenSegmentLetters.eC;
-				case 'D': return (int)SevenSegmentLetters.eD;
-				case 'E': return (int)SevenSegmentLetters.eE;
-				case 'F': return (int)SevenSegmentLetters.eF;
-				case 'G': return (int)SevenSegmentLetters.eG;
-				case 'H': return (int)SevenSegmentLetters.eH;
-				case 'I': return (int)SevenSegmentLetters.eI;
-				case 'J': return (int)SevenSegmentLetters.eJ;
-				case 'K': return (int)SevenSegmentLetters.eK;
-				case 'L': return (int)SevenSegmentLetters.eL;
-				case 'M': return (int)SevenSegmentLetters.eM;
-				case 'N': return (int)SevenSegmentLetters.eN;
-				case 'O': return (int)SevenSegmentLetters.eO;
-				case 'P': return (int)SevenSegmentLetters.eP;
-				case 'Q': return (int)SevenSegmentLetters.eQ;
-				case 'R': return (int)SevenSegmentLetters.eR;
-				case 'S': return (int)SevenSegmentLetters.eS;
-				case 'T': return (int)SevenSegmentLetters.eT;
-				case 'U': return (int)SevenSegmentLetters.eU;
-				case 'V': return (int)SevenSegmentLetters.eV;
-				case 'W': return (int)SevenSegmentLetters.eW;
-				case 'X': return (int)SevenSegmentLetters.eX;
-				case 'Y': return (int)SevenSegmentLetters.eY;
-				case 'Z': return (int)SevenSegmentLetters.eZ;
-				case '.': return (int)SevenSegmentLetters.eDot;
-			}
-			return 0;
-		}
+                case '0': return (int)SevenSegmentLetters.e0;
+                case '1': return (int)SevenSegmentLetters.e1;
+                case '2': return (int)SevenSegmentLetters.e2;
+                case '3': return (int)SevenSegmentLetters.e3;
+                case '4': return (int)SevenSegmentLetters.e4;
+                case '5': return (int)SevenSegmentLetters.e5;
+                case '6': return (int)SevenSegmentLetters.e6;
+                case '7': return (int)SevenSegmentLetters.e7;
+                case '8': return (int)SevenSegmentLetters.e8;
+                case '9': return (int)SevenSegmentLetters.e9;
+                case 'a': return (int)SevenSegmentLetters.ea;
+                case 'b': return (int)SevenSegmentLetters.eb;
+                case 'c': return (int)SevenSegmentLetters.ec;
+                case 'd': return (int)SevenSegmentLetters.ed;
+                case 'e': return (int)SevenSegmentLetters.ee;
+                case 'f': return (int)SevenSegmentLetters.ef;
+                case 'g': return (int)SevenSegmentLetters.eg;
+                case 'h': return (int)SevenSegmentLetters.eh;
+                case 'i': return (int)SevenSegmentLetters.ei;
+                case 'j': return (int)SevenSegmentLetters.ej;
+                case 'k': return (int)SevenSegmentLetters.ek;
+                case 'l': return (int)SevenSegmentLetters.el;
+                case 'm': return (int)SevenSegmentLetters.em;
+                case 'n': return (int)SevenSegmentLetters.en;
+                case 'o': return (int)SevenSegmentLetters.eo;
+                case 'p': return (int)SevenSegmentLetters.ep;
+                case 'q': return (int)SevenSegmentLetters.eq;
+                case 'r': return (int)SevenSegmentLetters.er;
+                case 's': return (int)SevenSegmentLetters.es;
+                case 't': return (int)SevenSegmentLetters.et;
+                case 'u': return (int)SevenSegmentLetters.eu;
+                case 'v': return (int)SevenSegmentLetters.ev;
+                case 'w': return (int)SevenSegmentLetters.ew;
+                case 'x': return (int)SevenSegmentLetters.ex;
+                case 'y': return (int)SevenSegmentLetters.ey;
+                case 'z': return (int)SevenSegmentLetters.ez;
+                case 'A': return (int)SevenSegmentLetters.eA;
+                case 'B': return (int)SevenSegmentLetters.eB;
+                case 'C': return (int)SevenSegmentLetters.eC;
+                case 'D': return (int)SevenSegmentLetters.eD;
+                case 'E': return (int)SevenSegmentLetters.eE;
+                case 'F': return (int)SevenSegmentLetters.eF;
+                case 'G': return (int)SevenSegmentLetters.eG;
+                case 'H': return (int)SevenSegmentLetters.eH;
+                case 'I': return (int)SevenSegmentLetters.eI;
+                case 'J': return (int)SevenSegmentLetters.eJ;
+                case 'K': return (int)SevenSegmentLetters.eK;
+                case 'L': return (int)SevenSegmentLetters.eL;
+                case 'M': return (int)SevenSegmentLetters.eM;
+                case 'N': return (int)SevenSegmentLetters.eN;
+                case 'O': return (int)SevenSegmentLetters.eO;
+                case 'P': return (int)SevenSegmentLetters.eP;
+                case 'Q': return (int)SevenSegmentLetters.eQ;
+                case 'R': return (int)SevenSegmentLetters.eR;
+                case 'S': return (int)SevenSegmentLetters.eS;
+                case 'T': return (int)SevenSegmentLetters.eT;
+                case 'U': return (int)SevenSegmentLetters.eU;
+                case 'V': return (int)SevenSegmentLetters.eV;
+                case 'W': return (int)SevenSegmentLetters.eW;
+                case 'X': return (int)SevenSegmentLetters.eX;
+                case 'Y': return (int)SevenSegmentLetters.eY;
+                case 'Z': return (int)SevenSegmentLetters.eZ;
+                case '.': return (int)SevenSegmentLetters.eDot;
+            }
+            return 0;
+        }
 
-		SevenSegment	(){}
-		static public void SetSegment	(char pInput, bool dp, ref Layers pImages)
-		{
+        SevenSegment() { }
+        static public void SetSegment(char pInput, bool dp, ref Layers pImages)
+        {
             //Make len a member 
-            int len		= pImages.mLayers.Count;
-			int pValue	= ToSegment(pInput);
+            int len = pImages.mLayers.Count;
+            int pValue = ToSegment(pInput);
 
-			pValue		&= 0xff;
-            pValue      |= ((dp)?0x80:0);
+            pValue &= 0xff;
+            pValue |= ((dp) ? 0x80 : 0);
 
-			for (int i = 0; i < len; i++)
-			{
-				if ((pValue & 1) == 1)
-					pImages.mLayers[i].On();
-				else
-					pImages.mLayers[i].Off();
+            for (int i = 0; i < len; i++)
+            {
+                if ((pValue & 1) == 1)
+                    pImages.mLayers[i].On();
+                else
+                    pImages.mLayers[i].Off();
 
-				pValue >>= 1;
-			}
-		}
+                pValue >>= 1;
+            }
+        }
         static public void Blank(Layers pImages)
         {
             SetSegment(' ', false, ref pImages);
         }
         static public void Blank(ref Layers pImages)
-		{
-			SetSegment(' ', false, ref pImages);
-		}
-	}
+        {
+            SetSegment(' ', false, ref pImages);
+        }
+    }
 
-    public class MultimeterScreen :
+    public class MultimeterScreenRenderer :
 #if __ANDROID__ && ! SOFTWARE_DRAW
         SKGLView
 #elif __IOS__ && ! SOFTWARE_DRAW
@@ -204,20 +204,6 @@ namespace rMultiplatform
 #endif
     {
         delegate void CacheImage(ILayer image);
-
-        private float   _MaxHeight = 300;
-        public float    MaxHeight
-        {
-            get
-            {
-                return _MaxHeight;
-            }
-            set
-            {
-                _MaxHeight = value;
-            }
-        }
-
         private Touch mTouch;
 
         public enum eControlInputState
@@ -230,7 +216,7 @@ namespace rMultiplatform
         public eControlInputState State
         {
             get
-            {   return _State;  }
+            { return _State; }
             set
             {
                 _State = value;
@@ -238,17 +224,17 @@ namespace rMultiplatform
             }
         }
 
-        private void MTouch_Press           (object sender, rMultiplatform.TouchActionEventArgs args)
+        private void MTouch_Press(object sender, rMultiplatform.TouchActionEventArgs args)
         {
             State = eControlInputState.ePressed;
             ChangeColors();
         }
-        private void MTouch_Hover           (object sender, rMultiplatform.TouchActionEventArgs args)
+        private void MTouch_Hover(object sender, rMultiplatform.TouchActionEventArgs args)
         {
             State = eControlInputState.eHover;
             ChangeColors();
         }
-        private void MTouch_Release         (object sender, rMultiplatform.TouchActionEventArgs args)
+        private void MTouch_Release(object sender, rMultiplatform.TouchActionEventArgs args)
         {
             if (State == eControlInputState.ePressed)
                 OnClicked(EventArgs.Empty);
@@ -256,8 +242,8 @@ namespace rMultiplatform
             ChangeColors();
         }
 
-        private SKColor     _IdleColor;
-        public Color         IdleColor
+        private SKColor _IdleColor;
+        public Color IdleColor
         {
             set
             {
@@ -269,8 +255,8 @@ namespace rMultiplatform
                 return _IdleColor.ToFormsColor();
             }
         }
-        private SKColor     _PressColor;
-        public Color         PressColor
+        private SKColor _PressColor;
+        public Color PressColor
         {
             set
             {
@@ -282,8 +268,8 @@ namespace rMultiplatform
                 return _PressColor.ToFormsColor();
             }
         }
-        private SKColor     _HoverColor;
-        public Color         HoverColor
+        private SKColor _HoverColor;
+        public Color HoverColor
         {
             set
             {
@@ -295,8 +281,8 @@ namespace rMultiplatform
                 return _HoverColor.ToFormsColor();
             }
         }
-        private SKColor     _BackgroundColor;
-        public new Color     BackgroundColor
+        private SKColor _BackgroundColor;
+        public new Color BackgroundColor
         {
             set
             {
@@ -308,7 +294,7 @@ namespace rMultiplatform
                 return _BackgroundColor.ToFormsColor();
             }
         }
-        private void ChangeColors           ()
+        private void ChangeColors()
         {
             switch (State)
             {
@@ -325,7 +311,7 @@ namespace rMultiplatform
             ChangeBackgroundColor(_BackgroundColor);
             Redraw();
         }
-        private void ChangePrimaryColor     (SKColor pInput)
+        private void ChangePrimaryColor(SKColor pInput)
         {
             for (int i = 0; i < mSegments.Count; i++)
                 mSegments[i].DrawColor = pInput;
@@ -334,7 +320,7 @@ namespace rMultiplatform
             mBargraph.DrawColor = pInput;
             mOther.DrawColor = pInput;
         }
-        private void ChangeBackgroundColor  (SKColor pInput)
+        private void ChangeBackgroundColor(SKColor pInput)
         {
             for (int i = 0; i < mSegments.Count; i++)
                 mSegments[i].BackgroundColor = pInput;
@@ -345,37 +331,26 @@ namespace rMultiplatform
         }
 
 
-        //public new bool IsVisible
-        //{
-        //    set
-        //    {
-        //        base.IsVisible = value;
-        //        //Invalidate();
-        //    }
-        //}
-
-
-
-        public event EventHandler       Clicked;
-        protected virtual   void        OnClicked   (EventArgs e)
+        public event EventHandler Clicked;
+        protected virtual void OnClicked(EventArgs e)
         {
             Clicked?.Invoke(this, e);
         }
 
-        Layers                          mOther;
-        public SKBitmap                 mLayer;
-        public SKCanvas                 mCanvas;
-        Layers                          mBargraph;
-        List<Layers>	                mSegments;
-        static List<ILayer>             mLayerCache;
-		List<Layers>	                mSubSegments;
-        int                             mDecimalPosition;
+        Layers mOther;
+        public SKBitmap mLayer;
+        public SKCanvas mCanvas;
+        Layers mBargraph;
+        List<Layers> mSegments;
+        static List<ILayer> mLayerCache;
+        List<Layers> mSubSegments;
+        int mDecimalPosition;
 
         protected virtual void LayerChange(object o, EventArgs e)
         {
 
         }
-        private void SetLargeSegments(string pInput)
+        private void    SetLargeSegments(string pInput)
         {
             if (pInput.EndsWith("."))
                 pInput += "0";
@@ -385,42 +360,42 @@ namespace rMultiplatform
 
             SetSegments(pInput.PadLeft(mSegments.Count, ' '), ref mSegments);
         }
-        private void SetSmallSegments(string pInput)
+        private void    SetSmallSegments(string pInput)
         {
             if (pInput.Length > mSubSegments.Count)
                 throw (new Exception("Small segment value too many decimal places."));
 
             SetSegments(pInput.PadLeft(mSubSegments.Count, ' '), ref mSubSegments);
         }
-        public float LargeSegments
+        public float    LargeSegments
         {
             set
             {
                 SetLargeSegments(value.ToString());
             }
         }
-        public string LargeSegmentsWord
+        public string   LargeSegmentsWord
         {
             set
             {
                 SetLargeSegments(value);
             }
         }
-        public float SmallSegments
+        public float    SmallSegments
         {
             set
             {
                 SetSmallSegments(value.ToString());
             }
         }
-        public string SmallSegmentsWord
+        public string   SmallSegmentsWord
         {
             set
             {
                 SetSmallSegments(value);
             }
         }
-        public int Bargraph
+        public int      Bargraph
         {
             set
             {
@@ -430,7 +405,7 @@ namespace rMultiplatform
                     throw (new Exception("Bargraph value too high."));
             }
         }
-        private void SetBargraph(int pInput)
+        private void    SetBargraph(int pInput)
         {
             foreach (ILayer Layer in mBargraph.mLayers)
                 Layer.Off();
@@ -438,7 +413,7 @@ namespace rMultiplatform
             for (int i = 0; i < mBargraph.mLayers.Count; i++)
                 mBargraph.mLayers[i].Set(pInput >= i);
         }
-        private void SetOther(string Label, bool State)
+        private void    SetOther(string Label, bool State)
         {
             foreach (var other in mOther.mLayers)
                 if (other.Name == Label)
@@ -450,7 +425,7 @@ namespace rMultiplatform
             set
             {
                 switch (value.Mode)
-                {   
+                {
                     case Packet112GW.eMode.Low_Z:
                         SetOther("LowZ", true);
                         SetOther("SegV", true);
@@ -561,12 +536,12 @@ namespace rMultiplatform
                 var Range = value.MainRangeValue;
 
                 //Overload
-                if ( OFL )
+                if (OFL)
                     LargeSegmentsWord = "OFL";
                 else
                 {
                     //Negative sign for segments
-                    if ( Sign == Packet112GW.eSign.eNegative )
+                    if (Sign == Packet112GW.eSign.eNegative)
                         SetOther("Seg-", true);
                     else
                         SetOther("Seg-", false);
@@ -578,19 +553,19 @@ namespace rMultiplatform
                     var DisplayString = value.MainIntValue.ToString().PadLeft(5, ' ');
 
                     //Cannot insert a decimal point outside the range of the string
-                    if ( mDecimalPosition < 5 )
+                    if (mDecimalPosition < 5)
                         DisplayString = DisplayString.Insert(mDecimalPosition, ".");
 
                     //Combine decimal points and charaters so that a decimal point 
                     // doesn't occupy a full character
                     bool beforepoint = true;
                     string outstring = "";
-                    for ( int i = 0; i < DisplayString.Length; ++i )
+                    for (int i = 0; i < DisplayString.Length; ++i)
                     {
                         var c = DisplayString[i];
-                        if ( c == '.' )
+                        if (c == '.')
                             beforepoint = false;
-      
+
                         if (beforepoint)
                             outstring += c;
                         else
@@ -604,7 +579,7 @@ namespace rMultiplatform
 
                     //Setup the SI units outputs
                     var units = value.MainRangeUnits;
-                    switch( units )
+                    switch (units)
                     {
                         case 'm':
                             SetOther("SegmV", true);
@@ -772,7 +747,7 @@ namespace rMultiplatform
 
                     //Calculate the position of the decimal point
                     mDecimalPosition = (int)Range / 10 + 1;
-                    
+
                     var DisplayString = value.SubValue.ToString();
 
                     //Cannot insert a decimal point outside the range of the string
@@ -830,7 +805,7 @@ namespace rMultiplatform
                 if (On)
                 {
                     //Setup bargraph ranges
-                    SetOther("BarTick0_0",  true);
+                    SetOther("BarTick0_0", true);
                     if (_0_150)
                     {
                         SetOther("BarTick1_2", true);
@@ -848,7 +823,7 @@ namespace rMultiplatform
                         SetOther("BarTick4_4", true);
                         SetOther("BarTick5_5", true);
                     }
-                    
+
                     switch (_1000_500)
                     {
                         case 0:
@@ -888,7 +863,7 @@ namespace rMultiplatform
         {
             set
             {
-                SetOther("1 kHz",   value.Status1KHz);
+                SetOther("1 kHz", value.Status1KHz);
 
                 if (value.Status1ms)
                 {
@@ -911,17 +886,17 @@ namespace rMultiplatform
                         break;
                 }
 
-                SetOther("auto",    value.StatusAuto);
-                SetOther("apo",     value.StatusAPO);
+                SetOther("auto", value.StatusAuto);
+                SetOther("apo", value.StatusAPO);
                 SetOther("Battery", value.StatusBAT);
-                SetOther("Arrow",   value.StatusArrow);
-                SetOther("REL",     value.StatusRel);
-                SetOther("SubdB",   value.StatusdBm);
+                SetOther("Arrow", value.StatusArrow);
+                SetOther("REL", value.StatusRel);
+                SetOther("SubdB", value.StatusdBm);
 
                 //NOTE UNKONWN MIN/MAX bits config
-                SetOther("TEST",    value.StatusTest);
-                SetOther("MEM",     value.StatusMem > 0);
-                
+                SetOther("TEST", value.StatusTest);
+                SetOther("MEM", value.StatusMem > 0);
+
                 switch (value.StatusAHold)
                 {
                     case 0:
@@ -955,36 +930,36 @@ namespace rMultiplatform
                 }
             }
         }
-        public void Update (Packet112GW pInput)
+        public void Update(Packet112GW pInput)
         {
             SetOther("BT", true);
             foreach (var other in mOther.mLayers)
                 other.Off();
 
             //Main range bits
-            MainMode        = pInput;
-            MainRangeValue  = pInput;
+            MainMode = pInput;
+            MainRangeValue = pInput;
 
             //Sub range bits
-            SubMode         = pInput;
-            SubRangeValue   = pInput;
+            SubMode = pInput;
+            SubRangeValue = pInput;
 
             //Bar graph bits
-            BarStatus       = pInput;
+            BarStatus = pInput;
 
             //Update icons
-            IconStatus      = pInput;
+            IconStatus = pInput;
         }
 
-        Layers segments        = new Layers("mSegments");
-        Layers subsegments     = new Layers("mSubsegments");
+        Layers segments = new Layers("mSegments");
+        Layers subsegments = new Layers("mSubsegments");
 
-        CacheImage              CacheFunction;
-        void                    Cacher(ILayer image)
+        CacheImage CacheFunction;
+        void Cacher(ILayer image)
         {
             mLayerCache.Add(image);
         }
-        bool                    ProcessImage    (string filename, Polycurve Image)
+        bool ProcessImage(string filename, Polycurve Image)
         {
             if (CacheFunction != null)
                 CacheFunction((new PathLayer(Image, filename) as ILayer));
@@ -1000,7 +975,7 @@ namespace rMultiplatform
 
             return true;
         }
-        bool                    ProcessImage    (string filename, SKSvg Image)
+        bool ProcessImage(string filename, SKSvg Image)
         {
             if (CacheFunction != null)
                 CacheFunction((new SVGLayer(Image, filename) as ILayer));
@@ -1016,7 +991,7 @@ namespace rMultiplatform
 
             return true;
         }
-        bool                    ProcessImage    (string filename, SKImage Image)
+        bool ProcessImage(string filename, SKImage Image)
         {
             if (CacheFunction != null)
                 CacheFunction((new ImageLayer(Image, filename) as ILayer));
@@ -1033,7 +1008,7 @@ namespace rMultiplatform
 
             return true;
         }
-        bool                    ProcessImage    (ILayer Image)
+        bool ProcessImage(ILayer Image)
         {
             var filename = Image.Name;
 
@@ -1049,7 +1024,7 @@ namespace rMultiplatform
             return true;
         }
 
-        private void            SetupTouch()
+        private void SetupTouch()
         {
             //Add the gesture recognizer 
             mTouch = new rMultiplatform.Touch();
@@ -1058,7 +1033,7 @@ namespace rMultiplatform
             mTouch.Released += MTouch_Release;
             Effects.Add(mTouch);
         }
-        private void            Redraw()
+        private void Redraw()
         {
             //Add render on change
             for (int i = 0; i < mSegments.Count; i++)
@@ -1069,22 +1044,21 @@ namespace rMultiplatform
             mOther.Redraw();
             InvalidateSurface();
         }
-
-        private void            Invalidate()
+        private void Invalidate()
         {
             InvalidateSurface();
         }
-        public (float aspect, float width, float height)       
-                                GetResultSize(double Width = 0)
+
+        float LayerAspect = 1, LayerX = 0, LayerY = 0;
+        public (float aspect, float width, float height) GetResultSize(double Width = 0)
         {
-            (float x, float y) = mBargraph.GetResultSize();
-            return ((y / x), x, y);
+            return (LayerAspect, LayerX, LayerY);
         }
-        private float           ConvertWidthToPixel(float value)
+        private float ConvertWidthToPixel(float value)
         {
             return (CanvasSize.Width * value / (float)Width);
         }
-        private float           ConvertHeightToPixel(float value)
+        private float ConvertHeightToPixel(float value)
         {
             return (CanvasSize.Height * value / (float)Height);
         }
@@ -1092,119 +1066,74 @@ namespace rMultiplatform
         //Only maintains aspect ratio
         protected override void OnSizeAllocated(double width, double height)
         {
-            base.OnSizeAllocated(width, height);
-
             //Get image dimensions
-            (float aspect, float x, float y) = GetResultSize();
-            var NewHeight = (float)width * aspect;
-
-            //Make sure the height
-            if (NewHeight > MaxHeight)
-                NewHeight = MaxHeight;
+            var NewHeight = (float)width * LayerAspect;
 
             //Setup the height request
             HeightRequest = NewHeight;
+            RemakeCanvas = true;
+            base.OnSizeAllocated(width, height);
         }
-        SKRect                  mDrawRectangle;
-        private void            Rescale()
+        protected override void InvalidateMeasure()
         {
-            (float aspect, float x, float y) = GetResultSize();
+            RemakeCanvas = true;
+            base.InvalidateMeasure();
+        }
+        protected override SizeRequest OnMeasure(double widthConstraint, double heightConstraint)
+        {
+            RemakeCanvas = true;
+            return base.OnMeasure(widthConstraint, heightConstraint);
+        }
 
+        SKRect mDrawRectangle;
+
+        private void Rescale()
+        {
             var width = CanvasSize.Width;
             var height = CanvasSize.Height;
 
             //Scale Image by height to match request
-            var scale = (float)height / y;
-            var imageHeight = (float)height;
-            var imageWidth = x * scale;
+            var scale = width / LayerX;
+            var imageWidth = LayerX * scale;
 
-            //
+
+            float imageHeight;
             if (imageWidth > width)
             {
-                imageWidth = (float)width;
-                imageHeight = aspect * imageWidth;
+                imageWidth = width;
+                imageHeight = LayerAspect * imageWidth;
             }
+            else
+                imageHeight = height;
 
-            //
             mDrawRectangle = new SKRect(0, 0, imageWidth, imageHeight);
         }
-        bool                    NeedClear = true;
-        private void            Render (SKCanvas pSurface)
+        bool RemakeCanvas = true;
+        static private void SetSegment(char pInput, bool dp, Layers pSegment)
         {
-            if ( NeedClear )
-            {
-                if ( CanvasSize.Width == 0 || CanvasSize.Height == 0 )
-                    return;
-                NeedClear = false;
-
-                //Cancel render if canvas doesn't exist
-                if ( mDrawRectangle.Width == 0 || mDrawRectangle.Height == 0 )
-                    Rescale();
-
-                //Setup a clear bitmap
-                mLayer = new SKBitmap((int)mDrawRectangle.Width, (int)mDrawRectangle.Height);
-                mLayer.Erase(SKColors.Transparent);
-                
-                //Setup a clear canvas
-                mCanvas = new SKCanvas(mLayer);
-                mCanvas.Clear(Globals.BackgroundColor.ToSKColor());
-
-                //Clear draw surface
-                pSurface.Clear(Globals.BackgroundColor.ToSKColor());
-            }
-
-            //Create the draw rectnagle from the draw size
-            var rendrect = new SKRect();
-            rendrect.Top = 0;
-            rendrect.Left = 0;
-            rendrect.Right = mDrawRectangle.Right;
-            rendrect.Bottom = mDrawRectangle.Bottom;
-
-            //Add render on change
-            for (int i = 0; i < mSegments.Count; i++)
-                mSegments[i].Render(ref mCanvas, mDrawRectangle);
-            for (int i = 0; i < mSegments.Count; i++)
-                mSubSegments[i].Render(ref mCanvas, mDrawRectangle);
-            mBargraph.Render (ref mCanvas, mDrawRectangle);
-            mOther.Render    (ref mCanvas, mDrawRectangle);
-
-            //Shift canvas as required
-            var offset_x = (float) Width - rendrect.Width;
-            if ( offset_x > 0 )
-                rendrect.Offset(offset_x / 2, 0);
-            else
-            {
-                rendrect.Right  = pSurface.DeviceClipBounds.Width;
-                rendrect.Bottom = pSurface.DeviceClipBounds.Height;
-            }
-            //Draw bitmap
-            pSurface.Clear();
-            pSurface.DrawBitmap(mLayer, rendrect);
+            SevenSegment.SetSegment(pInput, dp, ref pSegment);
         }
-		static private void     SetSegment(char pInput, bool dp, Layers pSegment)
-		{
-			SevenSegment.SetSegment(pInput, dp, ref pSegment);
-		}
-		private void            SetSegments(string pInput, ref List<Layers> pSegments)
-		{
+        private void SetSegments(string pInput, ref List<Layers> pSegments)
+        {
             foreach (Layers Segment in pSegments)
                 SevenSegment.Blank(Segment);
 
             int i = 0;
-			for(int j = 0; j < pInput.Length; j++)
-			{
-				char    cur = pInput[j];
+            for (int j = 0; j < pInput.Length; j++)
+            {
+                char cur = pInput[j];
                 if (cur == '.')
                     continue;
 
-                char    nxt = (j + 1 < pInput.Length) ? pInput[j + 1] : ' ';
-                var     dp  = (nxt == '.');
+                char nxt = (j + 1 < pInput.Length) ? pInput[j + 1] : ' ';
+                var dp = (nxt == '.');
 
                 SetSegment(cur, dp, pSegments[i]);
                 i++;
             }
-		}
+        }
 
+        SKRect rendrect = new SKRect();
 #if __ANDROID__ && ! SOFTWARE_DRAW
         protected override void OnPaintSurface(SKPaintGLSurfaceEventArgs e)
 #elif __IOS__ && ! SOFTWARE_DRAW
@@ -1213,9 +1142,57 @@ namespace rMultiplatform
         protected override void OnPaintSurface(SKPaintSurfaceEventArgs e)
 #endif
         {
-            Render(e.Surface.Canvas);
+            var pSurface = e.Surface.Canvas;
+            if (RemakeCanvas)
+            {
+                //Handles glitch in android.
+                var canvas_aspect = CanvasSize.Height / CanvasSize.Width;
+                if (canvas_aspect >= (LayerAspect / 2))
+                    RemakeCanvas = false;
+                else return;
+
+                Rescale();
+                Redraw();
+                if (CanvasSize.Width == 0 || CanvasSize.Height == 0)
+                    return;
+
+                //Shift canvas as required
+                rendrect.Right = mDrawRectangle.Right;
+                rendrect.Bottom = mDrawRectangle.Bottom;
+                var offset_x = (float)Width - rendrect.Width;
+                if (offset_x > 0)
+                    rendrect.Offset(offset_x / 2, 0);
+                else
+                {
+                    rendrect.Right = pSurface.DeviceClipBounds.Width;
+                    rendrect.Bottom = pSurface.DeviceClipBounds.Height;
+                }
+
+                //Setup a clear bitmap
+                mLayer = new SKBitmap((int)mDrawRectangle.Width, (int)mDrawRectangle.Height);
+                mLayer.Erase(SKColors.Transparent);
+
+                //Setup a clear canvas
+                mCanvas = new SKCanvas(mLayer);
+                mCanvas.Clear(Globals.BackgroundColor.ToSKColor());
+
+                //Clear draw surface
+                pSurface.Clear(Globals.BackgroundColor.ToSKColor());
+            }
+
+            //Add render on change
+            for (int i = 0; i < mSegments.Count; i++)
+                mSegments[i].Render(ref mCanvas, mDrawRectangle);
+            for (int i = 0; i < mSegments.Count; i++)
+                mSubSegments[i].Render(ref mCanvas, mDrawRectangle);
+            mBargraph.Render(ref mCanvas, mDrawRectangle);
+            mOther.Render(ref mCanvas, mDrawRectangle);
+
+            //Draw bitmap
+            pSurface.Clear();
+            pSurface.DrawBitmap(mLayer, rendrect);
         }
-        public                  MultimeterScreen()
+        public                  MultimeterScreenRenderer()
         {
             //Default size options
             HorizontalOptions = LayoutOptions.Fill;
@@ -1238,11 +1215,8 @@ namespace rMultiplatform
                 var Loader = new PathLoader(ProcessImage);
             }
             else
-            {
-                //Load from cache
                 foreach (var layer in mLayerCache)
                     ProcessImage(layer);
-            }
 
             //Sort Images alphabetically within layered images
             //Sort segments and subsegments into seperate digits
@@ -1261,28 +1235,25 @@ namespace rMultiplatform
             IdleColor = Globals.TextColor;
 
             //Setup the different segments
-            {
-                Layers returned;
-                int i;
-                i = 1;
-			    while (segments.Group("seg" + (i++).ToString(), out returned))
-				    mSegments.Add(returned);
+            Layers returned;
+            int i = 1;
+            while (segments.Group("seg" + (i++).ToString(), out returned))
+                mSegments.Add(returned);
 
-			    //Setup the different subsegments
-			    i = 1;
-			    while (subsegments.Group("sub" + (i++).ToString(), out returned))
-				    mSubSegments.Add(returned);
-            }
+            //Setup the different subsegments
+            i = 1;
+            while (subsegments.Group("sub" + (i++).ToString(), out returned))
+                mSubSegments.Add(returned);
 
-			//Move decimal point to the end
-			foreach (var temp in mSegments)
+            //Move decimal point to the end
+            foreach (var temp in mSegments)
             {
                 temp.ToBottom("dp");
                 temp.OnChanged += LayerChange;
             }
             foreach (var temp in mSubSegments)
             {
-				temp.ToBottom("dp");
+                temp.ToBottom("dp");
                 temp.OnChanged += LayerChange;
             }
 
@@ -1293,6 +1264,229 @@ namespace rMultiplatform
             //Add the gesture recognizer 
             SetupTouch();
             ChangeColors();
+
+            (LayerX, LayerY) = mBargraph.GetResultSize();
+            LayerAspect = LayerY / LayerX;
+
+            //
+            rendrect.Bottom = 0;
+            rendrect.Right = 0;
+            rendrect.Left = 0;
+            rendrect.Top = 0;
+        }
+    }
+
+    public class MultimeterScreen : ContentView
+    {
+        private MultimeterScreenRenderer ControlView;
+
+        public new bool IsVisible
+        {
+            set
+            {
+                if (value)
+                {
+                    ControlView = new MultimeterScreenRenderer();
+                    ControlView.Clicked += ClickedTemp;
+                    Content = ControlView;
+                }
+                else
+                {
+                    Content = null;
+                    ControlView = null;
+                }
+                base.IsVisible = value;
+            }
+            get
+            {
+                return base.IsVisible;
+            }
+        }
+
+        EventHandler ClickedTemp;
+        public event EventHandler Clicked
+        {
+            add
+            {
+                ClickedTemp += value;
+                ControlView.Clicked += value;
+            }
+            remove
+            {
+                ClickedTemp -= value;
+                ControlView.Clicked -= value;
+            }
+        }
+        public float    LargeSegments
+        {
+            set
+            {
+                ControlView.LargeSegments = value;
+            }
+        }
+        public string   LargeSegmentsWord
+        {
+            set
+            {
+                ControlView.LargeSegmentsWord = value;
+            }
+        }
+        public float    SmallSegments
+        {
+            set
+            {
+                ControlView.SmallSegments = value;
+            }
+        }
+        public string   SmallSegmentsWord
+        {
+            set
+            {
+                ControlView.SmallSegmentsWord = value;
+            }
+        }
+        public int      Bargraph
+        {
+            set
+            {
+                ControlView.Bargraph = value;
+            }
+        }
+        public Packet112GW MainMode
+        {
+            set
+            {
+                ControlView.MainMode = value;
+            }
+        }
+        public Packet112GW MainRangeValue
+        {
+            set
+            {
+                ControlView.MainRangeValue = value;
+            }
+        }
+        public Packet112GW SubMode
+        {
+            set
+            {
+                ControlView.SubMode = value;
+            }
+        }
+        public Packet112GW SubRangeValue
+        {
+            set
+            {
+                ControlView.SubRangeValue = value;
+            }
+        }
+        public Packet112GW BarStatus
+        {
+            set
+            {
+                ControlView.BarStatus = value;
+            }
+        }
+        public Packet112GW IconStatus
+        {
+            set
+            {
+                ControlView.IconStatus = value;
+            }
+        }
+        public void Update(Packet112GW pInput)
+        {
+            ControlView.Update(pInput);
+        }
+        public SKBitmap mLayer
+        {
+            get
+            {
+                return ControlView.mLayer;
+            }
+            set
+            {
+                ControlView.mLayer = value;
+            }
+        }
+        public SKCanvas mCanvas
+        {
+            get
+            {
+                return ControlView.mCanvas;
+            }
+            set
+            {
+                ControlView.mCanvas = value;
+            }
+        }
+
+        public MultimeterScreenRenderer.eControlInputState State
+        {
+            get
+            {
+                return ControlView.State;
+            }
+            set
+            {
+                ControlView.State = value;
+            }
+        }
+        public Color IdleColor
+        {
+            get
+            {
+                return ControlView.IdleColor;
+            }
+            set
+            {
+                ControlView.IdleColor = value;
+            }
+        }
+        public Color PressColor
+        {
+            get
+            {
+                return ControlView.PressColor;
+            }
+            set
+            {
+                ControlView.PressColor = value;
+            }
+        }
+        public Color HoverColor
+        {
+            get
+            {
+                return ControlView.HoverColor;
+            }
+            set
+            {
+                ControlView.HoverColor = value;
+            }
+        }
+        public new Color BackgroundColor
+        {
+            get
+            {
+                return ControlView.BackgroundColor;
+            }
+            set
+            {
+                ControlView.BackgroundColor = value;
+            }
+        }
+        public void InvalidateSurface()
+        {
+            ControlView.InvalidateSurface();
+        }
+
+        public MultimeterScreen()
+        {
+            VerticalOptions     = LayoutOptions.StartAndExpand;
+            HorizontalOptions   = LayoutOptions.Fill;
+            ControlView         = new MultimeterScreenRenderer();
+            Content             = ControlView;
         }
     }
 }

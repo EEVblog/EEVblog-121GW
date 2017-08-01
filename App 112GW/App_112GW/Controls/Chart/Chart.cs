@@ -164,6 +164,8 @@ namespace rMultiplatform
             //Reinitialise the buffer canvas if it is undefined at all.
             if (mBitmap == null || mCanvas == null | Rescale)
             {
+                Rescale = false;
+
                 //Check aspect
                 var aspect = Height / Width;
                 var aspectl = aspect * 0.9;
@@ -180,7 +182,6 @@ namespace rMultiplatform
 
                 mBitmap = new SKBitmap((int)CanvasSize.Width, (int)CanvasSize.Height);
                 mCanvas = new SKCanvas(mBitmap);
-                Rescale = false;
             }
 
             // If the child elements are not registered with each other do that
