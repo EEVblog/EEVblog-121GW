@@ -15,8 +15,8 @@ namespace rMultiplatform.BLE
     public class UnPairedDeviceBLE : IDeviceBLE
     {
         volatile public DeviceInformation Information;
-        public event SetupComplete Ready;
-        public event ChangeEvent Change;
+        public event SetupComplete  Ready;
+        public event ChangeEvent    Change;
 
         public string   Id
         {
@@ -65,8 +65,8 @@ namespace rMultiplatform.BLE
         volatile private BluetoothLEDevice mDevice;
         private List<IServiceBLE> mServices;
 
-        public event SetupComplete Ready;
-        public event ChangeEvent Change;
+        public event SetupComplete  Ready;
+        public event ChangeEvent    Change;
         private void InvokeChange(object o, CharacteristicEvent v)
         {
             Change?.Invoke(o, v);

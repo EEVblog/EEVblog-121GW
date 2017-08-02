@@ -26,10 +26,16 @@ namespace rMultiplatform
     {
         //public delegate double GetCoordinate(double Value);
         public delegate bool GetCoordinate(double Value, out double Output);
-        public GetCoordinate Function;
+        public delegate SKMatrix GetTransform();
+        public GetCoordinate    Function;
+        public GetTransform     Transform;
         public ChartDataEventReturn(GetCoordinate pFunction)
         {
             Function = pFunction;
+        }
+        public ChartDataEventReturn(GetTransform pFunction)
+        {
+            Transform = pFunction;
         }
     }
     public class ChartData : IChartRenderer
@@ -171,6 +177,8 @@ namespace rMultiplatform
             HorozontalSpan = new Range (0, pTimeSpan);
             VerticalSpan = new Range (0, 0);
         }
+
+
         public bool Draw (SKCanvas c)
         {
             if (Data.Count == 0)
@@ -187,39 +195,34 @@ namespace rMultiplatform
             //Rescale axis
             Range VisX = null;
             Range VisY = null;
-
             ChartDataEventReturn x = null, y = null, temp;
             foreach (var axis in Registrants)
             {
-                if((temp = axis(new ChartDataEventArgs(ChartAxis.AxisOrientation.Horizontal, horz), ref VisX)) != null)
+                if      ((temp = axis(new ChartDataEventArgs(ChartAxis.AxisOrientation.Horizontal,  horz), ref VisX)) != null)
                     x = temp;
-                else if ((temp = axis(new ChartDataEventArgs(ChartAxis.AxisOrientation.Vertical, vert), ref VisY)) != null)
+                else if ((temp = axis(new ChartDataEventArgs(ChartAxis.AxisOrientation.Vertical,    vert), ref VisY)) != null)
                     y = temp;
             }
-
             //
-            if (x == null || y == null)
+            if (    x == null || 
+                    y == null )
                 throw (new Exception("Graph object must contain an horizontal and vertical axis to plot data."));
-
-            //
-            var output = new List<SKPoint>();
-            foreach(var data in Data)
-            {
-                double xl, yl;
-                if (VisX.InRange(data.X))
-                    if (x.Function(data.X, out xl) && y.Function(data.Y, out yl))
-                        output.Add(new SKPoint((float)xl, (float)yl));
-            }
-
-            //
+            uint DataStart   = (uint)Data.FindIndex        (val => (val.X >= VisX.Minimum));
+            uint DataEnd     = (uint)Data.FindIndex        (val => (val.X > VisX.Maximum));
+            uint Length      = (uint)Data.Count;
+            bool Overflow = DataEnd > Length;
+            if (Overflow)
+                DataEnd = (uint)Data.Count;
+            var output      = Data.GetRange ((int)DataStart, (int)(DataEnd - DataStart)).ToArray();
             var path = new SKPath();
-            path.AddPoly(output.ToArray(), false);
-            c.DrawPath(path, DrawPaint);
+            path.AddPoly(output, false);
+            path.Transform(y.Transform());
+            path.Transform(x.Transform());
+            c.DrawPath  (path, DrawPaint);
             return false;
         }
 
         Mutex DataMux = new Mutex();
-        
         DateTime start = DateTime.Now;
         public void Sample (double pPoint)
         {

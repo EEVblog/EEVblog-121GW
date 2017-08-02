@@ -30,11 +30,10 @@ namespace App_112GW
             //Setup connected event
             BackgroundColor             = Globals.BackgroundColor;
             UserGrid.BackgroundColor    = Globals.BackgroundColor;
-
-            UserGrid.RowDefinitions.Add     (	new RowDefinition   { Height    = new GridLength(1,     GridUnitType.Star)      });
-			UserGrid.RowDefinitions.Add     (	new RowDefinition	{ Height	= new GridLength(50,    GridUnitType.Absolute)	});
-			UserGrid.ColumnDefinitions.Add  (	new ColumnDefinition{ Width		= new GridLength(1,     GridUnitType.Star)		});
-			UserGrid.ColumnDefinitions.Add  (	new ColumnDefinition{ Width		= new GridLength(1,     GridUnitType.Star)		});
+            UserGrid.RowDefinitions.Add     (	new RowDefinition   { Height    = new GridLength(1,     GridUnitType.Star       )   });
+			UserGrid.RowDefinitions.Add     (	new RowDefinition	{ Height	= new GridLength(50,    GridUnitType.Absolute   )	});
+			UserGrid.ColumnDefinitions.Add  (	new ColumnDefinition{ Width		= new GridLength(1,     GridUnitType.Star       )	});
+			UserGrid.ColumnDefinitions.Add  (	new ColumnDefinition{ Width		= new GridLength(1,     GridUnitType.Star       )	});
 
             //
             DeviceView.Content = DeviceLayout;
@@ -55,12 +54,9 @@ namespace App_112GW
             //
             ButtonAddDevice.Clicked	+= SelectDevice;
             UserGrid.WidthRequest = DefaultWidth;
-
             BLESelectDevice = new BLEDeviceSelector();
             BLESelectDevice.Connected += Connected;
-
             Content = BLESelectDevice;
-            //Content = UserGrid;
         }
         public  MainPage ()
 		{
@@ -69,19 +65,10 @@ namespace App_112GW
         }
         void    SelectDevice (object o, EventArgs e)
         {
-            //Production Code
             BLESelectDevice.Reset();
             Content = BLESelectDevice;
-
-            //Mock Code
-            //AddDevice(null);
         }
 
-        //Only maintains aspect ratio
-        protected override void OnSizeAllocated(double width, double height)
-        {
-            base.OnSizeAllocated(width, height);
-        }
         void    AddDevice (IDeviceBLE pDevice)
 		{
             Debug.WriteLine("ADDING DEVICE.");
@@ -115,7 +102,6 @@ namespace App_112GW
         
             (sender as Multimeter).IsVisible = true;
         }
-
         void    Connected(IDeviceBLE pDevice)
         {
             //BLESelectDevice = null;

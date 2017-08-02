@@ -63,6 +63,7 @@ namespace rMultiplatform.BLE
         
         public void Connect(IDeviceBLE pInput)
         {
+            Debug.WriteLine("public void Connect(IDeviceBLE pInput)");
             if (pInput == null)
                 return;
 
@@ -76,6 +77,7 @@ namespace rMultiplatform.BLE
         private static int index = 0;
         private void DeviceSubscriber_Added ( IScanResult scanResult )
         {
+            Debug.WriteLine("private void DeviceSubscriber_Added ( IScanResult scanResult )");
             var device = scanResult.Device;
 
             int indexer = index++;

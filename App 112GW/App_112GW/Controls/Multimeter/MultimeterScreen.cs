@@ -751,44 +751,45 @@ namespace rMultiplatform
                     var DisplayString = value.SubValue.ToString();
 
                     //Cannot insert a decimal point outside the range of the string
-                    if (mDecimalPosition < 5)
-                        DisplayString = DisplayString.Insert(mDecimalPosition + 1, ".");
-
-                    //Combine decimal points and charaters so that a decimal point 
-                    // doesn't occupy a full character
-                    bool beforepoint = true;
-                    string outstring = "";
-                    for (int i = 0; i < DisplayString.Length; ++i)
+                    if (mDecimalPosition + 1 < DisplayString.Length)
                     {
-                        var c = DisplayString[i];
-                        if (c == '.')
-                            beforepoint = false;
+                        if (mDecimalPosition < 5)
+                            DisplayString = DisplayString.Insert(mDecimalPosition + 1, ".");
 
-                        if (beforepoint)
-                            outstring += c;
-                        else
+                        //Combine decimal points and charaters so that a decimal point 
+                        // doesn't occupy a full character
+                        bool beforepoint = true;
+                        string outstring = "";
+                        for (int i = 0; i < DisplayString.Length; ++i)
                         {
-                            if (c == ' ')
-                                outstring += '0';
-                            else
+                            var c = DisplayString[i];
+                            if (c == '.')
+                                beforepoint = false;
+
+                            if (beforepoint)
                                 outstring += c;
+                            else
+                            {
+                                if (c == ' ')
+                                    outstring += '0';
+                                else
+                                    outstring += c;
+                            }
                         }
+                        Debug.WriteLine("Decimal position : " + mDecimalPosition.ToString());
+                        switch (_SubMode)
+                        {
+                            case Packet112GW.eMode.Temp:
+                            case Packet112GW.eMode._TempC:
+                                DisplayString += "c";
+                                break;
+                            case Packet112GW.eMode._TempF:
+                                DisplayString += "f";
+                                break;
+                        }
+                        Debug.WriteLine("DisplayString : " + DisplayString);
+                        SmallSegmentsWord = DisplayString;
                     }
-
-                    Debug.WriteLine("Decimal position : " + mDecimalPosition.ToString());
-
-                    switch (_SubMode)
-                    {
-                        case Packet112GW.eMode.Temp:
-                        case Packet112GW.eMode._TempC:
-                            DisplayString += "c";
-                            break;
-                        case Packet112GW.eMode._TempF:
-                            DisplayString += "f";
-                            break;
-                    }
-
-                    SmallSegmentsWord = DisplayString;
                 }
             }
         }
@@ -1309,115 +1310,135 @@ namespace rMultiplatform
             add
             {
                 ClickedTemp += value;
-                ControlView.Clicked += value;
+                if (ControlView != null)
+                    ControlView.Clicked += value;
             }
             remove
             {
                 ClickedTemp -= value;
-                ControlView.Clicked -= value;
+                if (ControlView != null)
+                    ControlView.Clicked -= value;
             }
         }
         public float    LargeSegments
         {
             set
             {
-                ControlView.LargeSegments = value;
+                if (ControlView != null)
+                    ControlView.LargeSegments = value;
             }
         }
         public string   LargeSegmentsWord
         {
             set
             {
-                ControlView.LargeSegmentsWord = value;
+                if (ControlView != null)
+                    ControlView.LargeSegmentsWord = value;
             }
         }
         public float    SmallSegments
         {
             set
             {
-                ControlView.SmallSegments = value;
+                if (ControlView != null)
+                    ControlView.SmallSegments = value;
             }
         }
         public string   SmallSegmentsWord
         {
             set
             {
-                ControlView.SmallSegmentsWord = value;
+                if (ControlView != null)
+                    ControlView.SmallSegmentsWord = value;
             }
         }
         public int      Bargraph
         {
             set
             {
-                ControlView.Bargraph = value;
+                if (ControlView != null)
+                    ControlView.Bargraph = value;
             }
         }
         public Packet112GW MainMode
         {
             set
             {
-                ControlView.MainMode = value;
+                if (ControlView != null)
+                    ControlView.MainMode = value;
             }
         }
         public Packet112GW MainRangeValue
         {
             set
             {
-                ControlView.MainRangeValue = value;
+                if (ControlView != null)
+                    ControlView.MainRangeValue = value;
             }
         }
         public Packet112GW SubMode
         {
             set
             {
-                ControlView.SubMode = value;
+                if (ControlView != null)
+                    ControlView.SubMode = value;
             }
         }
         public Packet112GW SubRangeValue
         {
             set
             {
-                ControlView.SubRangeValue = value;
+                if (ControlView != null)
+                    ControlView.SubRangeValue = value;
             }
         }
         public Packet112GW BarStatus
         {
             set
             {
-                ControlView.BarStatus = value;
+                if (ControlView != null)
+                    ControlView.BarStatus = value;
             }
         }
         public Packet112GW IconStatus
         {
             set
             {
-                ControlView.IconStatus = value;
+                if (ControlView != null)
+                    ControlView.IconStatus = value;
             }
         }
         public void Update(Packet112GW pInput)
-        {
-            ControlView.Update(pInput);
+        { 
+            if (ControlView != null)
+                ControlView.Update(pInput);
         }
         public SKBitmap mLayer
         {
             get
             {
-                return ControlView.mLayer;
+                if (ControlView != null)
+                    return ControlView.mLayer;
+                return null;
             }
             set
             {
-                ControlView.mLayer = value;
+                if (ControlView != null)
+                    ControlView.mLayer = value;
             }
         }
         public SKCanvas mCanvas
         {
             get
             {
-                return ControlView.mCanvas;
+                if (ControlView != null)
+                    return ControlView.mCanvas;
+                return null;
             }
             set
             {
-                ControlView.mCanvas = value;
+                if (ControlView != null)
+                    ControlView.mCanvas = value;
             }
         }
 
@@ -1425,60 +1446,76 @@ namespace rMultiplatform
         {
             get
             {
-                return ControlView.State;
+                if (ControlView != null)
+                    return ControlView.State;
+                return MultimeterScreenRenderer.eControlInputState.eNone;
             }
             set
             {
-                ControlView.State = value;
+                if (ControlView != null)
+                    ControlView.State = value;
             }
         }
         public Color IdleColor
         {
             get
             {
-                return ControlView.IdleColor;
+                if (ControlView != null)
+                    return ControlView.IdleColor;
+                return Color.White;
             }
             set
             {
-                ControlView.IdleColor = value;
+                if (ControlView != null)
+                    ControlView.IdleColor = value;
             }
         }
         public Color PressColor
         {
             get
             {
-                return ControlView.PressColor;
+                if (ControlView != null)
+                    return ControlView.PressColor;
+                return Color.White;
             }
             set
             {
-                ControlView.PressColor = value;
+                if (ControlView != null)
+                    ControlView.PressColor = value;
             }
         }
         public Color HoverColor
         {
             get
             {
-                return ControlView.HoverColor;
+                if (ControlView != null)
+                    return ControlView.HoverColor;
+                return Color.White;
             }
             set
             {
-                ControlView.HoverColor = value;
+                if (ControlView != null)
+                    ControlView.HoverColor = value;
             }
         }
         public new Color BackgroundColor
         {
             get
             {
-                return ControlView.BackgroundColor;
+                if (ControlView != null)
+                    return ControlView.BackgroundColor;
+                return Color.White;
             }
             set
             {
-                ControlView.BackgroundColor = value;
+                if (ControlView != null)
+                    ControlView.BackgroundColor = value;
             }
         }
         public void InvalidateSurface()
         {
-            ControlView.InvalidateSurface();
+            if (ControlView != null)
+                ControlView.InvalidateSurface();
         }
 
         public MultimeterScreen()

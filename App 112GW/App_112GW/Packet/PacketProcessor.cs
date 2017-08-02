@@ -21,6 +21,12 @@ namespace rMultiplatform
             mCount      = 0;
             mStartFound = false;
         }
+        public void Reset()
+        {
+            mBuffer.Clear();
+            mCount = 0;
+            mStartFound = false;
+        }
         public void Recieve(byte[] pBytes)
         {
             foreach(var byt in pBytes)

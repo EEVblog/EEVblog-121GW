@@ -653,6 +653,7 @@ namespace rMultiplatform
             Rerange         = true;
             ShowDataKey     = false;
         }
+
         public double GetCoordinate (double Value)
         {
             var scale = (AxisSize / VisibleRange.Distance);
@@ -667,9 +668,31 @@ namespace rMultiplatform
 
             //Offset from the base
             Value += AxisStart;
-            
+
             return Value;
         }
+
+        public SKMatrix GetTransform()
+        {
+            var scale = (AxisSize / VisibleRange.Distance);
+            if (Inverting)
+                scale = -scale;
+
+            var matrix = SKMatrix.MakeIdentity();
+            if (Orientation == AxisOrientation.Horizontal)
+            {
+                matrix.ScaleX = +(float)(scale);
+                matrix.TransX = +(float)(AxisStart - scale * StartPoint);
+            }
+            else
+            {
+                matrix.ScaleY = +(float)(scale);
+                matrix.TransY = +(float)(AxisStart - scale * StartPoint);
+            }
+            return matrix;
+        }
+
+
         public bool GetCoordinate(double Value, out double Output)
         {
             if (VisibleRange.Minimum <= Value)
@@ -721,7 +744,7 @@ namespace rMultiplatform
                 Maximum = temp.Maximum;
                 Minimum = temp.Minimum;
                 CalculateScales();
-                return new ChartDataEventReturn(GetCoordinate);
+                return new ChartDataEventReturn(GetTransform);
             }
             return null;
         }
@@ -910,20 +933,16 @@ namespace rMultiplatform
             {
                 case AxisOrientation.Vertical:
                     {
-                        offset = (int)LabelPadding + (int)SpaceWidth;
-                        var x = GetAxisLabelPosition() - offset;
-                        var ys = (float)(AxisStart + 2 * SpaceWidth);
-
-                        pt2 = new SKPoint(x, ys);
-                        pt1 = new SKPoint(x, ys + wid);
-
-                        xmakoffset = (CircleRadius + SpaceWidth * 2.0f);
-
-                        xfilloffset = - hei;
-                        yfilloffset = -SpaceWidth;
-
-                        xfillsoffset = SpaceWidth;
-                        yfillsoffset = SpaceWidth;
+                        offset          = (int)LabelPadding + (int)SpaceWidth;
+                        var x           = GetAxisLabelPosition() - offset;
+                        var ys          = (float)(AxisStart + 2 * SpaceWidth);
+                        pt2             = new SKPoint(x, ys);
+                        pt1             = new SKPoint(x, ys + wid);
+                        xmakoffset      = (CircleRadius + SpaceWidth * 2.0f);
+                        xfilloffset     = - hei;
+                        yfilloffset     = -SpaceWidth;
+                        xfillsoffset    = SpaceWidth;
+                        yfillsoffset    = SpaceWidth;
                     }
                     break;
                 case AxisOrientation.Horizontal:
@@ -967,23 +986,23 @@ namespace rMultiplatform
                 //
                 var pt1 = p[0];
                 var pt2 = p[1];
-                var dx = pt2.X - pt1.X;
-                var dy = pt2.Y - pt1.Y;
+                var dx  = pt2.X - pt1.X;
+                var dy  = pt2.Y - pt1.Y;
 
                 //
-                var inc = 1.0f / ((float)AxisDataColors.Count - 1);
+                var inc = 1.0f / (  - 1 );
                 var t = 0.0f;
-                for (var i = 0; i < AxisDataColors.Count; i++)
+                for ( var i = 0; i < AxisDataColors.Count; i++ )
                 {
                     var x = pt1.X + dx * t;
                     var y = pt1.Y + dy * t;
 
                     ColorPaint.IsStroke = true;
-                    ColorPaint.Color = App_112GW.Globals.BackgroundColor.ToSKColor();
+                    ColorPaint.Color    = Globals.BackgroundColor.ToSKColor();
                     c.DrawCircle(x, y, CircleRadius, ColorPaint);
 
                     ColorPaint.IsStroke = false;
-                    ColorPaint.Color = AxisDataColors[i];
+                    ColorPaint.Color    = AxisDataColors[i];
                     c.DrawCircle(x, y, CircleRadius, ColorPaint);
 
                     t += inc;

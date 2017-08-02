@@ -24,7 +24,12 @@ namespace rMultiplatform
     {
         private byte ToByte(string pInput)
         {
-            return Convert.ToByte(pInput, 16);
+            //try
+            //{
+                return Convert.ToByte(pInput, 16);
+            //}
+           // catch (Exception e) { Debug.WriteLine(e);  }
+          //  return 0;
         }
         List<byte> pData;
         public enum eMode
@@ -179,7 +184,7 @@ namespace rMultiplatform
             get
             {
                 return (eMode) pData[4];
-            }
+            } 
         }
         public bool     SubOverload
         {

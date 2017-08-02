@@ -8,9 +8,10 @@ using Android.Widget;
 using Android.OS;
 
 using Xamarin.Forms;
-
+[assembly: Application(Debuggable = true)]
 namespace App_112GW.Droid
 {
+   
 	[Activity (Label = "App_112GW", Icon = "@drawable/icon", Theme="@style/MainTheme", MainLauncher = true, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation)]
 	public class MainActivity : global::Xamarin.Forms.Platform.Android.FormsAppCompatActivity
 	{

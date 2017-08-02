@@ -31,6 +31,7 @@ namespace rMultiplatform
             }
             catch (Exception ex)
             {
+                MyProcessor.Reset();
                 Debug.WriteLine(ex.ToString());
             }
         }
