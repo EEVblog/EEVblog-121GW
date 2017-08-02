@@ -3,22 +3,22 @@ using System.Text;
 using System.Threading;
 using System.Diagnostics;
 using System.Collections.Generic;
-using Plugin.BluetoothLE;
 using System.Threading.Tasks;
+using Plugin.BLE.Abstractions.Contracts;
 
 namespace rMultiplatform.BLE
 {
     public class UnPairedDeviceBLE : IDeviceBLE
     {
-        public IDevice mDevice;
-        public event SetupComplete Ready;
-        public event ChangeEvent Change;
-        
+        public IDevice              mDevice;
+        public event SetupComplete  Ready;
+        public event ChangeEvent    Change;
+
         public string Id
         {
             get
             {
-                return mDevice.Uuid.ToString();
+                return mDevice.Id.ToString();
             }
         }
         public string Name
@@ -32,21 +32,19 @@ namespace rMultiplatform.BLE
         {
             get
             {
-                return mDevice.PairingStatus == PairingStatus.Paired;
+                if (mDevice.State == Plugin.BLE.Abstractions.DeviceState.Connected || mDevice.State == Plugin.BLE.Abstractions.DeviceState.Limited)
+                    return true;
+                return false;
             }
         }
         public bool CanPair
         {
             get
             {
-                return mDevice.IsPairingAvailable();
+                return true;
             }
         }
-
-        public UnPairedDeviceBLE(IDevice pDevice)
-        {
-            mDevice = pDevice;
-        }
+        public UnPairedDeviceBLE(IDevice pDevice) { mDevice = pDevice; }
         public override string ToString()
         {
             return Name + "\n" + Id;
@@ -61,15 +59,22 @@ namespace rMultiplatform.BLE
     }
     public class PairedDeviceBLE : IDeviceBLE
     {
-        private IDisposable wsd;
-        private IDevice mDevice;
-        private List<IServiceBLE> mServices;
-        
+        private IDevice             mDevice;
+        private List<IServiceBLE>   mServices;
+        public event SetupComplete  Ready;
+
+        public event ChangeEvent    Change;
+        private void InvokeChange(object o, CharacteristicEvent v)
+        {
+            Change?.Invoke(o, v);
+        }
+
+
         public string Id
         {
             get
             {
-                return mDevice.Uuid.ToString();
+                return mDevice.Id.ToString();
             }
         }
         public string Name
@@ -83,39 +88,48 @@ namespace rMultiplatform.BLE
         {
             get
             {
-                return mDevice.PairingStatus == PairingStatus.Paired;
+                if (mDevice.State == Plugin.BLE.Abstractions.DeviceState.Connected || mDevice.State == Plugin.BLE.Abstractions.DeviceState.Limited)
+                    return true;
+                return false;
             }
         }
         public bool CanPair
         {
             get
             {
-                return mDevice.IsPairingAvailable();
+                return true;
             }
         }
-        
-        public event SetupComplete Ready;
+
         void Build()
         {
-            wsd = mDevice.WhenServiceDiscovered().Subscribe(
-            obj =>
-            {
-                mServices.Add(new ServiceBLE(obj, ()=> { }, InvokeChange));
-            });
-            Ready?.Invoke();
+            var servs = mDevice.GetServicesAsync().ContinueWith(AddServices);
         }
-
-        public event ChangeEvent Change;
-        private void InvokeChange(object o, CharacteristicEvent v)
+        private int UninitialisedServices = 0;
+        void AddServices(Task<IList<IService>> obj)
         {
-            Change?.Invoke(o,v);
+            UninitialisedServices = obj.Result.Count;
+            foreach (var item in obj.Result)
+            {
+                Debug.WriteLine("Service adding : " + item.Name);
+                var temp = new ServiceBLE(item, ServiceReady, InvokeChange);
+                mServices.Add(temp);
+            }
         }
-
+        private void ServiceReady()
+        {
+            --UninitialisedServices;
+            if (UninitialisedServices == 0)
+            {
+                Debug.WriteLine("Services finished setting up : " + Id);
+                Ready?.Invoke();
+            }
+        }
         public PairedDeviceBLE(IDevice pDevice, SetupComplete ready)
         {
-            Ready += ready;
             mServices = new List<IServiceBLE>();
             mDevice = pDevice;
+            Ready += ready;
             Build();
         }
 

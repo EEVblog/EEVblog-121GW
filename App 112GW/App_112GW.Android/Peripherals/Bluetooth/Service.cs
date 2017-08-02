@@ -5,17 +5,16 @@ using System.Collections.Generic;
 
 using System.Text;
 using System.Threading.Tasks;
-using Plugin.BluetoothLE;
+using Plugin.BLE.Abstractions.Contracts;
 
 namespace rMultiplatform.BLE
 {
     public class ServiceBLE : IServiceBLE
     {
-        string _Id;
         public event SetupComplete Ready;
-        private List<ICharacteristicBLE> mCharacteristics;
-        private IDisposable wcd;
 
+        volatile private IService mService;
+        private List<ICharacteristicBLE> mCharacteristics;
         public List<ICharacteristicBLE> Characteristics
         {
             get
@@ -23,12 +22,11 @@ namespace rMultiplatform.BLE
                 return mCharacteristics;
             }
         }
-
         public string Id
         {
             get
             {
-                return _Id;
+                return mService.Id.ToString();
             }
         }
         public override string ToString()
@@ -36,25 +34,48 @@ namespace rMultiplatform.BLE
             return Id;
         }
 
-        private void Build(IGattService pInput, ChangeEvent pEvent)
+        ChangeEvent mEvent;
+        private void Build()
         {
-            wcd = pInput.WhenCharacteristicDiscovered().Subscribe(obj =>
-            {
-                mCharacteristics.Add(new CharacteristicBLE(obj, CharateristicReady, pEvent));
-            });
+            mService.GetCharacteristicsAsync().ContinueWith((obj) => { AddCharacteristics(obj, mEvent); });
         }
-        
-        private void CharateristicReady()
+        private void AddCharacteristics(Task<IList<ICharacteristic>> obj, ChangeEvent pEvent)
         {
-            Debug.WriteLine("Characteristic finished setting up : " + Id);
-            Ready?.Invoke();
+            try
+            {
+                UninitialisedServices = obj.Result.Count;
+                foreach (var item in obj.Result)
+                {
+                    Debug.WriteLine("Characteristic adding : " + item.Name);
+                    var temp = new CharacteristicBLE(item, CharateristicReady, pEvent);
+                    mCharacteristics.Add(temp);
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine("ERROR: " + e.Message);
+            }
         }
 
-        public ServiceBLE(IGattService pInput, SetupComplete ready, ChangeEvent pEvent)
+        private int UninitialisedServices = 0;
+        private void CharateristicReady()
+        {
+            --UninitialisedServices;
+            if (UninitialisedServices == 0)
+            {
+                Debug.WriteLine("Characteristics finished setting up : " + Id);
+                Ready?.Invoke();
+            }
+        }
+
+        public ServiceBLE(IService pInput, SetupComplete ready, ChangeEvent pEvent)
         {
             mCharacteristics = new List<ICharacteristicBLE>();
-            _Id = pInput.Uuid.ToString();
-            Build(pInput, pEvent);
+            Ready += ready;
+
+            mService = pInput;
+            mEvent = pEvent;
+            Build();
         }
     }
 }

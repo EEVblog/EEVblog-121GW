@@ -4,26 +4,51 @@ using System.Diagnostics;
 using System.Collections.Generic;
 
 using System.Text;
+using Android.Bluetooth;
 using System.Threading.Tasks;
-using Plugin.BluetoothLE;
+using Plugin.BLE.Abstractions.Contracts;
+using Plugin.BLE;
 
 namespace rMultiplatform.BLE
 {
     public class ClientBLE : AClientBLE, IClientBLE
     {
+        volatile private IBluetoothLE mDevice;
+        volatile private IAdapter mAdapter;
+
+        private static int index = 0;
+        private void DeviceWatcher_Added(object sender, Plugin.BLE.Abstractions.EventArgs.DeviceEventArgs args)
+        {
+            int indexer = index++;
+            if (args.Device.Name == string.Empty || mVisibleDevices == null)
+                return;
+
+            MutexBlock(() =>
+            {
+                mVisibleDevices.Clear();
+                foreach (var item in mAdapter.DiscoveredDevices)
+                    AddUniqueItem(new UnPairedDeviceBLE(item));
+            }, (indexer.ToString() + " Adding"));
+
+            //
+            TriggerListUpdate();
+        }
+
         private bool AcceptRescan = false;
         public void Start()
         {
             MutexBlock(() =>
             {
                 AcceptRescan = true;
+                mAdapter.StartScanningForDevicesAsync();
             }, "Start");
         }
         public void Stop()
         {
             MutexBlock(() =>
             {
-
+                AcceptRescan = false;
+                mAdapter.StopScanningForDevicesAsync().Wait();
             }, "Stop");
         }
         public void Rescan()
@@ -32,7 +57,8 @@ namespace rMultiplatform.BLE
             {
                 MutexBlock(() =>
                 {
-
+                    mAdapter.StopScanningForDevicesAsync().Wait();
+                    mAdapter.StartScanningForDevicesAsync();
                 }, "Rescan");
             }
         }
@@ -41,66 +67,73 @@ namespace rMultiplatform.BLE
             MutexBlock(() =>
             {
                 AcceptRescan = true;
-            }, "Reset" );
+                if (mAdapter.IsScanning == false)
+                    mAdapter.StartScanningForDevicesAsync();
+            }, "Reset");
         }
 
         IDeviceBLE ConnectingDevice = null;
         PairedDeviceBLE Device = null;
-        private IDisposable dcs;
-        private IDisposable ccss;
-        
-        private void ConnectionComplete ( Object obj )
+        private void ConnectionComplete(Task obj)
         {
-            if (obj == null)
-                return;
-
             Debug.WriteLine("Scanning stopped, building services and charateristics.");
-            var devtemp = (ConnectingDevice as UnPairedDeviceBLE);
-            
-            Device = new PairedDeviceBLE(devtemp.mDevice, null);
-            TriggerDeviceConnected(Device);
+            Device = new PairedDeviceBLE((ConnectingDevice as UnPairedDeviceBLE).mDevice, () => { TriggerDeviceConnected(Device); });
         }
-        
+        private void StopScanning(Task obj)
+        {
+            Debug.WriteLine("Device connected, stopping scanning.");
+            //ConnectionComplete(obj);
+            mAdapter.StopScanningForDevicesAsync().ContinueWith(ConnectionComplete);
+        }
+
         public void Connect(IDeviceBLE pInput)
         {
-            Debug.WriteLine("public void Connect(IDeviceBLE pInput)");
             if (pInput == null)
                 return;
 
-            var unpaired = (pInput as UnPairedDeviceBLE);
-            var device = unpaired.mDevice;
+            var inputType = pInput.GetType();
+            var searchType = typeof(UnPairedDeviceBLE);
 
-            ConnectingDevice = unpaired;
-            dcs = device.Connect().Subscribe((obj) => { ConnectionComplete(obj); });
-        }
+            Device = null;
+            if (inputType == searchType)
+            {
+                //Pair if the device is able to pair
+                AcceptRescan = false;
+                ConnectingDevice = pInput;
 
-        private static int index = 0;
-        private void DeviceSubscriber_Added ( IScanResult scanResult )
-        {
-            Debug.WriteLine("private void DeviceSubscriber_Added ( IScanResult scanResult )");
-            var device = scanResult.Device;
-
-            int indexer = index++;
-            if (device.Name == string.Empty || mVisibleDevices == null)
-                return;
-
-            if(AddUniqueItem(new UnPairedDeviceBLE(device)))
-                TriggerListUpdate();
+                Debug.WriteLine("Connecting to new device.");
+                mAdapter.ConnectToDeviceAsync((ConnectingDevice as UnPairedDeviceBLE).mDevice).ContinueWith(StopScanning);
+            }
         }
 
         public ClientBLE()
         {
             mVisibleDevices = new System.Collections.ObjectModel.ObservableCollection<IDeviceBLE>();
 
-            //Setup 
-            try
-            {
-                CrossBleAdapter.Current.ScanInterval(new TimeSpan(0, 0, 10));
-                ccss = CrossBleAdapter.Current.Scan().Subscribe(ScanResult => { DeviceSubscriber_Added(ScanResult); });
-            }
-            catch { }
+            //Setup bluetoth basic adapter
+            mDevice     = CrossBluetoothLE.Current;
+            mAdapter    = CrossBluetoothLE.Current.Adapter;
+            mAdapter.ScanTimeout = 20000;
+            mAdapter.ScanMode = Plugin.BLE.Abstractions.Contracts.ScanMode.Balanced;
+            mAdapter.ScanTimeoutElapsed += MAdapter_ScanTimeoutElapsed;
+
+            //Add debug state change indications
+            mDevice.StateChanged += (s, e) => { Debug.WriteLine($"The bluetooth state changed to {e.NewState}"); };
+            if (mDevice.IsOn && mDevice.IsAvailable)
+                mAdapter.DeviceDiscovered += DeviceWatcher_Added;
+
+            //Start the scan
+            mAdapter.StartScanningForDevicesAsync();
         }
 
+        private void MAdapter_DeviceConnectionLost(object sender, Plugin.BLE.Abstractions.EventArgs.DeviceErrorEventArgs e)
+        {
+            mAdapter.ConnectToDeviceAsync(e.Device).Wait();
+        }
+        private void MAdapter_ScanTimeoutElapsed(object sender, EventArgs e)
+        {
+            Rescan();
+        }
         ~ClientBLE()
         {
             Debug.WriteLine("Deconstructing ClientBLE!");
