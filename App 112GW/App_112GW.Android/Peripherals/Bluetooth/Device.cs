@@ -32,7 +32,7 @@ namespace rMultiplatform.BLE
         {
             get
             {
-                if (mDevice.State == Plugin.BLE.Abstractions.DeviceState.Connected || mDevice.State == Plugin.BLE.Abstractions.DeviceState.Limited)
+                if (mDevice.State == Plugin.BLE.Abstractions.DeviceState.Connected)
                     return true;
                 return false;
             }
@@ -88,7 +88,7 @@ namespace rMultiplatform.BLE
         {
             get
             {
-                if (mDevice.State == Plugin.BLE.Abstractions.DeviceState.Connected || mDevice.State == Plugin.BLE.Abstractions.DeviceState.Limited)
+                if (mDevice.State == Plugin.BLE.Abstractions.DeviceState.Connected)
                     return true;
                 return false;
             }
@@ -103,7 +103,7 @@ namespace rMultiplatform.BLE
 
         void Build()
         {
-            var servs = mDevice.GetServicesAsync().ContinueWith(AddServices);
+            var servs = mDevice.GetServicesAsync().ContinueWith( AddServices );
         }
         private int UninitialisedServices = 0;
         void AddServices(Task<IList<IService>> obj)
@@ -112,27 +112,22 @@ namespace rMultiplatform.BLE
             foreach (var item in obj.Result)
             {
                 Debug.WriteLine("Service adding : " + item.Name);
-                var temp = new ServiceBLE(item, ServiceReady, InvokeChange);
-                mServices.Add(temp);
+                mServices.Add(new ServiceBLE(item, ServiceReady, InvokeChange));
             }
         }
         private void ServiceReady()
         {
             --UninitialisedServices;
             if (UninitialisedServices == 0)
-            {
-                Debug.WriteLine("Services finished setting up : " + Id);
                 Ready?.Invoke();
-            }
         }
         public PairedDeviceBLE(IDevice pDevice, SetupComplete ready)
         {
-            mServices = new List<IServiceBLE>();
-            mDevice = pDevice;
-            Ready += ready;
+            mServices   = new List<IServiceBLE>();
+            mDevice     = pDevice;
+            Ready       += ready;
             Build();
         }
-
         public override string ToString()
         {
             return Name + "\n" + Id;

@@ -89,7 +89,7 @@ namespace rMultiplatform.BLE
 
         public void TriggerListUpdate()
         {
-            RunMainThread(() =>
+            RunMainThread(() => 
             {
                 DeviceListUpdated?.Invoke();
             });

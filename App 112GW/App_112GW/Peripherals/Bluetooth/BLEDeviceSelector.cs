@@ -75,10 +75,12 @@ namespace rMultiplatform.BLE
         {
             try
             {
+                Debug.WriteLine("Error Caught : 1");
                 listView.SelectedItem = null;
+                Debug.WriteLine("Error Caught : 2");
                 Connected?.Invoke(pDevice);
             }
-            catch
+            catch (Exception e)
             {
                 Debug.WriteLine("Error Caught : private void MClient_DeviceConnected(IDeviceBLE pDevice)");
             }

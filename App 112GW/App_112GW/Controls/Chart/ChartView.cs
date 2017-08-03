@@ -3,7 +3,7 @@ using Xamarin.Forms;
 
 namespace rMultiplatform
 {
-    public partial class ChartView : ContentView
+    public partial class ChartView : Grid
     {
         public event EventHandler FullscreenClicked
         {
@@ -51,25 +51,18 @@ namespace rMultiplatform
 
         public ChartView()
         {
-            mChart              = new Chart();
-            mMenu               = new ChartMenu();
-            mChartGrid          = new StackLayout();
-
-            VerticalOptions     = LayoutOptions.StartAndExpand;
-            HorizontalOptions   = LayoutOptions.Fill;
-
             //Setup the events
+            mChart = new Chart();
+            mMenu = new ChartMenu();
             mMenu.BackClicked   += ViewToggle;
             mMenu.SaveClicked   += DataSave;
             mChart.Clicked      += ViewToggle;
             FullscreenClicked   += ViewToggle;
 
             //Add
-            mChartGrid.Children.Add(mMenu);
-            mChartGrid.Children.Add(mChart);
+            Children.Add(mMenu);
+            Children.Add(mChart);
 
-            //
-            Content = mChartGrid;
             Item = true;
             SetView();
         }

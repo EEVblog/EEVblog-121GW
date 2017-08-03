@@ -8,6 +8,7 @@ using Android.Bluetooth;
 using System.Threading.Tasks;
 using Plugin.BLE.Abstractions.Contracts;
 using Plugin.BLE;
+using Plugin.BLE.Abstractions.EventArgs;
 
 namespace rMultiplatform.BLE
 {
@@ -29,8 +30,7 @@ namespace rMultiplatform.BLE
                 foreach (var item in mAdapter.DiscoveredDevices)
                     AddUniqueItem(new UnPairedDeviceBLE(item));
             }, (indexer.ToString() + " Adding"));
-
-            //
+            
             TriggerListUpdate();
         }
 
@@ -82,7 +82,6 @@ namespace rMultiplatform.BLE
         private void StopScanning(Task obj)
         {
             Debug.WriteLine("Device connected, stopping scanning.");
-            //ConnectionComplete(obj);
             mAdapter.StopScanningForDevicesAsync().ContinueWith(ConnectionComplete);
         }
 
@@ -113,23 +112,27 @@ namespace rMultiplatform.BLE
             //Setup bluetoth basic adapter
             mDevice     = CrossBluetoothLE.Current;
             mAdapter    = CrossBluetoothLE.Current.Adapter;
-            mAdapter.ScanTimeout = 20000;
-            mAdapter.ScanMode = Plugin.BLE.Abstractions.Contracts.ScanMode.Balanced;
             mAdapter.ScanTimeoutElapsed += MAdapter_ScanTimeoutElapsed;
 
             //Add debug state change indications
-            mDevice.StateChanged += (s, e) => { Debug.WriteLine($"The bluetooth state changed to {e.NewState}"); };
+            mDevice.StateChanged += (s, e) => { Debug.WriteLine($"The bluetooth state changed to {e.NewState}"); Rescan();  };
             if (mDevice.IsOn && mDevice.IsAvailable)
                 mAdapter.DeviceDiscovered += DeviceWatcher_Added;
+            mAdapter.DeviceConnectionLost += DeviceConnection_Lost;
 
             //Start the scan
             mAdapter.StartScanningForDevicesAsync();
         }
 
-        private void MAdapter_DeviceConnectionLost(object sender, Plugin.BLE.Abstractions.EventArgs.DeviceErrorEventArgs e)
+        private void DeviceConnection_Lost(object sender, DeviceErrorEventArgs e)
         {
-            mAdapter.ConnectToDeviceAsync(e.Device).Wait();
+            mAdapter.ConnectToDeviceAsync(e.Device).ContinueWith(DeviceReconnected);
         }
+        private void DeviceReconnected(Task obj)
+        {
+            Debug.WriteLine("Reconnected to device.");
+        }
+
         private void MAdapter_ScanTimeoutElapsed(object sender, EventArgs e)
         {
             Rescan();

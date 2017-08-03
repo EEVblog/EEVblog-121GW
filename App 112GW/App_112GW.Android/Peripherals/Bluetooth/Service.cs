@@ -11,17 +11,18 @@ namespace rMultiplatform.BLE
 {
     public class ServiceBLE : IServiceBLE
     {
-        public event SetupComplete Ready;
-
-        volatile private IService mService;
-        private List<ICharacteristicBLE> mCharacteristics;
-        public List<ICharacteristicBLE> Characteristics
+        public event SetupComplete          Ready;
+        private ChangeEvent                 mEvent;
+        volatile private IService           mService;
+        private List<ICharacteristicBLE>    mCharacteristics;
+        public  List<ICharacteristicBLE>    Characteristics
         {
             get
             {
                 return mCharacteristics;
             }
         }
+
         public string Id
         {
             get
@@ -34,12 +35,18 @@ namespace rMultiplatform.BLE
             return Id;
         }
 
-        ChangeEvent mEvent;
         private void Build()
         {
-            mService.GetCharacteristicsAsync().ContinueWith((obj) => { AddCharacteristics(obj, mEvent); });
+            mService.GetCharacteristicsAsync().ContinueWith((obj) => { AddCharacteristics(obj); });
         }
-        private void AddCharacteristics(Task<IList<ICharacteristic>> obj, ChangeEvent pEvent)
+        private int UninitialisedServices = 0;
+        private void CharateristicReady()
+        {
+            --UninitialisedServices;
+            if (UninitialisedServices == 0)
+                Ready?.Invoke();
+        }
+        private void AddCharacteristics(Task<IList<ICharacteristic>> obj)
         {
             try
             {
@@ -47,7 +54,7 @@ namespace rMultiplatform.BLE
                 foreach (var item in obj.Result)
                 {
                     Debug.WriteLine("Characteristic adding : " + item.Name);
-                    var temp = new CharacteristicBLE(item, CharateristicReady, pEvent);
+                    var temp = new CharacteristicBLE(item, CharateristicReady, mEvent);
                     mCharacteristics.Add(temp);
                 }
             }
@@ -57,24 +64,13 @@ namespace rMultiplatform.BLE
             }
         }
 
-        private int UninitialisedServices = 0;
-        private void CharateristicReady()
-        {
-            --UninitialisedServices;
-            if (UninitialisedServices == 0)
-            {
-                Debug.WriteLine("Characteristics finished setting up : " + Id);
-                Ready?.Invoke();
-            }
-        }
-
         public ServiceBLE(IService pInput, SetupComplete ready, ChangeEvent pEvent)
         {
             mCharacteristics = new List<ICharacteristicBLE>();
-            Ready += ready;
+            Ready       +=  ready;
+            mService    =   pInput;
+            mEvent      =   pEvent;
 
-            mService = pInput;
-            mEvent = pEvent;
             Build();
         }
     }

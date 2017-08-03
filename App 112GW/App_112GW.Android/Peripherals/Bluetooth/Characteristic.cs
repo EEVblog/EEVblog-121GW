@@ -27,74 +27,53 @@ namespace rMultiplatform.BLE
                 return mCharacteristic.Name;
             }
         }
-        public event SetupComplete Ready;
-        event ChangeEvent _ValueChanged;
-        public event ChangeEvent ValueChanged
-        {
-            add
-            {
-                _ValueChanged += value;
-            }
-            remove
-            {
-                _ValueChanged -= value;
-            }
-        }
+
+        public event SetupComplete  Ready;
+        public event ChangeEvent    ValueChanged;
+
         public bool Send(string pInput)
         {
-            byte[] bArray = Encoding.UTF8.GetBytes(pInput);
-            return Send(bArray);
+            return Send(Encoding.UTF8.GetBytes(pInput));
         }
         public bool Send(byte[] pInput)
         {
-            var temp = mCharacteristic.WriteAsync(pInput).Result;
-            return temp;
+            return mCharacteristic.WriteAsync(pInput).Result;
         }
 
         //Event that is called when the value of the characteristic is changed
         private void CharacteristicEvent_ValueChanged(object sender, Plugin.BLE.Abstractions.EventArgs.CharacteristicUpdatedEventArgs args)
         {
-            Debug.WriteLine("CharateristicEvent : " + args.ToString());
-
             if (args == null)
                 Debug.WriteLine("Args is null.");
             if (args.Characteristic == null)
                 Debug.WriteLine("Args.Characteristic is null.");
             if (args.Characteristic.Value == null)
                 Debug.WriteLine("Args.Characteristic.Value is null.");
-            if (_ValueChanged == null)
+            if (ValueChanged == null)
                 Debug.WriteLine("ValueChanged is null.");
 
             var buffer = args.Characteristic.Value;
             var charEvent = new CharacteristicEvent(buffer);
-            _ValueChanged?.Invoke(sender, charEvent);
+            ValueChanged?.Invoke(sender, charEvent);
         }
 
         public CharacteristicBLE(ICharacteristic pInput, SetupComplete ready, ChangeEvent pEvent)
         {
             Ready += ready;
             ValueChanged += pEvent;
-
-            Debug.WriteLine("Setting up characteristic");
-
             mCharacteristic = pInput;
             mCharacteristic.ValueUpdated += CharacteristicEvent_ValueChanged;
 
-
-            Debug.WriteLine("Characteristic CanRead: " + mCharacteristic.CanRead.ToString());
-            Debug.WriteLine("Characteristic CanUpdate: " + mCharacteristic.CanUpdate.ToString());
-            Debug.WriteLine("Characteristic CanWrite: " + mCharacteristic.CanWrite.ToString());
-            Debug.WriteLine("Characteristic Name: " + mCharacteristic.Name.ToString());
+            Debug.WriteLine("Setting up characteristic");
+            Debug.WriteLine("Characteristic CanRead:\t" + mCharacteristic.CanRead.ToString());
+            Debug.WriteLine("Characteristic CanUpdate:\t" + mCharacteristic.CanUpdate.ToString());
+            Debug.WriteLine("Characteristic CanWrite:\t" + mCharacteristic.CanWrite.ToString());
+            Debug.WriteLine("Characteristic Name:\t\t" + mCharacteristic.Name.ToString());
 
             if (mCharacteristic.CanUpdate)
-                mCharacteristic.StartUpdatesAsync().ContinueWith(UpdateStarted);
+                mCharacteristic.StartUpdatesAsync().ContinueWith((obj) => { Ready?.Invoke(); });
             else
                 Ready?.Invoke();
-        }
-        private void UpdateStarted(Task obj)
-        {
-            Debug.WriteLine("Characteristic updates started.");
-            Ready?.Invoke();
         }
     }
 }

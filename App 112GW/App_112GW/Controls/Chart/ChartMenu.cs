@@ -33,7 +33,6 @@ namespace rMultiplatform
             }
         }
 
-
         private void AddView(View pInput, int pX, int pY, int pXSpan = 1, int pYSpan = 1)
         {
             Children.Add(pInput);

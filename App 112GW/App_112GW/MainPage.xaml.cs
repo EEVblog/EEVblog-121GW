@@ -71,10 +71,12 @@ namespace App_112GW
 
         void    AddDevice (IDeviceBLE pDevice)
 		{
-            Debug.WriteLine("ADDING DEVICE.");
+            Debug.WriteLine("ADDING DEVICE 1.");
             var NewDevice = new Multimeter(pDevice);
+            Debug.WriteLine("ADDING DEVICE 2.");
             NewDevice.RequestMaximise   += NewDevice_RequestMaximise;
             NewDevice.RequestRestore    += NewDevice_RequestRestore;
+            Debug.WriteLine("ADDING DEVICE 3.");
             Devices.Add(NewDevice);
             DeviceLayout.Children.Add(NewDevice);
             Grid.SetRow(NewDevice, 0);
@@ -104,13 +106,17 @@ namespace App_112GW
         }
         void    Connected(IDeviceBLE pDevice)
         {
+            Debug.WriteLine("Error Caught : 3");
             //BLESelectDevice = null;
             if (pDevice == null)
                 return;
+            Debug.WriteLine("Error Caught : 4");
             Debug.WriteLine("Connected to device : " + pDevice.Name);
 
             //Add multimeter
+            Debug.WriteLine("Error Caught : 5");
             AddDevice(pDevice);
+            Debug.WriteLine("Error Caught : 6");
             Device.BeginInvokeOnMainThread( () =>
             {
                 Content = UserGrid;

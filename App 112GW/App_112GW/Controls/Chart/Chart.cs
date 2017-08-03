@@ -28,7 +28,7 @@ namespace rMultiplatform
         void InvalidateParent();
     };
 
-    public class Chart :
+    public class ChartRenderer :
 #if __ANDROID__ && ! SOFTWARE_DRAW
         SKGLView
 #elif __IOS__ && ! SOFTWARE_DRAW
@@ -37,10 +37,57 @@ namespace rMultiplatform
         SKCanvasView
 #endif
     {
+        public delegate void PaintCanvas(SKCanvas c, SKSize s);
+        public event PaintCanvas Paint;
+        public ChartRenderer(PaintCanvas PaintEvent)
+        {
+            Paint += PaintEvent;
+            HorizontalOptions = LayoutOptions.Fill;
+            VerticalOptions = LayoutOptions.Fill;
+
+            BackgroundColor = App_112GW.Globals.BackgroundColor;
+        }
+
+#if __ANDROID__ && ! SOFTWARE_DRAW
+        protected override void OnPaintSurface(SKPaintGLSurfaceEventArgs e)
+#elif __IOS__ && ! SOFTWARE_DRAW
+        protected override void OnPaintSurface(SKPaintGLSurfaceEventArgs e)
+#else
+        protected override void OnPaintSurface(SKPaintSurfaceEventArgs e)
+#endif
+        {
+            Paint?.Invoke(e.Surface.Canvas, CanvasSize);
+        }
+    }
+
+    public class Chart : ContentView
+    {
+        ChartRenderer mRenderer;
+        public void Disable()
+        {
+            mRenderer = null;
+            Content = null;
+        }
+        public void Enable()
+        {
+            mRenderer = new ChartRenderer(PaintSurface);
+            Content = mRenderer;
+        }
+
+        public new bool IsVisible
+        {
+            set
+            {
+                if (value)
+                    Enable();
+                else
+                    Disable();
+                base.IsVisible = value;
+            }
+        }
+
         //The padding around the control
         private SKPaint     mDrawPaint;
-        private SKBitmap    mBitmap;
-        private SKCanvas    mCanvas;
         private double      _Aspect;
         public double       Aspect
         {
@@ -56,7 +103,7 @@ namespace rMultiplatform
         }
 
         //Defines the padding around the boarder of the control
-        public ChartPadding Padding
+        public new ChartPadding Padding
         {
             set
             {
@@ -135,7 +182,6 @@ namespace rMultiplatform
                 if (Types == null)
                     continue;
 
-                //
                 foreach (var SubElement in ChartElements)
                 {
                     //Skip self registration
@@ -148,40 +194,35 @@ namespace rMultiplatform
                             Element.Register(SubElement);
                 }
             }
-
             RequireRegister = false;
         }
-#if __ANDROID__ && ! SOFTWARE_DRAW
-        protected override void OnPaintSurface(SKPaintGLSurfaceEventArgs e)
-#elif __IOS__ && ! SOFTWARE_DRAW
-        protected override void OnPaintSurface(SKPaintGLSurfaceEventArgs e)
-#else
-        protected override void OnPaintSurface(SKPaintSurfaceEventArgs e)
-#endif
+        void UpdateCanvasSize(SKSize Size)
         {
-            var canvas = e.Surface.Canvas;
+            //As base class initialises first the onSizeAllocated can be triggered before padding is intiialised
+            if (Padding != null)
+                Padding.SetParentSize(Size.Width, Size.Height, Size.Width / Width);
 
+            foreach (IChartRenderer Element in ChartElements)
+                Element.SetParentSize(Size.Width, Size.Height, Size.Width / Width);
+        }
+        bool RenderReady()
+        {
+            //Check aspect
+            var aspect = Height / Width;
+            var aspectl = aspect * 0.9;
+            var aspecth = aspect * 1.1;
+            if (!(aspectl <= aspect && aspect <= aspecth))
+                return false;
+            return true;
+        }
+        void PaintSurface(SKCanvas canvas, SKSize dimension)
+        {
             //Reinitialise the buffer canvas if it is undefined at all.
-            if (mBitmap == null || mCanvas == null | Rescale)
+            if (Rescale)
             {
                 Rescale = false;
-
-                //Check aspect
-                var aspect = Height / Width;
-                var aspectl = aspect * 0.9;
-                var aspecth = aspect * 1.1;
-                if (!(aspectl <= aspect && aspect <= aspecth))
-                    return;
-
-                //As base class initialises first the onSizeAllocated can be triggered before padding is intiialised
-                if (Padding != null)
-                    Padding.SetParentSize(CanvasSize.Width, CanvasSize.Height, CanvasSize.Width / Width);
-
-                foreach (IChartRenderer Element in ChartElements)
-                    Element.SetParentSize(CanvasSize.Width, CanvasSize.Height, CanvasSize.Width / Width);
-
-                mBitmap = new SKBitmap((int)CanvasSize.Width, (int)CanvasSize.Height);
-                mCanvas = new SKCanvas(mBitmap);
+                if (!RenderReady()) return;
+                UpdateCanvasSize(dimension);
             }
 
             // If the child elements are not registered with each other do that
@@ -190,21 +231,8 @@ namespace rMultiplatform
                 Register();
 
             // Let all child elements render, layers are already sorted
-            foreach ( var Element in ChartElements )
-            {
-                // This allows controls to rescale retrospectively'
-                var layer = mBitmap.Copy();
-                while ( Element.Draw(mCanvas) )
-                {
-                    mCanvas.DrawBitmap(layer, 0, 0, mDrawPaint);
-                    layer = mBitmap.Copy();
-                }
-            }
-
-            //Draw to canvas
-            canvas.Clear();
-            canvas.DrawBitmap(mBitmap, 0, 0, mDrawPaint);
-            mCanvas.Clear(App_112GW.Globals.BackgroundColor.ToSKColor());
+            canvas.Clear(BackgroundColor.ToSKColor());
+            foreach (var Element in ChartElements) Element.Draw(canvas);
         }
 
         public event EventHandler Clicked;
@@ -222,7 +250,9 @@ namespace rMultiplatform
         public eControlInputState State
         {
             get
-            { return _State; }
+            {
+                return _State;
+            }
             set
             {
                 _State = value;
@@ -265,7 +295,6 @@ namespace rMultiplatform
                         element.Pan(args.Dx, args.Dy);
                 }
         }
-
         private void MTouch_Pinch(object sender, TouchPinchActionEventArgs args)
         {
             var zoomX = (float)args.Pinch.ZoomX;
@@ -279,12 +308,19 @@ namespace rMultiplatform
                     if (element.Orientation == ChartAxis.AxisOrientation.Horizontal)
                         element.Zoom(zoomX, zoomY, zoomCenter.ToSKPoint());
                 }
-
+        }
+        public void InvalidateSurface()
+        {
+            if (mRenderer != null)
+                mRenderer.InvalidateSurface();
         }
 
         //Initialises the object
         public Chart() : base()
         {
+            mRenderer = new ChartRenderer(PaintSurface);
+            Content = mRenderer;
+
             //Must always fill parent container
             HorizontalOptions = LayoutOptions.Fill;
             VerticalOptions = LayoutOptions.StartAndExpand;
@@ -303,6 +339,8 @@ namespace rMultiplatform
             var transparency        = SKColors.Transparent;
             mDrawPaint.BlendMode    = SKBlendMode.SrcOver;
             mDrawPaint.ColorFilter  = SKColorFilter.CreateBlendMode(transparency, SKBlendMode.DstOver);
+
+            BackgroundColor = App_112GW.Globals.BackgroundColor;
 
             //Setup touch input
             SetupTouch();
