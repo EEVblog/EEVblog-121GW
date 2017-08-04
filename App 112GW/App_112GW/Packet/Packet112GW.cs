@@ -123,7 +123,6 @@ namespace rMultiplatform
             {
                 var rg = MainRange;
                 var range = (int)pData[1] & 0xF;
-                Debug.WriteLine("Current Range: " + range.ToString());
                 return rg.mValues[range];
             }
         }
@@ -133,7 +132,6 @@ namespace rMultiplatform
             {
                 var rg = MainRange;
                 var range = (int)pData[1] & 0xF;
-                Debug.WriteLine("Current Notation: " + rg.mNotation[range].ToString());
                 return rg.mNotation[range];
             }
         }

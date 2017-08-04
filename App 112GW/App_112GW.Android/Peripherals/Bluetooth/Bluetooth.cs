@@ -79,7 +79,11 @@ namespace rMultiplatform.BLE
         private void ConnectionComplete(Task obj)
         {
             Debug.WriteLine("Connection Complete.");
-            Device = new PairedDeviceBLE((ConnectingDevice as UnPairedDeviceBLE).mDevice, () => { TriggerDeviceConnected(Device); mExistingConnections.Add(Device); });
+            Device = new PairedDeviceBLE((ConnectingDevice as UnPairedDeviceBLE).mDevice, 
+            (dev) => {
+                TriggerDeviceConnected(dev);
+                mExistingConnections.Add(dev);
+            });
         }
         private void StopScanning(Task obj)
         {

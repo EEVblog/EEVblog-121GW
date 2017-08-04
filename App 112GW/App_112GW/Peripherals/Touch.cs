@@ -428,17 +428,14 @@ namespace rMultiplatform
         }
         public void ReleasedHandler(object sender, Point pt, uint ID)
         {
-            Debug.WriteLine("ReleasedHandler : " + ID.ToString());
             RaiseAction(new TouchActionEventArgs(TouchPointFactory.Released(pt), ID));
         }
         public void MoveHandler(object sender, Point pt, uint ID)
         {
-            Debug.WriteLine("MoveHandler : " + ID.ToString());
             RaiseAction(new TouchActionEventArgs(TouchPointFactory.Moved(pt), ID));
         }
         public void PressedHandler(object sender, Point pt, uint ID)
         {
-            Debug.WriteLine("PressedHandler : " + ID.ToString());
             RaiseAction(new TouchActionEventArgs(TouchPointFactory.Pressed(pt), ID));
         }
 

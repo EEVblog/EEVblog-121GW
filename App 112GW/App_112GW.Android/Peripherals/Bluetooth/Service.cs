@@ -6,12 +6,18 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using Plugin.BLE.Abstractions.Contracts;
+using rMultiplatform.BLEs;
 
 namespace rMultiplatform.BLE
 {
     public class ServiceBLE : IServiceBLE
     {
         public event SetupComplete          Ready;
+        void TriggerReady()
+        {
+            Ready?.Invoke();
+        }
+
         private ChangeEvent                 mEvent;
         volatile private IService           mService;
         private List<ICharacteristicBLE>    mCharacteristics;
@@ -37,24 +43,31 @@ namespace rMultiplatform.BLE
         {
             mService.GetCharacteristicsAsync().ContinueWith((obj) => { AddCharacteristics(obj); });
         }
-        private int UninitialisedServices = 0;
-        private void CharateristicReady()
+
+
+        private int Uninitialised = 0;
+        private void ItemReady()
         {
-            --UninitialisedServices;
-            if (UninitialisedServices == 0)
-                Ready?.Invoke();
+            --Uninitialised;
+            if (Uninitialised == 0)
+                TriggerReady();
         }
         private void AddCharacteristics(Task<IList<ICharacteristic>> obj)
         {
-            UninitialisedServices = obj.Result.Count;
+            Uninitialised = obj.Result.Count;
             foreach (var item in obj.Result)
             {
                 Debug.WriteLine("Characteristic adding : " + item.Name);
-                mCharacteristics.Add(new CharacteristicBLE(item, CharateristicReady, mEvent));
+                mCharacteristics.Add(new CharacteristicBLE(item, ItemReady, mEvent));
             }
         }
 
         public void Remake()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Unregister()
         {
             throw new NotImplementedException();
         }

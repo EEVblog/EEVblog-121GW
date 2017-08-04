@@ -75,19 +75,18 @@ namespace rMultiplatform.BLE
         {
             try
             {
-                Debug.WriteLine("Error Caught : 1");
                 listView.SelectedItem = null;
-                Debug.WriteLine("Error Caught : 2");
+                mClient.Stop();
                 Connected?.Invoke(pDevice);
             }
-            catch (Exception e)
+            catch
             {
                 Debug.WriteLine("Error Caught : private void MClient_DeviceConnected(IDeviceBLE pDevice)");
             }
         }
         private void OnSelection(object sender, SelectedItemChangedEventArgs e)
         {
-            var item = e.SelectedItem as IDeviceBLE;
+            var item = (e.SelectedItem as IDeviceBLE);
             Connect(item);
         }
 
@@ -99,7 +98,6 @@ namespace rMultiplatform.BLE
             //Wait for device to appear
             if (mClient != null)
                 mClient.Connect(Device);
-            mClient.Stop();
         }
     }
 }

@@ -23,24 +23,22 @@ namespace rMultiplatform.BLE
             NewValue = Encoding.UTF8.GetString(Bytes);
         }
     }
-
-
     public delegate void SetupComplete();
     public interface        IDeviceBLE
     {
-        event SetupComplete Ready;
+        event DeviceSetupComplete Ready;
         event ChangeEvent Change;
 
         string  Id      { get; }
         string  Name    { get; }
         bool    Paired  { get; }
         bool    CanPair { get; }
-
-        void Remake(object o);
+        void    Remake  ( object o );
 
         string ToString();
         List<IServiceBLE> Services { get; }
     }
+    public delegate void DeviceSetupComplete(IDeviceBLE Device);
     public interface        IServiceBLE
     {
         event SetupComplete Ready;
@@ -48,7 +46,7 @@ namespace rMultiplatform.BLE
         string Id { get; }
         string ToString();
 
-        void Remake();
+        void Unregister();
 
         List<ICharacteristicBLE> Characteristics { get;}
     }
@@ -59,12 +57,12 @@ namespace rMultiplatform.BLE
         string Id { get; }
         string Description { get; }
 
-        void Remake();
-
         bool Send( string pInput );
         bool Send( byte[] pInput );
 
         event ChangeEvent ValueChanged;
+
+        void Unregister();
     }
 
     public delegate void VoidEvent();

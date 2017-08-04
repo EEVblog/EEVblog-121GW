@@ -11,7 +11,7 @@ namespace rMultiplatform.BLE
     public class UnPairedDeviceBLE : IDeviceBLE
     {
         public IDevice              mDevice;
-        public event SetupComplete  Ready;
+        public event DeviceSetupComplete Ready;
         public event ChangeEvent    Change;
 
         public string Id
@@ -67,7 +67,7 @@ namespace rMultiplatform.BLE
     {
         private IDevice             mDevice;
         private List<IServiceBLE>   mServices;
-        public event SetupComplete  Ready;
+        public event DeviceSetupComplete Ready;
 
         public event ChangeEvent    Change;
         private void InvokeChange(object o, CharacteristicEvent v)
@@ -126,29 +126,27 @@ namespace rMultiplatform.BLE
             --UninitialisedServices;
             if (UninitialisedServices == 0)
             {
-                Ready?.Invoke();
+                Ready?.Invoke(this);
                 Ready = null;
             }
         }
-        public PairedDeviceBLE(IDevice pDevice, SetupComplete ready)
+        public PairedDeviceBLE(IDevice pDevice, DeviceSetupComplete ready)
         {
             mServices   = new List<IServiceBLE>();
             mDevice     = pDevice;
-            Ready       += ready;
+            Ready       = ready;
             Build();
         }
         public override string ToString()
         {
             return Name + "\n" + Id;
         }
-
         public void Remake(object o)
         {
+            Debug.WriteLine("Remaking.");
             var dev = o as IDevice;
             mDevice = null;
             mDevice = dev;
-
-            Debug.WriteLine("Remaking.");
             mServices = null;
             mServices = new List<IServiceBLE>();
             Build();

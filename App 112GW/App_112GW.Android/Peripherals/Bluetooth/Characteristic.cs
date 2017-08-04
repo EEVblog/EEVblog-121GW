@@ -6,8 +6,9 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using Plugin.BLE.Abstractions.Contracts;
+using rMultiplatform.BLE;
 
-namespace rMultiplatform.BLE
+namespace rMultiplatform.BLEs
 {
     public class CharacteristicBLE : ICharacteristicBLE
     {
@@ -56,6 +57,11 @@ namespace rMultiplatform.BLE
             ValueChanged?.Invoke(sender, charEvent);
         }
         public void Remake()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Unregister()
         {
             throw new NotImplementedException();
         }

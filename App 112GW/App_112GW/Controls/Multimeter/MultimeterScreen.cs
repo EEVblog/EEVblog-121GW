@@ -776,7 +776,6 @@ namespace rMultiplatform
                                     outstring += c;
                             }
                         }
-                        Debug.WriteLine("Decimal position : " + mDecimalPosition.ToString());
                         switch (_SubMode)
                         {
                             case Packet112GW.eMode.Temp:
@@ -787,7 +786,6 @@ namespace rMultiplatform
                                 DisplayString += "f";
                                 break;
                         }
-                        Debug.WriteLine("DisplayString : " + DisplayString);
                         SmallSegmentsWord = DisplayString;
                     }
                 }

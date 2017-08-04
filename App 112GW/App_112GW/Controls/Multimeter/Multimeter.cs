@@ -1,12 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Xamarin.Forms.Themes;
 using System.Threading;
-using Xamarin.Forms;
 using App_112GW;
+using Xamarin.Forms;
 using System.Diagnostics;
 
 namespace rMultiplatform
@@ -96,7 +91,6 @@ namespace rMultiplatform
             Menu.ModeChanged        +=  Menu_ModeChanged;
             Menu.RangeChanged       +=  Menu_RangeChanged;
             
-            Debug.WriteLine("ADDING DEVICE 4.");
             Data = new ChartData(ChartData.ChartDataMode.eRescaling, "Time (s)", "Volts (V)", 10f);
             Plot = new ChartView() { Padding = new ChartPadding(0.1) };
             Plot.AddGrid(new ChartGrid());
@@ -105,16 +99,13 @@ namespace rMultiplatform
             Plot.AddData(Data);
             Plot.FullscreenClicked += Plot_FullScreenClicked;
 
-            Debug.WriteLine("ADDING DEVICE 5.");
             MultimeterGrid = new StackLayout();
             MultimeterGrid.Children.Add(Screen);
             MultimeterGrid.Children.Add(Menu);
             MultimeterGrid.Children.Add(Plot);
 
-            Debug.WriteLine("ADDING DEVICE 6.");
             Content = MultimeterGrid;
             SetView();
-            Debug.WriteLine("ADDING DEVICE 7.");
         }
 
         bool Visible = true;

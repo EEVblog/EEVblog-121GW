@@ -11,20 +11,17 @@ namespace rMultiplatform
         private bool mStartFound;
         private byte mStart;
         private int mLength;
-        private int mCount;
         private List<byte> mBuffer;
         public PacketProcessor(byte start, int length)
         { 
             mBuffer     = new List<byte>();
             mStart      = start;
             mLength     = length;
-            mCount      = 0;
             mStartFound = false;
         }
         public void Reset()
         {
             mBuffer.Clear();
-            mCount = 0;
             mStartFound = false;
         }
         public void Recieve(byte[] pBytes)
@@ -35,16 +32,14 @@ namespace rMultiplatform
                 if (mStartFound)
                 {
                     mBuffer.Add(byt);
-                    mCount++;
-                    if (mCount >= mLength)
+                    if (mBuffer.Count >= mLength)
                     {
                         mCallback?.Invoke(mBuffer.ToArray());
                         mBuffer.Clear();
-                        mCount = 0;
                         mStartFound = false;
                     }
                 }
-                if (mCount == 0)
+                if (mBuffer.Count == 0)
                 {
                     if (byt == mStart)
                     {
