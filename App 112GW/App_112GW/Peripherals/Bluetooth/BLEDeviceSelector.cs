@@ -99,7 +99,7 @@ namespace rMultiplatform.BLE
             //Wait for device to appear
             if (mClient != null)
                 mClient.Connect(Device);
-
+            mClient.Stop();
         }
     }
 }

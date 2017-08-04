@@ -49,6 +49,12 @@ namespace rMultiplatform.BLE
         {
             return Name + "\n" + Id;
         }
+
+        public void Remake(object o)
+        {
+            throw new NotImplementedException();
+        }
+
         public List<IServiceBLE> Services
         {
             get
@@ -119,7 +125,10 @@ namespace rMultiplatform.BLE
         {
             --UninitialisedServices;
             if (UninitialisedServices == 0)
+            {
                 Ready?.Invoke();
+                Ready = null;
+            }
         }
         public PairedDeviceBLE(IDevice pDevice, SetupComplete ready)
         {
@@ -131,6 +140,18 @@ namespace rMultiplatform.BLE
         public override string ToString()
         {
             return Name + "\n" + Id;
+        }
+
+        public void Remake(object o)
+        {
+            var dev = o as IDevice;
+            mDevice = null;
+            mDevice = dev;
+
+            Debug.WriteLine("Remaking.");
+            mServices = null;
+            mServices = new List<IServiceBLE>();
+            Build();
         }
         public List<IServiceBLE> Services
         {

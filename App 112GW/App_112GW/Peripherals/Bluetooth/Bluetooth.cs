@@ -31,10 +31,12 @@ namespace rMultiplatform.BLE
         event SetupComplete Ready;
         event ChangeEvent Change;
 
-        string  Id { get; }
-        string  Name { get; }
-        bool    Paired { get; }
+        string  Id      { get; }
+        string  Name    { get; }
+        bool    Paired  { get; }
         bool    CanPair { get; }
+
+        void Remake(object o);
 
         string ToString();
         List<IServiceBLE> Services { get; }
@@ -46,6 +48,8 @@ namespace rMultiplatform.BLE
         string Id { get; }
         string ToString();
 
+        void Remake();
+
         List<ICharacteristicBLE> Characteristics { get;}
     }
     public interface        ICharacteristicBLE
@@ -54,6 +58,8 @@ namespace rMultiplatform.BLE
 
         string Id { get; }
         string Description { get; }
+
+        void Remake();
 
         bool Send( string pInput );
         bool Send( byte[] pInput );

@@ -22,7 +22,6 @@ namespace rMultiplatform.BLE
                 return mCharacteristics;
             }
         }
-
         public string Id
         {
             get
@@ -34,7 +33,6 @@ namespace rMultiplatform.BLE
         {
             return Id;
         }
-
         private void Build()
         {
             mService.GetCharacteristicsAsync().ContinueWith((obj) => { AddCharacteristics(obj); });
@@ -48,20 +46,17 @@ namespace rMultiplatform.BLE
         }
         private void AddCharacteristics(Task<IList<ICharacteristic>> obj)
         {
-            try
+            UninitialisedServices = obj.Result.Count;
+            foreach (var item in obj.Result)
             {
-                UninitialisedServices = obj.Result.Count;
-                foreach (var item in obj.Result)
-                {
-                    Debug.WriteLine("Characteristic adding : " + item.Name);
-                    var temp = new CharacteristicBLE(item, CharateristicReady, mEvent);
-                    mCharacteristics.Add(temp);
-                }
+                Debug.WriteLine("Characteristic adding : " + item.Name);
+                mCharacteristics.Add(new CharacteristicBLE(item, CharateristicReady, mEvent));
             }
-            catch (Exception e)
-            {
-                Debug.WriteLine("ERROR: " + e.Message);
-            }
+        }
+
+        public void Remake()
+        {
+            throw new NotImplementedException();
         }
 
         public ServiceBLE(IService pInput, SetupComplete ready, ChangeEvent pEvent)

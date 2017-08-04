@@ -237,6 +237,12 @@ namespace rMultiplatform.BLE
             var charEvent = new CharacteristicEvent ( data );
             _ValueChanged?.Invoke ( sender, charEvent );
         }
+
+        public void Remake()
+        {
+            throw new NotImplementedException();
+        }
+
         public CharacteristicBLE ( GattCharacteristic pInput, ChangeEvent pEvent )
         {
             _ValueChanged = pEvent;

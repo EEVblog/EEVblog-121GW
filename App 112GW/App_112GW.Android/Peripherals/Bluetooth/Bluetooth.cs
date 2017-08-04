@@ -14,6 +14,8 @@ namespace rMultiplatform.BLE
 {
     public class ClientBLE : AClientBLE, IClientBLE
     {
+        List<IDeviceBLE> mExistingConnections;
+
         volatile private IBluetoothLE mDevice;
         volatile private IAdapter mAdapter;
 
@@ -76,15 +78,14 @@ namespace rMultiplatform.BLE
         PairedDeviceBLE Device = null;
         private void ConnectionComplete(Task obj)
         {
-            Debug.WriteLine("Scanning stopped, building services and charateristics.");
-            Device = new PairedDeviceBLE((ConnectingDevice as UnPairedDeviceBLE).mDevice, () => { TriggerDeviceConnected(Device); });
+            Debug.WriteLine("Connection Complete.");
+            Device = new PairedDeviceBLE((ConnectingDevice as UnPairedDeviceBLE).mDevice, () => { TriggerDeviceConnected(Device); mExistingConnections.Add(Device); });
         }
         private void StopScanning(Task obj)
         {
-            Debug.WriteLine("Device connected, stopping scanning.");
+            Debug.WriteLine("Stopping scanning.");
             mAdapter.StopScanningForDevicesAsync().ContinueWith(ConnectionComplete);
         }
-
         public void Connect(IDeviceBLE pInput)
         {
             if (pInput == null)
@@ -107,12 +108,13 @@ namespace rMultiplatform.BLE
 
         public ClientBLE()
         {
+            mExistingConnections = new List<IDeviceBLE>();
             mVisibleDevices = new System.Collections.ObjectModel.ObservableCollection<IDeviceBLE>();
 
             //Setup bluetoth basic adapter
             mDevice     = CrossBluetoothLE.Current;
             mAdapter    = CrossBluetoothLE.Current.Adapter;
-            mAdapter.ScanTimeoutElapsed += MAdapter_ScanTimeoutElapsed;
+            mAdapter.ScanTimeout = int.MaxValue;
 
             //Add debug state change indications
             mDevice.StateChanged += (s, e) => { Debug.WriteLine($"The bluetooth state changed to {e.NewState}"); Rescan();  };
@@ -124,19 +126,23 @@ namespace rMultiplatform.BLE
             mAdapter.StartScanningForDevicesAsync();
         }
 
-        private void DeviceConnection_Lost(object sender, DeviceErrorEventArgs e)
+        private void DeviceConnection_Lost (object sender, DeviceErrorEventArgs e)
         {
-            mAdapter.ConnectToDeviceAsync(e.Device).ContinueWith(DeviceReconnected);
-        }
-        private void DeviceReconnected(Task obj)
-        {
-            Debug.WriteLine("Reconnected to device.");
+            string disconnect_Id = e.Device.Id.ToString();
+            Debug.WriteLine("DeviceConnection_Lost.");
+            Debug.WriteLine(disconnect_Id);
+
+            foreach (var item in mExistingConnections)
+                if (item.Id == disconnect_Id)
+                {
+                    Debug.WriteLine(item.Id);
+                    mAdapter.DisconnectDeviceAsync(e.Device).ContinueWith((temp) =>
+                    {
+                        mAdapter.ConnectToDeviceAsync(e.Device).ContinueWith((obj) => { item.Remake(e.Device); });
+                    });
+                }
         }
 
-        private void MAdapter_ScanTimeoutElapsed(object sender, EventArgs e)
-        {
-            Rescan();
-        }
         ~ClientBLE()
         {
             Debug.WriteLine("Deconstructing ClientBLE!");
