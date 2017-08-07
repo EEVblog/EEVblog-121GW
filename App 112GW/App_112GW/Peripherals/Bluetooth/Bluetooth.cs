@@ -69,7 +69,6 @@ namespace rMultiplatform.BLE
     public delegate void ConnectedEvent(IDeviceBLE pDevice);
     public interface        IClientBLE
     {
-        event VoidEvent DeviceListUpdated;
         event ConnectedEvent DeviceConnected;
 
         //Default functions
@@ -85,24 +84,18 @@ namespace rMultiplatform.BLE
 
     public abstract class AClientBLE
     {
-        volatile public ObservableCollection<IDeviceBLE> mVisibleDevices;
+        volatile public ObservableCollection<IDeviceBLE> mVisibleDevices = new ObservableCollection<IDeviceBLE>();
+        volatile public ObservableCollection<IDeviceBLE> mConnectedDevices = new ObservableCollection<IDeviceBLE>();
 
         private Mutex mut = new Mutex();
-        public event VoidEvent DeviceListUpdated;
         public event ConnectedEvent DeviceConnected;
 
-        public void TriggerListUpdate()
-        {
-            RunMainThread(() => 
-            {
-                DeviceListUpdated?.Invoke();
-            });
-        }
         public void TriggerDeviceConnected(IDeviceBLE pInput)
         {
             Device.BeginInvokeOnMainThread(() =>
             {
                 Debug.WriteLine("Finished connecting to : " + pInput.Id);
+                mConnectedDevices.Add(pInput);
                 DeviceConnected?.Invoke(pInput);
             });
         }
@@ -124,7 +117,7 @@ namespace rMultiplatform.BLE
             try
             {
                 GetMutex(tag);
-                Task.Run(Function).Wait();
+                Function();
                 ReleaseMutex(tag);
             }
             catch
@@ -144,11 +137,9 @@ namespace rMultiplatform.BLE
                         foreach (var device in mVisibleDevices)
                             if (device.Id == pInput.Id)
                                 add = false;
-                        if (add)
-                            mVisibleDevices.Add(pInput);
 
                         if (add)
-                            TriggerListUpdate();
+                            mVisibleDevices.Add(pInput);
 
                         return add;
                     }

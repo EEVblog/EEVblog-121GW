@@ -28,7 +28,7 @@ namespace rMultiplatform
             new SKPoint((float)(0), (float)(0.5)),
             new SKPoint((float)(0.5), (float)(1))})
         {
-            mRenderer.ShowPoints();
+            ShowPoints();
         }
     }
 }

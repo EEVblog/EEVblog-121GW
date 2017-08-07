@@ -194,15 +194,45 @@ namespace rMultiplatform
         }
     }
 
-    public class MultimeterScreenRenderer :
-#if __ANDROID__ && ! SOFTWARE_DRAW
-        SKGLView
-#elif __IOS__ && ! SOFTWARE_DRAW
-        SKGLView
-#else
-        SKCanvasView
-#endif
+    public class MultimeterScreen : ContentView
     {
+        GeneralRenderer mRenderer;
+        public void Disable()
+        {
+            mRenderer = null;
+            Content = null;
+        }
+        public void Enable()
+        {
+            mRenderer = new GeneralRenderer(PaintSurface);
+            Content = mRenderer;
+            mRenderer.InvalidateSurface();
+            InvalidateMeasure();
+        }
+        public new bool IsVisible
+        {
+            set
+            {
+                if (value)  Enable();
+                else        Disable();
+                base.IsVisible = value;
+            }
+        }
+        public SKSize CanvasSize
+        {
+            get
+            {
+                if (mRenderer != null)
+                    return mRenderer.CanvasSize;
+                return new SKSize(0, 0);
+            }
+        }
+        public void InvalidateSurface()
+        {
+            if (mRenderer != null)
+                mRenderer.InvalidateSurface();
+        }
+
         delegate void CacheImage(ILayer image);
         private Touch mTouch;
 
@@ -329,7 +359,6 @@ namespace rMultiplatform
             mBargraph.BackgroundColor = pInput;
             mOther.BackgroundColor = pInput;
         }
-
 
         public event EventHandler Clicked;
         protected virtual void OnClicked(EventArgs e)
@@ -800,7 +829,6 @@ namespace rMultiplatform
                 var _1000_500 = value.Bar1000_500;
                 var sign = value.BarSign;
                 var barval = value.BarValue;
-
                 if (On)
                 {
                     //Setup bargraph ranges
@@ -825,23 +853,19 @@ namespace rMultiplatform
 
                     switch (_1000_500)
                     {
-                        case 0:
-                            //5
-                            SetOther("Bar500_5_0", true);
+                        case 0://5
+                            SetOther("Bar500_5_0",  true);
                             break;
-                        case 1:
-                            //50
-                            SetOther("Bar500_5_0", true);
-                            SetOther("Bar500_0_1", true);
+                        case 1://50
+                            SetOther("Bar500_5_0",  true);
+                            SetOther("Bar500_0_1",  true);
                             break;
-                        case 2:
-                            //500
-                            SetOther("Bar500_5_0", true);
-                            SetOther("Bar500_0_1", true);
-                            SetOther("Bar500_0_2", true);
+                        case 2://500
+                            SetOther("Bar500_5_0",  true);
+                            SetOther("Bar500_0_1",  true);
+                            SetOther("Bar500_0_2",  true);
                             break;
-                        case 3:
-                            //1000
+                        case 3://1000
                             SetOther("Bar1000_1_0", true);
                             SetOther("Bar1000_0_1", true);
                             SetOther("Bar1000_0_2", true);
@@ -1053,25 +1077,21 @@ namespace rMultiplatform
         {
             return (LayerAspect, LayerX, LayerY);
         }
-        private float ConvertWidthToPixel(float value)
-        {
-            return (CanvasSize.Width * value / (float)Width);
-        }
-        private float ConvertHeightToPixel(float value)
-        {
-            return (CanvasSize.Height * value / (float)Height);
-        }
+
 
         //Only maintains aspect ratio
         protected override void OnSizeAllocated(double width, double height)
         {
-            //Get image dimensions
-            var NewHeight = (float)width * LayerAspect;
+            if (width > 0)
+            {
+                //Get image dimensions
+                var NewHeight = (float)width * LayerAspect;
 
-            //Setup the height request
-            HeightRequest = NewHeight;
-            RemakeCanvas = true;
-            base.OnSizeAllocated(width, height);
+                //Setup the height request
+                HeightRequest = NewHeight;
+                RemakeCanvas = true;
+                base.OnSizeAllocated(width, height);
+            }
         }
         protected override void InvalidateMeasure()
         {
@@ -1133,26 +1153,28 @@ namespace rMultiplatform
         }
 
         SKRect rendrect = new SKRect();
-#if __ANDROID__ && ! SOFTWARE_DRAW
-        protected override void OnPaintSurface(SKPaintGLSurfaceEventArgs e)
-#elif __IOS__ && ! SOFTWARE_DRAW
-        protected override void OnPaintSurface(SKPaintGLSurfaceEventArgs e)
-#else
-        protected override void OnPaintSurface(SKPaintSurfaceEventArgs e)
-#endif
+
+        private float ConvertWidthToPixel(float value)
         {
-            var pSurface = e.Surface.Canvas;
+            return (CanvasSize.Width * value / (float)Width);
+        }
+        private float ConvertHeightToPixel(float value)
+        {
+            return (CanvasSize.Height * value / (float)Height);
+        }
+        void PaintSurface(SKCanvas canvas, SKSize dimension)
+        {
             if (RemakeCanvas)
             {
                 //Handles glitch in android.
-                var canvas_aspect = CanvasSize.Height / CanvasSize.Width;
+                var canvas_aspect = dimension.Height / dimension.Width;
                 if (canvas_aspect >= (LayerAspect / 2))
                     RemakeCanvas = false;
                 else return;
 
                 Rescale();
                 Redraw();
-                if (CanvasSize.Width == 0 || CanvasSize.Height == 0)
+                if (dimension.Width == 0 || dimension.Height == 0)
                     return;
 
                 //Shift canvas as required
@@ -1163,8 +1185,8 @@ namespace rMultiplatform
                     rendrect.Offset(offset_x / 2, 0);
                 else
                 {
-                    rendrect.Right = pSurface.DeviceClipBounds.Width;
-                    rendrect.Bottom = pSurface.DeviceClipBounds.Height;
+                    rendrect.Right = canvas.DeviceClipBounds.Width;
+                    rendrect.Bottom = canvas.DeviceClipBounds.Height;
                 }
 
                 //Setup a clear bitmap
@@ -1176,7 +1198,7 @@ namespace rMultiplatform
                 mCanvas.Clear(Globals.BackgroundColor.ToSKColor());
 
                 //Clear draw surface
-                pSurface.Clear(Globals.BackgroundColor.ToSKColor());
+                canvas.Clear(Globals.BackgroundColor.ToSKColor());
             }
 
             //Add render on change
@@ -1188,14 +1210,16 @@ namespace rMultiplatform
             mOther.Render(ref mCanvas, mDrawRectangle);
 
             //Draw bitmap
-            pSurface.Clear();
-            pSurface.DrawBitmap(mLayer, rendrect);
+            canvas.Clear();
+            canvas.DrawBitmap(mLayer, rendrect);
         }
-        public                  MultimeterScreenRenderer()
+        public                  MultimeterScreen()
         {
+            Enable();
+
             //Default size options
             HorizontalOptions = LayoutOptions.Fill;
-            VerticalOptions = LayoutOptions.StartAndExpand;
+            VerticalOptions = LayoutOptions.Fill;
 
             //New layer images
             mSegments = new List<Layers>();
@@ -1275,253 +1299,253 @@ namespace rMultiplatform
         }
     }
 
-    public class MultimeterScreen : ContentView
-    {
-        private MultimeterScreenRenderer ControlView;
+    //public class MultimeterScreen : ContentView
+    //{
+    //    private MultimeterScreenRenderer ControlView;
 
-        public new bool IsVisible
-        {
-            set
-            {
-                if (value)
-                {
-                    ControlView = new MultimeterScreenRenderer();
-                    ControlView.Clicked += ClickedTemp;
-                    Content = ControlView;
-                }
-                else
-                {
-                    Content = null;
-                    ControlView = null;
-                }
-                base.IsVisible = value;
-            }
-            get
-            {
-                return base.IsVisible;
-            }
-        }
+    //    public new bool IsVisible
+    //    {
+    //        set
+    //        {
+    //            if (value)
+    //            {
+    //                ControlView = new MultimeterScreenRenderer();
+    //                ControlView.Clicked += ClickedTemp;
+    //                Content = ControlView;
+    //            }
+    //            else
+    //            {
+    //                Content = null;
+    //                ControlView = null;
+    //            }
+    //            base.IsVisible = value;
+    //        }
+    //        get
+    //        {
+    //            return base.IsVisible;
+    //        }
+    //    }
 
-        EventHandler ClickedTemp;
-        public event EventHandler Clicked
-        {
-            add
-            {
-                ClickedTemp += value;
-                if (ControlView != null)
-                    ControlView.Clicked += value;
-            }
-            remove
-            {
-                ClickedTemp -= value;
-                if (ControlView != null)
-                    ControlView.Clicked -= value;
-            }
-        }
-        public float    LargeSegments
-        {
-            set
-            {
-                if (ControlView != null)
-                    ControlView.LargeSegments = value;
-            }
-        }
-        public string   LargeSegmentsWord
-        {
-            set
-            {
-                if (ControlView != null)
-                    ControlView.LargeSegmentsWord = value;
-            }
-        }
-        public float    SmallSegments
-        {
-            set
-            {
-                if (ControlView != null)
-                    ControlView.SmallSegments = value;
-            }
-        }
-        public string   SmallSegmentsWord
-        {
-            set
-            {
-                if (ControlView != null)
-                    ControlView.SmallSegmentsWord = value;
-            }
-        }
-        public int      Bargraph
-        {
-            set
-            {
-                if (ControlView != null)
-                    ControlView.Bargraph = value;
-            }
-        }
-        public Packet112GW MainMode
-        {
-            set
-            {
-                if (ControlView != null)
-                    ControlView.MainMode = value;
-            }
-        }
-        public Packet112GW MainRangeValue
-        {
-            set
-            {
-                if (ControlView != null)
-                    ControlView.MainRangeValue = value;
-            }
-        }
-        public Packet112GW SubMode
-        {
-            set
-            {
-                if (ControlView != null)
-                    ControlView.SubMode = value;
-            }
-        }
-        public Packet112GW SubRangeValue
-        {
-            set
-            {
-                if (ControlView != null)
-                    ControlView.SubRangeValue = value;
-            }
-        }
-        public Packet112GW BarStatus
-        {
-            set
-            {
-                if (ControlView != null)
-                    ControlView.BarStatus = value;
-            }
-        }
-        public Packet112GW IconStatus
-        {
-            set
-            {
-                if (ControlView != null)
-                    ControlView.IconStatus = value;
-            }
-        }
-        public void Update(Packet112GW pInput)
-        { 
-            if (ControlView != null)
-                ControlView.Update(pInput);
-        }
-        public SKBitmap mLayer
-        {
-            get
-            {
-                if (ControlView != null)
-                    return ControlView.mLayer;
-                return null;
-            }
-            set
-            {
-                if (ControlView != null)
-                    ControlView.mLayer = value;
-            }
-        }
-        public SKCanvas mCanvas
-        {
-            get
-            {
-                if (ControlView != null)
-                    return ControlView.mCanvas;
-                return null;
-            }
-            set
-            {
-                if (ControlView != null)
-                    ControlView.mCanvas = value;
-            }
-        }
+    //    EventHandler ClickedTemp;
+    //    public event EventHandler Clicked
+    //    {
+    //        add
+    //        {
+    //            ClickedTemp += value;
+    //            if (ControlView != null)
+    //                ControlView.Clicked += value;
+    //        }
+    //        remove
+    //        {
+    //            ClickedTemp -= value;
+    //            if (ControlView != null)
+    //                ControlView.Clicked -= value;
+    //        }
+    //    }
+    //    public float    LargeSegments
+    //    {
+    //        set
+    //        {
+    //            if (ControlView != null)
+    //                ControlView.LargeSegments = value;
+    //        }
+    //    }
+    //    public string   LargeSegmentsWord
+    //    {
+    //        set
+    //        {
+    //            if (ControlView != null)
+    //                ControlView.LargeSegmentsWord = value;
+    //        }
+    //    }
+    //    public float    SmallSegments
+    //    {
+    //        set
+    //        {
+    //            if (ControlView != null)
+    //                ControlView.SmallSegments = value;
+    //        }
+    //    }
+    //    public string   SmallSegmentsWord
+    //    {
+    //        set
+    //        {
+    //            if (ControlView != null)
+    //                ControlView.SmallSegmentsWord = value;
+    //        }
+    //    }
+    //    public int      Bargraph
+    //    {
+    //        set
+    //        {
+    //            if (ControlView != null)
+    //                ControlView.Bargraph = value;
+    //        }
+    //    }
+    //    public Packet112GW MainMode
+    //    {
+    //        set
+    //        {
+    //            if (ControlView != null)
+    //                ControlView.MainMode = value;
+    //        }
+    //    }
+    //    public Packet112GW MainRangeValue
+    //    {
+    //        set
+    //        {
+    //            if (ControlView != null)
+    //                ControlView.MainRangeValue = value;
+    //        }
+    //    }
+    //    public Packet112GW SubMode
+    //    {
+    //        set
+    //        {
+    //            if (ControlView != null)
+    //                ControlView.SubMode = value;
+    //        }
+    //    }
+    //    public Packet112GW SubRangeValue
+    //    {
+    //        set
+    //        {
+    //            if (ControlView != null)
+    //                ControlView.SubRangeValue = value;
+    //        }
+    //    }
+    //    public Packet112GW BarStatus
+    //    {
+    //        set
+    //        {
+    //            if (ControlView != null)
+    //                ControlView.BarStatus = value;
+    //        }
+    //    }
+    //    public Packet112GW IconStatus
+    //    {
+    //        set
+    //        {
+    //            if (ControlView != null)
+    //                ControlView.IconStatus = value;
+    //        }
+    //    }
+    //    public void Update(Packet112GW pInput)
+    //    { 
+    //        if (ControlView != null)
+    //            ControlView.Update(pInput);
+    //    }
+    //    public SKBitmap mLayer
+    //    {
+    //        get
+    //        {
+    //            if (ControlView != null)
+    //                return ControlView.mLayer;
+    //            return null;
+    //        }
+    //        set
+    //        {
+    //            if (ControlView != null)
+    //                ControlView.mLayer = value;
+    //        }
+    //    }
+    //    public SKCanvas mCanvas
+    //    {
+    //        get
+    //        {
+    //            if (ControlView != null)
+    //                return ControlView.mCanvas;
+    //            return null;
+    //        }
+    //        set
+    //        {
+    //            if (ControlView != null)
+    //                ControlView.mCanvas = value;
+    //        }
+    //    }
 
-        public MultimeterScreenRenderer.eControlInputState State
-        {
-            get
-            {
-                if (ControlView != null)
-                    return ControlView.State;
-                return MultimeterScreenRenderer.eControlInputState.eNone;
-            }
-            set
-            {
-                if (ControlView != null)
-                    ControlView.State = value;
-            }
-        }
-        public Color IdleColor
-        {
-            get
-            {
-                if (ControlView != null)
-                    return ControlView.IdleColor;
-                return Color.White;
-            }
-            set
-            {
-                if (ControlView != null)
-                    ControlView.IdleColor = value;
-            }
-        }
-        public Color PressColor
-        {
-            get
-            {
-                if (ControlView != null)
-                    return ControlView.PressColor;
-                return Color.White;
-            }
-            set
-            {
-                if (ControlView != null)
-                    ControlView.PressColor = value;
-            }
-        }
-        public Color HoverColor
-        {
-            get
-            {
-                if (ControlView != null)
-                    return ControlView.HoverColor;
-                return Color.White;
-            }
-            set
-            {
-                if (ControlView != null)
-                    ControlView.HoverColor = value;
-            }
-        }
-        public new Color BackgroundColor
-        {
-            get
-            {
-                if (ControlView != null)
-                    return ControlView.BackgroundColor;
-                return Color.White;
-            }
-            set
-            {
-                if (ControlView != null)
-                    ControlView.BackgroundColor = value;
-            }
-        }
-        public void InvalidateSurface()
-        {
-            if (ControlView != null)
-                ControlView.InvalidateSurface();
-        }
+    //    public MultimeterScreenRenderer.eControlInputState State
+    //    {
+    //        get
+    //        {
+    //            if (ControlView != null)
+    //                return ControlView.State;
+    //            return MultimeterScreenRenderer.eControlInputState.eNone;
+    //        }
+    //        set
+    //        {
+    //            if (ControlView != null)
+    //                ControlView.State = value;
+    //        }
+    //    }
+    //    public Color IdleColor
+    //    {
+    //        get
+    //        {
+    //            if (ControlView != null)
+    //                return ControlView.IdleColor;
+    //            return Color.White;
+    //        }
+    //        set
+    //        {
+    //            if (ControlView != null)
+    //                ControlView.IdleColor = value;
+    //        }
+    //    }
+    //    public Color PressColor
+    //    {
+    //        get
+    //        {
+    //            if (ControlView != null)
+    //                return ControlView.PressColor;
+    //            return Color.White;
+    //        }
+    //        set
+    //        {
+    //            if (ControlView != null)
+    //                ControlView.PressColor = value;
+    //        }
+    //    }
+    //    public Color HoverColor
+    //    {
+    //        get
+    //        {
+    //            if (ControlView != null)
+    //                return ControlView.HoverColor;
+    //            return Color.White;
+    //        }
+    //        set
+    //        {
+    //            if (ControlView != null)
+    //                ControlView.HoverColor = value;
+    //        }
+    //    }
+    //    public new Color BackgroundColor
+    //    {
+    //        get
+    //        {
+    //            if (ControlView != null)
+    //                return ControlView.BackgroundColor;
+    //            return Color.White;
+    //        }
+    //        set
+    //        {
+    //            if (ControlView != null)
+    //                ControlView.BackgroundColor = value;
+    //        }
+    //    }
+    //    public void InvalidateSurface()
+    //    {
+    //        if (ControlView != null)
+    //            ControlView.InvalidateSurface();
+    //    }
 
-        public MultimeterScreen()
-        {
-            VerticalOptions     = LayoutOptions.StartAndExpand;
-            HorizontalOptions   = LayoutOptions.Fill;
-            ControlView         = new MultimeterScreenRenderer();
-            Content             = ControlView;
-        }
-    }
+    //    public MultimeterScreen()
+    //    {
+    //        VerticalOptions     = LayoutOptions.StartAndExpand;
+    //        HorizontalOptions   = LayoutOptions.Fill;
+    //        ControlView         = new MultimeterScreenRenderer();
+    //        Content             = ControlView;
+    //    }
+    //}
 }

@@ -14,10 +14,9 @@ namespace rMultiplatform.BLE
 {
     public class ClientBLE : AClientBLE, IClientBLE
     {
-        List<IDeviceBLE> mExistingConnections;
         volatile private DeviceWatcher mDeviceWatcher;
         private static int index = 0;
-        private void DeviceWatcher_Added    (DeviceWatcher sender, DeviceInformation args)
+        private void DeviceWatcher_Added(DeviceWatcher sender, DeviceInformation args)
         {
             try
             {
@@ -35,7 +34,7 @@ namespace rMultiplatform.BLE
                     AddUniqueItem(temp);
                 }, ((index++).ToString() + " Adding"));
             }
-            catch { Debug.WriteLine("Caught Error : private void DeviceWatcher_Added    (DeviceWatcher sender, DeviceInformation args)"); }
+            catch { Debug.WriteLine("Caught Error : private void DeviceWatcher_Added(DeviceWatcher sender, DeviceInformation args)"); }
         }
         private void DeviceWatcher_Updated(DeviceWatcher sender, DeviceInformationUpdate args)
         {
@@ -56,7 +55,6 @@ namespace rMultiplatform.BLE
                             (mVisibleDevices[i] as UnPairedDeviceBLE).Information.Update(args);
                     }
                 }, ((index++).ToString() + " Updated"));
-                TriggerListUpdate();
             }
             catch
             {
@@ -80,38 +78,34 @@ namespace rMultiplatform.BLE
                         var item = mVisibleDevices[i];
                         if (item.Id == removed_id)
                         {
-                            RunMainThread(() =>
-                            {
-                                mVisibleDevices.Remove(item);
-                            });}
+                            RunMainThread(() => { mVisibleDevices.Remove(item); });
                         }
+                    }
                 }, ((index++).ToString() + " Removed"));
-                TriggerListUpdate();
             }
             catch
             {
-                Debug.WriteLine("Caught Error : private void DeviceWatcher_Removed  (DeviceWatcher sender, DeviceInformationUpdate  args)");
+                Debug.WriteLine("Caught Error : private void DeviceWatcher_Removed(DeviceWatcher sender, DeviceInformationUpdate  args)");
             }
         }
 
-        PairedDeviceBLE NewPairedDevice = null;
         async private void ConnectionComplete( UnPairedDeviceBLE input )
         {
-            await BluetoothLEDevice.FromIdAsync(input.Information.Id).AsTask().ContinueWith((obj)=> 
+            await BluetoothLEDevice.FromIdAsync(input.Information.Id).AsTask().ContinueWith(
+            (obj)=> 
             {
                 if (obj.Result == null)
                     return;
-                NewPairedDevice = new PairedDeviceBLE(obj.Result, (dev) =>
+
+                var temp = new PairedDeviceBLE(obj.Result, (dev) =>
                 {
                     TriggerDeviceConnected(dev);
-                    mExistingConnections.Add(dev);
                 });
             });
         }
 
         public void Connect(IDeviceBLE pInput)
         {
-            NewPairedDevice = null;
             try
             {
                 Debug.WriteLine("Connecting to : " + pInput.Id);
@@ -129,12 +123,11 @@ namespace rMultiplatform.BLE
         }
         public void Start()
         {
-            try{ mDeviceWatcher.Start(); }
-            catch{}
+            mDeviceWatcher.Start();
         }
         public void Stop()
         {
-            try { mDeviceWatcher.Stop(); } catch { }
+            mDeviceWatcher.Stop();
         }
         public void Rescan()
         {
@@ -142,15 +135,12 @@ namespace rMultiplatform.BLE
         }
         public void Reset()
         {
-            if (mDeviceWatcher.Status == DeviceWatcherStatus.Stopped)
-                mDeviceWatcher.Start();
+
         }
         public ClientBLE()
         {
             try
             {
-                mExistingConnections = new List<IDeviceBLE>();
-                mVisibleDevices = new System.Collections.ObjectModel.ObservableCollection<IDeviceBLE>();
                 //Get all devices paired and not.
                 string query1 = "(" + BluetoothLEDevice.GetDeviceSelectorFromPairingState(true) + ")";
                 string query2 = "(" + BluetoothLEDevice.GetDeviceSelectorFromPairingState(false) + ")";

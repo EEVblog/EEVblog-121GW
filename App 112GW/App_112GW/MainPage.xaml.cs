@@ -71,18 +71,12 @@ namespace App_112GW
 
         void    AddDevice (IDeviceBLE pDevice)
 		{
-            Debug.WriteLine("ADDING DEVICE 1.");
             var NewDevice = new Multimeter(pDevice);
-            Debug.WriteLine("ADDING DEVICE 2.");
             NewDevice.RequestMaximise   += NewDevice_RequestMaximise;
             NewDevice.RequestRestore    += NewDevice_RequestRestore;
-            Debug.WriteLine("ADDING DEVICE 3.");
+
             Devices.Add(NewDevice);
             DeviceLayout.Children.Add(NewDevice);
-            Grid.SetRow(NewDevice, 0);
-            Grid.SetColumn(NewDevice, 0);
-            Grid.SetRowSpan(NewDevice, 1);
-            Grid.SetColumnSpan(NewDevice, 2);
         }
 
         private void NewDevice_RequestRestore(object sender, EventArgs e)

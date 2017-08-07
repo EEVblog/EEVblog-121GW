@@ -28,41 +28,9 @@ namespace rMultiplatform
         void InvalidateParent();
     };
 
-    public class ChartRenderer :
-#if __ANDROID__ && ! SOFTWARE_DRAW
-        SKGLView
-#elif __IOS__ && ! SOFTWARE_DRAW
-        SKGLView
-#else
-        SKCanvasView
-#endif
-    {
-        public delegate void PaintCanvas(SKCanvas c, SKSize s);
-        public event PaintCanvas Paint;
-        public ChartRenderer(PaintCanvas PaintEvent)
-        {
-            Paint += PaintEvent;
-            HorizontalOptions = LayoutOptions.Fill;
-            VerticalOptions = LayoutOptions.Fill;
-
-            BackgroundColor = App_112GW.Globals.BackgroundColor;
-        }
-
-#if __ANDROID__ && ! SOFTWARE_DRAW
-        protected override void OnPaintSurface(SKPaintGLSurfaceEventArgs e)
-#elif __IOS__ && ! SOFTWARE_DRAW
-        protected override void OnPaintSurface(SKPaintGLSurfaceEventArgs e)
-#else
-        protected override void OnPaintSurface(SKPaintSurfaceEventArgs e)
-#endif
-        {
-            Paint?.Invoke(e.Surface.Canvas, CanvasSize);
-        }
-    }
-
     public class Chart : ContentView
     {
-        ChartRenderer mRenderer;
+        GeneralRenderer mRenderer;
         public void Disable()
         {
             mRenderer = null;
@@ -70,10 +38,10 @@ namespace rMultiplatform
         }
         public void Enable()
         {
-            mRenderer = new ChartRenderer(PaintSurface);
+            mRenderer = new GeneralRenderer(PaintSurface);
             Content = mRenderer;
+            mRenderer.InvalidateSurface();
         }
-
         public new bool IsVisible
         {
             set
@@ -318,8 +286,7 @@ namespace rMultiplatform
         //Initialises the object
         public Chart() : base()
         {
-            mRenderer = new ChartRenderer(PaintSurface);
-            Content = mRenderer;
+            Enable();
 
             //Must always fill parent container
             HorizontalOptions = LayoutOptions.Fill;

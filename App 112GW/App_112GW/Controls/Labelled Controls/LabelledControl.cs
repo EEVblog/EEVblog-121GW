@@ -124,11 +124,11 @@ namespace rMultiplatform
         {
             get
             {
-                return ControlView.BackgroundColor;
+                return base.BackgroundColor;
             }
             set
             {
-                ControlView.BackgroundColor = value;
+                base.BackgroundColor = value;
             }
         }
 

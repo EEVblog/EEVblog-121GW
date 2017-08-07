@@ -32,9 +32,9 @@ namespace rMultiplatform
             }
         }
 
-        private Label mSerialNumber;
-        private LabelledCheckbox mPlotCheck;
-        private LabelledBackButton mBack;
+        private Label               mSerialNumber;
+        private LabelledCheckbox    mPlotCheck;
+        private LabelledBackButton  mBack;
         public new bool IsVisible
         {
             set
@@ -140,6 +140,7 @@ namespace rMultiplatform
                 HorizontalOptions       = LayoutOptions.Fill,
                 HorizontalTextAlignment = TextAlignment.Center
             };
+
             mPlotCheck.Changed += CheckboxChange_Plot;
             Stack.Children.Add(mBack);
             Stack.Children.Add(mSerialNumber);
@@ -198,6 +199,8 @@ namespace rMultiplatform
         {
             PlotClicked?.Invoke(mPlotCheck, e);
         }
+
+        //
         private void    PickerChange_Range     (object sender, EventArgs e)
         {
             RangeChanged?.Invoke(sender, e);

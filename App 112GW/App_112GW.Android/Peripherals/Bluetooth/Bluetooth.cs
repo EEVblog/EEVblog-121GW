@@ -14,8 +14,6 @@ namespace rMultiplatform.BLE
 {
     public class ClientBLE : AClientBLE, IClientBLE
     {
-        List<IDeviceBLE> mExistingConnections;
-
         volatile private IBluetoothLE mDevice;
         volatile private IAdapter mAdapter;
 
@@ -30,48 +28,33 @@ namespace rMultiplatform.BLE
             {
                 mVisibleDevices.Clear();
                 foreach (var item in mAdapter.DiscoveredDevices)
+                {
+                    Debug.WriteLine(item.Name + " " + item.Id);
                     AddUniqueItem(new UnPairedDeviceBLE(item));
+                }
             }, (indexer.ToString() + " Adding"));
-            
-            TriggerListUpdate();
         }
 
         private bool AcceptRescan = false;
         public void Start()
         {
-            MutexBlock(() =>
-            {
-                AcceptRescan = true;
-                mAdapter.StartScanningForDevicesAsync();
-            }, "Start");
+            AcceptRescan = true;
+            mAdapter.StartScanningForDevicesAsync();
         }
         public void Stop()
         {
-            MutexBlock(() =>
-            {
-                AcceptRescan = false;
-                mAdapter.StopScanningForDevicesAsync().Wait();
-            }, "Stop");
+            AcceptRescan = false;
+            mAdapter.StopScanningForDevicesAsync().Wait();
         }
         public void Rescan()
         {
             if (AcceptRescan)
-            {
-                MutexBlock(() =>
-                {
-                    mAdapter.StopScanningForDevicesAsync().Wait();
-                    mAdapter.StartScanningForDevicesAsync();
-                }, "Rescan");
-            }
+                mAdapter.StartScanningForDevicesAsync();
         }
         public void Reset()
         {
-            MutexBlock(() =>
-            {
-                AcceptRescan = true;
-                if (mAdapter.IsScanning == false)
-                    mAdapter.StartScanningForDevicesAsync();
-            }, "Reset");
+            Stop();
+            Start();
         }
 
         IDeviceBLE ConnectingDevice = null;
@@ -82,7 +65,6 @@ namespace rMultiplatform.BLE
             Device = new PairedDeviceBLE((ConnectingDevice as UnPairedDeviceBLE).mDevice, 
             (dev) => {
                 TriggerDeviceConnected(dev);
-                mExistingConnections.Add(dev);
             });
         }
         private void StopScanning(Task obj)
@@ -104,7 +86,6 @@ namespace rMultiplatform.BLE
                 //Pair if the device is able to pair
                 AcceptRescan = false;
                 ConnectingDevice = pInput;
-
                 Debug.WriteLine("Connecting to new device.");
                 mAdapter.ConnectToDeviceAsync((ConnectingDevice as UnPairedDeviceBLE).mDevice).ContinueWith(StopScanning);
             }
@@ -112,31 +93,40 @@ namespace rMultiplatform.BLE
 
         public ClientBLE()
         {
-            mExistingConnections = new List<IDeviceBLE>();
-            mVisibleDevices = new System.Collections.ObjectModel.ObservableCollection<IDeviceBLE>();
-
             //Setup bluetoth basic adapter
-            mDevice     = CrossBluetoothLE.Current;
-            mAdapter    = CrossBluetoothLE.Current.Adapter;
-            mAdapter.ScanTimeout = int.MaxValue;
+            mDevice = CrossBluetoothLE.Current;
+            mAdapter = CrossBluetoothLE.Current.Adapter;
+            mAdapter.ScanTimeoutElapsed += MAdapter_ScanTimeoutElapsed;
 
             //Add debug state change indications
-            mDevice.StateChanged += (s, e) => { Debug.WriteLine($"The bluetooth state changed to {e.NewState}"); Rescan();  };
+            mDevice.StateChanged += (s, e) =>
+            {
+                Debug.WriteLine($"The bluetooth state changed to " + e.NewState.ToString());
+                if (e.NewState == BluetoothState.TurningOn || e.NewState == BluetoothState.On)
+                    Reset();
+            };
+
+            //
             if (mDevice.IsOn && mDevice.IsAvailable)
                 mAdapter.DeviceDiscovered += DeviceWatcher_Added;
             mAdapter.DeviceConnectionLost += DeviceConnection_Lost;
 
             //Start the scan
-            mAdapter.StartScanningForDevicesAsync();
+            Start();
+        }
+
+        private void MAdapter_ScanTimeoutElapsed(object sender, EventArgs e)
+        {
+            Debug.WriteLine("private void MAdapter_ScanTimeoutElapsed(object sender, EventArgs e).");
+            Rescan();
         }
 
         private void DeviceConnection_Lost (object sender, DeviceErrorEventArgs e)
         {
             string disconnect_Id = e.Device.Id.ToString();
-            Debug.WriteLine("DeviceConnection_Lost.");
-            Debug.WriteLine(disconnect_Id);
-
-            foreach (var item in mExistingConnections)
+            Debug.WriteLine( "DeviceConnection_Lost." );
+            Debug.WriteLine( disconnect_Id );
+            foreach (var item in mConnectedDevices)
                 if (item.Id == disconnect_Id)
                 {
                     Debug.WriteLine(item.Id);

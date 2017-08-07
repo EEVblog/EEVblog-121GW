@@ -29,9 +29,9 @@ namespace rMultiplatform
         {
             _Checked = !_Checked;
             if (_Checked)
-                mRenderer.ShowPoints();
+                ShowPoints();
             else
-                mRenderer.HidePoints();
+                HidePoints();
         }
         public Checkbox() : base(new SKPoint[3]{
                 new SKPoint((float)(0), (float)(0)),
@@ -39,7 +39,7 @@ namespace rMultiplatform
                 new SKPoint((float)20, (float)(10))})
         {
             Clicked += CheckboxClick;
-            mRenderer.OffsetAngle = 135;
+            OffsetAngle = 135;
         }
     }
 }
