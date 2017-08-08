@@ -313,7 +313,6 @@ namespace rMultiplatform
 
                 var dx = args.Location.Position.X - item1.Position.X;
                 var dy = args.Location.Position.Y - item1.Position.Y;
-                Debug.WriteLine(dx.ToString() + " " + dy.ToString());
 
                 item1.Position = args.Location.Position;
                 switch (Cursors.Count)

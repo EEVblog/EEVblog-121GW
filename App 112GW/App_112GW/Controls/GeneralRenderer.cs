@@ -8,6 +8,7 @@ using SkiaSharp;
 using SkiaSharp.Views.Forms;
 using System.Runtime.CompilerServices;
 using System.Diagnostics;
+using App_112GW;
 
 namespace rMultiplatform
 {
@@ -24,11 +25,10 @@ namespace rMultiplatform
         public event PaintCanvas Paint;
         public GeneralRenderer(PaintCanvas PaintEvent)
         {
-            Paint += PaintEvent;
-            HorizontalOptions = LayoutOptions.Fill;
-            VerticalOptions = LayoutOptions.Fill;
-
-            BackgroundColor = App_112GW.Globals.BackgroundColor;
+            Paint               +=  PaintEvent;
+            HorizontalOptions   =   LayoutOptions.Fill;
+            VerticalOptions     =   LayoutOptions.Fill;
+            BackgroundColor     =   Globals.BackgroundColor;
         }
 
 #if __ANDROID__ && !SOFTWARE_DRAW

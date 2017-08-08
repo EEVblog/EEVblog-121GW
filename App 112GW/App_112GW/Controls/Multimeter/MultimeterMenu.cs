@@ -19,6 +19,7 @@ namespace rMultiplatform
         public event EventHandler   RelClicked;
         public event EventHandler   ModeChanged;
         public event EventHandler   RangeChanged;
+        public event EventHandler   DeviceRemoved;
 
         static bool                 SameType(object A, Type B)
         {

@@ -31,6 +31,14 @@ namespace rMultiplatform
             }
         }
 
+        public new string Id
+        {
+            get
+            {
+                return mDevice.Id;
+            }
+        }
+
         Timer stateTimer;
 
         public StackLayout              MultimeterGrid;
@@ -108,15 +116,25 @@ namespace rMultiplatform
             SetView();
         }
 
-        bool Visible = true;
-        public void HideVisibleState()
+        public new bool IsVisible
         {
-            Visible = IsVisible;
-            IsVisible = false;
-        }
-        public void RestoreVisibleState()
-        {
-            IsVisible = Visible;
+            set
+            {
+                if (value == false)
+                {
+                    Plot.IsVisible = false;
+                    Screen.IsVisible = false;
+                    Menu.IsVisible = false;
+                }
+                else
+                {
+                    Plot.IsVisible = false;
+                    Screen.IsVisible = true;
+                    Menu.IsVisible = false;
+                }
+
+                base.IsVisible = value;
+            }
         }
 
         ActiveItem LastActive;

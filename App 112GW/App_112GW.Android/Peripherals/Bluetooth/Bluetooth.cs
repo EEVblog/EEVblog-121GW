@@ -27,7 +27,8 @@ namespace rMultiplatform.BLE
             MutexBlock(() =>
             {
                 mVisibleDevices.Clear();
-                foreach (var item in mAdapter.DiscoveredDevices)
+                var devices = mAdapter.DiscoveredDevices;
+                foreach (var item in devices)
                 {
                     Debug.WriteLine(item.Name + " " + item.Id);
                     AddUniqueItem(new UnPairedDeviceBLE(item));
@@ -97,6 +98,7 @@ namespace rMultiplatform.BLE
             mDevice = CrossBluetoothLE.Current;
             mAdapter = CrossBluetoothLE.Current.Adapter;
             mAdapter.ScanTimeoutElapsed += MAdapter_ScanTimeoutElapsed;
+            mAdapter.ScanTimeout = int.MaxValue;
 
             //Add debug state change indications
             mDevice.StateChanged += (s, e) =>
@@ -121,7 +123,10 @@ namespace rMultiplatform.BLE
             Rescan();
         }
 
-        private void DeviceConnection_Lost (object sender, DeviceErrorEventArgs e)
+
+
+
+        async private void DeviceConnection_Lost (object sender, DeviceErrorEventArgs e)
         {
             string disconnect_Id = e.Device.Id.ToString();
             Debug.WriteLine( "DeviceConnection_Lost." );
@@ -130,9 +135,17 @@ namespace rMultiplatform.BLE
                 if (item.Id == disconnect_Id)
                 {
                     Debug.WriteLine(item.Id);
-                    mAdapter.DisconnectDeviceAsync(e.Device).ContinueWith((temp) =>
+                    await mAdapter.DisconnectDeviceAsync(e.Device).ContinueWith((temp) =>
                     {
-                        mAdapter.ConnectToDeviceAsync(e.Device).ContinueWith((obj) => { item.Remake(e.Device); });
+                        while (e.Device.State != Plugin.BLE.Abstractions.DeviceState.Connected)
+                        {
+                            mAdapter.ConnectToDeviceAsync(e.Device).ContinueWith((obj) =>
+                            {
+                                Debug.WriteLine("Reconnected, maybe.");
+                                if (e.Device.State == Plugin.BLE.Abstractions.DeviceState.Connected)
+                                    item.Remake(e.Device);
+                            }).Wait();
+                        }
                     });
                 }
         }
