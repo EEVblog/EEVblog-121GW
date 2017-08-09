@@ -89,9 +89,9 @@ namespace rMultiplatform.BLE
             }
         }
 
-        async private void ConnectionComplete( UnPairedDeviceBLE input )
+        private void ConnectionComplete( UnPairedDeviceBLE input )
         {
-            await BluetoothLEDevice.FromIdAsync(input.Information.Id).AsTask().ContinueWith(
+            BluetoothLEDevice.FromIdAsync(input.Information.Id).AsTask().ContinueWith(
             (obj)=> 
             {
                 if (obj.Result == null)
@@ -176,8 +176,5 @@ namespace rMultiplatform.BLE
                 Stop();
             }
         }
-
-
-
     }
 }

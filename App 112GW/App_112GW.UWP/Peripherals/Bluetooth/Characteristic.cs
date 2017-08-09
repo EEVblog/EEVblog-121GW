@@ -59,14 +59,14 @@ namespace rMultiplatform.BLE
             CryptographicBuffer.CopyToByteArray(buffer, out data);
             TriggerChange(sender, new CharacteristicEvent(data));
         }
-        async void Build()
+        void Build()
         {
             int properties = (int)mCharacteristic.CharacteristicProperties;
             int indicate_mask = (int)GattCharacteristicProperties.Indicate;
             if ((properties & indicate_mask) != 0)
             {
                 Debug.WriteLine("Setting up Indicate.");
-                await mCharacteristic.WriteClientCharacteristicConfigurationDescriptorAsync(GattClientCharacteristicConfigurationDescriptorValue.Indicate).AsTask().ContinueWith(
+                mCharacteristic.WriteClientCharacteristicConfigurationDescriptorAsync(GattClientCharacteristicConfigurationDescriptorValue.Indicate).AsTask().ContinueWith(
                 (obj2) =>
                 {
                     mCharacteristic.ValueChanged += CharacteristicEvent_ValueChanged;
@@ -77,7 +77,8 @@ namespace rMultiplatform.BLE
         }
         public void Unregister()
         {
-            mCharacteristic.ValueChanged -= CharacteristicEvent_ValueChanged;
+            if (mCharacteristic != null)
+                mCharacteristic.ValueChanged -= CharacteristicEvent_ValueChanged;
         }
 
         public CharacteristicBLE(GattCharacteristic pInput, SetupComplete pReady, ChangeEvent pEvent)

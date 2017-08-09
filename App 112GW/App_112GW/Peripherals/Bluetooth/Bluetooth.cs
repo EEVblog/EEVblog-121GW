@@ -85,7 +85,7 @@ namespace rMultiplatform.BLE
     public abstract class AClientBLE
     {
         volatile public ObservableCollection<IDeviceBLE> mVisibleDevices = new ObservableCollection<IDeviceBLE>();
-        volatile public ObservableCollection<IDeviceBLE> mConnectedDevices = new ObservableCollection<IDeviceBLE>();
+        volatile public ObservableCollection<IDeviceBLE> mConnectedDevices = null;
 
         private Mutex mut = new Mutex();
         public event ConnectedEvent DeviceConnected;
@@ -95,7 +95,9 @@ namespace rMultiplatform.BLE
             Device.BeginInvokeOnMainThread(() =>
             {
                 Debug.WriteLine("Finished connecting to : " + pInput.Id);
-                mConnectedDevices.Add(pInput);
+
+                if (mConnectedDevices != null)
+                    mConnectedDevices.Add(pInput);
                 DeviceConnected?.Invoke(pInput);
             });
         }
@@ -144,9 +146,10 @@ namespace rMultiplatform.BLE
                         return add;
                     }
             }
-            catch
+            catch (Exception e)
             {
                 Debug.WriteLine("Error Caught : public bool AddUniqueItem(IDeviceBLE pInput)");
+                Debug.WriteLine(e);
                 return false;
             }
             return false;

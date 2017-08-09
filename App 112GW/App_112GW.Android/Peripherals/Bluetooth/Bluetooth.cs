@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Plugin.BLE.Abstractions.Contracts;
 using Plugin.BLE;
 using Plugin.BLE.Abstractions.EventArgs;
+using System.Collections.ObjectModel;
 
 namespace rMultiplatform.BLE
 {
@@ -94,6 +95,8 @@ namespace rMultiplatform.BLE
 
         public ClientBLE()
         {
+            mConnectedDevices = new ObservableCollection<IDeviceBLE>();
+
             //Setup bluetoth basic adapter
             mDevice = CrossBluetoothLE.Current;
             mAdapter = CrossBluetoothLE.Current.Adapter;
