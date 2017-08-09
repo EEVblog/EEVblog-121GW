@@ -132,28 +132,22 @@ namespace rMultiplatform.BLE
         {
             try
             {
-                if (pInput.Name != null)
-                    if (pInput.Name.Length > 0)
-                    {
-                        bool add = true;
-                        foreach (var device in mVisibleDevices)
-                            if (device.Id == pInput.Id)
-                                add = false;
+                bool add = true;
+                foreach (var device in mVisibleDevices)
+                    if (device.Id == pInput.Id)
+                        add = false;
 
-                        if (add)
-                            mVisibleDevices.Add(pInput);
+                if (add)
+                    mVisibleDevices.Add(pInput);
 
-                        return add;
-                    }
+                return add;
             }
             catch (Exception e)
             {
                 Debug.WriteLine("Error Caught : public bool AddUniqueItem(IDeviceBLE pInput)");
                 Debug.WriteLine(e);
-                return false;
             }
             return false;
-
         }
         public ObservableCollection<IDeviceBLE> ListDevices()
         {

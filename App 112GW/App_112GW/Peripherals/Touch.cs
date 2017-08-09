@@ -12,10 +12,11 @@ using Xamarin.Forms.Platform;
 using System.Diagnostics;
 
 using System.Collections;
+using System.Threading;
 
 namespace rMultiplatform
 {
-    public class TouchPoint
+    public class        TouchPoint
     {
         public enum eTouchType
         {
@@ -57,9 +58,7 @@ namespace rMultiplatform
             return new TouchPoint(pInput, TouchPoint.eTouchType.eReleased);
         }
     }
-
-
-    public class TouchActionEventArgs : EventArgs
+    public class        TouchActionEventArgs : EventArgs
     {
         public TouchActionEventArgs(TouchPoint pLocation, uint pID)
         {
@@ -174,6 +173,13 @@ namespace rMultiplatform
         private bool    Ready;
         public double   XDistanceDelta    { get; private set; }
         public double   YDistanceDelta    { get; private set; }
+        public double   DistanceDelta
+        {
+            get
+            {
+                return Math.Sqrt(XDistanceDelta * XDistanceDelta + YDistanceDelta * YDistanceDelta);
+            }
+        }
 
         public bool Set(Point A, Point B)
         {
@@ -199,7 +205,6 @@ namespace rMultiplatform
             Ready = false;
         }
     }
-
     public class TouchPinchActionEventArgs : EventArgs
     {
         public TouchPinchActionEventArgs(TouchPinch pPinch)
@@ -214,6 +219,15 @@ namespace rMultiplatform
     public class TouchPanActionEventArgs : EventArgs
     {
         public double Dx, Dy;
+        public double Distance
+        {
+            get
+            {
+                return Math.Sqrt(Dx * Dx + Dy * Dy);
+            }
+        }
+
+
         public TouchPanActionEventArgs(double dx, double dy)
         {
             Dx = dx;
@@ -222,8 +236,6 @@ namespace rMultiplatform
         public TouchPanActionEventArgs()
         {}
     }
-
-
     public class TouchCursor
     {
         private TouchPoint Point;
@@ -273,33 +285,77 @@ namespace rMultiplatform
             Point = pPoint;
         }
     }
+    public class TouchDoubleTapEventArgs : EventArgs
+    {
+
+    }
+    public class TouchTapEventArgs : EventArgs
+    {
+
+    }
 
     public class Touch : RoutingEffect
     {
-        public delegate void    TouchActionEventHandler(object sender, TouchActionEventArgs args);
-        public delegate void    TouchPinchActionEventHandler(object sender, TouchPinchActionEventArgs args);
-        public delegate void    TouchPanActionEventHandler(object sender, TouchPanActionEventArgs args);
+        public delegate void    TouchActionEventHandler         (object sender, TouchActionEventArgs        args);
+        public delegate void    TouchPinchActionEventHandler    (object sender, TouchPinchActionEventArgs   args);
+        public delegate void    TouchPanActionEventHandler      (object sender, TouchPanActionEventArgs     args);
+        public delegate void    TouchDoubleTapActionEventHandler   (object sender, TouchDoubleTapEventArgs     args);
+        public delegate void    TouchTapEventArgs               (object sender, TouchTapEventArgs           args);
 
+        public event TouchActionEventHandler            Pressed;
+        public event TouchActionEventHandler            Released;
+        public event TouchActionEventHandler            Hover;
+        public event TouchActionEventHandler            PressedMoved;
 
-        public event            TouchActionEventHandler     Pressed;
-        public event            TouchActionEventHandler     Released;
-        public event            TouchActionEventHandler     Hover;
-        public event            TouchActionEventHandler     PressedMoved;
+        public event TouchPanActionEventHandler         Pan;
+        public event TouchPinchActionEventHandler       Pinch;
 
-        public event TouchPinchActionEventHandler Pinch;
-        public event TouchPanActionEventHandler Pan;
-        public event TouchActionEventHandler Swipe;
+        private double GestureThreshold;
+        CancellableTimer                                TapTimer;
+        private int                                     TapTimeout;
+        private int                                     TapCount;
+        public event TouchTapEventArgs                  Tap;
+        public event TouchDoubleTapActionEventHandler   DoubleTap;
+        private void TapTimer_Expired()
+        {
+            if (TapCount == 1)
+                Tap?.Invoke(this, null);
+            else if (TapCount >= 2)
+                DoubleTap?.Invoke(this, null);
 
-        public double MultitouchThreshold = 5;
-        public bool             Capture { set; get; }
+            TapCount = 0;
+        }
+        private void TapIncrementTapCount()
+        {
+            TapCount++;
+            if (TapCount >= 2)
+                Mode = TouchMode.Multitap;
+        }
+        private void TapProcess()
+        {
+            if (TapCount == 0)
+                TapTimer.Start();
+
+            //Increment tap regardless
+            TapIncrementTapCount();
+        }
+
+        public bool Capture { set; get; }
 
         Dictionary<uint, TouchCursor> Cursors;
         TouchPinch PinchProcessor = new TouchPinch();
 
         //Adds a cursor to the map if it doesn't already exist
-        bool PinchMode = false;
-        bool PanMode = false;
-        void ProcessCursor(TouchActionEventArgs args)
+        bool PanMode    = false;
+        enum TouchMode
+        {
+            Normal,
+            Pinch,
+            Pan,
+            Multitap
+        }
+        TouchMode Mode = TouchMode.Normal;
+        void ProcessCursor  (TouchActionEventArgs args)
         {
             if (!Cursors.ContainsKey(args.ID))
                 Cursors.Add(args.ID, new TouchCursor(args.Location));
@@ -318,71 +374,77 @@ namespace rMultiplatform
                 switch (Cursors.Count)
                 {
                     case 0:
+                        Mode = TouchMode.Normal;
                         break;
                     case 1:
-                        if (Math.Abs(dx) < 3 && Math.Abs(dy) < 3 && !PanMode)
-                            PanMode = false;
-                        else
-                        {
-                            PanMode = true;
-                            Pan?.Invoke(this, new TouchPanActionEventArgs(dx, dy));
+                        { 
+                            //GestureThreshold
+                            var temp = new TouchPanActionEventArgs(dx, dy);
+                            if (temp.Distance > GestureThreshold || Mode == TouchMode.Pan)
+                            {
+                                Mode = TouchMode.Pan;
+                                Pan?.Invoke(this, temp);
+                            }
                         }
                         break;
                     default:
-                        PinchMode = true;
-                        if (PinchProcessor.Set(item1.Position, item2.Position))
                         {
-                            Pinch?.Invoke(this, new TouchPinchActionEventArgs(PinchProcessor));
+                            var temp = new TouchPinchActionEventArgs(PinchProcessor);
+                            if (temp.Pinch.DistanceDelta > GestureThreshold || Mode == TouchMode.Pinch)
+                            {
+                                Mode = TouchMode.Pinch;
+                                if (PinchProcessor.Set(item1.Position, item2.Position))
+                                    Pinch?.Invoke(this, new TouchPinchActionEventArgs(PinchProcessor));
+                            }
                         }
                         break;
                 }
             }
         }
-        void RemoveCursor(TouchActionEventArgs args)
+        void RemoveCursor   (TouchActionEventArgs args)
         {
             PinchProcessor.Clear();
             Cursors.Remove(args.ID);
+            if (Cursors.Count == 0)
+                Mode = TouchMode.Normal;
         }
-
-
-        //Removes a cursor from the map
-
 
         //Triggers a threadsafe event
         private void SafeEvent(TouchActionEventHandler EventFunction, Element element, TouchActionEventArgs args)
         {
             if (EventFunction != null)
-                Device.BeginInvokeOnMainThread(() =>
-                {
-                    EventFunction?.Invoke(element, args);
-                });
+                Device.BeginInvokeOnMainThread(() => { EventFunction?.Invoke(element, args); });
+        }
+        private void PlainEvent(TouchActionEventHandler EventFunction, Element element, TouchActionEventArgs args)
+        {
+            if (Mode == TouchMode.Normal)
+                SafeEvent(EventFunction, element, args);
         }
 
+
         //Calls the safe event function for the event
-        private void SafeHover(Element element, TouchActionEventArgs args)
+        private void SafeHover      (Element element, TouchActionEventArgs args)
         {
-           // ProcessCursor(args);
-            SafeEvent(Hover, element, args);
+            PlainEvent(Hover, element, args);
         }
-        private void SafePressed(Element element, TouchActionEventArgs args)
+        private void SafePressed    (Element element, TouchActionEventArgs args)
         {
-            PanMode = false;
+            //Start the tap timer
+            TapProcess();
             ProcessCursor(args);
-            SafeEvent(Pressed, element, args);
+            PlainEvent(Pressed, element, args);
+        }
+        private void SafeReleased   (Element element, TouchActionEventArgs args)
+        {
+            //Stop the tap timer
+            TapTimer.Stop();
+            RemoveCursor(args);
+            PlainEvent(Released, element, args);
         }
         private void SafePressedMove(Element element, TouchActionEventArgs args)
         {
             ProcessCursor(args);
-            SafeEvent(PressedMoved, element, args);
-        }
-        private void SafeReleased(Element element, TouchActionEventArgs args)
-        {
-            if (!PinchMode && !PanMode)
-                SafeEvent(Released, element, args);
-
-            RemoveCursor(args);
-            if (Cursors.Count == 0)
-                PinchMode = false;
+            PlainEvent(PressedMoved, element, args);
         }
 
         //Processes platform agnostic input
@@ -441,8 +503,12 @@ namespace rMultiplatform
         }
 
         //Initialise class and base
-        public                  Touch() : base("rMultiplatform.Touch")
+        public Touch(int pTapTimeout = 4000, double pThreshold = 4) : base("rMultiplatform.Touch")
         {
+            GestureThreshold = pThreshold;
+            TapTimeout = pTapTimeout; //ms
+            TapTimer = new CancellableTimer(TimeSpan.FromMilliseconds(TapTimeout), TapTimer_Expired);
+
             PreviousType = TouchPoint.eTouchType.eReleased;
             Cursors = new Dictionary<uint, TouchCursor>();
         }

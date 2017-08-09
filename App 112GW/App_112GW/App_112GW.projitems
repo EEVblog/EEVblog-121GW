@@ -14,6 +14,7 @@
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Controls\GeneralControl.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\GeneralRenderer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Controls\Timer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Peripherals\Bluetooth\BLEDeviceSelector.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Peripherals\Bluetooth\Bluetooth.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\Buttons\BackButton.cs" />

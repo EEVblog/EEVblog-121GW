@@ -98,8 +98,8 @@ namespace rMultiplatform.BLE
             mConnectedDevices = new ObservableCollection<IDeviceBLE>();
 
             //Setup bluetoth basic adapter
-            mDevice = CrossBluetoothLE.Current;
-            mAdapter = CrossBluetoothLE.Current.Adapter;
+            mDevice     = CrossBluetoothLE.Current;
+            mAdapter    = CrossBluetoothLE.Current.Adapter;
             mAdapter.ScanTimeoutElapsed += MAdapter_ScanTimeoutElapsed;
             mAdapter.ScanTimeout = int.MaxValue;
 
