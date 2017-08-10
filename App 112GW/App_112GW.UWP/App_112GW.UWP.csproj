@@ -189,6 +189,9 @@
     <PackageReference Include="Xamarin.Forms.Theme.Base">
       <Version>1.0.0.43-pre1</Version>
     </PackageReference>
+    <PackageReference Include="Xamarin.Forms.Theme.Dark">
+      <Version>1.0.0.43-pre1</Version>
+    </PackageReference>
     <PackageReference Include="Xamarin.Insights">
       <Version>1.12.3</Version>
     </PackageReference>

@@ -51,6 +51,9 @@ namespace rMultiplatform
 
         public ChartView()
         {
+            VerticalOptions = LayoutOptions.Fill;
+            HorizontalOptions = LayoutOptions.Fill;
+
             //Setup the events
             mChart = new Chart();
             mMenu = new ChartMenu();
@@ -63,7 +66,7 @@ namespace rMultiplatform
             Children.Add(mMenu);
             Children.Add(mChart);
 
-            Item = true;
+            Item = false;
             SetView();
         }
 

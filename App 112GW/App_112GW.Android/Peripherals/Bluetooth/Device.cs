@@ -55,6 +55,11 @@ namespace rMultiplatform.BLE
             throw new NotImplementedException();
         }
 
+        public void Unregister()
+        {
+            throw new NotImplementedException();
+        }
+
         public List<IServiceBLE> Services
         {
             get
@@ -74,8 +79,6 @@ namespace rMultiplatform.BLE
         {
             Change?.Invoke(o, v);
         }
-
-
         public string Id
         {
             get
@@ -151,6 +154,12 @@ namespace rMultiplatform.BLE
             mServices = new List<IServiceBLE>();
             Build();
         }
+
+        public void Unregister()
+        {
+
+        }
+
         public List<IServiceBLE> Services
         {
             get

@@ -113,9 +113,6 @@ namespace rMultiplatform.BLE
                 ConnectionComplete(pInput as UnPairedDeviceBLE);
         }
 
-
-
-
         private DeviceWatcher mDeviceWatcher;
         public void Start()
         {
@@ -130,8 +127,8 @@ namespace rMultiplatform.BLE
             Reset();
         }
         public void Reset()
-        {
-        }
+        {}
+
         public ClientBLE()
         {
             //Get all devices paired and not.
@@ -151,9 +148,6 @@ namespace rMultiplatform.BLE
             // Start the watcher.
             Start();
         }
-
-        
-
         ~ClientBLE()
         {
             if (mDeviceWatcher != null)

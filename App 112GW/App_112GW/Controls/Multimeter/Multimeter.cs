@@ -6,12 +6,12 @@ using System.Diagnostics;
 
 namespace rMultiplatform
 {
-    public partial class Multimeter : ContentView
+    public partial class Multimeter : ContentPage
     {
         public event EventHandler RequestMaximise;
         public event EventHandler RequestRestore;
 
-        private BLE.IDeviceBLE mDevice;
+        public BLE.IDeviceBLE mDevice;
         PacketProcessor MyProcessor = new PacketProcessor(0xF2, 26);
         void ProcessPacket(byte[] pInput)
         {
@@ -41,7 +41,7 @@ namespace rMultiplatform
 
         Timer stateTimer;
 
-        public StackLayout              MultimeterGrid;
+        public Grid                     MultimeterGrid;
         public MultimeterScreen         Screen;
         public MultimeterMenu           Menu;
         public ChartData                Data;
@@ -71,13 +71,6 @@ namespace rMultiplatform
                 MyProcessor.mCallback += ProcessPacket;
             }
 
-            // 
-            HorizontalOptions = LayoutOptions.Fill;
-            VerticalOptions = LayoutOptions.StartAndExpand;
-
-            // Assures that a non-zero height is allocated
-            MinimumHeightRequest = 200;
-            
             Screen                  =   new MultimeterScreen();
             Screen.BackgroundColor  =   Globals.BackgroundColor;
             Screen.Clicked          +=  Menu_BackClicked;
@@ -88,6 +81,7 @@ namespace rMultiplatform
             else
             {
                 id = pDevice.Id;
+                Title = "[ " + id.Substring(id.Length - 5) + " ]";
                 Menu = new MultimeterMenu(id.Substring(id.Length - 5));
             }
 
@@ -107,34 +101,26 @@ namespace rMultiplatform
             Plot.AddData(Data);
             Plot.FullscreenClicked += Plot_FullScreenClicked;
 
-            MultimeterGrid = new StackLayout();
+            MultimeterGrid = new Grid();
+
+            MultimeterGrid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Auto) });
+            MultimeterGrid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Star) });
+            MultimeterGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+
+            MultimeterGrid.Children.Add(Screen, 0, 0);
+
+
+            MultimeterGrid.Children.Add(Plot, 0, 1);
+            Grid.SetColumnSpan(Screen, 1);
+            Grid.SetRowSpan(Screen, 1);
+            Grid.SetColumnSpan(Plot, 1);
+            Grid.SetRowSpan(Plot, 1);
+
+
             MultimeterGrid.Children.Add(Screen);
-            MultimeterGrid.Children.Add(Menu);
+            //MultimeterGrid.Children.Add(Menu);
             MultimeterGrid.Children.Add(Plot);
-
             Content = MultimeterGrid;
-            SetView();
-        }
-
-        public new bool IsVisible
-        {
-            set
-            {
-                if (value == false)
-                {
-                    Plot.IsVisible = false;
-                    Screen.IsVisible = false;
-                    Menu.IsVisible = false;
-                }
-                else
-                {
-                    Plot.IsVisible = false;
-                    Screen.IsVisible = true;
-                    Menu.IsVisible = false;
-                }
-
-                base.IsVisible = value;
-            }
         }
 
         ActiveItem LastActive;
@@ -187,24 +173,51 @@ namespace rMultiplatform
             SendData(data);
         }
 
+        void FullscreenPlot()
+        {
+            Plot.IsVisible      = true;
+            Screen.IsVisible    = false;
+            Menu.IsVisible      = false;
+
+            Grid.SetColumnSpan(Screen, 1);
+            Grid.SetRowSpan(Screen, 1);
+            Grid.SetColumnSpan(Plot, 1);
+            Grid.SetRowSpan(Plot, 2);
+
+            Grid.SetRow(Plot, 0);
+        }
+
         private void SetView()
         {
             switch (Item)
             {
                 case ActiveItem.Menu:
-                    Menu.IsVisible      = true;
-                    Screen.IsVisible    = false;
-                    Plot.IsVisible      = Menu.PlotEnabled;
-                    break;
+                    //Menu.IsVisible = true;
+                    //Screen.IsVisible = false;
+                    //Menu.IsVisible = false;
+
+                    //Grid.SetColumnSpan(Screen, 1);
+                    //Grid.SetRowSpan(Screen, 1);
+                    //Grid.SetColumnSpan(Plot, 1);
+                    //Grid.SetRowSpan(Plot, 1);
+
+                    //Grid.SetRow(Plot, 1);
+                    //break;
                 case ActiveItem.Screen:
-                    Screen.IsVisible    = true;
-                    Menu.IsVisible      = false;
-                    Plot.IsVisible      = Menu.PlotEnabled;
+                    Screen.IsVisible = true;
+                    Plot.IsVisible = true;
+                    Menu.IsVisible = false;
+                    
+                    Grid.SetColumnSpan(Screen, 1);
+                    Grid.SetRowSpan(Screen, 1);
+                    Grid.SetColumnSpan(Plot, 1);
+                    Grid.SetRowSpan(Plot, 1);
+
+                    Grid.SetRow(Plot, 1);
+                    Screen.InvalidateSurface();
                     break;
                 case ActiveItem.FullscreenPlot:
-                    Plot.IsVisible      = true;
-                    Screen.IsVisible    = false;
-                    Menu.IsVisible      = false;
+                    FullscreenPlot();
                     break;
             }
         }

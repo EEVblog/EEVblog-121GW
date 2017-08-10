@@ -56,19 +56,6 @@ namespace rMultiplatform
 
         //The padding around the control
         private SKPaint     mDrawPaint;
-        private double      _Aspect;
-        public double       Aspect
-        {
-            set
-            {
-                _Aspect = value;
-                InvalidateMeasure();
-            }
-            get
-            {
-                return _Aspect;
-            }
-        }
 
         //Defines the padding around the boarder of the control
         public new ChartPadding Padding
@@ -121,9 +108,6 @@ namespace rMultiplatform
         {
             base.OnSizeAllocated(width, height);
 
-            var h = width / Aspect;
-            HeightRequest = h;
-
             //Null out the bitmap and canvas
             Rescale = true;
         }
@@ -173,23 +157,12 @@ namespace rMultiplatform
             foreach (IChartRenderer Element in ChartElements)
                 Element.SetParentSize(Size.Width, Size.Height, Size.Width / Width);
         }
-        bool RenderReady()
-        {
-            //Check aspect
-            var aspect = Height / Width;
-            var aspectl = aspect * 0.9;
-            var aspecth = aspect * 1.1;
-            if (!(aspectl <= aspect && aspect <= aspecth))
-                return false;
-            return true;
-        }
         void PaintSurface(SKCanvas canvas, SKSize dimension)
         {
             //Reinitialise the buffer canvas if it is undefined at all.
             if (Rescale)
             {
                 Rescale = false;
-                if (!RenderReady()) return;
                 UpdateCanvasSize(dimension);
             }
 
@@ -303,7 +276,7 @@ namespace rMultiplatform
 
             //Must always fill parent container
             HorizontalOptions = LayoutOptions.Fill;
-            VerticalOptions = LayoutOptions.StartAndExpand;
+            VerticalOptions = LayoutOptions.Fill;
 
             //Setup chart elements
             mDrawPaint              = new SKPaint();
@@ -311,9 +284,6 @@ namespace rMultiplatform
 
             //Setup the padding object
             ChartElements.Add(new ChartPadding(0));
-
-            //Default aspect ratio 1:3
-            Aspect = 2;
 
             //Default draw brush paints transparent
             var transparency        = SKColors.Transparent;

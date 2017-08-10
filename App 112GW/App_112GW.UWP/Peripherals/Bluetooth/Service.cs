@@ -68,13 +68,16 @@ namespace rMultiplatform.BLE
         }
         public ServiceBLE(GattDeviceService pInput, SetupComplete ready, ChangeEvent pEvent)
         {
-            Ready = ready;
-            mService = pInput;
+            Ready       = ready;
+            mService    = pInput;
             Build(pEvent);
         }
         ~ServiceBLE()
         {
+            Debug.WriteLine("Deregistering Service.");
             Unregister();
+            mService.Dispose();
+            mService = null;
             mCharacteristics = null;
         }
     }

@@ -54,6 +54,11 @@ namespace rMultiplatform.BLE
             throw new NotImplementedException();
         }
 
+        public void Unregister()
+        {
+            throw new NotImplementedException();
+        }
+
         public List<IServiceBLE> Services
         {
             get
@@ -182,13 +187,25 @@ namespace rMultiplatform.BLE
             Debug.WriteLine("Connection complete end.");
         }
 
-        
+        public void Unregister()
+        {
+            Deregister();
+        }
+
         public PairedDeviceBLE(BluetoothLEDevice pInput, DeviceSetupComplete pReady)
         {
             mServices = new List<IServiceBLE>();
             Ready = pReady;
             mDevice = pInput;
             Build();
+        }
+        ~PairedDeviceBLE()
+        {
+            Debug.WriteLine("Deregistering Service.");
+            mDevice.Dispose();
+            mDevice = null;
+            Deregister();
+            mServices = null;
         }
     }
 }

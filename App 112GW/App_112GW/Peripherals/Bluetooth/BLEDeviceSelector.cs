@@ -27,7 +27,7 @@ namespace rMultiplatform.BLE
             }
         }
 
-        IClientBLE mClient;
+        public IClientBLE mClient;
         public BLEDeviceSelector()
         {
             HorizontalOptions = LayoutOptions.CenterAndExpand;
@@ -40,22 +40,26 @@ namespace rMultiplatform.BLE
             mClient = null;
             mClient = new ClientBLE();
             mClient.DeviceConnected += MClient_DeviceConnected;
-            // Reset();
 
             //
             var template = new DataTemplate(typeof(TextCell));
 
             // We can set data bindings to our supplied objects.
-            template.SetBinding(TextCell.TextProperty, "Name");
-            template.SetBinding(TextCell.DetailProperty, "Id");
-            template.SetValue(TextCell.TextColorProperty, Globals.TextColor);
-            template.SetValue(TextCell.DetailColorProperty, Globals.HighlightColor);
+            template.SetBinding (TextCell.TextProperty, "Name");
+            template.SetBinding (TextCell.DetailProperty, "Id");
+            template.SetValue   (TextCell.TextColorProperty, Globals.TextColor);
+            template.SetValue   (TextCell.DetailColorProperty, Globals.HighlightColor);
 
             //
             listView.ItemTemplate = template;
             listView.ItemSelected += OnSelection;
             listView.ItemsSource = mClient.ListDevices();
             Content = listView;
+        }
+
+        public void RemoveDevices()
+        {
+            mClient.RemoveAll();
         }
 
         private void MClient_DeviceConnected(IDeviceBLE pDevice)

@@ -35,6 +35,8 @@ namespace rMultiplatform.BLE
         bool    CanPair { get; }
         void    Remake  ( object o );
 
+        void    Unregister();
+
         string ToString();
         List<IServiceBLE> Services { get; }
     }
@@ -76,6 +78,7 @@ namespace rMultiplatform.BLE
         void Stop();
         void Rescan();
         void Reset();
+        void RemoveAll();
 
         //Does not return a usable device, it must be paired first
         ObservableCollection<IDeviceBLE> ListDevices();
@@ -90,6 +93,12 @@ namespace rMultiplatform.BLE
         private Mutex mut = new Mutex();
         public event ConnectedEvent DeviceConnected;
 
+        public void RemoveAll()
+        {
+            mVisibleDevices.Clear();
+            if (mConnectedDevices != null)
+                mConnectedDevices.Clear();
+        }
         public void TriggerDeviceConnected(IDeviceBLE pInput)
         {
             RunMainThread(() =>
@@ -129,22 +138,27 @@ namespace rMultiplatform.BLE
 
         public bool AddUniqueItem(IDeviceBLE pInput)
         {
-            try
+            if (pInput != null)
             {
-                bool add = true;
-                foreach (var device in mVisibleDevices)
-                    if (device.Id == pInput.Id)
-                        add = false;
+                try
+                {
+                    bool add = true;
+                    foreach (var device in mVisibleDevices)
+                        if (device.Id == pInput.Id)
+                            add = false;
 
-                if (add)
-                    mVisibleDevices.Add(pInput);
+                    if (add)
+                        if (pInput.Name != null)
+                            if (pInput.Name.Length != 0)
+                                mVisibleDevices.Add(pInput);
 
-                return add;
-            }
-            catch (Exception e)
-            {
-                Debug.WriteLine("Error Caught : public bool AddUniqueItem(IDeviceBLE pInput)");
-                Debug.WriteLine(e);
+                    return add;
+                }
+                catch (Exception e)
+                {
+                    Debug.WriteLine("Error Caught : public bool AddUniqueItem(IDeviceBLE pInput)");
+                    Debug.WriteLine(e);
+                }
             }
             return false;
         }

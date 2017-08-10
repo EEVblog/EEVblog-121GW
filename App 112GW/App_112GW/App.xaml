@@ -5,13 +5,12 @@
     <Application.Resources>
         <ResourceDictionary>
             <!-- DEFINE ANY CONSTANTS -->
-            <x:Double x:Key="BorderWidth">  3       </x:Double>
-
-            <Color x:Key="HighlightColor">#FFFFFF</Color>
-            <Color x:Key="TextColor">#C5CCB9</Color>
-            <Color x:Key="BorderColor">#292F33</Color>
-            <Color x:Key="FocusColor">#7E827A</Color>
-            <Color x:Key="BackgroundColor">#111111</Color>
+            <x:Double x:Key="BorderWidth">  3           </x:Double>
+            <Color x:Key="HighlightColor">  #FFFFFF     </Color>
+            <Color x:Key="TextColor">       #C5CCB9     </Color>
+            <Color x:Key="BorderColor">     #292F33     </Color>
+            <Color x:Key="FocusColor">      #7E827A     </Color>
+            <Color x:Key="BackgroundColor"> #111111     </Color>
 
             <!-- DEFINE GLOBAL STYLES -->
             <Style TargetType="Grid">
@@ -24,7 +23,6 @@
                 <Setter Property="BorderColor"              Value="{ StaticResource TextColor }" />
                 <Setter Property="BorderRadius"             Value="5" />
                 <Setter Property="BorderWidth"              Value="{ StaticResource BorderWidth }" />
-                <Setter Property="FontSize"                 Value="Medium" />
             </Style>
             <Style TargetType="Picker">
                 <Setter Property="BackgroundColor"          Value="{ StaticResource BackgroundColor }" />
