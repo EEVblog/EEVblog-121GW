@@ -299,7 +299,7 @@ namespace rMultiplatform
         public delegate void    TouchActionEventHandler         (object sender, TouchActionEventArgs        args);
         public delegate void    TouchPinchActionEventHandler    (object sender, TouchPinchActionEventArgs   args);
         public delegate void    TouchPanActionEventHandler      (object sender, TouchPanActionEventArgs     args);
-        public delegate void    TouchDoubleTapActionEventHandler   (object sender, TouchDoubleTapEventArgs     args);
+        public delegate void    TouchDoubleTapActionEventHandler(object sender, TouchDoubleTapEventArgs     args);
         public delegate void    TouchTapEventArgs               (object sender, TouchTapEventArgs           args);
 
         public event TouchActionEventHandler            Pressed;
@@ -310,7 +310,7 @@ namespace rMultiplatform
         public event TouchPanActionEventHandler         Pan;
         public event TouchPinchActionEventHandler       Pinch;
 
-        private double GestureThreshold;
+        private double                                  GestureThreshold;
         CancellableTimer                                TapTimer;
         private int                                     TapTimeout;
         private int                                     TapCount;
@@ -519,7 +519,7 @@ namespace rMultiplatform
         }
 
         //Initialise class and base
-        public Touch(int pTapTimeout = 500, double pThreshold = 10) : base("rMultiplatform.Touch")
+        public Touch(int pTapTimeout = 500, double pThreshold = 4) : base("rMultiplatform.Touch")
         {
             GestureThreshold = pThreshold;
             TapTimeout = pTapTimeout;
