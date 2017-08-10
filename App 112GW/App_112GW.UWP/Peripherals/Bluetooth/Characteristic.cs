@@ -59,14 +59,14 @@ namespace rMultiplatform.BLE
             CryptographicBuffer.CopyToByteArray(buffer, out data);
             TriggerChange(sender, new CharacteristicEvent(data));
         }
-        void Build()
+        async void Build()
         {
             int properties = (int)mCharacteristic.CharacteristicProperties;
             int indicate_mask = (int)GattCharacteristicProperties.Indicate;
             if ((properties & indicate_mask) != 0)
             {
                 Debug.WriteLine("Setting up Indicate.");
-                mCharacteristic.WriteClientCharacteristicConfigurationDescriptorAsync(GattClientCharacteristicConfigurationDescriptorValue.Indicate).AsTask().ContinueWith(
+                await mCharacteristic.WriteClientCharacteristicConfigurationDescriptorAsync(GattClientCharacteristicConfigurationDescriptorValue.Indicate).AsTask().ContinueWith(
                 (obj2) =>
                 {
                     mCharacteristic.ValueChanged += CharacteristicEvent_ValueChanged;

@@ -11,7 +11,9 @@ namespace rMultiplatform
     {
         public event EventHandler SaveClicked;
         public event EventHandler BackClicked;
-        public event EventHandler FullscreenClicked;
+
+
+
         static bool SameType(object A, Type B)
         {
             return Object.ReferenceEquals(A.GetType(), B);
@@ -19,7 +21,6 @@ namespace rMultiplatform
 
         private Button              mSave;
         private LabelledBackButton  mBack;
-        private Button mFullscreen;
 
         public new bool IsVisible
         {
@@ -76,13 +77,9 @@ namespace rMultiplatform
             mSave = new Button() { Text = "Save" };
             mSave.Clicked += ButtonPress_Save;
 
-            mFullscreen = new Button() { Text = "Fullscreen" };
-            mFullscreen.Clicked += ButtonPress_Fullscreen;
-
             //
             AddView(mBack, 0, 0);
             AddView(mSave, 1, 0);
-            AddView(mFullscreen, 1, 1);
             //##################################################
             BackgroundColor         = Globals.BackgroundColor;
             mSave.BackgroundColor   = Globals.BackgroundColor;
@@ -90,12 +87,6 @@ namespace rMultiplatform
         }
 
 
-        //The reactions to picker, checkbox, buttons events
-        private void ButtonPress_Fullscreen(object sender, EventArgs e)
-        {
-            Debug.WriteLine("ButtonPress_Fullscreen.");
-            FullscreenClicked?.Invoke(sender, e);
-        }
         private void ButtonPress_Save (object sender, EventArgs e)
         {
             SaveClicked?.Invoke(sender, e);

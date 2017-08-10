@@ -92,10 +92,9 @@ namespace rMultiplatform.BLE
 
         public void TriggerDeviceConnected(IDeviceBLE pInput)
         {
-            Device.BeginInvokeOnMainThread(() =>
+            RunMainThread(() =>
             {
                 Debug.WriteLine("Finished connecting to : " + pInput.Id);
-
                 if (mConnectedDevices != null)
                     mConnectedDevices.Add(pInput);
                 DeviceConnected?.Invoke(pInput);

@@ -36,11 +36,11 @@ namespace rMultiplatform.BLE
         {
             return Id;
         }
-        void Build(ChangeEvent pEvent)
+        async void Build(ChangeEvent pEvent)
         {
             mCharacteristics = null;
             mCharacteristics = new List<ICharacteristicBLE>();
-            mService.GetCharacteristicsAsync().AsTask().ContinueWith((arg)=> 
+            await mService.GetCharacteristicsAsync().AsTask().ContinueWith((arg)=> 
             {
                 Debug.WriteLine("Found Characteristics.");
                 CharacteristicsAquired(arg.Result, pEvent);

@@ -237,20 +237,33 @@ namespace rMultiplatform
         }
         private void MTouch_Release(object sender, rMultiplatform.TouchActionEventArgs args)
         {
-            if (State == eControlInputState.ePressed)
-                OnClicked(EventArgs.Empty);
             State = eControlInputState.eNone;
         }
         private void SetupTouch()
         {
             //Add the gesture recognizer 
             mTouch = new rMultiplatform.Touch();
+            mTouch.Tap += MTouch_Tap;
+            mTouch.DoubleTap += MTouch_DoubleTap;
             mTouch.Pressed += MTouch_Press;
             mTouch.Hover += MTouch_Hover;
             mTouch.Released += MTouch_Release;
             mTouch.Pinch += MTouch_Pinch;
             mTouch.Pan += MTouch_Pan;
             Effects.Add(mTouch);
+        }
+        public event EventHandler FullscreenClicked;
+
+        //The reactions to picker, checkbox, buttons events
+        private void MTouch_DoubleTap(object sender, TouchDoubleTapEventArgs args)
+        {
+            Debug.WriteLine("ButtonPress_Fullscreen.");
+            FullscreenClicked?.Invoke(sender, args);
+        }
+
+        private void MTouch_Tap(object sender, Touch.TouchTapEventArgs args)
+        {
+            OnClicked(EventArgs.Empty);
         }
 
         private void MTouch_Pan(object sender, TouchPanActionEventArgs args)

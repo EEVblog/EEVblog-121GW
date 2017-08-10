@@ -213,12 +213,16 @@ namespace rMultiplatform
             bool Overflow = DataEnd > Length;
             if (Overflow)
                 DataEnd = (uint)Data.Count;
-            var output      = Data.GetRange ((int)DataStart, (int)(DataEnd - DataStart)).ToArray();
-            var path = new SKPath();
-            path.AddPoly(output, false);
-            path.Transform(y.Transform());
-            path.Transform(x.Transform());
-            c.DrawPath  (path, DrawPaint);
+
+            if (DataEnd > DataStart)
+            {
+                var output = Data.GetRange((int)DataStart, (int)(DataEnd - DataStart)).ToArray();
+                var path = new SKPath();
+                path.AddPoly(output, false);
+                path.Transform(y.Transform());
+                path.Transform(x.Transform());
+                c.DrawPath(path, DrawPaint);
+            }
             return false;
         }
 

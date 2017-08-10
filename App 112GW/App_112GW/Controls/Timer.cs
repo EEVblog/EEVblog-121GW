@@ -1,37 +1,45 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using Xamarin.Forms;
 
 namespace rMultiplatform
 {
     public class CancellableTimer
     {
-        private readonly TimeSpan timespan;
-        private readonly Action callback;
-
-        private CancellationTokenSource cancellation;
+        private readonly TimeSpan   timespan;
+        private readonly Action     callback;
+        private CancellationTokenSource cancel;
 
         public CancellableTimer(TimeSpan timespan, Action callback)
         {
             this.timespan = timespan;
             this.callback = callback;
-            this.cancellation = new CancellationTokenSource();
+            cancel = new CancellationTokenSource();
         }
+
+        bool Running = false;
         public void Start()
         {
-            CancellationTokenSource cts = this.cancellation; 
-            Device.StartTimer(this.timespan,
-                () => {
-                    if (cts.IsCancellationRequested) return false;
-                    this.callback.Invoke();
-                    return false;
-            });
+            if (!Running)
+            {
+                Running = true;
+                Task.Delay(timespan).ContinueWith((obj) =>
+                {
+                    Running = false;
+                    Debug.WriteLine("Callback called.");
+                    Device.BeginInvokeOnMainThread(() => { callback?.Invoke(); });
+                }, cancel.Token);
+            }
         }
-        public void Stop()
+        public void Cancel()
         {
-            Interlocked.Exchange(ref this.cancellation, new CancellationTokenSource()).Cancel();
+            cancel.Cancel();
+            cancel = new CancellationTokenSource();
+            Running = false;
         }
     }
 }

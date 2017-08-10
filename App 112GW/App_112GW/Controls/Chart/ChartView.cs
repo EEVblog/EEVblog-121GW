@@ -9,11 +9,11 @@ namespace rMultiplatform
         {
             add
             {
-                mMenu.FullscreenClicked += value;
+                mChart.FullscreenClicked += value;
             }
             remove
             {
-                mMenu.FullscreenClicked -= value;
+                mChart.FullscreenClicked -= value;
             }
         }
         
@@ -57,7 +57,7 @@ namespace rMultiplatform
             mMenu.BackClicked   += ViewToggle;
             mMenu.SaveClicked   += DataSave;
             mChart.Clicked      += ViewToggle;
-            FullscreenClicked   += ViewToggle;
+            FullscreenClicked   += FullscreenToggle;
 
             //Add
             Children.Add(mMenu);
@@ -66,6 +66,7 @@ namespace rMultiplatform
             Item = true;
             SetView();
         }
+
         protected override void OnSizeAllocated(double width, double height)
         {
             base.OnSizeAllocated(width, height);
@@ -93,6 +94,10 @@ namespace rMultiplatform
         public void ViewToggle(object sender, EventArgs e)
         {
             Item = !Item;
+            SetView();
+        }
+        private void FullscreenToggle(object sender, EventArgs e)
+        {
             SetView();
         }
     }

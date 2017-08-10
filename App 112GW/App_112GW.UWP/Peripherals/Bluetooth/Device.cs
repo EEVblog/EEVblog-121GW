@@ -67,14 +67,13 @@ namespace rMultiplatform.BLE
         private BluetoothLEDevice mDevice;
         private List<IServiceBLE> mServices;
         public event DeviceSetupComplete Ready;
+        public event ChangeEvent Change;
         void TriggerReady()
         {
             mDevice.ConnectionStatusChanged += MDevice_ConnectionStatusChanged;
             Ready?.Invoke(this);
             Ready = null;
         }
-
-        public event ChangeEvent Change;
         private void InvokeChange(object o, CharacteristicEvent v)
         {
             Change?.Invoke(o, v);
@@ -108,6 +107,13 @@ namespace rMultiplatform.BLE
                 return mDevice.DeviceInformation.Pairing.CanPair;
             }
         }
+        public List<IServiceBLE> Services
+        {
+            get
+            {
+                return mServices;
+            }
+        }
 
         private int Uninitialised = 0;
         private void ItemReady()
@@ -117,21 +123,19 @@ namespace rMultiplatform.BLE
             if (Uninitialised == 0)
                 TriggerReady();
         }
-        private void Build()
+        async private void Build()
         {
-            mDevice.GetGattServicesAsync().AsTask().ContinueWith((obj) =>
+            await mDevice.GetGattServicesAsync().AsTask().ContinueWith((obj) =>
             {
                 Debug.WriteLine("Found Services.");
                 ServicesAquired(obj.Result);
-            }, TaskContinuationOptions.OnlyOnRanToCompletion);
+            });
         }
         private void ServicesAquired(GattDeviceServicesResult result)
         {
+            Debug.WriteLine("Services Aquired.");
             var services = result.Services;
             Uninitialised = services.Count;
-
-            Deregister();
-
             foreach (var service in services)
                 mServices.Add(new ServiceBLE(service, ItemReady, InvokeChange));
         }
@@ -141,12 +145,14 @@ namespace rMultiplatform.BLE
         }
         public void Remake(object o)
         {
-            mDevice.ConnectionStatusChanged -= MDevice_ConnectionStatusChanged;
+            Deregister();
             Build();
         }
 
         void Deregister()
         {
+            mDevice.ConnectionStatusChanged -= MDevice_ConnectionStatusChanged;
+
             if (mServices != null)
                 foreach (var service in mServices)
                     service.Unregister();
@@ -155,16 +161,14 @@ namespace rMultiplatform.BLE
             mServices = new List<IServiceBLE>();
         }
 
-        CancellationTokenSource canceller_source = new CancellationTokenSource();
-        void MDevice_ConnectionStatusChanged(BluetoothLEDevice sender, object args)
+        async void MDevice_ConnectionStatusChanged(BluetoothLEDevice sender, object args)
         {
             mDevice = sender;
             Deregister();
-
             if (sender.ConnectionStatus == BluetoothConnectionStatus.Disconnected)
             {
                 Debug.WriteLine("Reconnecting...");
-                //BluetoothLEDevice.FromIdAsync(sender.DeviceId).AsTask().ContinueWith((obj)=> { ConnectionComplete(obj.Result); });
+                await BluetoothLEDevice.FromIdAsync(sender.DeviceId).AsTask().ContinueWith((obj) => { ConnectionComplete(obj.Result); });
             }
             else
                 ConnectionComplete(sender);
@@ -178,15 +182,10 @@ namespace rMultiplatform.BLE
             Debug.WriteLine("Connection complete end.");
         }
 
-        public List<IServiceBLE> Services
-        {
-            get
-            {
-                return mServices;
-            }
-        }
+        
         public PairedDeviceBLE(BluetoothLEDevice pInput, DeviceSetupComplete pReady)
         {
+            mServices = new List<IServiceBLE>();
             Ready = pReady;
             mDevice = pInput;
             Build();

@@ -14,7 +14,6 @@ namespace rMultiplatform.BLE
 {
     public class ClientBLE : AClientBLE, IClientBLE
     {
-        volatile private DeviceWatcher mDeviceWatcher;
         private static int index = 0;
         private void DeviceWatcher_Added(DeviceWatcher sender, DeviceInformation args)
         {
@@ -77,9 +76,7 @@ namespace rMultiplatform.BLE
                     {
                         var item = mVisibleDevices[i];
                         if (item.Id == removed_id)
-                        {
                             RunMainThread(() => { mVisibleDevices.Remove(item); });
-                        }
                     }
                 }, ((index++).ToString() + " Removed"));
             }
@@ -92,35 +89,34 @@ namespace rMultiplatform.BLE
         private void ConnectionComplete( UnPairedDeviceBLE input )
         {
             BluetoothLEDevice.FromIdAsync(input.Information.Id).AsTask().ContinueWith(
-            (obj)=> 
+            (obj)=>
             {
+                Debug.WriteLine("Connection Complete.");
                 if (obj.Result == null)
                     return;
 
                 var temp = new PairedDeviceBLE(obj.Result, (dev) =>
                 {
+                    Debug.WriteLine("Enumeration Complete.");
                     TriggerDeviceConnected(dev);
                 });
             });
         }
-
         public void Connect(IDeviceBLE pInput)
         {
-            try
-            {
-                Debug.WriteLine("Connecting to : " + pInput.Id);
+            Debug.WriteLine("Connecting to : " + pInput.Id);
 
-                var inputType = pInput.GetType();
-                var searchType = typeof(UnPairedDeviceBLE);
+            var inputType = pInput.GetType();
+            var searchType = typeof(UnPairedDeviceBLE);
 
-                if (inputType == searchType)
-                    ConnectionComplete(pInput as UnPairedDeviceBLE);
-            }
-            catch
-            {
-                Debug.WriteLine("Caught Error : public void Connect(IDeviceBLE pInput)");
-            }
+            if (inputType == searchType)
+                ConnectionComplete(pInput as UnPairedDeviceBLE);
         }
+
+
+
+
+        private DeviceWatcher mDeviceWatcher;
         public void Start()
         {
             mDeviceWatcher.Start();
@@ -135,34 +131,29 @@ namespace rMultiplatform.BLE
         }
         public void Reset()
         {
-
         }
         public ClientBLE()
         {
-            try
-            {
-                //Get all devices paired and not.
-                string query1 = "(" + BluetoothLEDevice.GetDeviceSelectorFromPairingState(true) + ")";
-                string query2 = "(" + BluetoothLEDevice.GetDeviceSelectorFromPairingState(false) + ")";
-                var query = query1 + " OR " + query2;
+            //Get all devices paired and not.
+            string query1 = "(" + BluetoothLEDevice.GetDeviceSelectorFromPairingState(true) + ")";
+            string query2 = "(" + BluetoothLEDevice.GetDeviceSelectorFromPairingState(false) + ")";
+            var query = query1 + " OR " + query2;
 
-                //Create device watcher
-                mDeviceWatcher = DeviceInformation.CreateWatcher(query, new string[]{ "System.Devices.Aep.DeviceAddress", "System.Devices.Aep.IsConnected" }, DeviceInformationKind.AssociationEndpoint);
+            //Create device watcher
+            mDeviceWatcher = DeviceInformation.CreateWatcher(query, new string[]{ "System.Devices.Aep.DeviceAddress", "System.Devices.Aep.IsConnected" }, DeviceInformationKind.AssociationEndpoint);
 
-                // Register event handlers before starting the watcher.
-                // Added, Updated and Removed are required to get all nearby devices
-                mDeviceWatcher.Added    +=  DeviceWatcher_Added;
-                mDeviceWatcher.Updated  +=  DeviceWatcher_Updated;
-                mDeviceWatcher.Removed  +=  DeviceWatcher_Removed;
+            // Register event handlers before starting the watcher.
+            // Added, Updated and Removed are required to get all nearby devices
+            mDeviceWatcher.Added    +=  DeviceWatcher_Added;
+            mDeviceWatcher.Updated  +=  DeviceWatcher_Updated;
+            mDeviceWatcher.Removed  +=  DeviceWatcher_Removed;
 
-                // Start the watcher.
-                Start();
-            }
-            catch
-            {
-                Debug.WriteLine("Caught Error : public ClientBLE()");
-            }
+            // Start the watcher.
+            Start();
         }
+
+        
+
         ~ClientBLE()
         {
             if (mDeviceWatcher != null)
