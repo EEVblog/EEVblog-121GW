@@ -6,7 +6,6 @@ using System.Text;
 using Xamarin.Forms;
 namespace App_112GW
 {
-    [Xamarin.Forms.ContentProperty("Platforms")]
     public class Globals
     {
         static Random random = new Random();
@@ -150,7 +149,6 @@ namespace App_112GW
 		{
 
 			InitializeComponent();
-
 			MainPage = new App_112GW.MainPage();
 		}
 

@@ -24,7 +24,6 @@ namespace rMultiplatform
             mRenderer = new GeneralRenderer(PaintSurface);
             Content = mRenderer;
             mRenderer.InvalidateSurface();
-            InvalidateMeasure();
         }
         public new bool IsVisible
         {
@@ -196,7 +195,6 @@ namespace rMultiplatform
 
             SetupTouch();
             Enable();
-
 
             OffsetAngle = 0;
             ShiftPoints(-0.5f, -0.5f);

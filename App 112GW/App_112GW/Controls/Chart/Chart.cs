@@ -8,6 +8,7 @@ using SkiaSharp;
 using SkiaSharp.Views.Forms;
 using System.Runtime.CompilerServices;
 using System.Diagnostics;
+using App_112GW;
 
 namespace rMultiplatform
 {
@@ -40,16 +41,14 @@ namespace rMultiplatform
         {
             mRenderer = new GeneralRenderer(PaintSurface);
             Content = mRenderer;
-            mRenderer.InvalidateSurface();
         }
         public new bool IsVisible
         {
             set
             {
-                if (value)
-                    Enable();
-                else
-                    Disable();
+                if (value)  Enable();
+                else        Disable();
+
                 base.IsVisible = value;
             }
         }
@@ -161,8 +160,8 @@ namespace rMultiplatform
             //Reinitialise the buffer canvas if it is undefined at all.
             if (Rescale)
             {
-                var aspect      = (float)Height / (float)Width;
-                var can_aspect  = (float)dimension.Height / (float)dimension.Width;
+                var aspect      = (float)(Height / Width);
+                var can_aspect  = dimension.Height / dimension.Width;
 
                 if (aspect * 0.9 <= can_aspect && can_aspect <= aspect * 1.1)
                 {
@@ -208,15 +207,15 @@ namespace rMultiplatform
             }
         }
         private Touch mTouch;
-        private void MTouch_Press(object sender, rMultiplatform.TouchActionEventArgs args)
+        private void MTouch_Press   (object sender, rMultiplatform.TouchActionEventArgs args)
         {
             State = eControlInputState.ePressed;
         }
-        private void MTouch_Hover(object sender, rMultiplatform.TouchActionEventArgs args)
+        private void MTouch_Hover   (object sender, rMultiplatform.TouchActionEventArgs args)
         {
             State = eControlInputState.eHover;
         }
-        private void MTouch_Release(object sender, rMultiplatform.TouchActionEventArgs args)
+        private void MTouch_Release (object sender, rMultiplatform.TouchActionEventArgs args)
         {
             State = eControlInputState.eNone;
         }
@@ -233,12 +232,12 @@ namespace rMultiplatform
             Effects.Add(mTouch);
         }
         public event EventHandler FullscreenClicked;
-        private void MTouch_Tap(object sender, Touch.TouchTapEventArgs args)
+        private void MTouch_Tap     (object sender, Touch.TouchTapEventArgs args)
         {
             FullscreenClicked?.Invoke(sender, EventArgs.Empty);
         }
 
-        private void MTouch_Pan(object sender, TouchPanActionEventArgs args)
+        private void MTouch_Pan     (object sender, TouchPanActionEventArgs args)
         {
             foreach (IChartRenderer Element in ChartElements)
                 if (Element.GetType() == typeof(ChartAxis))
@@ -248,7 +247,7 @@ namespace rMultiplatform
                         element.Pan(args.Dx, args.Dy);
                 }
         }
-        private void MTouch_Pinch(object sender, TouchPinchActionEventArgs args)
+        private void MTouch_Pinch   (object sender, TouchPinchActionEventArgs args)
         {
             var zoomX = (float)args.Pinch.ZoomX;
             var zoomY = (float)args.Pinch.ZoomY;
@@ -271,8 +270,6 @@ namespace rMultiplatform
         //Initialises the object
         public Chart() : base()
         {
-            BackgroundColor = App_112GW.Globals.BackgroundColor;
-
             Enable();
 
             //Must always fill parent container
@@ -293,6 +290,7 @@ namespace rMultiplatform
 
             //Setup touch input
             SetupTouch();
+            BackgroundColor = Globals.BackgroundColor;
         }
     }
 }

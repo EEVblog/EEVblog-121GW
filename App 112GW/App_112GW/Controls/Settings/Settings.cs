@@ -52,7 +52,11 @@ namespace rMultiplatform
 
             SetRightButton("Remove Devices", (o, e) => { RemoveDevices?.Invoke(); });
             SetLeftButton("Refresh", RefreshDevices);
+            UserGrid.HorizontalOptions = LayoutOptions.Fill;
+            UserGrid.VerticalOptions = LayoutOptions.Fill;
             Content = UserGrid;
+
+            BackgroundColor = Globals.BackgroundColor;
         }
 
         private void RefreshDevices(object sender, EventArgs e)

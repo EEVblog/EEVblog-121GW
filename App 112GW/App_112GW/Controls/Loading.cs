@@ -12,11 +12,13 @@ namespace rMultiplatform
 {
     class Loading : ContentView
     {
-        public TimeSpan Period = new TimeSpan(0, 0, 0, 0, 200);
-        private Timer Updater;
+        private TimeSpan    Now     = new TimeSpan(0, 0, 0, 0, 0);
+        private TimeSpan    Period  = new TimeSpan(0, 0, 0, 0, 100);
+        private Timer       Updater;
 
-        string dots_string = ".....";
+        const string dots_string = ".................";
         private int dots = 0;
+
         private Label LoadingText = new Label()
         {
             TextColor = Globals.TextColor,
@@ -28,7 +30,7 @@ namespace rMultiplatform
         {
             Device.BeginInvokeOnMainThread(() =>
             {
-                LoadingText.Text = "Loading" + dots_string.Substring(dots_string.Length - dots);
+                LoadingText.Text = dots_string.Substring(dots_string.Length - dots);
                 dots++; if (dots >= dots_string.Length) dots = 0;
             });
         }
@@ -37,10 +39,8 @@ namespace rMultiplatform
         {
             set
             {
-                if (value)
-                    Updater = new Timer((obj) => { Update(); }, null, new TimeSpan(), Period);
-                else
-                    Updater = null;
+                if (value)  Updater = new Timer((obj) => { Update(); }, null, Now, Period);
+                else        Updater = null;
             }
         }
 
@@ -49,7 +49,7 @@ namespace rMultiplatform
             BackgroundColor = Globals.BackgroundColor;
             HorizontalOptions = LayoutOptions.FillAndExpand;
             VerticalOptions = LayoutOptions.FillAndExpand;
-            Updater = new Timer((obj) => { Update(); }, null, new TimeSpan(), Period);
+            Updater = new Timer((obj) => { Update(); }, null, Now, Period);
             Content = LoadingText;
         }
     }

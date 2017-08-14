@@ -56,10 +56,6 @@ namespace rMultiplatform.BLE
         public IClientBLE mClient;
         public BLEDeviceSelector()
         {
-            BackgroundColor = Globals.BackgroundColor; 
-
-            HorizontalOptions = LayoutOptions.Fill;
-            VerticalOptions = LayoutOptions.Fill;
 
             //Reset BLE
             mClient = null;
@@ -81,6 +77,9 @@ namespace rMultiplatform.BLE
 
             //
             IsBusy = false;
+            BackgroundColor     = Globals.BackgroundColor;
+            HorizontalOptions   = LayoutOptions.Fill;
+            VerticalOptions     = LayoutOptions.Fill;
         }
 
         public void RemoveDevices()

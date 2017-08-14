@@ -1251,7 +1251,6 @@ namespace rMultiplatform
             foreach (var item in mOther.mLayers)
                 item.Off();
 
-            BackgroundColor = Globals.BackgroundColor;
             PressColor = Globals.FocusColor;
             HoverColor = Globals.HighlightColor;
             IdleColor = Globals.TextColor;
@@ -1295,6 +1294,8 @@ namespace rMultiplatform
             rendrect.Right = 0;
             rendrect.Left = 0;
             rendrect.Top = 0;
+
+            BackgroundColor = Globals.BackgroundColor;
         }
     }
 }

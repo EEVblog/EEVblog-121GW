@@ -62,7 +62,7 @@ namespace rMultiplatform
 
         public Multimeter ( BLE.IDeviceBLE pDevice )
         {
-            Padding = 20;
+            Padding = 0;
 
             if (pDevice == null)
                 stateTimer = new Timer(TestCallback, null, 1000, 1000);
@@ -98,20 +98,20 @@ namespace rMultiplatform
             Plot.AddAxis(new ChartAxis(5, 5, 0, 20) {   Label = "Time (s)", Orientation = ChartAxis.AxisOrientation.Horizontal, LockToAxisLabel = "Volts (V)",  LockAlignment = ChartAxis.AxisLock.eEnd, ShowDataKey = false });
             Plot.AddAxis(new ChartAxis(5, 5, 0, 0)  {   Label = "Volts (V)",Orientation = ChartAxis.AxisOrientation.Vertical,   LockToAxisLabel = "Time (s)",   LockAlignment = ChartAxis.AxisLock.eStart});
             Plot.AddData(Data);
+            Plot.FullscreenClicked += Plot_FullScreenClicked;
 
             MultimeterGrid = new Grid();
+            MultimeterGrid.BackgroundColor = Globals.BackgroundColor;
             MultimeterGrid.RowDefinitions.Add       (   new RowDefinition      { Height    = new GridLength(1, GridUnitType.Auto)  });
             MultimeterGrid.RowDefinitions.Add       (   new RowDefinition      { Height    = new GridLength(1, GridUnitType.Star)  });
             MultimeterGrid.ColumnDefinitions.Add    (   new ColumnDefinition   { Width     = new GridLength(1, GridUnitType.Star)  });
-
             MultimeterGrid.Children.Add(Screen, 0, 0);
             MultimeterGrid.Children.Add(Plot,   0, 1);
             MultimeterGrid.Children.Add(Menu,   0, 0);
             Grid.SetRowSpan(Menu, 2);
 
+            BackgroundColor = Globals.BackgroundColor;
             Content = MultimeterGrid;
-            Plot.FullscreenClicked += Plot_FullScreenClicked;
-
             SetView();
         }
 

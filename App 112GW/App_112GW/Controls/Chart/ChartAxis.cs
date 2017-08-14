@@ -51,6 +51,7 @@ namespace rMultiplatform
             EventType = Typ;
         } 
     }
+
     public class ChartAxisDrawEventArgs : EventArgs
     {
         public int                          Index;

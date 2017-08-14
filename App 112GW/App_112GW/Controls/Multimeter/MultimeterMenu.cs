@@ -135,6 +135,8 @@ namespace rMultiplatform
             AutoAddRight    (mRange     );
             AutoAddLeft     (mSave);
             SetBottomLeft   (mBack);
+
+            BackgroundColor = Globals.BackgroundColor;
         }
 
         int rows = 0;
