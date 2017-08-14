@@ -6,13 +6,20 @@ using System.Text;
 using System.Threading.Tasks;
 using Xamarin.Forms;
 using App_112GW;
+using Xamarin.Forms.PlatformConfiguration;
+using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
+using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
+using Xamarin.Forms.PlatformConfiguration.WindowsSpecific;
 
 namespace rMultiplatform.BLE
 {
     public class BLEDeviceSelector : ContentView
     {
+        private Loading Activity = new Loading();
+
         public delegate void DeviceConnected(IDeviceBLE pDevice);
         public event DeviceConnected Connected;
+
 
         ListView listView;
         public void Reset()
@@ -27,34 +34,53 @@ namespace rMultiplatform.BLE
             }
         }
 
+        private bool IsBusy
+        {
+            set
+            {
+                if (value)
+                {
+                    Content = null;
+                    Activity.IsRunning = true;
+                    Content = Activity;
+                }
+                else
+                {
+                    Content = null;
+                    Activity.IsRunning = false;
+                    Content = listView;
+                }
+            }
+        }
+
         public IClientBLE mClient;
         public BLEDeviceSelector()
         {
-            HorizontalOptions = LayoutOptions.CenterAndExpand;
-            VerticalOptions = LayoutOptions.CenterAndExpand;
+            BackgroundColor = Globals.BackgroundColor; 
 
-            listView = new ListView();
-            listView.BackgroundColor = Globals.BackgroundColor;
+            HorizontalOptions = LayoutOptions.Fill;
+            VerticalOptions = LayoutOptions.Fill;
 
             //Reset BLE
             mClient = null;
-            mClient = new ClientBLE();
+            mClient = new ClientBLE(); 
             mClient.DeviceConnected += MClient_DeviceConnected;
 
-            //
-            var template = new DataTemplate(typeof(TextCell));
-
             // We can set data bindings to our supplied objects.
-            template.SetBinding (TextCell.TextProperty, "Name");
-            template.SetBinding (TextCell.DetailProperty, "Id");
-            template.SetValue   (TextCell.TextColorProperty, Globals.TextColor);
-            template.SetValue   (TextCell.DetailColorProperty, Globals.HighlightColor);
+            var template = new DataTemplate(typeof(TextCell));
+            template.SetBinding (TextCell.TextProperty,         "Name");
+            template.SetBinding (TextCell.DetailProperty,       "Id");
+            template.SetValue   (TextCell.TextColorProperty,    Globals.TextColor);
+            template.SetValue   (TextCell.DetailColorProperty,  Globals.HighlightColor);
 
             //
+            listView = new ListView();
             listView.ItemTemplate = template;
             listView.ItemSelected += OnSelection;
             listView.ItemsSource = mClient.ListDevices();
-            Content = listView;
+
+            //
+            IsBusy = false;
         }
 
         public void RemoveDevices()
@@ -64,6 +90,7 @@ namespace rMultiplatform.BLE
 
         private void MClient_DeviceConnected(IDeviceBLE pDevice)
         {
+            IsBusy = false;
             try
             {
                 Connected?.Invoke(pDevice);
@@ -87,7 +114,10 @@ namespace rMultiplatform.BLE
 
             //Wait for device to appear
             if (mClient != null)
+            {
+                IsBusy = true;
                 mClient.Connect(Device);
+            }
         }
     }
 }

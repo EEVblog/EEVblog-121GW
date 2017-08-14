@@ -23,7 +23,6 @@ namespace rMultiplatform
             Title = "< Settings >";
 
             //Setup connected event
-            UserGrid.BackgroundColor = Globals.BackgroundColor;
             UserGrid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Star) });
             UserGrid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Star) });
             UserGrid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(50, GridUnitType.Absolute) });
@@ -47,7 +46,6 @@ namespace rMultiplatform
             UserGrid.Children.Add(BLESelectDevice, 0, 0);
             Grid.SetColumnSpan(BLESelectDevice, 2);
             Grid.SetRowSpan(BLESelectDevice, 1);
-
 
             ClearRightButton();
             ClearLeftButton();

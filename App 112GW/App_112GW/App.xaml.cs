@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 
 using Xamarin.Forms;
-
 namespace App_112GW
 {
+    [Xamarin.Forms.ContentProperty("Platforms")]
     public class Globals
     {
         static Random random = new Random();
@@ -15,10 +15,9 @@ namespace App_112GW
             var output = (float)random.NextDouble() * (max - min) + min;
             return output;
         }
-
-        static private Object GetResource(string name)
+        static private T GetResource<T>(string name)
         {
-            return Application.Current.Resources[name];
+            return (T)Application.Current.Resources[name];
         }
 
         static public double _BorderWidth;
@@ -26,8 +25,7 @@ namespace App_112GW
         {
             get
             {
-                _BorderWidth = (double)GetResource("BorderWidth");
-                return (int)_BorderWidth;
+                return 3;
             }
         }
 
@@ -36,44 +34,98 @@ namespace App_112GW
         {
             get
             {
-                _HighlightColor = (Color)GetResource("HighlightColor");
-                return _HighlightColor;
+                switch(Device.RuntimePlatform)
+                {
+                    case Device.iOS:
+                        return Color.FromHex("#FFFFFF");
+                    case Device.Android:
+                        return Color.FromHex("#FFFFFF");
+                    case Device.Windows:
+                        return Color.FromHex("#000000");
+                    case Device.WinPhone:
+                        return Color.FromHex("#000000");
+                }
+                return Color.Black;
             }
         }
+
         static public Color _TextColor;
         static public Color TextColor
         {
             get
             {
-                _TextColor = (Color)GetResource("TextColor");
-                return _TextColor;
+                switch (Device.RuntimePlatform)
+                {
+                    case Device.iOS:
+                        return Color.FromHex("#C5CCB9");
+                    case Device.Android:
+                        return Color.FromHex("#C5CCB9");
+                    case Device.Windows:
+                        return Color.FromHex("#000000");
+                    case Device.WinPhone:
+                        return Color.FromHex("#000000");
+                }
+                return Color.Black;
             }
         }
+
         static public Color _FocusColor;
         static public Color FocusColor
         {
             get
             {
-                _FocusColor = (Color)GetResource("FocusColor");
-                return _FocusColor;
+                switch (Device.RuntimePlatform)
+                {
+                    case Device.iOS:
+                        return Color.FromHex("#7E827A");
+                    case Device.Android:
+                        return Color.FromHex("#7E827A");
+                    case Device.Windows:
+                        return Color.FromHex("#7E827A");
+                    case Device.WinPhone:
+                        return Color.FromHex("#7E827A");
+                }
+                return Color.Black;
             }
         }
-        static public Color _BorderColor;
-        static public Color BorderColor
-        {
-            get
-            {
-                _BorderColor = (Color)GetResource("BorderColor");
-                return _BorderColor;
-            }
-        }
+
         static public Color _BackgroundColor;
         static public Color BackgroundColor
         {
             get
             {
-                _BackgroundColor = (Color)GetResource("BackgroundColor");
-                return _BackgroundColor;
+                switch (Device.RuntimePlatform)
+                {
+                    case Device.iOS:
+                        return Color.FromHex("#111111");
+                    case Device.Android:
+                        return Color.FromHex("#111111");
+                    case Device.Windows:
+                        return Color.FromHex("#FFFFFF");
+                    case Device.WinPhone:
+                        return Color.FromHex("#FFFFFF");
+                }
+                return Color.Black;
+            }
+        }
+
+        static public Color _BorderColor;
+        static public Color BorderColor
+        {
+            get
+            {
+                switch (Device.RuntimePlatform)
+                {
+                    case Device.iOS:
+                        return Color.FromHex("#292F33");
+                    case Device.Android:
+                        return Color.FromHex("#292F33");
+                    case Device.Windows:
+                        return Color.FromHex("#292F33");
+                    case Device.WinPhone:
+                        return Color.FromHex("#292F33");
+                }
+                return Color.Black;
             }
         }
 

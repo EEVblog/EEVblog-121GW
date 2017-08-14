@@ -169,6 +169,7 @@ namespace rMultiplatform
             ControlView = Control;
             LabelView = new Label()
             {
+                TextColor  = Globals.TextColor,
                 Text = Label,
                 VerticalOptions = LayoutOptions.Fill,
                 VerticalTextAlignment = TextAlignment.Center

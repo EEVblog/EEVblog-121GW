@@ -156,14 +156,17 @@ namespace rMultiplatform.BLE
 
         void Deregister()
         {
-            mDevice.ConnectionStatusChanged -= MDevice_ConnectionStatusChanged;
+            if (mDevice != null)
+            {
+                mDevice.ConnectionStatusChanged -= MDevice_ConnectionStatusChanged;
 
-            if (mServices != null)
-                foreach (var service in mServices)
-                    service.Unregister();
+                if (mServices != null)
+                    foreach (var service in mServices)
+                        service.Unregister();
 
-            mServices = null;
-            mServices = new List<IServiceBLE>();
+                mServices = null;
+                mServices = new List<IServiceBLE>();
+            }
         }
 
         async void MDevice_ConnectionStatusChanged(BluetoothLEDevice sender, object args)

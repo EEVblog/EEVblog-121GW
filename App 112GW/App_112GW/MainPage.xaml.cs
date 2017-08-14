@@ -30,12 +30,11 @@ namespace App_112GW
 
         public MainPage()
         {
+            BackgroundColor = Globals.BackgroundColor;
             On<Xamarin.Forms.PlatformConfiguration.Android>().SetIsSwipePagingEnabled(false);
             Children.Add(SettingsView);
-
             SettingsView.AddDevice += SettingsView_AddDevice;
             SettingsView.RemoveDevices += SettingsView_RemoveDevices;
-
             Padding = 10;
         }
     }

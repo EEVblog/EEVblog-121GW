@@ -3,8 +3,10 @@ using Xamarin.Forms;
 
 namespace rMultiplatform
 {
-    public partial class ChartView : Grid
+    public partial class ChartView : ContentView
     {
+        private Chart       mChart;
+
         public event EventHandler FullscreenClicked
         {
             add
@@ -17,11 +19,6 @@ namespace rMultiplatform
             }
         }
         
-        bool                    Item = true;
-        public  StackLayout     mChartGrid;
-        private Chart           mChart;
-        public  ChartMenu       mMenu;
-
         //Wrappers for the supported chart elements
         public void AddAxis(ChartAxis pInput)
         {
@@ -51,57 +48,21 @@ namespace rMultiplatform
 
         public ChartView()
         {
-            VerticalOptions = LayoutOptions.Fill;
-            HorizontalOptions = LayoutOptions.Fill;
-
-            //Setup the events
-            mChart = new Chart();
-            mMenu = new ChartMenu();
-            mMenu.BackClicked   += ViewToggle;
-            mMenu.SaveClicked   += DataSave;
-            mChart.Clicked      += ViewToggle;
-            FullscreenClicked   += FullscreenToggle;
+            VerticalOptions     =   LayoutOptions.Fill;
+            HorizontalOptions   =   LayoutOptions.Fill;
 
             //Add
-            Children.Add(mMenu);
-            Children.Add(mChart);
-
-            Item = false;
-            SetView();
+            Content = (mChart = new Chart());
         }
 
         protected override void OnSizeAllocated(double width, double height)
         {
+            mChart.InvalidateSurface();
             base.OnSizeAllocated(width, height);
-        }
-        private void SetView()
-        {
-            switch (Item)
-            {
-                case true:
-                    mMenu.IsVisible = true;
-                    mChart.IsVisible = false;
-                    break;
-                case false:
-                    mMenu.IsVisible = false;
-                    mChart.IsVisible = true;
-                    break;
-                default:
-                    break;
-            }
         }
         public void DataSave(object sender, EventArgs e)
         {
             mChart.SaveCSV();
-        }
-        public void ViewToggle(object sender, EventArgs e)
-        {
-            Item = !Item;
-            SetView();
-        }
-        private void FullscreenToggle(object sender, EventArgs e)
-        {
-            SetView();
         }
     }
 }

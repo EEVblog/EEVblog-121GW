@@ -82,10 +82,7 @@ namespace rMultiplatform
             AddView(mSave, 1, 0);
             //##################################################
             BackgroundColor         = Globals.BackgroundColor;
-            mSave.BackgroundColor   = Globals.BackgroundColor;
-            mSave.TextColor         = Globals.TextColor;
         }
-
 
         private void ButtonPress_Save (object sender, EventArgs e)
         {

@@ -13,53 +13,40 @@ namespace rMultiplatform
 {
     public class MultimeterMenu : Grid
     {
-        public event EventHandler   BackClicked;
-        public event EventHandler   PlotClicked;
-        public event EventHandler   HoldClicked;
-        public event EventHandler   RelClicked;
-        public event EventHandler   ModeChanged;
-        public event EventHandler   RangeChanged;
-        public event EventHandler   DeviceRemoved;
+        public event    EventHandler        BackClicked;
+        public event    EventHandler        HoldClicked;
+        public event    EventHandler        RelClicked;
+        public event    EventHandler        ModeChanged;
+        public event    EventHandler        RangeChanged;
+        public event    EventHandler        SaveClicked;
+        private         Button              mMode;
+        private         Button              mHold;
+        private         Button              mRange;
+        private         Button              mRelative;
+        private         Button              mSave;
+        private         LabelledBackButton  mBack;
 
         static bool                 SameType(object A, Type B)
         {
             return Object.ReferenceEquals(A.GetType(), B);
         }
-        public bool                 PlotEnabled
-        {
-            get
-            {
-                return mPlotCheck.Checked;
-            }
-        }
-
-        private Label               mSerialNumber;
-        private LabelledCheckbox    mPlotCheck;
-        private LabelledBackButton  mBack;
         public new bool IsVisible
         {
             set
             {
                 if (value)
                 {
-                    mPlotCheck.ControlView.Enable();
                     mBack.ControlView.Enable();
                 }
                 else
                 {
-                    mPlotCheck.ControlView.Disable();
                     mBack.ControlView.Disable();
                 }
                 base.IsVisible = value;
             }
         }
 
-        private Button              mMode;
-        private Button              mHold;
-        private Button              mRange;
-        private Button              mRelative;
-
-
+        //
         private void    AddView    (View pInput, int pX, int pY, int pXSpan = 1, int pYSpan = 1)
         {
             Children.Add(pInput);
@@ -71,21 +58,17 @@ namespace rMultiplatform
         }
         public          MultimeterMenu   (string pSerialNumber = "SN0000")
         {
+            Padding = 10;
+
             //##################################################
             HorizontalOptions   = LayoutOptions.Fill;
-            VerticalOptions     = LayoutOptions.StartAndExpand;
-            Padding             = 10;
+            VerticalOptions     = LayoutOptions.Fill;
 
             //##################################################
             //The grid is currently 2x5
-            //Setup Grid rows
-            RowDefinitions.Add(new RowDefinition { Height = new GridLength (1, GridUnitType.Star) });
-            RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Star) });
-            RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Auto) });
-
             //Setup Grid columns
-            ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength (1, GridUnitType.Star) });
-            ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength (1, GridUnitType.Star) });
+            ColumnDefinitions.Add   (new ColumnDefinition { Width = new GridLength (1, GridUnitType.Star) });
+            ColumnDefinitions.Add   (new ColumnDefinition { Width = new GridLength (1, GridUnitType.Star) });
 
             //##################################################
             //Add Hold Button
@@ -94,7 +77,6 @@ namespace rMultiplatform
                 Text = "Hold"
             };
             mHold.Clicked += ButtonPress_Hold;
-            AddView(mHold, 0, 0);
 
             //##################################################
             //Add Relative Button
@@ -103,16 +85,17 @@ namespace rMultiplatform
                 Text = "Relative"
             };
             mRelative.Clicked += ButtonPress_Relative;
-            AddView(mRelative, 0, 1);
 
             //##################################################
             //Add Relative Button
-            var Stack = new StackLayout()
+            mSave = new Button()
             {
-                Orientation             = StackOrientation.Horizontal,
-                HorizontalOptions       = LayoutOptions.FillAndExpand,
-                VerticalOptions         = LayoutOptions.CenterAndExpand,
+                Text = "Save"
             };
+            mSave.Clicked += ButtonPress_Save;
+
+            //##################################################
+            //Add Relative Button
             mBack = new LabelledBackButton("Back")
             {
                 BorderWidth             = Globals.BorderWidth,
@@ -123,39 +106,12 @@ namespace rMultiplatform
             mBack.Back += ButtonPress_Back;
 
             //##################################################
-            //Add Plot checkbox
-            mPlotCheck = new LabelledCheckbox("Plot")
-            {
-                BorderWidth             = Globals.BorderWidth,
-                LabelSide               = LabelledControl.eLabelSide.Left,
-                HorizontalOptions       = LayoutOptions.EndAndExpand,
-                Padding                 = 0
-            };
-
-            //##################################################
-            //Add Serial number
-            mSerialNumber = new Label()
-            {
-                Text                    = pSerialNumber,
-                VerticalOptions         = LayoutOptions.CenterAndExpand,
-                HorizontalOptions       = LayoutOptions.Fill,
-                HorizontalTextAlignment = TextAlignment.Center
-            };
-
-            mPlotCheck.Changed += CheckboxChange_Plot;
-            Stack.Children.Add(mBack);
-            Stack.Children.Add(mSerialNumber);
-            Stack.Children.Add(mPlotCheck);
-            AddView(Stack, 0 ,2, 2, 1);
-
-            //##################################################
             //Add range dropdown
             mRange = new Button()
             {
                 Text = "Range",
             };
             mRange.Clicked += PickerChange_Range;
-            AddView(mRange, 1, 0);
 
             //##################################################
             //Add Mode dropdown
@@ -168,19 +124,42 @@ namespace rMultiplatform
             //##################################################
             //
             mMode.Clicked += PickerChange_Mode;
-            AddView(mMode, 1, 1);
 
             //##################################################
+
             //
-            BackgroundColor             = Globals.BackgroundColor;
-            mMode.BackgroundColor       = Globals.BackgroundColor;
-            mMode.TextColor             = Globals.TextColor;
-            mRange.BackgroundColor      = Globals.BackgroundColor;
-            mRange.TextColor            = Globals.TextColor;
-            mHold.BackgroundColor       = Globals.BackgroundColor;
-            mHold.TextColor             = Globals.TextColor;
-            mRelative.BackgroundColor   = Globals.BackgroundColor;
-            mRelative.TextColor         = Globals.TextColor;
+            DefineRows(4);
+            AutoAddRight    (mHold      );
+            AutoAddRight    (mMode      );
+            AutoAddRight    (mRelative  );
+            AutoAddRight    (mRange     );
+            AutoAddLeft     (mSave);
+            SetBottomLeft   (mBack);
+        }
+
+        int rows = 0;
+        void DefineRows(int Count)
+        {
+            rows = Count;
+            for (var i = 0; i < Count; ++i)
+                RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Auto) });
+        }
+
+        int rightcount = 0;
+        void AutoAddRight(View Item)
+        {
+            if (rightcount < rows)
+                AddView(Item, 1, rightcount++);
+        }
+        int leftcount = 0;
+        void AutoAddLeft(View Item)
+        {
+            if (leftcount < rows)
+                AddView(Item, 0, leftcount++);
+        }
+        void SetBottomLeft(View Item)
+        {
+            AddView(Item, 0, rows - 1);
         }
 
         //The reactions to picker, checkbox, buttons events
@@ -196,12 +175,10 @@ namespace rMultiplatform
         {
             BackClicked?.Invoke(sender, e);
         }
-        private void    CheckboxChange_Plot    (object sender, EventArgs e)
+        private void    ButtonPress_Save       (object sender, EventArgs e)
         {
-            PlotClicked?.Invoke(mPlotCheck, e);
+            SaveClicked?.Invoke(sender, e);
         }
-
-        //
         private void    PickerChange_Range     (object sender, EventArgs e)
         {
             RangeChanged?.Invoke(sender, e);

@@ -250,27 +250,27 @@ namespace rMultiplatform
             set
             {
                 _State = value;
-                InvalidateSurface();
+                ChangeColors();
             }
         }
 
 
-        private void MTouch_Tap(object sender, Touch.TouchTapEventArgs args)
+
+        private void MTouch_Pressed(object sender, TouchActionEventArgs args)
         {
             State = eControlInputState.ePressed;
-            ChangeColors();
+        }
+        private void MTouch_Tap(object sender, Touch.TouchTapEventArgs args)
+        {
+            OnClicked(EventArgs.Empty);
         }
         private void MTouch_Hover(object sender, rMultiplatform.TouchActionEventArgs args)
         {
             State = eControlInputState.eHover;
-            ChangeColors();
         }
         private void MTouch_Release(object sender, rMultiplatform.TouchActionEventArgs args)
         {
-            if (State == eControlInputState.ePressed)
-                OnClicked(EventArgs.Empty);
             State = eControlInputState.eNone;
-            ChangeColors();
         }
 
         private SKColor _IdleColor;
@@ -1053,6 +1053,7 @@ namespace rMultiplatform
             //Add the gesture recognizer 
             mTouch = new rMultiplatform.Touch();
             mTouch.Tap += MTouch_Tap;
+            mTouch.Pressed += MTouch_Pressed;
             mTouch.Hover += MTouch_Hover;
             mTouch.Released += MTouch_Release;
             Effects.Add(mTouch);
@@ -1116,8 +1117,6 @@ namespace rMultiplatform
             //Scale Image by height to match request
             var scale = width / LayerX;
             var imageWidth = LayerX * scale;
-
-
             float imageHeight;
             if (imageWidth > width)
             {
@@ -1164,9 +1163,10 @@ namespace rMultiplatform
         {
             return (CanvasSize.Height * value / (float)Height);
         }
-        void PaintSurface(SKCanvas canvas, SKSize dimension)
+
+        void PaintSurface ( SKCanvas canvas, SKSize dimension )
         {
-            if (RemakeCanvas)
+            if ( RemakeCanvas )
             {
                 //Handles glitch in android.
                 var canvas_aspect = dimension.Height / dimension.Width;
@@ -1198,9 +1198,6 @@ namespace rMultiplatform
                 //Setup a clear canvas
                 mCanvas = new SKCanvas(mLayer);
                 mCanvas.Clear(Globals.BackgroundColor.ToSKColor());
-
-                //Clear draw surface
-                canvas.Clear(Globals.BackgroundColor.ToSKColor());
             }
 
             //Add render on change
@@ -1215,19 +1212,19 @@ namespace rMultiplatform
             canvas.Clear();
             canvas.DrawBitmap(mLayer, rendrect);
         }
-        public                  MultimeterScreen()
+        public MultimeterScreen()
         {
             Enable();
 
             //Default size options
-            HorizontalOptions = LayoutOptions.Fill;
-            VerticalOptions = LayoutOptions.Fill;
+            HorizontalOptions   = LayoutOptions.Fill;
+            VerticalOptions     = LayoutOptions.Fill;
 
             //New layer images
-            mSegments = new List<Layers>();
-            mSubSegments = new List<Layers>();
-            mBargraph = new Layers("mBargraph");
-            mOther = new Layers("mOther");
+            mSegments       = new List<Layers>();
+            mSubSegments    = new List<Layers>();
+            mBargraph       = new Layers("mBargraph");
+            mOther          = new Layers("mOther");
 
             //Setup the image cache if it doesn't exist
             CacheFunction = null;

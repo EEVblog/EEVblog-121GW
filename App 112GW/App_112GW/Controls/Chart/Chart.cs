@@ -153,7 +153,6 @@ namespace rMultiplatform
             //As base class initialises first the onSizeAllocated can be triggered before padding is intiialised
             if (Padding != null)
                 Padding.SetParentSize(Size.Width, Size.Height, Size.Width / Width);
-
             foreach (IChartRenderer Element in ChartElements)
                 Element.SetParentSize(Size.Width, Size.Height, Size.Width / Width);
         }
@@ -162,8 +161,16 @@ namespace rMultiplatform
             //Reinitialise the buffer canvas if it is undefined at all.
             if (Rescale)
             {
-                Rescale = false;
-                UpdateCanvasSize(dimension);
+                var aspect      = (float)Height / (float)Width;
+                var can_aspect  = (float)dimension.Height / (float)dimension.Width;
+
+                if (aspect * 0.9 <= can_aspect && can_aspect <= aspect * 1.1)
+                {
+                    //Handles glitch in android.
+                    Rescale = false;
+                    UpdateCanvasSize(dimension);
+                }
+                else return;
             }
 
             // If the child elements are not registered with each other do that
@@ -173,7 +180,8 @@ namespace rMultiplatform
 
             // Let all child elements render, layers are already sorted
             canvas.Clear(BackgroundColor.ToSKColor());
-            foreach (var Element in ChartElements) Element.Draw(canvas);
+            foreach (var Element in ChartElements)
+                Element.Draw(canvas);
         }
 
         public event EventHandler Clicked;
@@ -215,28 +223,19 @@ namespace rMultiplatform
         private void SetupTouch()
         {
             //Add the gesture recognizer 
-            mTouch = new rMultiplatform.Touch();
-            mTouch.Tap += MTouch_Tap;
-            mTouch.DoubleTap += MTouch_DoubleTap;
-            mTouch.Pressed += MTouch_Press;
-            mTouch.Hover += MTouch_Hover;
-            mTouch.Released += MTouch_Release;
-            mTouch.Pinch += MTouch_Pinch;
-            mTouch.Pan += MTouch_Pan;
+            mTouch = new Touch();
+            mTouch.Tap          += MTouch_Tap;
+            mTouch.Pressed      += MTouch_Press;
+            mTouch.Hover        += MTouch_Hover;
+            mTouch.Released     += MTouch_Release;
+            mTouch.Pinch        += MTouch_Pinch;
+            mTouch.Pan          += MTouch_Pan;
             Effects.Add(mTouch);
         }
         public event EventHandler FullscreenClicked;
-
-        //The reactions to picker, checkbox, buttons events
-        private void MTouch_DoubleTap(object sender, TouchDoubleTapEventArgs args)
-        {
-            Debug.WriteLine("ButtonPress_Fullscreen.");
-            FullscreenClicked?.Invoke(sender, args);
-        }
-
         private void MTouch_Tap(object sender, Touch.TouchTapEventArgs args)
         {
-            OnClicked(EventArgs.Empty);
+            FullscreenClicked?.Invoke(sender, EventArgs.Empty);
         }
 
         private void MTouch_Pan(object sender, TouchPanActionEventArgs args)
@@ -272,11 +271,13 @@ namespace rMultiplatform
         //Initialises the object
         public Chart() : base()
         {
+            BackgroundColor = App_112GW.Globals.BackgroundColor;
+
             Enable();
 
             //Must always fill parent container
-            HorizontalOptions = LayoutOptions.Fill;
-            VerticalOptions = LayoutOptions.Fill;
+            HorizontalOptions       = LayoutOptions.Fill;
+            VerticalOptions         = LayoutOptions.Fill;
 
             //Setup chart elements
             mDrawPaint              = new SKPaint();
@@ -289,8 +290,6 @@ namespace rMultiplatform
             var transparency        = SKColors.Transparent;
             mDrawPaint.BlendMode    = SKBlendMode.SrcOver;
             mDrawPaint.ColorFilter  = SKColorFilter.CreateBlendMode(transparency, SKBlendMode.DstOver);
-
-            BackgroundColor = App_112GW.Globals.BackgroundColor;
 
             //Setup touch input
             SetupTouch();

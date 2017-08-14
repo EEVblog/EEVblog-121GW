@@ -45,7 +45,7 @@ namespace rMultiplatform
         public MultimeterScreen         Screen;
         public MultimeterMenu           Menu;
         public ChartData                Data;
-        public ChartView                Plot;
+        public Chart                    Plot;
 
         enum ActiveItem
         {
@@ -62,6 +62,8 @@ namespace rMultiplatform
 
         public Multimeter ( BLE.IDeviceBLE pDevice )
         {
+            Padding = 20;
+
             if (pDevice == null)
                 stateTimer = new Timer(TestCallback, null, 1000, 1000);
             else
@@ -72,7 +74,6 @@ namespace rMultiplatform
             }
 
             Screen                  =   new MultimeterScreen();
-            Screen.BackgroundColor  =   Globals.BackgroundColor;
             Screen.Clicked          +=  Menu_BackClicked;
 
             string id;
@@ -85,42 +86,33 @@ namespace rMultiplatform
                 Menu = new MultimeterMenu(id.Substring(id.Length - 5));
             }
 
-            Menu.BackgroundColor    =   Globals.BackgroundColor;
             Menu.BackClicked        +=  Menu_BackClicked;
-            Menu.PlotClicked        +=  Menu_PlotClicked;
             Menu.HoldClicked        +=  Menu_HoldClicked;
             Menu.RelClicked         +=  Menu_RelClicked;
             Menu.ModeChanged        +=  Menu_ModeChanged;
             Menu.RangeChanged       +=  Menu_RangeChanged;
             
-            Data = new ChartData(ChartData.ChartDataMode.eRescaling, "Time (s)", "Volts (V)", 10f);
-            Plot = new ChartView() { Padding = new ChartPadding(0.1) };
+            Data = new ChartData( ChartData.ChartDataMode.eRescaling, "Time (s)", "Volts (V)", 10f );
+            Plot = new Chart() { Padding = new ChartPadding( 0.1f ) };
             Plot.AddGrid(new ChartGrid());
-            Plot.AddAxis(new ChartAxis(5, 5, 0, 20) {   Label = "Time (s)",     Orientation = ChartAxis.AxisOrientation.Horizontal, LockToAxisLabel = "Volts (V)",  LockAlignment = ChartAxis.AxisLock.eEnd, ShowDataKey = false });
-            Plot.AddAxis(new ChartAxis(5, 5, 0, 0)  {   Label = "Volts (V)",    Orientation = ChartAxis.AxisOrientation.Vertical,   LockToAxisLabel = "Time (s)", LockAlignment = ChartAxis.AxisLock.eStart});
+            Plot.AddAxis(new ChartAxis(5, 5, 0, 20) {   Label = "Time (s)", Orientation = ChartAxis.AxisOrientation.Horizontal, LockToAxisLabel = "Volts (V)",  LockAlignment = ChartAxis.AxisLock.eEnd, ShowDataKey = false });
+            Plot.AddAxis(new ChartAxis(5, 5, 0, 0)  {   Label = "Volts (V)",Orientation = ChartAxis.AxisOrientation.Vertical,   LockToAxisLabel = "Time (s)",   LockAlignment = ChartAxis.AxisLock.eStart});
             Plot.AddData(Data);
-            Plot.FullscreenClicked += Plot_FullScreenClicked;
 
             MultimeterGrid = new Grid();
-
-            MultimeterGrid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Auto) });
-            MultimeterGrid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Star) });
-            MultimeterGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+            MultimeterGrid.RowDefinitions.Add       (   new RowDefinition      { Height    = new GridLength(1, GridUnitType.Auto)  });
+            MultimeterGrid.RowDefinitions.Add       (   new RowDefinition      { Height    = new GridLength(1, GridUnitType.Star)  });
+            MultimeterGrid.ColumnDefinitions.Add    (   new ColumnDefinition   { Width     = new GridLength(1, GridUnitType.Star)  });
 
             MultimeterGrid.Children.Add(Screen, 0, 0);
+            MultimeterGrid.Children.Add(Plot,   0, 1);
+            MultimeterGrid.Children.Add(Menu,   0, 0);
+            Grid.SetRowSpan(Menu, 2);
 
-
-            MultimeterGrid.Children.Add(Plot, 0, 1);
-            Grid.SetColumnSpan(Screen, 1);
-            Grid.SetRowSpan(Screen, 1);
-            Grid.SetColumnSpan(Plot, 1);
-            Grid.SetRowSpan(Plot, 1);
-
-
-            MultimeterGrid.Children.Add(Screen);
-            //MultimeterGrid.Children.Add(Menu);
-            MultimeterGrid.Children.Add(Plot);
             Content = MultimeterGrid;
+            Plot.FullscreenClicked += Plot_FullScreenClicked;
+
+            SetView();
         }
 
         ActiveItem LastActive;
@@ -173,57 +165,42 @@ namespace rMultiplatform
             SendData(data);
         }
 
-        void FullscreenPlot()
+
+        private void PlotFullscreen()
         {
-            Plot.IsVisible      = true;
-            Screen.IsVisible    = false;
-            Menu.IsVisible      = false;
-
-            Grid.SetColumnSpan(Screen, 1);
-            Grid.SetRowSpan(Screen, 1);
-            Grid.SetColumnSpan(Plot, 1);
-            Grid.SetRowSpan(Plot, 2);
-
-            Grid.SetRow(Plot, 0);
+            Plot.IsVisible = true;
+            Grid.SetRowSpan(Menu, 2);
+        }
+        private void PlotSmall()
+        {
+            Plot.IsVisible = true;
+            Grid.SetRowSpan(Menu, 1);
+        }
+        private void PlotHide()
+        {
+            Plot.IsVisible = false;
         }
 
         private void SetView()
         {
             switch (Item)
             {
-                case ActiveItem.Menu:
-                    //Menu.IsVisible = true;
-                    //Screen.IsVisible = false;
-                    //Menu.IsVisible = false;
-
-                    //Grid.SetColumnSpan(Screen, 1);
-                    //Grid.SetRowSpan(Screen, 1);
-                    //Grid.SetColumnSpan(Plot, 1);
-                    //Grid.SetRowSpan(Plot, 1);
-
-                    //Grid.SetRow(Plot, 1);
-                    //break;
-                case ActiveItem.Screen:
-                    Screen.IsVisible = true;
-                    Plot.IsVisible = true;
-                    Menu.IsVisible = false;
-                    
-                    Grid.SetColumnSpan(Screen, 1);
-                    Grid.SetRowSpan(Screen, 1);
-                    Grid.SetColumnSpan(Plot, 1);
-                    Grid.SetRowSpan(Plot, 1);
-
-                    Grid.SetRow(Plot, 1);
-                    Screen.InvalidateSurface();
-                    break;
-                case ActiveItem.FullscreenPlot:
-                    FullscreenPlot();
-                    break;
+            case ActiveItem.Menu:
+                Menu.IsVisible      =   true;
+                Screen.IsVisible    =   false;
+                PlotHide();
+                break;
+            case ActiveItem.Screen:
+                Screen.IsVisible    =   true;
+                Menu.IsVisible      =   false;
+                PlotSmall();
+                break;
+            case ActiveItem.FullscreenPlot:
+                Screen.IsVisible    =   false;
+                Menu.IsVisible      =   false;
+                PlotFullscreen();
+                break;
             }
-        }
-        protected override void OnSizeAllocated(double width, double height)
-        {
-            base.OnSizeAllocated(width, height);
         }
         public void Menu_BackClicked(object sender, EventArgs e)
         {
@@ -239,10 +216,6 @@ namespace rMultiplatform
                     Item = ActiveItem.Screen;
                     break;
             }
-            SetView();
-        }
-        public void Menu_PlotClicked(object sender, EventArgs e)
-        {
             SetView();
         }
     }
