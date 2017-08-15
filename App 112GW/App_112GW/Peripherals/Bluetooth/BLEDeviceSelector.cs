@@ -71,9 +71,11 @@ namespace rMultiplatform.BLE
 
             //
             listView = new ListView();
-            listView.ItemTemplate = template;
-            listView.ItemSelected += OnSelection;
-            listView.ItemsSource = mClient.ListDevices();
+            listView.HorizontalOptions  = LayoutOptions.Fill;
+            listView.VerticalOptions    = LayoutOptions.Fill;
+            listView.ItemTemplate       = template;
+            listView.ItemSelected       += OnSelection;
+            listView.ItemsSource        = mClient.ListDevices();
 
             //
             IsBusy = false;

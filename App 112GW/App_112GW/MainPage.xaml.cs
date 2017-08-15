@@ -1,5 +1,6 @@
 ﻿using rMultiplatform;
 using rMultiplatform.BLE;
+using Xamarin.Forms;
 using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
 
 namespace App_112GW
@@ -36,6 +37,14 @@ namespace App_112GW
             SettingsView.AddDevice += SettingsView_AddDevice;
             SettingsView.RemoveDevices += SettingsView_RemoveDevices;
             Padding = 10;
+
+
+            Children.Add(
+                new ContentPage()
+                {
+                    Title = "This",
+                    Content = new MathChartSettings()
+                });
         }
     }
 }
