@@ -6,5 +6,6 @@ namespace App_112GW.Controls.Chart.Combined_Plot
 {
     class MathChart
     {
+
     }
 }

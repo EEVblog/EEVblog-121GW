@@ -693,7 +693,6 @@ namespace rMultiplatform
             return matrix;
         }
 
-
         public bool GetCoordinate(double Value, out double Output)
         {
             if (VisibleRange.Minimum <= Value)

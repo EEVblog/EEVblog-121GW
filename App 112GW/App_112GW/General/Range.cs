@@ -147,5 +147,11 @@ namespace rMultiplatform
             temp.Add(A); temp.Add(B);
             return Combine(temp);
         }
+        public static Range Fit(Range A, Range B)
+        {
+            var min = (A.Minimum <= B.Minimum) ? A.Minimum : B.Minimum;
+            var max = (A.Maximum >= B.Maximum) ? A.Maximum : B.Maximum;
+            return new Range(min, max);
+        }
     }
 }

@@ -38,14 +38,32 @@ namespace rMultiplatform
                 return mDevice.Id;
             }
         }
-
+        public string ShortId
+        {
+            get
+            {
+                var id = Id;
+                return Id.Substring(id.Length - 5);
+            }
+        }
         Timer stateTimer;
 
         public Grid                     MultimeterGrid;
         public MultimeterScreen         Screen;
         public MultimeterMenu           Menu;
         public ChartData                Data;
-        public Chart                    Plot;
+        public Chart                    _Plot;
+        public Chart Plot
+        {
+            get
+            {
+                return _Plot;
+            }
+            private set
+            {
+                _Plot = value;
+            }
+        }
 
         enum ActiveItem
         {
@@ -80,7 +98,7 @@ namespace rMultiplatform
             else
             {
                 id = pDevice.Id;
-                Title = "[ " + id.Substring(id.Length - 5) + " ]";
+                Title = "[ " + ShortId + " ]";
                 Menu = new MultimeterMenu(id.Substring(id.Length - 5));
             }
 

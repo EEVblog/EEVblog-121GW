@@ -82,6 +82,23 @@ namespace rMultiplatform
         //Stores all chart elements, this handles rendering too
         private List<IChartRenderer> ChartElements;
 
+        //Registers the change in ChartData if it exists
+        public event ChartData.ListChanged DataChanged
+        {
+            add
+            {
+                foreach (IChartRenderer item in ChartElements)
+                    if (item.GetType() == typeof(ChartData))
+                        (item as ChartData).DataChanged += value;
+            }
+            remove
+            {
+                foreach (IChartRenderer item in ChartElements)
+                    if (item.GetType() == typeof(ChartData))
+                        (item as ChartData).DataChanged -= value;
+            }
+        }
+
         //Wrappers for the supported chart elements
         private void    AddElement(IChartRenderer pInput)
         {

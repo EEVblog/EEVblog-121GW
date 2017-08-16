@@ -147,10 +147,45 @@ namespace rMultiplatform
         }
 
         //
-        List<SKPoint>   Data;
+        List<SKPoint>   _Data;
         public Range    HorozontalSpan;
         public Range    VerticalSpan;
-        
+
+
+        public delegate void ListChanged(List<SKPoint> Data);
+        public event ListChanged DataChanged;
+        void DataChange()
+        {
+            DataChanged?.Invoke(Data);
+        }
+        public List<SKPoint> Data
+        {
+            get
+            {
+                return _Data;
+            }
+            set
+            {
+                DataMux.WaitOne();
+                _Data = value;
+                DataMux.ReleaseMutex();
+            }
+        }
+
+        bool Combination = false;
+        public void CombineDataRanges(ChartData A, ChartData B)
+        {
+            Combination = true;
+
+            var horz = Range.Fit(A.HorozontalSpan, B.HorozontalSpan);
+            var vert = Range.Fit(A.VerticalSpan, B.VerticalSpan);
+
+            VerticalSpan.Set(vert.Minimum, vert.Maximum);
+            HorozontalSpan.Set(horz.Minimum, horz.Maximum);
+
+            InvalidateParent();
+        }
+
         //
         float           TimeSpan;
         ChartDataMode   Mode;
@@ -177,7 +212,6 @@ namespace rMultiplatform
             HorozontalSpan = new Range (0, pTimeSpan);
             VerticalSpan = new Range (0, 0);
         }
-
 
         public bool Draw (SKCanvas c)
         {
@@ -207,8 +241,9 @@ namespace rMultiplatform
             if (    x == null || 
                     y == null )
                 throw (new Exception("Graph object must contain an horizontal and vertical axis to plot data."));
-            uint DataStart   = (uint)Data.FindIndex        (val => (val.X >= VisX.Minimum));
-            uint DataEnd     = (uint)Data.FindIndex        (val => (val.X > VisX.Maximum));
+
+            uint DataStart   = (uint)Data.FindIndex        (val => (val.X >=    VisX.Minimum    ));
+            uint DataEnd     = (uint)Data.FindIndex        (val => (val.X >     VisX.Maximum    ));
             uint Length      = (uint)Data.Count;
             bool Overflow = DataEnd > Length;
             if (Overflow)
@@ -241,7 +276,6 @@ namespace rMultiplatform
                         if (Data.Count > 0)
                             Data.RemoveAt(0);
                         DataMux.ReleaseMutex();
-
                         HorozontalSpan.ShiftRangeToFitValue(ms_diff);
                     }
                     break;
@@ -254,7 +288,6 @@ namespace rMultiplatform
                         DataMux.WaitOne();
                         Data.Clear();
                         DataMux.ReleaseMutex();
-
                         VerticalSpan.Set(0, 0);
                         HorozontalSpan.ShiftRange(HorozontalSpan.Distance);
                     }
@@ -266,7 +299,7 @@ namespace rMultiplatform
             DataMux.WaitOne();
             Data.Add(new SKPoint((float)ms_diff, (float)pPoint));
             DataMux.ReleaseMutex();
-
+            DataChange();
             InvalidateParent();
         }
 

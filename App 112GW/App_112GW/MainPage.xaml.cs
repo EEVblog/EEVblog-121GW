@@ -1,5 +1,7 @@
 ﻿using rMultiplatform;
 using rMultiplatform.BLE;
+using System.Collections.ObjectModel;
+using System.Diagnostics;
 using Xamarin.Forms;
 using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
 
@@ -8,10 +10,14 @@ namespace App_112GW
     public partial class MainPage : Xamarin.Forms.TabbedPage
     {
         private Settings SettingsView = new Settings();
-        
+        private MathChartSettings MathChart = new MathChartSettings();
+
+
         private void SettingsView_AddDevice(IDeviceBLE pDevice)
         {
-            Children.Add(new Multimeter(pDevice));
+            var dev = new Multimeter(pDevice);
+            Devices.Add(dev);
+            Children.Add(dev);
         }
 
         private void SettingsView_RemoveDevices()
@@ -29,6 +35,7 @@ namespace App_112GW
             SettingsView.RemoveDevice();
         }
 
+        ObservableCollection<Multimeter> Devices = new ObservableCollection<Multimeter>();
         public MainPage()
         {
             BackgroundColor = Globals.BackgroundColor;
@@ -38,13 +45,14 @@ namespace App_112GW
             SettingsView.RemoveDevices += SettingsView_RemoveDevices;
             Padding = 10;
 
+            Children.Add( new ContentPage()
+            {
+                Title = "< Maths >",
+                Content = MathChart
+            });
 
-            Children.Add(
-                new ContentPage()
-                {
-                    Title = "This",
-                    Content = new MathChartSettings()
-                });
+            MathChart.SourceA = Devices;
+            MathChart.SourceB = Devices;
         }
     }
 }
