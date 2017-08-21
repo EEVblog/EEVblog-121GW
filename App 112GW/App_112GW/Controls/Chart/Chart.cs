@@ -12,30 +12,8 @@ using App_112GW;
 
 namespace rMultiplatform
 {
-    public class Chart : ContentView
+    public class Chart : BaseRenderer
     {
-        GeneralRenderer mRenderer;
-        public void Disable()
-        {
-            mRenderer = null;
-            Content = null;
-        }
-        public void Enable()
-        {
-            mRenderer = new GeneralRenderer(PaintSurface);
-            Content = mRenderer;
-        }
-        public new bool IsVisible
-        {
-            set
-            {
-                if (value)  Enable();
-                else        Disable();
-
-                base.IsVisible = value;
-            }
-        }
-
         //The padding around the control
         private SKPaint     mDrawPaint;
 
@@ -63,42 +41,42 @@ namespace rMultiplatform
         }
 
         //Stores all chart elements, this handles rendering too
-        private List<IChartRenderer> ChartElements;
+        private List<AChartRenderer> ChartElements;
 
         //Registers the change in ChartData if it exists
         public event ChartData.ListChanged DataChanged
         {
             add
             {
-                foreach (IChartRenderer item in ChartElements)
+                foreach (AChartRenderer item in ChartElements)
                     if (item.GetType() == typeof(ChartData))
                         (item as ChartData).DataChanged += value;
             }
             remove
             {
-                foreach (IChartRenderer item in ChartElements)
+                foreach (AChartRenderer item in ChartElements)
                     if (item.GetType() == typeof(ChartData))
                         (item as ChartData).DataChanged -= value;
             }
         }
 
         //Wrappers for the supported chart elements
-        private void    AddElement(IChartRenderer pInput)
+        private void    AddElement(AChartRenderer pInput)
         {
             ChartElements.Add(pInput);
             ChartElements.Sort();
         }
         public void     AddAxis(ChartAxis pInput)
         {
-            AddElement(pInput as IChartRenderer);
+            AddElement(pInput as AChartRenderer);
         }
         public void     AddData(ChartData pInput)
         {
-            AddElement(pInput as IChartRenderer);
+            AddElement(pInput as AChartRenderer);
         }
         public void     AddGrid(ChartGrid pInput)
         {
-            AddElement(pInput as IChartRenderer);
+            AddElement(pInput as AChartRenderer);
         }
 
         //Resizes the control and registers resize with parents
@@ -116,34 +94,6 @@ namespace rMultiplatform
             foreach(var Element in ChartElements)
                 if (Element.GetType() == typeof (ChartData))
                     (Element as ChartData).ToCSV();
-        }
-
-        void PaintSurface(SKCanvas canvas, SKSize dimension)
-        {
-            //Reinitialise the buffer canvas if it is undefined at all.
-            if (Rescale)
-            {
-                var aspect      = (float)(Height / Width);
-                var can_aspect  = dimension.Height / dimension.Width;
-
-                if (aspect * 0.9 <= can_aspect && can_aspect <= aspect * 1.1)
-                {
-                    //Handles glitch in android.
-                    Rescale = false;
-                    UpdateCanvasSize(dimension);
-                }
-                else return;
-            }
-
-            // If the child elements are not registered with each other do that
-            // before rendering
-            if (RequireRegister)
-                Register();
-
-            // Let all child elements render, layers are already sorted
-            canvas.Clear(BackgroundColor.ToSKColor());
-            foreach (var Element in ChartElements)
-                Element.Draw(canvas);
         }
 
         public event EventHandler Clicked;
@@ -202,11 +152,11 @@ namespace rMultiplatform
 
         private void MTouch_Pan     (object sender, TouchPanActionEventArgs args)
         {
-            foreach (IChartRenderer Element in ChartElements)
+            foreach (AChartRenderer Element in ChartElements)
                 if (Element.GetType() == typeof(ChartAxis))
                 {
                     var element = (Element as ChartAxis);
-                    if (element.Orientation == ChartAxis.AxisOrientation.Horizontal)
+                    if (element.Orientation == ChartAxis.Orientation.Horizontal)
                         element.Pan(args.Dx, args.Dy);
                 }
         }
@@ -216,18 +166,28 @@ namespace rMultiplatform
             var zoomY = (float)args.Pinch.ZoomY;
             var zoomCenter = args.Pinch.Center;
 
-            foreach (IChartRenderer Element in ChartElements)
+            foreach (AChartRenderer Element in ChartElements)
                 if (Element.GetType() == typeof(ChartAxis))
                 {
                     var element = (Element as ChartAxis);
-                    if (element.Orientation == ChartAxis.AxisOrientation.Horizontal)
+                    if (element.Orientation == ChartAxis.Orientation.Horizontal)
                         element.Zoom(zoomX, zoomY, zoomCenter.ToSKPoint());
                 }
         }
-        public void InvalidateSurface()
+
+        public override void PaintSurface(SKCanvas canvas, SKSize dimension)
         {
-            if (mRenderer != null)
-                mRenderer.InvalidateSurface();
+            //Reinitialise the buffer canvas if it is undefined at all.
+            if (Rescale)
+            {
+                var aspect = (float)(Height / Width);
+                var can_aspect = dimension.Height / dimension.Width;
+            }
+
+            // Let all child elements render, layers are already sorted
+            canvas.Clear(BackgroundColor.ToSKColor());
+            foreach (var Element in ChartElements)
+                Element.Draw(canvas);
         }
 
         //Initialises the object
@@ -241,7 +201,7 @@ namespace rMultiplatform
 
             //Setup chart elements
             mDrawPaint              = new SKPaint();
-            ChartElements           = new List<IChartRenderer>();
+            ChartElements           = new List<AChartRenderer>();
 
             //Setup the padding object
             ChartElements.Add(new ChartPadding(0));

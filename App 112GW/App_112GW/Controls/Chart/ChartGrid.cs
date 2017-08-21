@@ -61,7 +61,7 @@ namespace rMultiplatform
             var     args = o as ChartAxisEventArgs;
             var     canvas = args.Canvas;
             SKPoint p1, p2;
-            if (args.Orientation == ChartAxis.AxisOrientation.Horizontal)
+            if (args.Orientation == ChartAxis.Orientation.Horizontal)
                 (p1, p2) = ParentPadding.GetVerticalLine((float)args.Position);
             else
                 (p1, p2) = ParentPadding.GetHorozontalLine((float)args.Position);

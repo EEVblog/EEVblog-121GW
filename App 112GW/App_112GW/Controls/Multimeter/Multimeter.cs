@@ -111,8 +111,8 @@ namespace rMultiplatform
             Data = new ChartData( ChartData.ChartDataMode.eRescaling, "Time (s)", "Volts (V)", 10f );
             Plot = new Chart() { Padding = new ChartPadding( 0.1f ) };
             Plot.AddGrid ( new ChartGrid());
-            Plot.AddAxis ( new ChartAxis(5, 5, 0, 20) {   Label = "Time (s)", Orientation = ChartAxis.AxisOrientation.Horizontal, LockToAxisLabel = "Volts (V)",  LockAlignment = ChartAxis.AxisLock.eEnd, ShowDataKey = false });
-            Plot.AddAxis ( new ChartAxis(5, 5, 0, 0)  {   Label = "Volts (V)",Orientation = ChartAxis.AxisOrientation.Vertical,   LockToAxisLabel = "Time (s)",   LockAlignment = ChartAxis.AxisLock.eStart});
+            Plot.AddAxis ( new ChartAxis(5, 5, 0, 20) {   Label = "Time (s)", Orientation = ChartAxis.Orientation.Horizontal, LockToAxisLabel = "Volts (V)",  LockAlignment = ChartAxis.AxisLock.eEnd, ShowDataKey = false });
+            Plot.AddAxis ( new ChartAxis(5, 5, 0, 0)  {   Label = "Volts (V)",Orientation = ChartAxis.Orientation.Vertical,   LockToAxisLabel = "Time (s)",   LockAlignment = ChartAxis.AxisLock.eStart});
             Plot.AddData(Data);
             Plot.FullscreenClicked += Plot_FullScreenClicked;
 

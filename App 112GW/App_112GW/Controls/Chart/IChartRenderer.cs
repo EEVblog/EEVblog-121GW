@@ -5,30 +5,24 @@ using System.Text;
 
 namespace rMultiplatform
 {
-    interface IChartRenderer : IComparable
+    public interface IChartRenderer : IComparable
     {
         int Layer
         {
             get;
         }
-
         List<IChartRenderer> Children { get; set; }
 
         //Return true when redraw is required
         void Draw(SKCanvas c, SKSize dimension);
-        void DrawSelf(SKCanvas c, SKSize dimension);
     };
 
-    abstract class AChartRenderer : IChartRenderer
+    public abstract class AChartRenderer : IChartRenderer
     {
         public int Layer => throw new NotImplementedException();
 
-        public List<IChartRenderer> Children { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-
-        public int CompareTo(object obj)
-        {
-            throw new NotImplementedException();
-        }
+        public abstract List<IChartRenderer> Children { get; set; }
+        public abstract int CompareTo(object obj);
 
         public void Draw(SKCanvas canvas, SKSize dimension)
         {

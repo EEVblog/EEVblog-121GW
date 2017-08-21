@@ -13,65 +13,16 @@ using System.Diagnostics;
 
 namespace rMultiplatform
 {
-    public class ChartAxisEventArgs : EventArgs
+    public enum Orientation
     {
-        public enum ChartAxisEventType
-        {
-            DrawMajorTick,
-            DrawMinorTick,
-            DrawLabel
-        };
-
-        public AxisLabel                    Label;
-        public SKCanvas                     Canvas;
-        public SKColor                      Color;
-        public double                       Position;
-        public ChartAxis.AxisOrientation    Orientation;
-        public ChartAxisEventType           EventType;
-        public float                        TickLength;
-
-        public ChartAxisEventArgs(AxisLabel Label,  SKCanvas Can,    Color      Col,    double Pos,     double TickLen,     ChartAxis.AxisOrientation  Ori,     ChartAxisEventType Typ) :base()
-        {
-            this.Label = Label;
-            TickLength = (float)TickLen;
-            Canvas = Can;
-            Color = Col.ToSKColor();
-            Position = Pos;
-            Orientation = Ori;
-            EventType = Typ;
-        }
-        public ChartAxisEventArgs(AxisLabel Label,  SKCanvas Can,    SKColor    Col,    double Pos,     double TickLen,     ChartAxis.AxisOrientation  Ori,     ChartAxisEventType Typ) : base()
-        {
-            this.Label = Label;
-            TickLength = (float)TickLen;
-            Canvas = Can;
-            Color = Col;
-            Position = Pos;
-            Orientation = Ori;
-            EventType = Typ;
-        } 
-    }
-
-    public class ChartAxisDrawEventArgs : EventArgs
-    {
-        public int                          Index;
-        public int                          MaxIndex;
-        public AxisLabel                    AxisLabel;
-        public ChartAxis.AxisOrientation    Orientation;
-        public float                        Position;
-
-        public ChartAxisDrawEventArgs(AxisLabel Label, ChartAxis.AxisOrientation Orientation, float Position, int Index, int MaxIndex) : base()
-        {
-            this.AxisLabel = Label;
-            this.Orientation = Orientation;
-            this.Position = Position;
-            this.Index = Index;
-            this.MaxIndex = MaxIndex;
-        }
+        Vertical,
+        Horizontal
     };
 
-    public class ChartAxis : Range, IChartRenderer
+    public class ChartAxis : AChartRenderer
     {
+        Range DataRange;
+           
         public delegate bool ChartAxisDrawEvent(ChartAxisDrawEventArgs o);
         public delegate bool ChartAxisEvent(Object o);
 
@@ -82,7 +33,7 @@ namespace rMultiplatform
             {
                 _VisibleRange.Minimum = value;
             }
-        }   
+        }
         private double VisibleMaximum
         {
             set
@@ -102,7 +53,6 @@ namespace rMultiplatform
             CalculateScales();
             InvalidateParent();
         }
-
 
         private Range _VisibleRange = new Range(0, 0);
         public Range VisibleRange
@@ -141,7 +91,7 @@ namespace rMultiplatform
         public void Pan(double X, double Y)
         {
             double dist = 1.0f;
-            dist = -GetScalePoint((Orientation == AxisOrientation.Vertical) ? Y : X);
+            dist = -GetScalePoint((Orientation == Orientation.Vertical) ? Y : X);
             if (dist == 1.0)
                 return;
 
@@ -166,7 +116,7 @@ namespace rMultiplatform
         {
             double zoom = 1.0f;
             double about = 0;
-            if (Orientation == AxisOrientation.Vertical)
+            if (Orientation == Orientation.Vertical)
             {
                 zoom = Y;
                 about = GetPoint(About.Y);
@@ -282,7 +232,7 @@ namespace rMultiplatform
         {
             get
             {
-                if (Orientation == AxisOrientation.Vertical)
+                if (Orientation == Orientation.Vertical)
                 {
                     if (Direction == AxisDirection.Standard)
                         return -_MinorTickDistance;
@@ -334,12 +284,7 @@ namespace rMultiplatform
         {
             get; set;
         }
-        public enum         AxisOrientation
-        {
-            Vertical,
-            Horizontal
-        }
-        public              AxisOrientation     Orientation
+        public              Orientation     Orientation
         {
             get;
             set;
@@ -349,7 +294,7 @@ namespace rMultiplatform
         {
             get
             {
-                if (Orientation == AxisOrientation.Vertical)
+                if (Orientation == Orientation.Vertical)
                 {
                     return ParentHeight;
                 }
@@ -363,7 +308,7 @@ namespace rMultiplatform
         {
             get
             {
-                if (Orientation == AxisOrientation.Vertical)
+                if (Orientation == Orientation.Vertical)
                 {
                     return ParentWidth;
                 }
@@ -379,9 +324,9 @@ namespace rMultiplatform
             {
                 switch (Orientation)
                 {
-                    case AxisOrientation.Vertical:
+                    case Orientation.Vertical:
                         return ParentPadding.PaddedHeight;
-                    case AxisOrientation.Horizontal:
+                    case Orientation.Horizontal:
                         return ParentPadding.PaddedWidth;
                 }
                 return 0;
@@ -393,9 +338,9 @@ namespace rMultiplatform
             {
                 switch (Orientation)
                 {
-                    case AxisOrientation.Vertical:
+                    case Orientation.Vertical:
                         return ParentPadding.GetTopPosition;
-                    case AxisOrientation.Horizontal:
+                    case Orientation.Horizontal:
                         return ParentPadding.GetLeftPosition;
                 }
                 return 0;
@@ -407,9 +352,9 @@ namespace rMultiplatform
             {
                 switch (Orientation)
                 {
-                    case AxisOrientation.Vertical:
+                    case Orientation.Vertical:
                         return ParentPadding.GetBottomPosition;
-                    case AxisOrientation.Horizontal:
+                    case Orientation.Horizontal:
                         return ParentPadding.GetRightPosition;
                 }
                 return 0;
@@ -485,7 +430,7 @@ namespace rMultiplatform
         {
             get
             {
-                if (Orientation == AxisOrientation.Vertical)
+                if (Orientation == Orientation.Vertical)
                     return (Direction == AxisDirection.Standard);
                 else
                     return (Direction != AxisDirection.Standard);
@@ -598,9 +543,9 @@ namespace rMultiplatform
         //
         float MajorTextSize = 12;
         float MinorTextSize = 10;
-        public ChartAxis       (double MainTicks, double MinorTicks, double Minimum, double Maximum)
-            : base(Minimum, Maximum)
+        public ChartAxis       (double MainTicks, double MinorTicks, double Minimum, double Maximum) : base()
         {
+            DataRange = new Range(Minimum, Maximum);
             ParentPadding = new ChartPadding(0);
 
             //Setup divisions
@@ -678,7 +623,7 @@ namespace rMultiplatform
                 scale = -scale;
 
             var matrix = SKMatrix.MakeIdentity();
-            if (Orientation == AxisOrientation.Horizontal)
+            if (Orientation == Orientation.Horizontal)
             {
                 matrix.ScaleX = +(float)(scale);
                 matrix.TransX = +(float)(AxisStart - scale * StartPoint);
@@ -800,7 +745,7 @@ namespace rMultiplatform
             length /= 2;
             switch (Orientation)      
             {
-                case AxisOrientation.Vertical:
+                case Orientation.Vertical:
                     c.DrawLine(
                         _AxisLocation - length, //x1
                         Position,               //y1
@@ -808,7 +753,7 @@ namespace rMultiplatform
                         Position,               //y2
                         TickPaint);
                     break;
-                case AxisOrientation.Horizontal:
+                case Orientation.Horizontal:
                     c.DrawLine(
                         Position,               //x1
                         _AxisLocation - length, //y1
@@ -874,13 +819,16 @@ namespace rMultiplatform
                 TotalPadding = _LabelPadding + _AxisLabelPadding;
             }
         }
+
+        public override List<IChartRenderer> Children { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+
         float   GetAxisLabelPosition()
         {
             switch (Orientation)
             {
-                case AxisOrientation.Vertical:
+                case Orientation.Vertical:
                     return ParentPadding.GetLeftPosition;
-                case AxisOrientation.Horizontal:
+                case Orientation.Horizontal:
                     return ParentPadding.GetBottomPosition;
             }
             return 0;
@@ -902,14 +850,14 @@ namespace rMultiplatform
             length /= 2;
             switch (Orientation)
             {
-                case AxisOrientation.Vertical:
+                case Orientation.Vertical:
                     if (TotalPadding > ParentPadding.L)
                         ParentPadding.L = TotalPadding;
 
                     pt1 = new SKPoint(GetAxisLabelPosition() - tot_wid, Position);
                     pt2 = new SKPoint(GetAxisLabelPosition() - SpaceWidth,   Position);
                     break;
-                case AxisOrientation.Horizontal:
+                case Orientation.Horizontal:
                     if (TotalPadding > ParentPadding.B)
                         ParentPadding.B = TotalPadding;
 
@@ -942,7 +890,7 @@ namespace rMultiplatform
             length /= 2;
             switch (Orientation)
             {
-                case AxisOrientation.Vertical:
+                case Orientation.Vertical:
                     {
                         offset          = (int)LabelPadding + (int)SpaceWidth;
                         var x           = GetAxisLabelPosition() - offset;
@@ -956,7 +904,7 @@ namespace rMultiplatform
                         yfillsoffset    = SpaceWidth;
                     }
                     break;
-                case AxisOrientation.Horizontal:
+                case Orientation.Horizontal:
                     {
                         offset          = (int)TotalPadding - (int)SpaceWidth;
                         var xs          = (float)AxisEnd - SpaceWidth * 2;
@@ -1085,7 +1033,7 @@ namespace rMultiplatform
             else if (o.GetType() == typeof(ChartData))
             {
                 var d = o as ChartData;
-                if (Orientation == AxisOrientation.Horizontal)
+                if (Orientation == Orientation.Horizontal)
                 {
                     if (d.HorizontalLabel == Label)
                         AxisDataColors.Add(d.LineColor);
@@ -1140,6 +1088,16 @@ namespace rMultiplatform
         public void InvalidateParent()
         {
             Parent.InvalidateSurface();
+        }
+
+        public override void DrawSelf(SKCanvas c, SKSize dimension)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override int CompareTo(object obj)
+        {
+            throw new NotImplementedException();
         }
     }
 }

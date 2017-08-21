@@ -13,10 +13,10 @@ namespace rMultiplatform
     public class GridlineEventArgs
     {
         public double                       Position;
-        public ChartAxis.AxisOrientation    Orientation;
+        public ChartAxis.Orientation    Orientation;
         public SKCanvas                     Canvas;
 
-        public GridlineEventArgs (double Pos, ChartAxis.AxisOrientation Ori, SKCanvas Can)
+        public GridlineEventArgs (double Pos, ChartAxis.Orientation Ori, SKCanvas Can)
         {
             Position = Pos;
             Orientation = Ori;

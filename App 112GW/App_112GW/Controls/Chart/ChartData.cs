@@ -16,9 +16,9 @@ namespace rMultiplatform
     using Points = List<SKPoint>;
     public class ChartDataEventArgs: EventArgs
     {
-        public ChartAxis.AxisOrientation   Orientation;
+        public ChartAxis.Orientation   Orientation;
         public Range NewRange;
-        public ChartDataEventArgs(ChartAxis.AxisOrientation pOrientation, Range pNewRange)
+        public ChartDataEventArgs(ChartAxis.Orientation pOrientation, Range pNewRange)
         {
             Orientation = pOrientation;
             NewRange = pNewRange;
@@ -234,9 +234,9 @@ namespace rMultiplatform
             ChartDataEventReturn x = null, y = null, temp;
             foreach (var axis in Registrants)
             {
-                if (        (temp = axis.ChartDataEvent(new ChartDataEventArgs(ChartAxis.AxisOrientation.Horizontal, horz), ref VisX)) != null)
+                if (        (temp = axis.ChartDataEvent(new ChartDataEventArgs(ChartAxis.Orientation.Horizontal, horz), ref VisX)) != null)
                     x = temp;
-                else if (   (temp = axis.ChartDataEvent(new ChartDataEventArgs(ChartAxis.AxisOrientation.Vertical, vert), ref VisY  )) != null)
+                else if (   (temp = axis.ChartDataEvent(new ChartDataEventArgs(ChartAxis.Orientation.Vertical, vert), ref VisY  )) != null)
                     y = temp;
             }
 
@@ -365,7 +365,7 @@ namespace rMultiplatform
 
                     foreach (var axis in Registrants)
                     {
-                        if (axis.Orientation == ChartAxis.AxisOrientation.Horizontal)
+                        if (axis.Orientation == ChartAxis.Orientation.Horizontal)
                             axis.Set(horz);
                         else
                             axis.Set(vert);
@@ -389,10 +389,10 @@ namespace rMultiplatform
             //Add the object to registrants after testing whether axis is of relevant units
             var axis = o as ChartAxis;
             bool reg = false;
-            if (axis.Orientation == ChartAxis.AxisOrientation.Horizontal)
+            if (axis.Orientation == ChartAxis.Orientation.Horizontal)
                 if (axis.Label == HorizontalLabel)
                     reg = true;
-            if (axis.Orientation == ChartAxis.AxisOrientation.Vertical)
+            if (axis.Orientation == ChartAxis.Orientation.Vertical)
                 if (axis.Label == VerticalLabel)
                     reg = true;
             if (reg)

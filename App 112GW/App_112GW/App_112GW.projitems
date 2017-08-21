@@ -12,6 +12,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Controls\BaseRenderer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Controls\Chart\ChartAxis\ChartAxisEvents.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Controls\Chart\ChartAxis\GestureRange.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\Chart\IChartRenderer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\Chart\MathChart\MathChart.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\Chart\MathChart\MathChartSettings.cs" />
@@ -29,7 +32,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Controls\Labelled Controls\LabelledCheckbox.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\Chart\AxisLabel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\Chart\Chart.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Controls\Chart\ChartAxis.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Controls\Chart\ChartAxis\ChartAxis.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\Chart\ChartData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\Chart\ChartGrid.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\Chart\Gridline.cs" />
