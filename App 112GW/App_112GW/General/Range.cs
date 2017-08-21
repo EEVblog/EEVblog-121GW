@@ -15,8 +15,9 @@ namespace rMultiplatform
             }
             get
             {
+                bool state = _Update;
                 _Update = false;
-                return _Update;
+                return state;
             }
         }
 
@@ -52,9 +53,16 @@ namespace rMultiplatform
         {
             get { return Maximum - Minimum; }
         }
+
+        public void Set(Range Input)
+        {
+            Minimum = Input.Minimum;
+            Maximum = Input.Maximum;
+
+            FirstScaling = false;
+        }
         public void Set     (double ValA, double ValB)
         {
-            Update = true;
             if (ValA > ValB)
             {
                 Minimum = ValB;

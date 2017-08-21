@@ -162,8 +162,7 @@ namespace rMultiplatform
                     }
                 }
             }
-            ChartData.Data = Data;
-            ChartData.CombineDataRanges(DeviceA.Data, DeviceB.Data);
+            ChartData.Set(Data);
         }
 
         List<SKPoint> Data = new List<SKPoint>();
@@ -206,9 +205,6 @@ namespace rMultiplatform
 
         public ChartData ChartData;
         public Chart Plot;
-
-
-
         private void AddView(View pInput, int pX, int pY, int pXSpan = 1, int pYSpan = 1)
         {
             Children.Add(pInput);

@@ -62,6 +62,10 @@ namespace rMultiplatform.BLE
         }
         private void DeviceWatcher_Removed  (DeviceWatcher sender, DeviceInformationUpdate  args)
         {
+            //This aborts device removal.
+            return;
+
+
             try
             {
                 if (sender != mDeviceWatcher)
