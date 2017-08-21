@@ -118,43 +118,6 @@ namespace rMultiplatform
                     (Element as ChartData).ToCSV();
         }
 
-        //Renders the chart and child objects
-        bool RequireRegister = true;
-        protected void Register()
-        {
-            //Register all elements
-            foreach (var Element in ChartElements)
-            {
-                //Register parent (this class) with children who need it
-                Element.RegisterParent(this);
-
-                //Get list of types to register
-                var Types = Element.RequireRegistration();
-                if (Types == null)
-                    continue;
-
-                foreach (var SubElement in ChartElements)
-                {
-                    //Skip self registration
-                    if (Element.Equals(SubElement))
-                        continue;
-
-                    //Register if it is a required type
-                    foreach (var RegType in Types)
-                        if (RegType == SubElement.GetType())
-                            Element.Register(SubElement);
-                }
-            }
-            RequireRegister = false;
-        }
-        void UpdateCanvasSize(SKSize Size)
-        {
-            //As base class initialises first the onSizeAllocated can be triggered before padding is intiialised
-            if (Padding != null)
-                Padding.SetParentSize(Size.Width, Size.Height, Size.Width / Width);
-            foreach (IChartRenderer Element in ChartElements)
-                Element.SetParentSize(Size.Width, Size.Height, Size.Width / Width);
-        }
         void PaintSurface(SKCanvas canvas, SKSize dimension)
         {
             //Reinitialise the buffer canvas if it is undefined at all.

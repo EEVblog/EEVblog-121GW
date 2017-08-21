@@ -12,53 +12,30 @@ namespace rMultiplatform
             get;
         }
 
-        bool Register(Object o);
-        List<Type> RequireRegistration();
+        List<IChartRenderer> Children { get; set; }
 
         //Return true when redraw is required
-        bool Draw(SKCanvas c);
-        void SetParentSize(double w, double h, double scale = 1.0);
-        bool RegisterParent(Object c);
-        void InvalidateParent();
+        void Draw(SKCanvas c, SKSize dimension);
+        void DrawSelf(SKCanvas c, SKSize dimension);
     };
 
     abstract class AChartRenderer : IChartRenderer
     {
         public int Layer => throw new NotImplementedException();
 
+        public List<IChartRenderer> Children { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+
         public int CompareTo(object obj)
         {
             throw new NotImplementedException();
         }
 
-        public bool Draw(SKCanvas c)
+        public void Draw(SKCanvas canvas, SKSize dimension)
         {
-            throw new NotImplementedException();
+            foreach (var element in Children)
+                element.Draw(canvas, dimension);
+            DrawSelf(canvas, dimension);
         }
-
-        public void InvalidateParent()
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool Register(object o)
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool RegisterParent(object c)
-        {
-            throw new NotImplementedException();
-        }
-
-        public List<Type> RequireRegistration()
-        {
-            throw new NotImplementedException();
-        }
-
-        public void SetParentSize(double w, double h, double scale = 1)
-        {
-            throw new NotImplementedException();
-        }
+        public abstract void DrawSelf(SKCanvas c, SKSize dimension);
     }
 }
