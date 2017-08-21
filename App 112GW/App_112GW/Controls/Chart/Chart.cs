@@ -12,23 +12,6 @@ using App_112GW;
 
 namespace rMultiplatform
 {
-    interface IChartRenderer : IComparable
-    {
-        int Layer
-        {
-            get;
-        }
-
-        bool            Register(Object o);
-        List<Type>      RequireRegistration();
-
-        //Return true when redraw is required
-        bool Draw           (SKCanvas c);
-        void SetParentSize  (double w, double h, double scale = 1.0);
-        bool RegisterParent (Object c);
-        void InvalidateParent();
-    };
-
     public class Chart : ContentView
     {
         GeneralRenderer mRenderer;

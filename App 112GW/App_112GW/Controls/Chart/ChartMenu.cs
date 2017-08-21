@@ -54,13 +54,13 @@ namespace rMultiplatform
             //##################################################
             //The grid is currently 2x5
             //Setup Grid rows
-            RowDefinitions.Add  (   new RowDefinition { Height = new GridLength(1, GridUnitType.Star) } );
-            RowDefinitions.Add  (   new RowDefinition { Height = new GridLength(1, GridUnitType.Star) });
+            RowDefinitions.Add  (   new RowDefinition       { Height = new GridLength(1, GridUnitType.Star) } );
+            RowDefinitions.Add  (   new RowDefinition       { Height = new GridLength(1, GridUnitType.Star) } );
 
             //##################################################
             //Setup Grid columns
-            ColumnDefinitions.Add ( new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) } );
-            ColumnDefinitions.Add ( new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) } );
+            ColumnDefinitions.Add ( new ColumnDefinition    { Width = new GridLength(1, GridUnitType.Star)  } );
+            ColumnDefinitions.Add ( new ColumnDefinition    { Width = new GridLength(1, GridUnitType.Star)  } );
            
             //##################################################
             //Add Relative Button

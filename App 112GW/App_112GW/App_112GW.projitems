@@ -12,6 +12,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Controls\Chart\IChartRenderer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\Chart\MathChart\MathChart.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\Chart\MathChart\MathChartSettings.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\GeneralControl.cs" />
