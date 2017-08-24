@@ -14,7 +14,7 @@
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Controls\BaseRenderer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\Chart\ChartAxis\ChartAxisEvents.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Controls\Chart\ChartAxis\GestureRange.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)General\GestureRange.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\Chart\IChartRenderer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\Chart\MathChart\MathChart.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\Chart\MathChart\MathChartSettings.cs" />

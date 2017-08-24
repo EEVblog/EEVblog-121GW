@@ -6,21 +6,22 @@ namespace rMultiplatform
 {
     class GestureRange
     {
-        private Range Visible;
-        private Range Boundary;
         private enum Current
         {
             Visible,
             Boundary
-        }
-        Current Select;
+        };
+
+        private Range   Visible;
+        private Range   Boundary;
+        private Current Select;
 
         public double Minimum
         {
             get
             {
                 switch (Select)
-                {   
+                {
                     case Current.Visible:
                         return Visible.Minimum;
                     case Current.Boundary:
@@ -73,20 +74,10 @@ namespace rMultiplatform
             }
         }
 
-
-
-
-
-
-        
-
-        
         public void Set(Range Input)
         {
             Minimum = Input.Minimum;
             Maximum = Input.Maximum;
-
-            FirstScaling = false;
         }
         public void Set(double ValA, double ValB)
         {
@@ -101,6 +92,7 @@ namespace rMultiplatform
                 Maximum = ValB;
             }
         }
+
         public bool InRange(double Val)
         {
             return (Minimum <= Val) && (Val <= Maximum);
@@ -108,42 +100,38 @@ namespace rMultiplatform
         public void AddToMaximum(double Value)
         {
             Maximum += Value;
+            if (Maximum < Minimum)  Minimum = Minimum;
         }
         public void AddToMinimum(double Value)
         {
             Minimum += Value;
+            if (Minimum > Maximum)  Maximum = Minimum;
         }
+
         public void ShiftRange(double Value)
         {
-            AddToMaximum(Value);
-            AddToMinimum(Value);
+            Minimum += Value;
+            Maximum += Value;
         }
         public void ShiftRangeToFitValue(double Value)
         {
-            var diff = (double)0;
-
+            double diff = 0.0;
             if (Value > Maximum)
                 diff = Value - Maximum;
             else if (Value < Minimum)
                 diff = Minimum - Value;
-
-            //Shift the range to fit the value
             ShiftRange(diff);
         }
 
-        bool FirstScaling = true;
         public void RescaleRangeToFitValue(double Value)
         {
-            if (FirstScaling)
-            {
-                Minimum = Value;
-                Maximum = Value;
-                FirstScaling = false;
-            }
-            if (Value > Maximum)
-                Maximum = (Value);
-            else if (Value < Minimum)
-                Minimum = (Value);
+            if      (Value > Maximum)   Maximum = (Value);
+            else if (Value < Minimum)   Minimum = (Value);
+        }
+
+        public GestureRange(double A, double B)
+        {
+            Set(A, B);
         }
     }
 }

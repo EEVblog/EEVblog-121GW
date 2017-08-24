@@ -5,12 +5,9 @@ using System.Text;
 
 namespace rMultiplatform
 {
-    public interface IChartRenderer : IComparable
+    public interface IChartRenderer
     {
-        int Layer
-        {
-            get;
-        }
+        int Layer { get; }
         List<IChartRenderer> Children { get; set; }
 
         //Return true when redraw is required
@@ -20,16 +17,14 @@ namespace rMultiplatform
     public abstract class AChartRenderer : IChartRenderer
     {
         public int Layer => throw new NotImplementedException();
-
         public abstract List<IChartRenderer> Children { get; set; }
-        public abstract int CompareTo(object obj);
 
-        public void Draw(SKCanvas canvas, SKSize dimension)
+        public          void Draw       (SKCanvas canvas, SKSize dimension)
         {
             foreach (var element in Children)
                 element.Draw(canvas, dimension);
             DrawSelf(canvas, dimension);
         }
-        public abstract void DrawSelf(SKCanvas c, SKSize dimension);
+        public abstract void DrawSelf   (SKCanvas canvas, SKSize dimension);
     }
 }

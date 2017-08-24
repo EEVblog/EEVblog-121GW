@@ -21,6 +21,14 @@ namespace rMultiplatform
 
     public class ChartAxis : AChartRenderer
     {
+        public int Layer
+        {
+            get
+            {
+                return 3;
+            }
+        }
+
         Range DataRange;
            
         public delegate bool ChartAxisDrawEvent(ChartAxisDrawEventArgs o);
@@ -191,7 +199,7 @@ namespace rMultiplatform
         private float       SpaceWidth;
         private double      MainTickDrawDistance;
         private double      MinorTickDrawDistance;
-        public void        CalculateScales()
+        public void CalculateScales()
         {
             var rangesize = VisibleRange.Distance;
             var viewsize = AxisSize;
@@ -444,13 +452,6 @@ namespace rMultiplatform
                 _Rerange = value;
             }
         }
-        public int Layer
-        {
-            get
-            {
-                return 3;
-            }
-        }
 
         public Color Color
         {
@@ -543,7 +544,7 @@ namespace rMultiplatform
         //
         float MajorTextSize = 12;
         float MinorTextSize = 10;
-        public ChartAxis       (double MainTicks, double MinorTicks, double Minimum, double Maximum) : base()
+        public ChartAxis (double MainTicks, double MinorTicks, double Minimum, double Maximum) : base()
         {
             DataRange = new Range(Minimum, Maximum);
             ParentPadding = new ChartPadding(0);
@@ -636,7 +637,7 @@ namespace rMultiplatform
             return matrix;
         }
 
-        public bool     GetCoordinate(double Value, out double Output)
+        public bool GetCoordinate(double Value, out double Output)
         {
             if (VisibleRange.Minimum <= Value)
                 Output = VisibleRange.Minimum;
@@ -645,12 +646,12 @@ namespace rMultiplatform
             Output = GetCoordinate(Value);
             return true;
         }
-        public double   GetScalePoint(double Value)
+        public double GetScalePoint(double Value)
         {
             var scale = (AxisSize / VisibleRange.Distance);
             return Value /= scale;
         }
-        public double   GetPoint(double Value)
+        public double GetPoint(double Value)
         {
             var scale = (AxisSize / VisibleRange.Distance);
             double value = Value;
@@ -692,19 +693,6 @@ namespace rMultiplatform
             return null;
         }
 
-        bool SetMode = false;
-        public new void Set(Range Input)
-        {
-            base.Set(Input);
-            VisibleRange = Input;
-            CalculateScales();
-
-            Debug.WriteLine("Setting");
-            SetMode = true;
-        }
-
-
-        
         public bool ChartDrawEvent (ChartAxisDrawEventArgs e)
         {
             //No lock position set
@@ -740,7 +728,7 @@ namespace rMultiplatform
             return true;
         }
 
-        void                DrawTick        (ref SKCanvas c, float Position, float length, SKPaint TickPaint)
+        void DrawTick (ref SKCanvas c, float Position, float length, SKPaint TickPaint)
         {
             length /= 2;
             switch (Orientation)      
@@ -778,9 +766,9 @@ namespace rMultiplatform
             DrawTick(ref c, Position, MinorTickLineSize, MinorPaint);
         }
 
-        float   _LabelPadding = 0;
-        float   _AxisLabelPadding = 0;
-        float   TotalPadding
+        float _LabelPadding = 0;
+        float _AxisLabelPadding = 0;
+        float TotalPadding
         {
             get
             {
@@ -795,7 +783,7 @@ namespace rMultiplatform
                 }
             }
         }
-        float   LabelPadding
+        float LabelPadding
         {
             get
             {
@@ -807,7 +795,7 @@ namespace rMultiplatform
                 TotalPadding = _LabelPadding + _AxisLabelPadding;
             }
         }
-        float   AxisLabelPadding
+        float AxisLabelPadding
         {
             get
             {
@@ -820,9 +808,7 @@ namespace rMultiplatform
             }
         }
 
-        public override List<IChartRenderer> Children { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-
-        float   GetAxisLabelPosition()
+        float GetAxisLabelPosition()
         {
             switch (Orientation)
             {
@@ -970,7 +956,7 @@ namespace rMultiplatform
         }
 
         //Draws the entire system
-        bool IChartRenderer.Draw (SKCanvas c)
+        bool Draw (SKCanvas c)
         {
             var redraw      = false;
             var NextMain    = AxisStart;
@@ -1006,96 +992,9 @@ namespace rMultiplatform
             }
             return redraw;
         }
-        float Scale = 1.0f;
-        void IChartRenderer.SetParentSize (double w, double h, double scale)
-        {
-            Scale               = (float)scale;
-            MinorPaint.TextSize = MinorTextSize * Scale;
-            MajorPaint.TextSize = MajorTextSize * Scale;
-            SpaceWidth          = MajorPaint.MeasureText(" ");
-            TotalPadding        = 0;
-            ParentWidth         = w;
-            ParentHeight        = h;
-            CalculateScales();
-        }
 
         //Required 
-        public bool         Register(Object o)
-        {
-            if      (o.GetType() == typeof(ChartAxisEvent))
-                AxisDataEvents.Add(o as ChartAxisEvent);
-
-            else if (o.GetType() == typeof(ChartAxis))
-            {
-                var v = o as ChartAxis;
-                AxisDrawEvents.Add(v.ChartDrawEvent);
-            }
-            else if (o.GetType() == typeof(ChartData))
-            {
-                var d = o as ChartData;
-                if (Orientation == Orientation.Horizontal)
-                {
-                    if (d.HorizontalLabel == Label)
-                        AxisDataColors.Add(d.LineColor);
-                    //
-                    AxisDataRanges.Add(d.HorozontalSpan);
-                }
-                else
-                {
-                    if (d.VerticalLabel == Label)
-                        AxisDataColors.Add(d.LineColor);
-                    //
-                    AxisDataRanges.Add(d.VerticalSpan);
-                }
-            }
-
-            else if (o.GetType() == typeof(ChartPadding))
-                ParentPadding = o as ChartPadding;
-
-            return true;
-        }
-        public List<Type>   RequireRegistration()
-        {
-            var lst = new List<Type>();
-            lst.Add(typeof(ChartPadding));
-            lst.Add(typeof(ChartAxis));
-            lst.Add(typeof(ChartData));
-            return lst;
-        }
-        public int          CompareTo(object obj)
-        {
-            if (obj is IChartRenderer)
-            {
-                var ob = obj as IChartRenderer;
-                var layer = ob.Layer;
-
-                if (layer > Layer)
-                    return -1;
-                else if (layer < Layer)
-                    return 1;
-                else
-                    return 0;
-            }
-            return 0;
-        }
-        public bool         RegisterParent(object c)
-        {
-            Parent = c as Chart;
-            return false;
-        }
-
-        private Chart Parent;
-        public void InvalidateParent()
-        {
-            Parent.InvalidateSurface();
-        }
-
         public override void DrawSelf(SKCanvas c, SKSize dimension)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override int CompareTo(object obj)
         {
             throw new NotImplementedException();
         }
