@@ -157,9 +157,9 @@ namespace rMultiplatform
                 lower = Maximum - VisibleRange.Distance;
                 upper = Maximum;
             }
+
             VisibleMinimum = lower;
             VisibleMaximum = upper;
-            EnableCroppedRange();
         }
 
         public void Zoom(double X, double Y, SKPoint About)
@@ -181,8 +181,8 @@ namespace rMultiplatform
 
             if (VisibleRange.Minimum <= about && about <= VisibleRange.Maximum)
             {
-                var l = Dist(about, VisibleRange.Minimum) / zoom;
-                var h = Dist(about, VisibleRange.Maximum) / zoom;
+                var l = Dist( about, VisibleRange.Minimum ) / zoom;
+                var h = Dist( about, VisibleRange.Maximum ) / zoom;
                 var lower = about - l;
                 var upper = about + h;
                 int c = 0;

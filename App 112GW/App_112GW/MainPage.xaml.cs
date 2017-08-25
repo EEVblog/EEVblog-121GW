@@ -9,9 +9,8 @@ namespace App_112GW
 {
     public partial class MainPage : Xamarin.Forms.TabbedPage
     {
-        private Settings SettingsView = new Settings();
-        private MathChartSettings MathChart = new MathChartSettings();
-
+        private Settings            SettingsView    = new Settings();
+        private MathChartSettings   MathChart       = new MathChartSettings();
 
         private void SettingsView_AddDevice(IDeviceBLE pDevice)
         {
