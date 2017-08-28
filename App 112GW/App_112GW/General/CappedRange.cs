@@ -104,9 +104,13 @@ namespace rMultiplatform
 
         public void     Set(Range Input)
         {
+            var temp_select = Select;
+
             Select = Current.Boundary;
             Minimum = Input.Minimum;
             Maximum = Input.Maximum;
+
+            Select = temp_select;
         }
         public void     Set(double ValA, double ValB)
         {
@@ -122,22 +126,23 @@ namespace rMultiplatform
             }
         }
 
-        public bool     InRange     (double Value)
+        public bool InRange(double Value)
         {
             return (Minimum <= Value) && (Value <= Maximum);
         }
-        public void     AddToMaximum(double Value)
+
+        public void AddToMaximum(double Value)
         {
             Maximum += Value;
             if (Maximum < Minimum) Minimum = Minimum;
         }
-        public void     AddToMinimum(double Value)
+        public void AddToMinimum(double Value)
         {
             Minimum += Value;
             if (Minimum > Maximum) Maximum = Minimum;
         }
 
-        public void     ShiftRange  (double Value)
+        public void ShiftRange(double Value)
         {
             if (Value == 0.0)
                 return;
@@ -145,7 +150,7 @@ namespace rMultiplatform
             Minimum = Minimum + Value;
             Maximum = Maximum + Value;
         }
-        public void     ShiftFit  (double Value)
+        public void ShiftFit(double Value)
         {
             double diff = 0.0;
             if      (Value > Maximum)
@@ -154,13 +159,13 @@ namespace rMultiplatform
                 diff = Minimum - Value;
             ShiftRange(diff);
         }
-        public void     ExpandFit (double Value)
+        public void ExpandFit(double Value)
         {
             if      (Value > Maximum) Maximum = Value;
             else if (Value < Minimum) Minimum = Value;
         }
 
-        public void     Pan(double Amount)
+        public void Pan(double Amount)
         {
             if (Select != Current.Visible)  return;
 
@@ -173,7 +178,7 @@ namespace rMultiplatform
                 Visible.Maximum = max;
             }
         }
-        public void     Zoom(double Amount, double About)
+        public void Zoom(double Amount, double About)
         {
             if (Amount == 1.0)
                 return;
@@ -212,6 +217,8 @@ namespace rMultiplatform
 
         public CappedRange(double A, double B)
         {
+            Boundary = new Range(A, B);
+            Visible = new Range(A, B);
             Set(A, B);
         }
     }

@@ -37,6 +37,9 @@ namespace App_112GW
         ObservableCollection<Multimeter> Devices = new ObservableCollection<Multimeter>();
         public MainPage()
         {
+            CappedRange temp = new CappedRange(0.0, 10.0);
+            temp.Zoom(2, 6);
+            temp.Pan(1);
             BackgroundColor = Globals.BackgroundColor;
             On<Xamarin.Forms.PlatformConfiguration.Android>().SetIsSwipePagingEnabled(false);
             Children.Add(SettingsView);

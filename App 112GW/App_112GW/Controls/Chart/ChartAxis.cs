@@ -140,26 +140,28 @@ namespace rMultiplatform
 
         public void Pan(double X, double Y)
         {
-            double dist = 1.0f;
-            dist = -GetScalePoint((Orientation == AxisOrientation.Vertical) ? Y : X);
-            if (dist == 1.0)
-                return;
 
-            var lower = VisibleRange.Minimum + dist;
-            var upper = VisibleRange.Maximum + dist;
-            if (lower < Minimum)
-            {
-                lower = Minimum;
-                upper = Minimum + VisibleRange.Distance;
-            }
-            else if (upper > Maximum)
-            {  
-                lower = Maximum - VisibleRange.Distance;
-                upper = Maximum;
-            }
 
-            VisibleMinimum = lower;
-            VisibleMaximum = upper;
+            //double dist = 1.0f;
+            //dist = -GetScalePoint((Orientation == AxisOrientation.Vertical) ? Y : X);
+            //if (dist == 1.0)
+            //    return;
+
+            //var lower = VisibleRange.Minimum + dist;
+            //var upper = VisibleRange.Maximum + dist;
+            //if (lower < Minimum)
+            //{
+            //    lower = Minimum;
+            //    upper = Minimum + VisibleRange.Distance;
+            //}
+            //else if (upper > Maximum)
+            //{  
+            //    lower = Maximum - VisibleRange.Distance;
+            //    upper = Maximum;
+            //}
+
+            //VisibleMinimum = lower;
+            //VisibleMaximum = upper;
         }
 
         public void Zoom(double X, double Y, SKPoint About)
