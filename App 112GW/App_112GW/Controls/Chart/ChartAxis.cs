@@ -49,7 +49,7 @@ namespace rMultiplatform
             Position = Pos;
             Orientation = Ori;
             EventType = Typ;
-        } 
+        }
     }
 
     public class ChartAxisDrawEventArgs : EventArgs
@@ -70,66 +70,10 @@ namespace rMultiplatform
         }
     };
 
-    public class ChartAxis : Range, IChartRenderer
+    public class ChartAxis : CappedRange, IChartRenderer
     {
         public delegate bool ChartAxisDrawEvent(ChartAxisDrawEventArgs o);
         public delegate bool ChartAxisEvent(Object o);
-
-        private bool _VisibleRangeEnabled;
-        private double VisibleMinimum
-        {
-            set
-            {
-                _VisibleRange.Minimum = value;
-            }
-        }   
-        private double VisibleMaximum
-        {
-            set
-            {
-                _VisibleRange.Maximum = value;
-            }
-        }
-        void DisableCroppedRange()
-        {
-            _VisibleRangeEnabled = false;
-            CalculateScales();
-            InvalidateParent();
-        }
-        void EnableCroppedRange()
-        {
-            _VisibleRangeEnabled = true;
-            CalculateScales();
-            InvalidateParent();
-        }
-
-
-        private Range _VisibleRange = new Range(0, 0);
-        public Range VisibleRange
-        {
-            get
-            {
-                if (_VisibleRangeEnabled)
-                    return _VisibleRange;
-                else
-                    return new Range(Minimum, Maximum);
-            }
-            set
-            {
-                _VisibleRangeEnabled = true;
-                _VisibleRange = value;
-                CalculateScales();
-            }
-        }
-
-        private void PassiveSetVisibleRange(Range pInput)
-        {
-            if (_VisibleRangeEnabled)
-            {
-                _VisibleRange = pInput;
-                CalculateScales();
-            }
-        }
 
         double Dist (double A, double B)
         {
@@ -137,33 +81,13 @@ namespace rMultiplatform
                 return A - B;
             return B - A;
         }
-
         public void Pan(double X, double Y)
         {
-
-
-            //double dist = 1.0f;
-            //dist = -GetScalePoint((Orientation == AxisOrientation.Vertical) ? Y : X);
-            //if (dist == 1.0)
-            //    return;
-
-            //var lower = VisibleRange.Minimum + dist;
-            //var upper = VisibleRange.Maximum + dist;
-            //if (lower < Minimum)
-            //{
-            //    lower = Minimum;
-            //    upper = Minimum + VisibleRange.Distance;
-            //}
-            //else if (upper > Maximum)
-            //{  
-            //    lower = Maximum - VisibleRange.Distance;
-            //    upper = Maximum;
-            //}
-
-            //VisibleMinimum = lower;
-            //VisibleMaximum = upper;
+            double dist = 1.0f;
+            dist = -GetScalePoint((Orientation == AxisOrientation.Vertical) ? Y : X);
+            Pan(dist);
+            CalculateScales();
         }
-
         public void Zoom(double X, double Y, SKPoint About)
         {
             double zoom = 1.0f;
@@ -178,38 +102,14 @@ namespace rMultiplatform
                 zoom = X;
                 about = GetPoint(About.X);
             }
-            if (zoom == 1.0)
-                return;
 
-            if (VisibleRange.Minimum <= about && about <= VisibleRange.Maximum)
-            {
-                var l = Dist( about, VisibleRange.Minimum ) / zoom;
-                var h = Dist( about, VisibleRange.Maximum ) / zoom;
-                var lower = about - l;
-                var upper = about + h;
-                int c = 0;
-
-                //Clip upper and lower bounds
-                //If zoomed out to full range re-enable normal mode.
-                if (lower <= Minimum)
-                {
-                    ++c;
-                    lower = Minimum;
-                }
-                if (upper >= Maximum)
-                {
-                    ++c;
-                    upper = Maximum;
-                }
-                if (c == 2)
-                    DisableCroppedRange();
-                else
-                {
-                    VisibleMinimum = lower;
-                    VisibleMaximum = upper;
-                    EnableCroppedRange();
-                }
-            }
+            Debug.WriteLine("about : " + about.ToString());
+            Debug.WriteLine("zoom : " + zoom.ToString());
+            Debug.WriteLine(base.GetRange().String);
+            Zoom(zoom, about);
+            Debug.WriteLine(base.GetRange().String);
+            Debug.WriteLine("\n\n");
+            CalculateScales();
         }
 
         List<Range>                 AxisDataRanges;
@@ -243,18 +143,27 @@ namespace rMultiplatform
         private float       SpaceWidth;
         private double      MainTickDrawDistance;
         private double      MinorTickDrawDistance;
+        private bool Ready = false;
         public void        CalculateScales()
         {
-            var rangesize = VisibleRange.Distance;
-            var viewsize = AxisSize;
-            var scale = viewsize / rangesize;
-            
-            _MainTickDistance = VisibleRange.Distance / _MainTicks;
-            _MinorTickDistance = MainTickDistance / _MinorTicks;
-            MainTickDrawDistance = Math.Abs(_MainTickDistance) * scale;
-            MinorTickDrawDistance = Math.Abs(_MinorTickDistance) * scale;
-            
-            AxisLocation    = _AxisLocationScaler;
+            var rangesize = Distance;
+            if (rangesize > 0)
+            {
+                var viewsize = AxisSize;
+                if (viewsize > 0)
+                {
+                    var scale = viewsize / rangesize;
+                    _MainTickDistance = rangesize / _MainTicks;
+                    _MinorTickDistance = MainTickDistance / _MinorTicks;
+                    MainTickDrawDistance = Math.Abs(_MainTickDistance) * scale;
+                    MinorTickDrawDistance = Math.Abs(_MinorTickDistance) * scale;
+                    AxisLocation = _AxisLocationScaler;
+
+                    Ready = true;
+                    return;
+                }
+            }
+            return;
         }
 
         //Properties
@@ -332,14 +241,14 @@ namespace rMultiplatform
             Standard,
             Inverted
         }
-        public              AxisDirection       Direction
-        {
-            get; set;
-        }
-        public enum         AxisOrientation
+        public enum AxisOrientation
         {
             Vertical,
             Horizontal
+        }
+        public              AxisDirection       Direction
+        {
+            get; set;
         }
         public              AxisOrientation     Orientation
         {
@@ -447,40 +356,20 @@ namespace rMultiplatform
         {
             get
             {
-                if (_VisibleRangeEnabled)
-                {
-                    if (MinorTickDistance < 0)
-                        return VisibleRange.Maximum;
-                    else
-                        return VisibleRange.Minimum;
-                }
+                if (MinorTickDistance < 0)
+                    return Maximum;
                 else
-                {
-                    if (MinorTickDistance < 0)
-                        return Maximum;
-                    else
-                        return Minimum;
-                }
+                    return Minimum;
             }
         }
         private double      EndPoint
         {
             get
             {
-                if (_VisibleRangeEnabled)
-                {
-                    if (MinorTickDistance < 0)
-                        return VisibleRange.Minimum;
-                    else
-                        return VisibleRange.Maximum;
-                }
+                if (MinorTickDistance < 0)
+                    return Minimum;
                 else
-                {
-                    if (MinorTickDistance < 0)
-                        return Minimum;
-                    else
-                        return Maximum;
-                }
+                    return Maximum;
             }
         }
         private bool        Inverting
@@ -493,15 +382,15 @@ namespace rMultiplatform
                     return (Direction != AxisDirection.Standard);
             }
         }
-        private bool _Rerange;
-        public bool Rerange
+        private bool        _Rerange;
+        public bool         Rerange
         {
             set
             {
                 _Rerange = value;
             }
         }
-        public int Layer
+        public int          Layer
         {
             get
             {
@@ -600,7 +489,7 @@ namespace rMultiplatform
         //
         float MajorTextSize = 12;
         float MinorTextSize = 10;
-        public ChartAxis       (double MainTicks, double MinorTicks, double Minimum, double Maximum)
+        public ChartAxis (double MainTicks, double MinorTicks, double Minimum, double Maximum)
             : base(Minimum, Maximum)
         {
             ParentPadding = new ChartPadding(0);
@@ -655,61 +544,56 @@ namespace rMultiplatform
             Rerange         = true;
             ShowDataKey     = false;
         }
-
-        public double GetCoordinate (double Value)
-        {
-            var scale = (AxisSize / VisibleRange.Distance);
-
-            //Handle axis inversion
-            if (Inverting)
-                scale = -scale;
-            Value -= StartPoint;
-
-            //Value now represents the full scale
-            Value *= scale;
-
-            //Offset from the base
-            Value += AxisStart;
-            return Value;
-        }
-
         public SKMatrix GetTransform()
         {
-            var scale = (AxisSize / VisibleRange.Distance);
+            var scale = AxisSize / Distance;
             if (Inverting)
                 scale = -scale;
 
             var matrix = SKMatrix.MakeIdentity();
             if (Orientation == AxisOrientation.Horizontal)
             {
-                matrix.ScaleX = +(float)(scale);
-                matrix.TransX = +(float)(AxisStart - scale * StartPoint);
+                matrix.ScaleX = (float)(scale);
+                matrix.TransX = (float)(AxisStart - scale * StartPoint);
             }
             else
             {
-                matrix.ScaleY = +(float)(scale);
-                matrix.TransY = +(float)(AxisStart - scale * StartPoint);
+                matrix.ScaleY = (float)(scale);
+                matrix.TransY = (float)(AxisStart - scale * StartPoint);
             }
             return matrix;
         }
 
-        public bool     GetCoordinate(double Value, out double Output)
+        public double GetCoordinate(double Value)
         {
-            if (VisibleRange.Minimum <= Value)
-                Output = VisibleRange.Minimum;
-            if (Value >= VisibleRange.Maximum)
-                Output = VisibleRange.Maximum;
-            Output = GetCoordinate(Value);
-            return true;
+            var scale = (AxisSize / Distance);
+            //Handle axis inversion
+            if (Inverting)
+                scale = -scale;
+            Value -= StartPoint;
+            //Value now represents the full scale
+            Value *= scale;
+            //Offset from the base
+            Value += AxisStart;
+            return Value;
         }
-        public double   GetScalePoint(double Value)
+        public void GetCoordinate(double Value, out double Output)
         {
-            var scale = (AxisSize / VisibleRange.Distance);
+            if (Minimum <= Value)
+                Output = Minimum;
+            if (Value >= Maximum)
+                Output = Maximum;
+
+            Output = GetCoordinate(Value);
+        }
+        public double GetScalePoint(double Value)
+        {
+            var scale = AxisSize / Distance;
             return Value /= scale;
         }
-        public double   GetPoint(double Value)
+        public double GetPoint(double Value)
         {
-            var scale = (AxisSize / VisibleRange.Distance);
+            var scale = (AxisSize / Distance);
             double value = Value;
             value -= AxisStart;
             value /= scale;
@@ -739,28 +623,18 @@ namespace rMultiplatform
         {
             if (e.Orientation == Orientation)
             {
-                VisRange = VisibleRange;
-                var temp = Combine(AxisDataRanges);
-                Maximum = temp.Maximum;
-                Minimum = temp.Minimum;
-                CalculateScales();
+                VisRange = GetRange();
+                Set(Combine(AxisDataRanges));
                 return new ChartDataEventReturn(GetTransform);
             }
             return null;
         }
 
-        bool SetMode = false;
         public new void Set(Range Input)
         {
             base.Set(Input);
-            VisibleRange = Input;
             CalculateScales();
-
-            Debug.WriteLine("Setting");
-            SetMode = true;
         }
-
-
         
         public bool ChartDrawEvent (ChartAxisDrawEventArgs e)
         {
@@ -797,7 +671,7 @@ namespace rMultiplatform
             return true;
         }
 
-        void                DrawTick        (ref SKCanvas c, float Position, float length, SKPaint TickPaint)
+        void DrawTick (ref SKCanvas c, float Position, float length, SKPaint TickPaint)
         {
             length /= 2;
             switch (Orientation)      
@@ -888,7 +762,7 @@ namespace rMultiplatform
             return 0;
         }
 
-        void DrawTickLabel (ref SKCanvas c, double Value, float Position, float length, SKPaint TickPaint)
+        void DrawTickLabel  (ref SKCanvas c, double Value, float Position, float length, SKPaint TickPaint)
         {
             var hei = MinorPaint.TextSize /2;
 
@@ -925,7 +799,7 @@ namespace rMultiplatform
             pth.AddPoly(pts, false);
             c.DrawTextOnPath(txt, pth, 0, hei / 2, MinorPaint);
         }
-        void DrawLabel (ref SKCanvas c, float length)
+        void DrawLabel      (ref SKCanvas c, float length)
         {
             var hei = MajorPaint.TextSize;
             if (hei > AxisLabelPadding)
@@ -989,7 +863,7 @@ namespace rMultiplatform
             //
             DrawColors(ref c, ref pts);
         }
-        void DrawColors (ref SKCanvas c, ref SKPoint[] p)
+        void DrawColors     (ref SKCanvas c, ref SKPoint[] p)
         {
             if (ShowDataKey)
             {
@@ -1026,37 +900,40 @@ namespace rMultiplatform
         //Draws the entire system
         bool IChartRenderer.Draw (SKCanvas c)
         {
-            var redraw      = false;
-            var NextMain    = AxisStart;
-            var ercor       = MinorTickDrawDistance / 2;
-            var cur         = StartPoint;
-            int index       = 0;
-
-            //
-            if (Label.Length > 0)
-                DrawLabel(ref c, 20);
-
-            for ( var Tick = AxisStart; Tick <= AxisEnd + ercor; Tick += MinorTickDrawDistance )
+            var redraw = false;
+            if (Ready)
             {
-                //This avoids multiple cast operations
-                var pos = (float)Tick;
-
-                //Need to add error compensation to avoid missing steps due to double maths issues
-                if (Tick + ercor >= NextMain)
-                {
-                    //Draw main tick
-                    DrawMajorTick(ref c, pos, index);
-                    DrawTickLabel(ref c, cur, pos, 20, MajorPaint);
-
-                    //Increment to anticipate the next main tick
-                    NextMain += MainTickDrawDistance;
-                    index++;
-                }
-                else
-                    DrawMinorTick(ref c, pos);
+                var NextMain = AxisStart;
+                var ercor = MinorTickDrawDistance / 2;
+                var cur = StartPoint;
+                int index = 0;
 
                 //
-                cur += MinorTickDistance;
+                if (Label.Length > 0)
+                    DrawLabel(ref c, 20);
+
+                for (var Tick = AxisStart; Tick <= AxisEnd + ercor; Tick += MinorTickDrawDistance)
+                {
+                    //This avoids multiple cast operations
+                    var pos = (float)Tick;
+
+                    //Need to add error compensation to avoid missing steps due to double maths issues
+                    if (Tick + ercor >= NextMain)
+                    {
+                        //Draw main tick
+                        DrawMajorTick(ref c, pos, index);
+                        DrawTickLabel(ref c, cur, pos, 20, MajorPaint);
+
+                        //Increment to anticipate the next main tick
+                        NextMain += MainTickDrawDistance;
+                        index++;
+                    }
+                    else
+                        DrawMinorTick(ref c, pos);
+
+                    //
+                    cur += MinorTickDistance;
+                }
             }
             return redraw;
         }

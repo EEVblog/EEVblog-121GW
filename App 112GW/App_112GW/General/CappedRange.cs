@@ -4,7 +4,7 @@ using System.Text;
 
 namespace rMultiplatform
 {
-    class CappedRange
+    public class CappedRange
     {
         private enum Current
         {
@@ -104,26 +104,16 @@ namespace rMultiplatform
 
         public void     Set(Range Input)
         {
-            var temp_select = Select;
-
             Select = Current.Boundary;
-            Minimum = Input.Minimum;
-            Maximum = Input.Maximum;
-
-            Select = temp_select;
+            Boundary.Minimum = Input.Minimum;
+            Boundary.Maximum = Input.Maximum;
+            Visible.Minimum = Input.Minimum;
+            Visible.Maximum = Input.Maximum;
         }
         public void     Set(double ValA, double ValB)
         {
-            if (ValA > ValB)
-            {
-                Minimum = ValB;
-                Maximum = ValA;
-            }
-            else
-            {
-                Minimum = ValA;
-                Maximum = ValB;
-            }
+            if (ValA > ValB)    Set(new Range(ValB, ValA));
+            else                Set(new Range(ValA, ValB));
         }
 
         public bool InRange(double Value)
@@ -213,6 +203,40 @@ namespace rMultiplatform
                     Maximum = upper;
                 }
             }
+        }
+
+        public Range GetRange()
+        {
+            switch (Select)
+            {
+                case Current.Visible:
+                    return Visible;
+                case Current.Boundary:
+                    return Boundary;
+                default:
+                    throw new Exception("Not possible.");
+            }
+        }
+
+        public Range Combine(List<Range> mRanges)
+        {
+            var output = new Range(Boundary.Minimum, Boundary.Maximum);
+            foreach(var item in mRanges)
+            {
+                if (output.Distance == 0)
+                {
+                    output.Minimum = item.Minimum;
+                    output.Maximum = item.Maximum;
+                }
+                else
+                {
+                    var min = item.Minimum;
+                    var max = item.Maximum;
+                    output.Minimum = Math.Min(min, output.Minimum);
+                    output.Maximum = Math.Max(max, output.Maximum);
+                }
+            }
+            return output;
         }
 
         public CappedRange(double A, double B)

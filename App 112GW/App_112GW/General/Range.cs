@@ -49,6 +49,15 @@ namespace rMultiplatform
             }
         }
 
+
+        public string String
+        {
+            get
+            {
+                return Minimum.ToString() + " <= value <= " + Maximum.ToString();
+            }
+        }
+
         public double Distance
         {
             get { return Maximum - Minimum; }

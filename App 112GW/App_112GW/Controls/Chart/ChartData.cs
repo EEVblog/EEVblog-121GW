@@ -27,14 +27,9 @@ namespace rMultiplatform
     public class ChartDataEventReturn
     {
         //public delegate double GetCoordinate(double Value);
-        public delegate bool GetCoordinate(double Value, out double Output);
         public delegate SKMatrix GetTransform();
-        public GetCoordinate    Function;
         public GetTransform     Transform;
-        public ChartDataEventReturn(GetCoordinate pFunction)
-        {
-            Function = pFunction;
-        }
+
         public ChartDataEventReturn(GetTransform pFunction)
         {
             Transform = pFunction;
@@ -169,17 +164,12 @@ namespace rMultiplatform
             }
             set
             {
-                DataMux.WaitOne();
                 _Data = value;
-                DataMux.ReleaseMutex();
             }
         }
 
-        bool Combination = false;
         public void CombineDataRanges(ChartData A, ChartData B)
         {
-            Combination = true;
-
             var horz = Range.Fit(A.HorozontalSpan, B.HorozontalSpan);
             var vert = Range.Fit(A.VerticalSpan, B.VerticalSpan);
 
@@ -264,8 +254,6 @@ namespace rMultiplatform
                 path.Transform(y_t);
                 path.Transform(x_t);
 
-                if (SetMode)
-                    Debug.WriteLine("Stop");
                 c.DrawPath(path, DrawPaint);
             }
             return false;
@@ -306,13 +294,9 @@ namespace rMultiplatform
 
             //Rescale vertical
             VerticalSpan.RescaleRangeToFitValue(pPoint);
-            DataMux.WaitOne();
             Data.Add(new Point((float)ms_diff, (float)pPoint));
-            DataMux.ReleaseMutex();
             DataChange();
         }
-
-        bool SetMode = false;
 
         public (Range, Range) CalculateRanges(Points pPoints)
         {
@@ -355,8 +339,6 @@ namespace rMultiplatform
         {
             if (pPoints.Count >= 2)
             {
-                SetMode = true;
-
                 (var horz, var vert) = CalculateRanges(pPoints);
                 if (horz.Distance > 0 && vert.Distance > 0)
                 {
@@ -372,9 +354,7 @@ namespace rMultiplatform
                     }
 
                     //Data cannot be changed when it is in use.
-                    DataMux.WaitOne();
                     Data = pPoints;
-                    DataMux.ReleaseMutex();
                     DataChange();
                 }
             }
