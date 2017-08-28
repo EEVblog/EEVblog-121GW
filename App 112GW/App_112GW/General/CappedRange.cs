@@ -175,7 +175,6 @@ namespace rMultiplatform
 
             if (InRange(About))
             {
-                Select = Current.Visible;
 
                 var l = Dist(About, Minimum) / Amount;
                 var h = Dist(About, Maximum) / Amount;
@@ -199,6 +198,7 @@ namespace rMultiplatform
                     Select = Current.Boundary;
                 else
                 {
+                    Select = Current.Visible;
                     Minimum = lower;
                     Maximum = upper;
                 }
