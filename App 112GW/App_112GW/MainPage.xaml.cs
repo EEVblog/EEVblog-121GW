@@ -1,9 +1,9 @@
 ﻿using rMultiplatform;
 using rMultiplatform.BLE;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using Xamarin.Forms;
 using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
+using Xamarin.Forms.PlatformConfiguration.WindowsSpecific;
 
 namespace App_112GW
 {
@@ -39,7 +39,7 @@ namespace App_112GW
         {
             BackgroundColor = Globals.BackgroundColor;
             On<Xamarin.Forms.PlatformConfiguration.Android>().SetIsSwipePagingEnabled(false);
-
+            
             Children.Add(SettingsView);
             SettingsView.AddDevice += SettingsView_AddDevice;
             SettingsView.RemoveDevices += SettingsView_RemoveDevices;

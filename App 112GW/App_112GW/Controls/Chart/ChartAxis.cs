@@ -765,7 +765,6 @@ namespace rMultiplatform
         void DrawTickLabel  (ref SKCanvas c, double Value, float Position, float length, SKPaint TickPaint)
         {
             var hei = MinorPaint.TextSize /2;
-
             var txt = String.Format("{0:0.00}", Value);
             var wid = MinorPaint.MeasureText(txt) + SpaceWidth;
             var pth = new SKPath();
@@ -774,7 +773,6 @@ namespace rMultiplatform
                 LabelPadding = tot_wid;
 
             SKPoint pt1, pt2;
-
             length /= 2;
             switch (Orientation)
             {
@@ -807,7 +805,6 @@ namespace rMultiplatform
 
             var txt = Convert.ToString(Label);
             var wid = MajorPaint.MeasureText(txt) + SpaceWidth;
-
             var pth = new SKPath();
             SKPoint pt1, pt2;
 
