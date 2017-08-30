@@ -53,7 +53,7 @@ namespace rMultiplatform.UWP
         {
             var sendr = sender as UIElement;
             var pp = args.GetCurrentPoint(sendr).Position;
-            return new Point(pp.X * 2, pp.Y * 2);
+            return new Point(pp.X, pp.Y);
         }
 
         // Common handlers

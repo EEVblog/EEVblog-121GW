@@ -85,7 +85,7 @@ namespace rMultiplatform
         {
             double dist = 1.0f;
             dist = -GetScalePoint((Orientation == AxisOrientation.Vertical) ? Y : X);
-            Pan(dist);
+            base.Pan(dist);
             CalculateScales();
         }
         public void Zoom(double X, double Y, SKPoint About)
@@ -103,12 +103,9 @@ namespace rMultiplatform
                 about = GetPoint(About.X);
             }
 
-            Debug.WriteLine("about : " + about.ToString());
-            Debug.WriteLine("zoom : " + zoom.ToString());
             Debug.WriteLine(base.GetRange().String);
-            Zoom(zoom, about);
+            base.Zoom(zoom, about);
             Debug.WriteLine(base.GetRange().String);
-            Debug.WriteLine("\n\n");
             CalculateScales();
         }
 

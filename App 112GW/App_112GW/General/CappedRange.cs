@@ -175,7 +175,6 @@ namespace rMultiplatform
 
             if (InRange(About))
             {
-
                 var l = Dist(About, Minimum) / Amount;
                 var h = Dist(About, Maximum) / Amount;
                 var lower = About - l;
@@ -184,15 +183,15 @@ namespace rMultiplatform
 
                 //Clip upper and lower bounds
                 //If zoomed out to full range re-enable normal mode.
-                if (lower <= Minimum)
+                if (lower <= Boundary.Minimum)
                 {
                     ++c;
-                    lower = Minimum;
+                    lower = Boundary.Minimum;
                 }
-                if (upper >= Maximum)
+                if (upper >= Boundary.Maximum)
                 {
                     ++c;
-                    upper = Maximum;
+                    upper = Boundary.Maximum;
                 }
                 if (c == 2)
                     Select = Current.Boundary;
