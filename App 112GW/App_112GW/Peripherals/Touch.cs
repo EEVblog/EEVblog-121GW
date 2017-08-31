@@ -431,7 +431,9 @@ namespace rMultiplatform
         private void SafeEvent(TouchActionEventHandler EventFunction, Element element, TouchActionEventArgs args)
         {
             if (EventFunction != null)
-                Device.BeginInvokeOnMainThread(() => { EventFunction?.Invoke(element, args); });
+                Device.BeginInvokeOnMainThread(() => {
+                    EventFunction?.Invoke(element, args);
+                });
         }
         private void PlainEvent(TouchActionEventHandler EventFunction, Element element, TouchActionEventArgs args)
         {

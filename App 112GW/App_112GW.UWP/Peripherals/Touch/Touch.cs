@@ -51,9 +51,9 @@ namespace rMultiplatform.UWP
         //Shared handler functions
         private Point GetPoint(object sender, PointerRoutedEventArgs args)
         {
-            var sendr = sender as UIElement;
-            var pp = args.GetCurrentPoint(sendr).Position;
-            return new Point(pp.X, pp.Y);
+            var sndr = sender as UIElement;
+            var p = args.GetCurrentPoint(sndr).Position;
+            return new Point(p.X, p.Y);
         }
 
         // Common handlers
