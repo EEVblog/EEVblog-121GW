@@ -575,15 +575,6 @@ namespace rMultiplatform
             Value += AxisStart;
             return Value;
         }
-        public void GetCoordinate(double Value, out double Output)
-        {
-            if (Minimum <= Value)
-                Output = Minimum;
-            if (Value >= Maximum)
-                Output = Maximum;
-            Output = Value;
-
-        }
         public double DrawScale
         {
             get
