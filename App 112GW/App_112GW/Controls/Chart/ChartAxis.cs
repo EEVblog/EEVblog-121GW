@@ -585,15 +585,15 @@ namespace rMultiplatform
         public double GetScalePoint(double Value)
         {
             var scale = AxisSize / Distance;
-            Value *= DrawScale;
+            //Value *= DrawScale;
             return Value /= scale;
         }
         public double GetPoint(double Value)
         {
-            Value *= DrawScale;
             var scale = (AxisSize / Distance);
             double value = Value;
             value -= AxisStart;
+            //Value *= DrawScale;
             value /= scale;
             value += StartPoint;
             return value;
@@ -760,7 +760,6 @@ namespace rMultiplatform
             return 0;
         }
 
-
         void DrawTickLabel  (ref SKCanvas c, double Value, float Position, float length, SKPaint TickPaint)
         {
             var txt = SIValue.ToString(Value);
@@ -777,14 +776,14 @@ namespace rMultiplatform
             switch (Orientation)
             {
                 case AxisOrientation.Vertical:
-                    if (TotalPadding > ParentPadding.L)
+                    if ( TotalPadding > ParentPadding.L )
                         ParentPadding.L = TotalPadding;
 
                     pt1 = new SKPoint(GetAxisLabelPosition() - tot_wid, Position);
                     pt2 = new SKPoint(GetAxisLabelPosition() - SpaceWidth,   Position);
                     break;
                 case AxisOrientation.Horizontal:
-                    if (TotalPadding > ParentPadding.B)
+                    if ( TotalPadding > ParentPadding.B )
                         ParentPadding.B = TotalPadding;
 
                     pt1 = new SKPoint(Position, GetAxisLabelPosition() + tot_wid);

@@ -53,6 +53,10 @@ namespace rMultiplatform.UWP
         {
             var sndr = sender as UIElement;
             var p = args.GetCurrentPoint(sndr).Position;
+
+            var actual_width = Control.ActualWidth;
+            var scaled_width = Control.Width;
+
             return new Point(p.X, p.Y);
         }
 
