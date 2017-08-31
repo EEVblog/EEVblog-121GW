@@ -84,9 +84,11 @@ namespace rMultiplatform
         public void Pan(double X, double Y)
         {
             double dist = 1.0f;
+
             dist = -GetScalePoint((Orientation == AxisOrientation.Vertical) ? Y : X);
             base.Pan(dist);
             CalculateScales();
+            InvalidateParent();
         }
         public void Zoom(double X, double Y, SKPoint About)
         {
@@ -103,10 +105,9 @@ namespace rMultiplatform
                 about = GetPoint(About.X);
             }
 
-            Debug.WriteLine(base.GetRange().String);
             base.Zoom(zoom, about);
-            Debug.WriteLine(base.GetRange().String);
             CalculateScales();
+            InvalidateParent();
         }
 
         List<Range>                 AxisDataRanges;
@@ -574,22 +575,22 @@ namespace rMultiplatform
             Value += AxisStart;
             return Value;
         }
-        public void GetCoordinate(double Value, out double Output)
+        public double DrawScale
         {
-            if (Minimum <= Value)
-                Output = Minimum;
-            if (Value >= Maximum)
-                Output = Maximum;
-
-            Output = GetCoordinate(Value);
+            get
+            {
+                return VisualScale / Parent.Width;
+            }
         }
         public double GetScalePoint(double Value)
         {
             var scale = AxisSize / Distance;
+            Value *= DrawScale;
             return Value /= scale;
         }
         public double GetPoint(double Value)
         {
+            Value *= DrawScale;
             var scale = (AxisSize / Distance);
             double value = Value;
             value -= AxisStart;
@@ -621,7 +622,7 @@ namespace rMultiplatform
             if (e.Orientation == Orientation)
             {
                 VisRange = GetRange();
-                Set(Combine(AxisDataRanges));
+                base.SetBoundary(Combine(AxisDataRanges));
                 return new ChartDataEventReturn(GetTransform);
             }
             return null;
@@ -629,7 +630,7 @@ namespace rMultiplatform
 
         public new void Set(Range Input)
         {
-            base.Set(Input);
+            base.SetBoundary(Input);
             CalculateScales();
         }
         
@@ -844,12 +845,20 @@ namespace rMultiplatform
                     return;
             }
 
-            var pts = new SKPoint[] { pt1, pt2 };
+            var pts = new SKPoint[] {
+                pt1,
+                pt2 };
+
             pth.AddPoly(pts, false);
-            var rect = new SKRect(pt1.X + xfillsoffset, pt1.Y + yfillsoffset, pt2.X + xfilloffset, pt2.Y + yfilloffset);
+            var rect = new SKRect(
+                pt1.X + xfillsoffset, 
+                pt1.Y + yfillsoffset, 
+                pt2.X + xfilloffset, 
+                pt2.Y + yfilloffset);
 
             c.DrawRoundRect(rect, SpaceWidth, SpaceWidth, MaskPaint);
             c.DrawTextOnPath(txt, pth, 0, 0, MajorPaint);
+
             //
             pth.Offset(xmakoffset, ymakoffset);
             pts = pth.Points;
@@ -871,7 +880,7 @@ namespace rMultiplatform
                 var dy  = pt2.Y - pt1.Y;
 
                 //
-                var inc = 1.0f / (  - 1 );
+                var inc = -1.0f;
                 var t = 0.0f;
                 for ( var i = 0; i < AxisDataColors.Count; i++ )
                 {

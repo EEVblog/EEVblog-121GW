@@ -101,6 +101,18 @@ namespace rMultiplatform
                 }
             }
         }
+        public void SetBoundary(Range Input)
+        {
+            Boundary.Minimum = Input.Minimum;
+            Boundary.Maximum = Input.Maximum;
+
+            if (Select == Current.Boundary)
+            {
+                Visible.Minimum = Input.Minimum;
+                Visible.Maximum = Input.Maximum;
+            }
+        }
+
 
         public void     Set(Range Input)
         {
@@ -197,9 +209,9 @@ namespace rMultiplatform
                     Select = Current.Boundary;
                 else
                 {
-                     Select = Current.Visible;
-                    Minimum = lower;
-                    Maximum = upper;
+                    Visible.Minimum = lower;
+                    Visible.Maximum = upper;
+                    Select = Current.Visible;
                 }
             }
         }
