@@ -4,7 +4,7 @@ using System.Text;
 
 namespace rMultiplatform
 {
-    public class SIValue
+    static public class SIValue
     {
         static private List<Tuple<double, string>> Units = new List<Tuple<double, string>>()
         {
@@ -38,7 +38,7 @@ namespace rMultiplatform
                 foreach (var unit in Units)
                 {
                     var range = unit.Item1 * 1000;
-                    if (range > Value)
+                    if (range > Math.Abs(Value))
                     {
                         var label = unit.Item2;
                         var outval = (1000 * Value) / range;
