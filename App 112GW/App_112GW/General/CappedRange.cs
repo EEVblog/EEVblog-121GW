@@ -197,7 +197,7 @@ namespace rMultiplatform
                     Select = Current.Boundary;
                 else
                 {
-                    Select = Current.Visible;
+                     Select = Current.Visible;
                     Minimum = lower;
                     Maximum = upper;
                 }
