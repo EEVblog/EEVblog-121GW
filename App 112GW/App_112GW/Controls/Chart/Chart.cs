@@ -64,11 +64,9 @@ namespace rMultiplatform
                 for (var i = 0; i < ChartElements.Count; i++)
                 {
                     if (ChartElements[i].GetType() == typeof(ChartPadding))
-                    {
                         ChartElements[i] =  value;
-                        InvalidateSurface();
-                    }
                 }
+                InvalidateSurface();
             }
             get
             {

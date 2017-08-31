@@ -225,9 +225,17 @@ namespace rMultiplatform
             foreach (var axis in Registrants)
             {
                 if (        (temp = axis.ChartDataEvent(new ChartDataEventArgs(ChartAxis.AxisOrientation.Horizontal, horz), ref VisX)) != null)
+                {
+                    if (horz.Update)
+                        axis.CalculateScales();
                     x = temp;
-                else if (   (temp = axis.ChartDataEvent(new ChartDataEventArgs(ChartAxis.AxisOrientation.Vertical, vert), ref VisY  )) != null)
+                }
+                else if (   (temp = axis.ChartDataEvent(new ChartDataEventArgs(ChartAxis.AxisOrientation.Vertical, vert),   ref VisY)) != null)
+                {
+                    if (vert.Update)
+                        axis.CalculateScales();
                     y = temp;
+                }
             }
 
             //

@@ -1,6 +1,7 @@
 ﻿using rMultiplatform;
 using rMultiplatform.BLE;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using Xamarin.Forms;
 using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
 using Xamarin.Forms.PlatformConfiguration.WindowsSpecific;

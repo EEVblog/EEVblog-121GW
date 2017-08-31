@@ -141,8 +141,8 @@ namespace rMultiplatform
         private float       SpaceWidth;
         private double      MainTickDrawDistance;
         private double      MinorTickDrawDistance;
-        private bool Ready = false;
-        public void        CalculateScales()
+        private bool        Ready = false;
+        public void CalculateScales()
         {
             var rangesize = Distance;
             if (rangesize > 0)
@@ -760,11 +760,13 @@ namespace rMultiplatform
             return 0;
         }
 
+
         void DrawTickLabel  (ref SKCanvas c, double Value, float Position, float length, SKPaint TickPaint)
         {
-            var hei = MinorPaint.TextSize /2;
-            var txt = String.Format("{0:0.00}", Value);
+            var txt = SIValue.ToString(Value);
+            var hei = MinorPaint.TextSize / 2;
             var wid = MinorPaint.MeasureText(txt) + SpaceWidth;
+
             var pth = new SKPath();
             var tot_wid = wid + SpaceWidth*2;
             if (tot_wid > LabelPadding)
