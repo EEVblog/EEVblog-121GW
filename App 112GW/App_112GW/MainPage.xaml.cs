@@ -10,8 +10,9 @@ namespace App_112GW
 {
     public partial class MainPage : Xamarin.Forms.TabbedPage
     {
+        private ObservableCollection<Multimeter> Devices = new ObservableCollection<Multimeter>();
         private Settings            SettingsView    = new Settings();
-        private MathChartSettings   MathChart       = new MathChartSettings();
+        private MathChart MathChart = new MathChart();
 
         private void SettingsView_AddDevice(IDeviceBLE pDevice)
         {
@@ -35,7 +36,6 @@ namespace App_112GW
             SettingsView.RemoveDevice();
         }
 
-        ObservableCollection<Multimeter> Devices = new ObservableCollection<Multimeter>();
         public MainPage()
         {
             BackgroundColor = Globals.BackgroundColor;

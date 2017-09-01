@@ -12,8 +12,6 @@ namespace rMultiplatform
         public event EventHandler SaveClicked;
         public event EventHandler BackClicked;
 
-
-
         static bool SameType(object A, Type B)
         {
             return Object.ReferenceEquals(A.GetType(), B);

@@ -13,63 +13,6 @@ using System.Diagnostics;
 
 namespace rMultiplatform
 {
-    public class ChartAxisEventArgs : EventArgs
-    {
-        public enum ChartAxisEventType
-        {
-            DrawMajorTick,
-            DrawMinorTick,
-            DrawLabel
-        };
-
-        public AxisLabel                    Label;
-        public SKCanvas                     Canvas;
-        public SKColor                      Color;
-        public double                       Position;
-        public ChartAxis.AxisOrientation    Orientation;
-        public ChartAxisEventType           EventType;
-        public float                        TickLength;
-
-        public ChartAxisEventArgs(AxisLabel Label,  SKCanvas Can,    Color      Col,    double Pos,     double TickLen,     ChartAxis.AxisOrientation  Ori,     ChartAxisEventType Typ) :base()
-        {
-            this.Label = Label;
-            TickLength = (float)TickLen;
-            Canvas = Can;
-            Color = Col.ToSKColor();
-            Position = Pos;
-            Orientation = Ori;
-            EventType = Typ;
-        }
-        public ChartAxisEventArgs(AxisLabel Label,  SKCanvas Can,    SKColor    Col,    double Pos,     double TickLen,     ChartAxis.AxisOrientation  Ori,     ChartAxisEventType Typ) : base()
-        {
-            this.Label = Label;
-            TickLength = (float)TickLen;
-            Canvas = Can;
-            Color = Col;
-            Position = Pos;
-            Orientation = Ori;
-            EventType = Typ;
-        }
-    }
-
-    public class ChartAxisDrawEventArgs : EventArgs
-    {
-        public int                          Index;
-        public int                          MaxIndex;
-        public AxisLabel                    AxisLabel;
-        public ChartAxis.AxisOrientation    Orientation;
-        public float                        Position;
-
-        public ChartAxisDrawEventArgs(AxisLabel Label, ChartAxis.AxisOrientation Orientation, float Position, int Index, int MaxIndex) : base()
-        {
-            this.AxisLabel = Label;
-            this.Orientation = Orientation;
-            this.Position = Position;
-            this.Index = Index;
-            this.MaxIndex = MaxIndex;
-        }
-    };
-
     public class ChartAxis : CappedRange, IChartRenderer
     {
         public delegate bool ChartAxisDrawEvent(ChartAxisDrawEventArgs o);
@@ -170,7 +113,7 @@ namespace rMultiplatform
         }
 
         //Properties
-        private AxisLabel   _Label;
+        private AxisLabel _Label = new AxisLabel("Unknown (none)");
         public string       Label
         {
             get
@@ -179,7 +122,7 @@ namespace rMultiplatform
             }
             set
             {
-                _Label = new AxisLabel(value);
+                _Label.Text = value;
             }
         }
 
@@ -856,7 +799,7 @@ namespace rMultiplatform
                 pt2 };
 
             pth.AddPoly(pts, false);
-            var rect = new SKRect(
+            var rect = new SKRect (
                 pt1.X + xfillsoffset, 
                 pt1.Y + yfillsoffset, 
                 pt2.X + xfilloffset, 
