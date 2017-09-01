@@ -28,7 +28,7 @@ namespace rMultiplatform
             int decimals = (int)((Value - (double)int_value) * Math.Pow(10, Figures));
             if (int_value == 0 && decimals == 0)
                 return int_value.ToString() + "." + decimals.ToString();
-            return int_value.ToString() + "." + decimals.ToString();
+            return int_value.ToString() + "." + decimals.ToString().PadLeft(Figures, '0');
         }
 
         static public string ToString(double Value)
@@ -38,10 +38,10 @@ namespace rMultiplatform
                 foreach (var unit in Units)
                 {
                     var range = unit.Item1 * 1000;
-                    if (range > Value)
+                    if (range > Math.Abs(Value))
                     {
                         var label = unit.Item2;
-                        var outval = (1000 * Value) / range;
+                        var outval = (Value * 1000) / range;
 
                         var str = SignificantFigure(outval, 4);
                         if (str != "0.0")

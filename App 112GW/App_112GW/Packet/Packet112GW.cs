@@ -135,6 +135,26 @@ namespace rMultiplatform
                 return rg.mNotation[range];
             }
         }
+        public double   MainRangeMultiple
+        {
+            get
+            {
+                switch (MainRangeUnits)
+                {
+                    case 'u':
+                        return 1.0 / 1000000.0;
+                    case 'm':
+                        return 1.0 / 1000.0;
+                    case 'K':
+                    case 'k':
+                        return 1000.0;
+                    case 'M':
+                        return 1000000.0;
+                }
+                return 1;
+            }
+        }
+
         public double   MainValue
         {
             get
@@ -142,7 +162,7 @@ namespace rMultiplatform
                 var msb = (int)pData[2];
                 var lsb = (int)pData[3];
                 var val = (double)((int)((msb << 8) | lsb));
-                return val / Math.Pow(10.0, ( 5 - (double)MainRangeValue));
+                return val * MainRangeMultiple / Math.Pow(10.0, ( 5 - (double)MainRangeValue));
             }
         }
         public int MainIntValue
@@ -182,7 +202,7 @@ namespace rMultiplatform
             get
             {
                 return (eMode) pData[4];
-            } 
+            }
         }
         public bool     SubOverload
         {
