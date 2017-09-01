@@ -113,12 +113,21 @@ namespace rMultiplatform
             }
         }
 
+        public void Reset()
+        {
+            Boundary.Rescale();
+            Visible.Rescale();
 
-        public void     Set(Range Input)
+            Select = Current.Boundary;
+        }
+
+        public void Set(Range Input)
         {
             Select = Current.Boundary;
+
             Boundary.Minimum = Input.Minimum;
             Boundary.Maximum = Input.Maximum;
+
             Visible.Minimum = Input.Minimum;
             Visible.Maximum = Input.Maximum;
         }

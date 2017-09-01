@@ -75,11 +75,16 @@ namespace rMultiplatform
         public delegate bool ChartAxisDrawEvent(ChartAxisDrawEventArgs o);
         public delegate bool ChartAxisEvent(Object o);
 
+        public new void Reset()
+        {
+            base.Reset();
+            CalculateScales();
+            InvalidateParent();
+        }
+
         double Dist (double A, double B)
         {
-            if (A > B)
-                return A - B;
-            return B - A;
+            return (A > B) ? (A - B) : (B - A);
         }
         public void Pan(double X, double Y)
         {
@@ -762,7 +767,7 @@ namespace rMultiplatform
 
         void DrawTickLabel  (ref SKCanvas c, double Value, float Position, float length, SKPaint TickPaint)
         {
-            var txt = SIValue.ToString(Value);
+            var txt = SIPrefix.ToString(Value);
             var hei = MinorPaint.TextSize / 2;
             var wid = MinorPaint.MeasureText(txt) + SpaceWidth;
 
@@ -836,10 +841,10 @@ namespace rMultiplatform
                         pt1             = new SKPoint(xs - wid, y);
                         pt2             = new SKPoint(xs,       y);
                         ymakoffset      = - (CircleRadius + hei + SpaceWidth);
-                        yfilloffset     = -hei;
+                        yfilloffset     = - hei;
                         xfilloffset     = SpaceWidth;
                         yfillsoffset    = SpaceWidth;
-                        xfillsoffset    = -SpaceWidth;
+                        xfillsoffset    = - SpaceWidth;
                     }
                     break;
                 default:
@@ -867,7 +872,7 @@ namespace rMultiplatform
             //
             DrawColors(ref c, ref pts);
         }
-        void DrawColors     (ref SKCanvas c, ref SKPoint[] p)
+        void DrawColors (ref SKCanvas c, ref SKPoint[] p)
         {
             if (ShowDataKey)
             {
@@ -942,7 +947,7 @@ namespace rMultiplatform
             return redraw;
         }
         float Scale = 1.0f;
-        void IChartRenderer.SetParentSize (double w, double h, double scale)
+        void IChartRenderer.SetParentSize( double w, double h, double scale )
         {
             Scale               = (float)scale;
             MinorPaint.TextSize = MinorTextSize * Scale;
@@ -955,7 +960,7 @@ namespace rMultiplatform
         }
 
         //Required 
-        public bool         Register(Object o)
+        public bool Register( Object o )
         {
             if      (o.GetType() == typeof(ChartAxisEvent))
                 AxisDataEvents.Add(o as ChartAxisEvent);
@@ -989,7 +994,7 @@ namespace rMultiplatform
 
             return true;
         }
-        public List<Type>   RequireRegistration()
+        public List<Type> RequireRegistration()
         {
             var lst = new List<Type>();
             lst.Add(typeof(ChartPadding));
@@ -997,7 +1002,7 @@ namespace rMultiplatform
             lst.Add(typeof(ChartData));
             return lst;
         }
-        public int          CompareTo(object obj)
+        public int CompareTo(object obj)
         {
             if (obj is IChartRenderer)
             {
@@ -1013,7 +1018,7 @@ namespace rMultiplatform
             }
             return 0;
         }
-        public bool         RegisterParent(object c)
+        public bool RegisterParent(object c)
         {
             Parent = c as Chart;
             return false;

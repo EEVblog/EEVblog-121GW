@@ -53,8 +53,6 @@ namespace rMultiplatform.UWP
         {
             var sndr = sender as UIElement;
             var p = args.GetCurrentPoint(sndr).Position;
-            
-
 
             return new Point(p.X, p.Y);
         }

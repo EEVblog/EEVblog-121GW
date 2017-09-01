@@ -6,6 +6,44 @@ namespace rMultiplatform
 {
     public class Range
     {
+        private bool FirstScaling = true;
+        public void Rescale()
+        {
+            Minimum = 0;
+            Maximum = 0;
+            FirstScaling = true;
+        }
+        public bool FirstScale(double Value)
+        {
+            if (FirstScaling)
+            {
+                Minimum = Value;
+                Maximum = Value;
+                FirstScaling = false;
+                return true;
+            }
+            return false;
+        }
+        public bool FirstScale(double Min, double Max)
+        {
+            if (FirstScaling)
+            {
+                Minimum = Min;
+                Maximum = Max;
+                FirstScaling = false;
+                return true;
+            }
+            return false;
+        }
+        private void AddToMaximum(double Value)
+        {
+            Maximum += Value;
+        }
+        private void AddToMinimum(double Value)
+        {
+            Minimum += Value;
+        }
+
         private bool _Update;
         public bool Update
         {
@@ -49,7 +87,6 @@ namespace rMultiplatform
             }
         }
 
-
         public string String
         {
             get
@@ -62,7 +99,6 @@ namespace rMultiplatform
         {
             get { return Maximum - Minimum; }
         }
-
         public void Set(Range Input)
         {
             Minimum = Input.Minimum;
@@ -70,8 +106,10 @@ namespace rMultiplatform
 
             FirstScaling = false;
         }
-        public void Set     (double ValA, double ValB)
+        public void Set(double ValA, double ValB)
         {
+            Update = true;
+            FirstScaling = false;
             if (ValA > ValB)
             {
                 Minimum = ValB;
@@ -83,60 +121,46 @@ namespace rMultiplatform
                 Maximum = ValB;
             }
         }
-
         public      Range   (double ValA, double ValB)
         {
-            Update = true;
-
-            Minimum = 0;
-            Maximum = 1;
             Set(ValA, ValB);
         }
+
         public bool InRange (double Val)
         {
             return (Minimum <= Val) && (Val <= Maximum);
         }
-
-        public void AddToMaximum(double Value)
-        {
-            Maximum += Value;
-        }
-        public void AddToMinimum(double Value)
-        {
-            Minimum += Value;
-        }
         public void ShiftRange(double Value)
         {
-            AddToMaximum(Value);
-            AddToMinimum(Value);
+            if (!FirstScale(Value))
+            {
+                AddToMaximum(Value);
+                AddToMinimum(Value);
+            }
         }
         public void ShiftRangeToFitValue(double Value)
         {
-            var diff = (double)0;
+            if (!FirstScale(Value))
+            {
+                var diff = (double)0;
+                if (Value > Maximum)
+                    diff = Value - Maximum;
+                else if (Value < Minimum)
+                    diff = Minimum - Value;
 
-            if (Value > Maximum)
-                diff = Value - Maximum;
-            else if (Value < Minimum)
-                diff = Minimum - Value;
-
-            //Shift the range to fit the value
-            ShiftRange(diff);
+                //Shift the range to fit the value
+                ShiftRange(diff);
+            }
         }
-
-        bool FirstScaling = true;
         public void RescaleRangeToFitValue(double Value)
         {
-            if (FirstScaling)
+            if (!FirstScale(Value))
             {
-                Minimum = Value;
-                Maximum = Value;
-                FirstScaling = false;
+                if (Value > Maximum)
+                    Maximum = (Value);
+                else if (Value < Minimum)
+                    Minimum = (Value);
             }
-
-            if (Value > Maximum)
-                Maximum = (Value);
-            else if (Value < Minimum)
-                Minimum = (Value);
         }
 
         //Combines numerous ranges
