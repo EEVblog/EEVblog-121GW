@@ -38,20 +38,20 @@ namespace App_112GW
 
         public MainPage()
         {
+            Padding = 0;
             BackgroundColor = Globals.BackgroundColor;
+
             On<Xamarin.Forms.PlatformConfiguration.Android>().SetIsSwipePagingEnabled(false);
             
             Children.Add(SettingsView);
             SettingsView.AddDevice += SettingsView_AddDevice;
             SettingsView.RemoveDevices += SettingsView_RemoveDevices;
-            Padding = 10;
 
             Children.Add( new ContentPage()
             {
                 Title = "< Maths >",
-                Content = MathChart
+                Content = MathChart,
             });
-
             MathChart.SourceA = Devices;
             MathChart.SourceB = Devices;
         }

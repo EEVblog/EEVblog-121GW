@@ -81,7 +81,7 @@ namespace rMultiplatform
             new Range112GW("KΩ",    "Resistance (Ω)",           new int[]{2,3,1,2,3,1,2},"  kkkMM"),//9
             new Range112GW("KΩ",    "Continuity (Ω)",           new int[]{3}            ," "),      //10
             new Range112GW("V",     "Diode (V)",                new int[]{1,2}          ,"  "),     //11
-            new Range112GW("ms",    "Capacitor (F)",            new int[]{3,4,2,3,4,5}  ,"nnuuuu"), //12
+            new Range112GW("ms",    "Capacitance (F)",          new int[]{3,4,2,3,4,5}  ,"nnuuuu"), //12
             new Range112GW("uVA",   "Power AC (VA)",            new int[]{4,5,2,3}      ,"    "),   //13
             new Range112GW("mVA",   "Power AC (VA)",            new int[]{4,5,2,3}      ,"mm  "),   //14
             new Range112GW("mVA",   "Power AC (VA)",            new int[]{4,5,2,3}      ,"mm  "),   //15
@@ -145,6 +145,8 @@ namespace rMultiplatform
             {
                 switch (MainRangeUnits)
                 {
+                    case 'n':
+                        return 1.0 / 1000000000.0;
                     case 'u':
                         return 1.0 / 1000000.0;
                     case 'm':

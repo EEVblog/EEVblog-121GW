@@ -198,7 +198,7 @@ namespace rMultiplatform
             Registrants = new List<ChartAxis>();
 
             //
-            var col = Globals.UniqueColor;
+            var col = Globals.UniqueColor(new Range(0.7, 0.9));
             DrawPaint = new SKPaint () { Color = col.ToSKColor(), IsStroke = true, StrokeWidth = 2, IsAntialias = true };
 
             //
@@ -257,19 +257,22 @@ namespace rMultiplatform
             if (Overflow)
                 DataEnd = (uint)Data.Count;
 
-            if (DataEnd > DataStart)
+            if (Data.Count > 0)
             {
-                var output = Data.GetRange((int)DataStart, (int)(DataEnd - DataStart)).ToArray();
-                var path = new SKPath();
-                path.AddPoly(output, false);
+                if (DataEnd > DataStart)
+                {
+                    var output = Data.GetRange((int)DataStart, (int)(DataEnd - DataStart)).ToArray();
+                    var path = new SKPath();
+                    path.AddPoly(output, false);
 
-                var y_t = y.Transform();
-                var x_t = x.Transform();
+                    var y_t = y.Transform();
+                    var x_t = x.Transform();
 
-                path.Transform(y_t);
-                path.Transform(x_t);
+                    path.Transform(y_t);
+                    path.Transform(x_t);
 
-                c.DrawPath(path, DrawPaint);
+                    c.DrawPath(path, DrawPaint);
+                }
             }
             return false;
         }

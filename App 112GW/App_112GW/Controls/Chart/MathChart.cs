@@ -6,11 +6,35 @@ using System.Diagnostics;
 using App_112GW;
 using System.Collections;
 using SkiaSharp;
+using Xamarin.Forms.PlatformConfiguration;
 
 namespace rMultiplatform
 {
     class MathChart : Grid
     {
+        private string x_label = "Time (s)";
+        private string y_label = "Volts (V)";
+
+        ChartAxis VerticalAxis = null;
+        ChartAxis HorizontalAxis = null;
+
+        public string VerticalLabel
+        {
+            set
+            {
+                if (VerticalAxis != null)
+                    VerticalAxis.Label = value;
+            }
+        }
+        public string HorozontalLabel
+        {
+            set
+            {
+                if (HorizontalAxis != null)
+                    HorizontalAxis.Label = value;
+            }
+        }
+        
         private static float SqrA_x_B(float A, float B)
         {
             return (A * A) * B;
@@ -45,11 +69,14 @@ namespace rMultiplatform
         {
             public string Label { get; set; }
             public Operation Function { get; set; }
+            public Color Color { get; set; }
 
             public OperationItem(string pLabel, Operation pFunction)
             {
                 Label = pLabel;
                 Function = pFunction;
+
+                Color = Globals.BackgroundColor;
             }
         }
         List<OperationItem> Operations = new List<OperationItem>()
@@ -63,10 +90,10 @@ namespace rMultiplatform
             new OperationItem( "A / B\u00b2",        A_Div_SqrB      )
         };
 
-        ListView A_List = new ListView();
-        ListView B_List = new ListView();
-
         Operation Current_Operation = null;
+
+        ListView A_List         = new ListView();
+        ListView B_List         = new ListView();
         ListView Operation_List = new ListView();
 
         public IEnumerable SourceA
@@ -200,83 +227,198 @@ namespace rMultiplatform
         {
             var sel_item = e.SelectedItem;
             var sel_obj = sel_item as Object;
-            Current_Operation = ( (OperationItem) sel_item ).Function;
+            var sel_item_type = ((OperationItem)sel_item);
+            Current_Operation = sel_item_type.Function;
+            VerticalLabel = "("+ sel_item_type.Label + ")";
         }
 
+        private Grid SelectGrid = new Grid();
         public ChartData ChartData;
         public Chart Plot;
+
         private void AddView(View pInput, int pX, int pY, int pXSpan = 1, int pYSpan = 1)
         {
-            Children.Add(pInput);
-            SetColumn(pInput, pX);
-            SetRow(pInput, pY);
-
-            SetColumnSpan(pInput, pXSpan);
-            SetRowSpan(pInput, pYSpan);
+            Children.Add(pInput, pX, pX + pXSpan, pY, pY + pYSpan);
         }
-        public MathChart( )
+        private void AddSelectView(View pInput, int pX, int pY, int pXSpan = 1, int pYSpan = 1)
         {
-            A_List.ItemSelected += A_List_ItemSelected;
-            B_List.ItemSelected += B_List_ItemSelected;
-            Operation_List.ItemSelected += Operation_List_ItemSelected;
+            SelectGrid.Children.Add(pInput, pX, pX + pXSpan, pY, pY + pYSpan);
+        }
 
-            Padding = 10;
+        static Label MakeChartLabel(string pText, FontAttributes pAttributes = FontAttributes.None)
+        {
+            return new Label
+            {
+                Text = pText,
+                FontAttributes = pAttributes,
+                HorizontalOptions = LayoutOptions.Fill,
+                HorizontalTextAlignment = TextAlignment.Center,
+                HeightRequest = 20,
+                TextColor = Globals.TextColor,
+                BackgroundColor = Globals.BackgroundColor
+            };
+        }
+        static DataTemplate MakeChartDataTemplate(string pBindTextTo, string pBindColorTo, FontAttributes pAttributes = FontAttributes.None)
+        {
+            return new DataTemplate(() =>
+            {
+                var temp = MakeChartLabel("", pAttributes);
+                temp.SetBinding(Label.TextProperty, pBindTextTo);
+                temp.SetBinding(Label.BackgroundColorProperty, pBindColorTo);
+
+                var template = new ViewCell { View = temp };
+                template.Tapped += Template_Tapped;
+                return template;
+            });
+        }
+
+        private static void Template_Tapped(object sender, EventArgs e)
+        {
+            var cell = (ViewCell)sender;
+            var label = (Label)cell.View;
+            label.BackgroundColor = Color.Red;
+        }
+
+        static ColumnDefinition MakeMinimalColumn()
+        {
+            return new ColumnDefinition { Width = new GridLength(1, GridUnitType.Auto) };
+        }
+        static ColumnDefinition MakeFillColumn()
+        {
+            return new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) };
+        }
+
+        static RowDefinition MakeMinimalRow()
+        {
+            return new RowDefinition { Height = new GridLength(1, GridUnitType.Auto) };
+        }
+        static RowDefinition MakeFillRow()
+        {
+            return new RowDefinition { Height = new GridLength(1, GridUnitType.Star) };
+        }
+
+        private int RowSpan
+        {
+            get
+            {
+                return SelectGrid.RowDefinitions.Count;
+            }
+        }
+        private int ColumnSpan
+        {
+            get
+            {
+                return SelectGrid.ColumnDefinitions.Count;
+            }
+        }
+
+        static LayoutOptions ColumnLayout = LayoutOptions.Fill;
+        static ListView MakeListView( EventHandler<SelectedItemChangedEventArgs> SelectedHandler, DataTemplate ItemTemplate)
+        {
+            var output = new ListView();
+            output.ItemSelected += SelectedHandler;
+            output.ItemTemplate = ItemTemplate;
+            output.VerticalOptions = LayoutOptions.StartAndExpand;
+            output.HorizontalOptions = ColumnLayout;
+            output.SeparatorColor = Globals.BorderColor;
+            output.SeparatorVisibility = SeparatorVisibility.Default;
+
+            //TODO : This is a bug in xamarin, row height need to be made automatic
+            output.RowHeight = 20;
+            output.HasUnevenRows = false;
+            return output;
+        }
+
+        public MathChart()
+        {
+            //Basic default constants, these should be globalised eventually
+            Padding             = 0;
             HorizontalOptions   = LayoutOptions.Fill;
-            VerticalOptions     = LayoutOptions.Fill; 
+            VerticalOptions     = LayoutOptions.Fill;
             BackgroundColor     = Globals.BackgroundColor;
 
-            var operation_template = new DataTemplate(() =>
+            var operation_template = MakeChartDataTemplate("Label", "Color");
+            var item_template = MakeChartDataTemplate("ShortId", "BackgroundColor");
+
+            //Setup listviews
+            A_List = MakeListView(A_List_ItemSelected, item_template);
+            B_List = MakeListView(B_List_ItemSelected, item_template);
+            Operation_List = MakeListView(Operation_List_ItemSelected, operation_template);
+
+            //Operations list is bound to operations
+            Operation_List.ItemsSource = Operations;
+
+            ContentView OperationSelect;
+            //Sets up operator table
             {
-                var temp = new Label
-                {
-                    HorizontalOptions = LayoutOptions.Fill,
-                    HorizontalTextAlignment = TextAlignment.Center,
-                    HeightRequest = 20
-                };
-                temp.SetBinding(Label.TextProperty, "Label");
-                return new ViewCell { View = temp };
-            });
-            var item_template = new DataTemplate(() =>
+                OperationSelect = new ContentView();
+
+                SelectGrid.ColumnDefinitions.Add(MakeFillColumn());
+                SelectGrid.ColumnDefinitions.Add(MakeFillColumn());
+                SelectGrid.ColumnDefinitions.Add(MakeFillColumn());
+                SelectGrid.RowDefinitions.Add(MakeMinimalRow());
+                SelectGrid.RowDefinitions.Add(MakeMinimalRow());
+
+                int Column_Count    = 0;
+                int A_Column        = Column_Count++;
+                int OP_Column       = Column_Count++;
+                int B_Column        = Column_Count++;
+                int Current_Row     = 0;
+                var Header_Font     = FontAttributes.Bold;
+                var Header_Row      = Current_Row++;
+                var Data_Row        = Current_Row++;
+
+                AddSelectView(MakeChartLabel("A", Header_Font), A_Column, Header_Row);
+                AddSelectView(A_List, A_Column, Data_Row);
+
+                AddSelectView(MakeChartLabel("Operation", Header_Font), OP_Column, Header_Row);
+                AddSelectView(Operation_List, OP_Column, Data_Row);
+
+                AddSelectView(MakeChartLabel("B", Header_Font), B_Column, Header_Row);
+                AddSelectView(B_List, B_Column, Data_Row);
+
+                OperationSelect.VerticalOptions = LayoutOptions.Start;
+                OperationSelect.Content = SelectGrid;
+            }
+
+            //Sets up Plot
             {
-                var temp = new Label
-                {
-                    HorizontalOptions = LayoutOptions.Fill,
-                    HorizontalTextAlignment = TextAlignment.Center,
-                    HeightRequest = 20
-                };
-                temp.SetBinding(Label.TextProperty, "ShortId");
-                return new ViewCell { View = temp };
-            });
+                ChartData = new ChartData(ChartData.ChartDataMode.eRescaling, x_label, y_label, 10f);
+                Plot = new Chart() { Padding = new ChartPadding(0.1f) };
+                Plot.AddGrid(new ChartGrid());
+                Plot.AddAxis(HorizontalAxis = new ChartAxis(5, 5, 0, 20) { Label = x_label, Orientation = ChartAxis.AxisOrientation.Horizontal, LockToAxisLabel = y_label, LockAlignment = ChartAxis.AxisLock.eEnd, ShowDataKey = false });
+                Plot.AddAxis(VerticalAxis = new ChartAxis(5, 5, 0, 0) { Label = y_label, Orientation = ChartAxis.AxisOrientation.Vertical, LockToAxisLabel = x_label, LockAlignment = ChartAxis.AxisLock.eStart, ShowDataKey = false });
+                Plot.AddData(ChartData);
+                Plot.FullscreenClicked += Plot_FullscreenClicked;
+            }
 
-            A_List.ItemTemplate         = item_template;
-            B_List.ItemTemplate         = item_template;
-            Operation_List.ItemTemplate = operation_template;
-            Operation_List.ItemsSource  = Operations;
+            //1 Column, 2 Rows
+            ColumnDefinitions.Add(MakeFillColumn());
 
-            ChartData = new ChartData(ChartData.ChartDataMode.eRescaling, "Time (s)", "Volts (V)", 10f);
-            Plot = new Chart() { Padding = new ChartPadding(0.1f) };
-            Plot.AddGrid(new ChartGrid());
-            Plot.AddAxis(new ChartAxis(5, 5, 0, 20) { Label = "Time (s)",   Orientation = ChartAxis.AxisOrientation.Horizontal, LockToAxisLabel = "Volts (V)",  LockAlignment = ChartAxis.AxisLock.eEnd, ShowDataKey = false });
-            Plot.AddAxis(new ChartAxis(5, 5, 0, 0)  { Label = "Volts (V)",  Orientation = ChartAxis.AxisOrientation.Vertical,   LockToAxisLabel = "Time (s)",   LockAlignment = ChartAxis.AxisLock.eStart });
-            Plot.AddData(ChartData);
+            RowDefinitions.Add(MakeMinimalRow());
+            AddView     (OperationSelect, 0, 0);
 
-            RowDefinitions.Add      ( new RowDefinition     { Height    = new GridLength    ( 1, GridUnitType.Auto) } );
-            RowDefinitions.Add      ( new RowDefinition     { Height    = new GridLength    ( 1, GridUnitType.Star) } );
-            RowDefinitions.Add      ( new RowDefinition     { Height    = new GridLength    ( 1, GridUnitType.Star) } );
-
-            ColumnDefinitions.Add   ( new ColumnDefinition  { Width     = new GridLength    ( 1, GridUnitType.Star) } );
-            ColumnDefinitions.Add   ( new ColumnDefinition  { Width     = new GridLength    ( 1, GridUnitType.Star) } );
-            ColumnDefinitions.Add   ( new ColumnDefinition  { Width     = new GridLength    ( 1, GridUnitType.Star) } );
-
-            Children.Add(new Label() { Text = "A",          HorizontalOptions = LayoutOptions.Fill,     HorizontalTextAlignment = TextAlignment.Center  },  0, 0);
-            Children.Add(new Label() { Text = "Operation",  HorizontalOptions = LayoutOptions.Fill,     HorizontalTextAlignment = TextAlignment.Center  },  1, 0);
-            Children.Add(new Label() { Text = "B",          HorizontalOptions = LayoutOptions.Fill,     HorizontalTextAlignment = TextAlignment.Center  },  2, 0);
-            Children.Add(A_List,                                0, 1);
-            Children.Add(Operation_List,                        1, 1);
-            Children.Add(B_List,                                2, 1);
-
-            AddView(Plot, 0, 2, 3, 1);
+            RowDefinitions.Add(MakeFillRow());
+            AddView     (Plot, 0, 1);
         }
 
+        private bool Fullscreen = true;
+        private void Plot_FullscreenClicked(object sender, EventArgs e)
+        {
+            foreach (var item in Children)
+            {
+                if (Fullscreen)
+                {
+                    if (item.GetType() != typeof(Chart))
+                        item.IsVisible = false;
+                }
+                else
+                {
+                    if (item.GetType() != typeof(Chart))
+                        item.IsVisible = true;
+                }
+            }
+            Fullscreen = !Fullscreen;
+        }
     }
 }
