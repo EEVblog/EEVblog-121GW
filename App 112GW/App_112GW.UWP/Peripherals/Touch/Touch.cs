@@ -9,7 +9,6 @@ using Xamarin.Forms.Platform.UWP;
 
 [assembly: ResolutionGroupName("rMultiplatform")]
 [assembly: ExportEffect(typeof(rMultiplatform.UWP.Touch), "Touch")]
-
 namespace rMultiplatform.UWP
 {
     class Touch : PlatformEffect
