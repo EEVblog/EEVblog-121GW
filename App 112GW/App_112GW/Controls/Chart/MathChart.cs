@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Collections;
 using System.Text;
 using Xamarin.Forms;
 using System.Diagnostics;
@@ -7,6 +7,7 @@ using App_112GW;
 using System.Collections;
 using SkiaSharp;
 using Xamarin.Forms.PlatformConfiguration;
+using System.Collections.Generic;
 
 namespace rMultiplatform
 {
@@ -65,7 +66,7 @@ namespace rMultiplatform
         }
         public delegate float Operation(float A, float B);
 
-        public struct OperationItem
+        public class OperationItem
         {
             public string Label { get; set; }
             public Operation Function { get; set; }
@@ -92,11 +93,11 @@ namespace rMultiplatform
 
         Operation Current_Operation = null;
 
-        ListView A_List         = new ListView();
-        ListView B_List         = new ListView();
-        ListView Operation_List = new ListView();
+        Picker A_List         = new Picker();
+        Picker B_List         = new Picker();
+        Picker Operation_List = new Picker();
 
-        public IEnumerable SourceA
+        public IList SourceA
         {
             set
             {
@@ -107,7 +108,7 @@ namespace rMultiplatform
                 return A_List.ItemsSource;
             }
         }
-        public IEnumerable SourceB
+        public IList SourceB
         {
             set
             {
@@ -194,26 +195,38 @@ namespace rMultiplatform
 
         List<SKPoint> Data = new List<SKPoint>();
         Multimeter DeviceA = null, DeviceB = null;
-        private void A_List_ItemSelected(object sender, SelectedItemChangedEventArgs e)
+        private void A_List_ItemSelected(object sender, EventArgs e)
         {
-            if (e.SelectedItem != null)
+            var item = (sender as Picker).SelectedItem;
+            if (item != null)
             {
                 if (DeviceA != null)
                     DeviceA.Plot.DataChanged -= DataA_Changed;
-                DeviceA = e.SelectedItem as Multimeter;
+                DeviceA = item as Multimeter;
                 DeviceA.Plot.DataChanged += DataA_Changed;
             }
         }
-        private void B_List_ItemSelected(object sender, SelectedItemChangedEventArgs e)
+        private void B_List_ItemSelected(object sender, EventArgs e)
         {
-            if (e.SelectedItem != null)
+            var item = (sender as Picker).SelectedItem;
+            if (item != null)
             {
                 if (DeviceB != null)
                     DeviceB.Plot.DataChanged -= DataB_Changed;
-                DeviceB = e.SelectedItem as Multimeter;
+                DeviceB = item as Multimeter;
                 DeviceB.Plot.DataChanged += DataB_Changed;
             }
         }
+
+        private void Operation_List_ItemSelected(object sender, EventArgs e)
+        {
+            var sel_item = (sender as Picker).SelectedItem;
+            var sel_obj = sel_item as Object;
+            var sel_item_type = ((OperationItem)sel_item);
+            Current_Operation = sel_item_type.Function;
+            VerticalLabel = "(" + sel_item_type.Label + ")";
+        }
+
         private void DataA_Changed(List<SKPoint> Data)
         {
             Resample(Data, DeviceB.Data.Data);
@@ -221,15 +234,6 @@ namespace rMultiplatform
         private void DataB_Changed(List<SKPoint> Data)
         {
             Resample(DeviceA.Data.Data, Data);
-        }
-
-        private void Operation_List_ItemSelected(object sender, SelectedItemChangedEventArgs e)
-        {
-            var sel_item = e.SelectedItem;
-            var sel_obj = sel_item as Object;
-            var sel_item_type = ((OperationItem)sel_item);
-            Current_Operation = sel_item_type.Function;
-            VerticalLabel = "("+ sel_item_type.Label + ")";
         }
 
         private Grid SelectGrid = new Grid();
@@ -258,13 +262,12 @@ namespace rMultiplatform
                 BackgroundColor = Globals.BackgroundColor
             };
         }
-        static DataTemplate MakeChartDataTemplate(string pBindTextTo, string pBindColorTo, FontAttributes pAttributes = FontAttributes.None)
+        static DataTemplate MakeChartDataTemplate(string pBindTextTo, FontAttributes pAttributes = FontAttributes.None)
         {
             return new DataTemplate(() =>
             {
                 var temp = MakeChartLabel("", pAttributes);
                 temp.SetBinding(Label.TextProperty, pBindTextTo);
-                temp.SetBinding(Label.BackgroundColorProperty, pBindColorTo);
 
                 var template = new ViewCell { View = temp };
                 template.Tapped += Template_Tapped;
@@ -313,19 +316,17 @@ namespace rMultiplatform
         }
 
         static LayoutOptions ColumnLayout = LayoutOptions.Fill;
-        static ListView MakeListView( EventHandler<SelectedItemChangedEventArgs> SelectedHandler, DataTemplate ItemTemplate)
+        static Picker MakePicker( EventHandler SelectedHandler, string Title, string BindText)
         {
-            var output = new ListView();
-            output.ItemSelected += SelectedHandler;
-            output.ItemTemplate = ItemTemplate;
+            var output = new Picker();
+            output.Title = Title;
             output.VerticalOptions = LayoutOptions.StartAndExpand;
             output.HorizontalOptions = ColumnLayout;
-            output.SeparatorColor = Globals.BorderColor;
-            output.SeparatorVisibility = SeparatorVisibility.Default;
+            output.SelectedIndexChanged += SelectedHandler;
+
+            output.ItemDisplayBinding = new Binding(BindText);
 
             //TODO : This is a bug in xamarin, row height need to be made automatic
-            output.RowHeight = 20;
-            output.HasUnevenRows = false;
             return output;
         }
 
@@ -337,15 +338,12 @@ namespace rMultiplatform
             VerticalOptions     = LayoutOptions.Fill;
             BackgroundColor     = Globals.BackgroundColor;
 
-            var operation_template = MakeChartDataTemplate("Label", "Color");
-            var item_template = MakeChartDataTemplate("ShortId", "BackgroundColor");
-
             //Setup listviews
-            A_List = MakeListView(A_List_ItemSelected, item_template);
-            B_List = MakeListView(B_List_ItemSelected, item_template);
-            Operation_List = MakeListView(Operation_List_ItemSelected, operation_template);
+            A_List = MakePicker(A_List_ItemSelected, "Device A", "ShortId");
+            B_List = MakePicker(B_List_ItemSelected, "Device B", "ShortId");
 
             //Operations list is bound to operations
+            Operation_List = MakePicker(Operation_List_ItemSelected, "Operation", "Label");
             Operation_List.ItemsSource = Operations;
 
             ContentView OperationSelect;
@@ -357,24 +355,17 @@ namespace rMultiplatform
                 SelectGrid.ColumnDefinitions.Add(MakeFillColumn());
                 SelectGrid.ColumnDefinitions.Add(MakeFillColumn());
                 SelectGrid.RowDefinitions.Add(MakeMinimalRow());
-                SelectGrid.RowDefinitions.Add(MakeMinimalRow());
 
                 int Column_Count    = 0;
                 int A_Column        = Column_Count++;
                 int OP_Column       = Column_Count++;
                 int B_Column        = Column_Count++;
                 int Current_Row     = 0;
-                var Header_Font     = FontAttributes.Bold;
                 var Header_Row      = Current_Row++;
                 var Data_Row        = Current_Row++;
 
-                AddSelectView(MakeChartLabel("A", Header_Font), A_Column, Header_Row);
                 AddSelectView(A_List, A_Column, Data_Row);
-
-                AddSelectView(MakeChartLabel("Operation", Header_Font), OP_Column, Header_Row);
                 AddSelectView(Operation_List, OP_Column, Data_Row);
-
-                AddSelectView(MakeChartLabel("B", Header_Font), B_Column, Header_Row);
                 AddSelectView(B_List, B_Column, Data_Row);
 
                 OperationSelect.VerticalOptions = LayoutOptions.Start;
