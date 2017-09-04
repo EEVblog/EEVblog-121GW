@@ -19,11 +19,13 @@ namespace rMultiplatform
         public event    EventHandler        ModeChanged;
         public event    EventHandler        RangeChanged;
         public event    EventHandler        SaveClicked;
+        public event    EventHandler        ResetClicked;
         private         Button              mMode;
         private         Button              mHold;
         private         Button              mRange;
         private         Button              mRelative;
         private         Button              mSave;
+        private         Button              mReset;
         private         LabelledBackButton  mBack;
 
         static bool                 SameType(object A, Type B)
@@ -90,9 +92,15 @@ namespace rMultiplatform
             //Add Relative Button
             mSave = new Button()
             {
-                Text = "Save"
+                Text = "Save Log"
             };
             mSave.Clicked += ButtonPress_Save;
+
+            mReset = new Button()
+            {
+                Text = "Reset Log"
+            };
+            mReset.Clicked += ButtonPress_Reset;
 
             //##################################################
             //Add Relative Button
@@ -134,6 +142,7 @@ namespace rMultiplatform
             AutoAddRight    (mRelative  );
             AutoAddRight    (mRange     );
             AutoAddLeft     (mSave);
+            AutoAddLeft     (mReset);
             SetBottomLeft   (mBack);
 
             BackgroundColor = Globals.BackgroundColor;
@@ -165,6 +174,10 @@ namespace rMultiplatform
         }
 
         //The reactions to picker, checkbox, buttons events
+        private void ButtonPress_Reset(object sender, EventArgs e)
+        {
+            ResetClicked?.Invoke(sender, e);
+        }
         private void    ButtonPress_Hold       (object sender, EventArgs e)
         {
             HoldClicked?.Invoke(sender, e);

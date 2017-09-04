@@ -13,73 +13,21 @@ using System.Diagnostics;
 
 namespace rMultiplatform
 {
-    public class ChartAxisEventArgs : EventArgs
-    {
-        public enum ChartAxisEventType
-        {
-            DrawMajorTick,
-            DrawMinorTick,
-            DrawLabel
-        };
-
-        public AxisLabel                    Label;
-        public SKCanvas                     Canvas;
-        public SKColor                      Color;
-        public double                       Position;
-        public ChartAxis.AxisOrientation    Orientation;
-        public ChartAxisEventType           EventType;
-        public float                        TickLength;
-
-        public ChartAxisEventArgs(AxisLabel Label,  SKCanvas Can,    Color      Col,    double Pos,     double TickLen,     ChartAxis.AxisOrientation  Ori,     ChartAxisEventType Typ) :base()
-        {
-            this.Label = Label;
-            TickLength = (float)TickLen;
-            Canvas = Can;
-            Color = Col.ToSKColor();
-            Position = Pos;
-            Orientation = Ori;
-            EventType = Typ;
-        }
-        public ChartAxisEventArgs(AxisLabel Label,  SKCanvas Can,    SKColor    Col,    double Pos,     double TickLen,     ChartAxis.AxisOrientation  Ori,     ChartAxisEventType Typ) : base()
-        {
-            this.Label = Label;
-            TickLength = (float)TickLen;
-            Canvas = Can;
-            Color = Col;
-            Position = Pos;
-            Orientation = Ori;
-            EventType = Typ;
-        }
-    }
-
-    public class ChartAxisDrawEventArgs : EventArgs
-    {
-        public int                          Index;
-        public int                          MaxIndex;
-        public AxisLabel                    AxisLabel;
-        public ChartAxis.AxisOrientation    Orientation;
-        public float                        Position;
-
-        public ChartAxisDrawEventArgs(AxisLabel Label, ChartAxis.AxisOrientation Orientation, float Position, int Index, int MaxIndex) : base()
-        {
-            this.AxisLabel = Label;
-            this.Orientation = Orientation;
-            this.Position = Position;
-            this.Index = Index;
-            this.MaxIndex = MaxIndex;
-        }
-    };
-
     public class ChartAxis : CappedRange, IChartRenderer
     {
         public delegate bool ChartAxisDrawEvent(ChartAxisDrawEventArgs o);
         public delegate bool ChartAxisEvent(Object o);
 
+        public new void Reset()
+        {
+            base.Reset();
+            CalculateScales();
+            InvalidateParent();
+        }
+
         double Dist (double A, double B)
         {
-            if (A > B)
-                return A - B;
-            return B - A;
+            return (A > B) ? (A - B) : (B - A);
         }
         public void Pan(double X, double Y)
         {
@@ -165,7 +113,7 @@ namespace rMultiplatform
         }
 
         //Properties
-        private AxisLabel   _Label;
+        private AxisLabel _Label = new AxisLabel("Unknown (none)");
         public string       Label
         {
             get
@@ -174,7 +122,7 @@ namespace rMultiplatform
             }
             set
             {
-                _Label = new AxisLabel(value);
+                _Label.Text = value;
             }
         }
 
@@ -762,7 +710,7 @@ namespace rMultiplatform
 
         void DrawTickLabel  (ref SKCanvas c, double Value, float Position, float length, SKPaint TickPaint)
         {
-            var txt = SIValue.ToString(Value);
+            var txt = SIPrefix.ToString(Value);
             var hei = MinorPaint.TextSize / 2;
             var wid = MinorPaint.MeasureText(txt) + SpaceWidth;
 
@@ -836,10 +784,10 @@ namespace rMultiplatform
                         pt1             = new SKPoint(xs - wid, y);
                         pt2             = new SKPoint(xs,       y);
                         ymakoffset      = - (CircleRadius + hei + SpaceWidth);
-                        yfilloffset     = -hei;
+                        yfilloffset     = - hei;
                         xfilloffset     = SpaceWidth;
                         yfillsoffset    = SpaceWidth;
-                        xfillsoffset    = -SpaceWidth;
+                        xfillsoffset    = - SpaceWidth;
                     }
                     break;
                 default:
@@ -851,7 +799,7 @@ namespace rMultiplatform
                 pt2 };
 
             pth.AddPoly(pts, false);
-            var rect = new SKRect(
+            var rect = new SKRect (
                 pt1.X + xfillsoffset, 
                 pt1.Y + yfillsoffset, 
                 pt2.X + xfilloffset, 
@@ -867,7 +815,7 @@ namespace rMultiplatform
             //
             DrawColors(ref c, ref pts);
         }
-        void DrawColors     (ref SKCanvas c, ref SKPoint[] p)
+        void DrawColors (ref SKCanvas c, ref SKPoint[] p)
         {
             if (ShowDataKey)
             {
@@ -942,7 +890,7 @@ namespace rMultiplatform
             return redraw;
         }
         float Scale = 1.0f;
-        void IChartRenderer.SetParentSize (double w, double h, double scale)
+        void IChartRenderer.SetParentSize( double w, double h, double scale )
         {
             Scale               = (float)scale;
             MinorPaint.TextSize = MinorTextSize * Scale;
@@ -955,7 +903,7 @@ namespace rMultiplatform
         }
 
         //Required 
-        public bool         Register(Object o)
+        public bool Register( Object o )
         {
             if      (o.GetType() == typeof(ChartAxisEvent))
                 AxisDataEvents.Add(o as ChartAxisEvent);
@@ -989,7 +937,7 @@ namespace rMultiplatform
 
             return true;
         }
-        public List<Type>   RequireRegistration()
+        public List<Type> RequireRegistration()
         {
             var lst = new List<Type>();
             lst.Add(typeof(ChartPadding));
@@ -997,7 +945,7 @@ namespace rMultiplatform
             lst.Add(typeof(ChartData));
             return lst;
         }
-        public int          CompareTo(object obj)
+        public int CompareTo(object obj)
         {
             if (obj is IChartRenderer)
             {
@@ -1013,7 +961,7 @@ namespace rMultiplatform
             }
             return 0;
         }
-        public bool         RegisterParent(object c)
+        public bool RegisterParent(object c)
         {
             Parent = c as Chart;
             return false;

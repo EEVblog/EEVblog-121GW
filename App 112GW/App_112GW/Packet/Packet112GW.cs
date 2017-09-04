@@ -24,12 +24,7 @@ namespace rMultiplatform
     {
         private byte ToByte(string pInput)
         {
-            //try
-            //{
-                return Convert.ToByte(pInput, 16);
-            //}
-           // catch (Exception e) { Debug.WriteLine(e);  }
-          //  return 0;
+            return Convert.ToByte(pInput, 16);
         }
         List<byte> pData;
         public enum eMode
@@ -74,31 +69,31 @@ namespace rMultiplatform
         }
         Range112GW[] RangeLookup =
         {
-            new Range112GW("V",     "Low_Z",        new int[]{4}            ," "),
-            new Range112GW("V",     "DCV",          new int[]{1,2,3,4}      ,"    "),
-            new Range112GW("V",     "ACV",          new int[]{1,2,3,4}      ,"    "),
-            new Range112GW("mV",    "DCmV",         new int[]{2,3}          ,"mm"),
-            new Range112GW("mV",    "ACmV",         new int[]{2,3}          ,"mm"),
-            new Range112GW("°C",    "Temp",         new int[]{4}            ," "),
-            new Range112GW("KHz",   "Hz",           new int[]{2,3,1,2,3}    ,"  kkk"),
-            new Range112GW("ms",    "mS",           new int[]{1,2,3}        ,"   "),
-            new Range112GW("%",     "Duty",         new int[]{4}            ," "),
-            new Range112GW("KΩ",    "Resistor",     new int[]{2,3,1,2,3,1,2},"  kkkMM"),
-            new Range112GW("KΩ",    "Continuity",   new int[]{3}            ," "),
-            new Range112GW("ms",    "Diode",        new int[]{1,2}          ,"  "),
-            new Range112GW("ms",    "Capacitor",    new int[]{3,4,2,3,4,5}  ,"nnuuuu"),
-            new Range112GW("uVA",   "ACuVA",        new int[]{4,5,2,3}      ,"    "),
-            new Range112GW("mVA",   "ACmVA",        new int[]{4,5,2,3}      ,"mm  "),
-            new Range112GW("mVA",   "ACVA",         new int[]{4,5,2,3}      ,"mm  "),
-            new Range112GW("uA",    "ACuA",         new int[]{2,3}          ,"  "),
-            new Range112GW("uA",    "DCuA",         new int[]{2,3}          ,"  "),
-            new Range112GW("mA",    "ACmA",         new int[]{3,1,2}        ,"mAA"),
-            new Range112GW("mA",    "DCmA",         new int[]{3,1,2}        ,"mAA"),
-            new Range112GW("A",     "ACA",          new int[]{3,1,2}        ,"mAA"),
-            new Range112GW("A",     "DCA",          new int[]{3,1,2}        ,"mAA"),
-            new Range112GW("uVA",   "DCuVA",        new int[]{3,4,4,5}      ,"    "),
-            new Range112GW("mVA",   "DCmVA",        new int[]{4,5,2,3}      ,"mm  "),
-            new Range112GW("VA",    "DCVA",         new int[]{4,5,2,3}      ,"mm  ")
+            new Range112GW("V",     "Voltage Low Z (V)",        new int[]{4}            ," "),      //0
+            new Range112GW("V",     "Voltage DC (V)",           new int[]{1,2,3,4}      ,"    "),   //1
+            new Range112GW("V",     "Voltage AC (V)",           new int[]{1,2,3,4}      ,"    "),   //2
+            new Range112GW("mV",    "Voltage DC (V)",           new int[]{2,3}          ,"mm"),     //3 
+            new Range112GW("mV",    "Voltage AC (V)",           new int[]{2,3}          ,"mm"),     //4
+            new Range112GW("°C",    "Temp (°C)",                new int[]{4}            ," "),      //5
+            new Range112GW("KHz",   "Frequency (Hz)",           new int[]{2,3,1,2,3}    ,"  kkk"),  //6
+            new Range112GW("ms",    "Period (s)",               new int[]{1,2,3}        ,"   "),    //7
+            new Range112GW("%",     "Duty (%)",                 new int[]{4}            ," "),      //8
+            new Range112GW("KΩ",    "Resistance (Ω)",           new int[]{2,3,1,2,3,1,2},"  kkkMM"),//9
+            new Range112GW("KΩ",    "Continuity (Ω)",           new int[]{3}            ," "),      //10
+            new Range112GW("V",     "Diode (V)",                new int[]{1,2}          ,"  "),     //11
+            new Range112GW("ms",    "Capacitor (F)",            new int[]{3,4,2,3,4,5}  ,"nnuuuu"), //12
+            new Range112GW("uVA",   "Power AC (VA)",            new int[]{4,5,2,3}      ,"    "),   //13
+            new Range112GW("mVA",   "Power AC (VA)",            new int[]{4,5,2,3}      ,"mm  "),   //14
+            new Range112GW("mVA",   "Power AC (VA)",            new int[]{4,5,2,3}      ,"mm  "),   //15
+            new Range112GW("uA",    "Current AC (A)",           new int[]{2,3}          ,"  "),     //16
+            new Range112GW("uA",    "Current DC (A)",           new int[]{2,3}          ,"  "),     //17
+            new Range112GW("mA",    "Current AC (A)",           new int[]{3,1,2}        ,"mmm"),    //18
+            new Range112GW("mA",    "Current DC (A)",           new int[]{1,2}          ,"mm"),     //19
+            new Range112GW("A",     "Current AC (A)",           new int[]{3,1,2}        ,"m  "),    //20
+            new Range112GW("A",     "Current DC (A)",           new int[]{3,1,2}        ,"m  "),    //21
+            new Range112GW("uVA",   "Power DC (VA)",            new int[]{3,4,4,5}      ,"    "),   //22
+            new Range112GW("mVA",   "Power DC (VA)",            new int[]{4,5,2,3}      ,"mm  "),   //23
+            new Range112GW("VA",    "Power DC (VA)",            new int[]{4,5,2,3}      ,"mm  ")    //24
         };
         private readonly eAD_DC eACDC;
 
@@ -114,7 +109,8 @@ namespace rMultiplatform
             get
             {
                 var md = (int)Mode;
-                return RangeLookup[md];
+                var rlk = RangeLookup[md];
+                return rlk;
             }
         }
         public int      MainRangeValue
@@ -135,6 +131,34 @@ namespace rMultiplatform
                 return rg.mNotation[range];
             }
         }
+        public string   MainRangeLabel
+        {
+            get
+            {
+                var rg = MainRange;
+                return rg.mLabel;
+            }
+        }
+        public double   MainRangeMultiple
+        {
+            get
+            {
+                switch (MainRangeUnits)
+                {
+                    case 'u':
+                        return 1.0 / 1000000.0;
+                    case 'm':
+                        return 1.0 / 1000.0;
+                    case 'K':
+                    case 'k':
+                        return 1000.0;
+                    case 'M':
+                        return 1000000.0;
+                }
+                return 1;
+            }
+        }
+
         public double   MainValue
         {
             get
@@ -142,9 +166,10 @@ namespace rMultiplatform
                 var msb = (int)pData[2];
                 var lsb = (int)pData[3];
                 var val = (double)((int)((msb << 8) | lsb));
-                return val / Math.Pow(10.0, ( 5 - (double)MainRangeValue));
+                return val * MainRangeMultiple / Math.Pow(10.0, ( 5 - (double)MainRangeValue));
             }
         }
+
         public int MainIntValue
         {
             get
@@ -182,7 +207,7 @@ namespace rMultiplatform
             get
             {
                 return (eMode) pData[4];
-            } 
+            }
         }
         public bool     SubOverload
         {

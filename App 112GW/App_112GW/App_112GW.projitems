@@ -12,15 +12,15 @@
     <Compile Include="$(MSBuildThisFileDirectory)App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
-    <Compile Include="$(MSBuildThisFileDirectory)Controls\Chart\MathChart\MathChart.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Controls\Chart\MathChart\MathChartSettings.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Controls\Chart\Chart Data\ChartDataEvents.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Controls\Chart\MathChart.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\GeneralControl.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\GeneralRenderer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\Loading.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\Settings\Settings.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\Timer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)General\CappedRange.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)General\SIValue.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)General\SIPrefix.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Peripherals\Bluetooth\BLEDeviceSelector.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Peripherals\Bluetooth\Bluetooth.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\Buttons\BackButton.cs" />
@@ -31,7 +31,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Controls\Chart\AxisLabel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\Chart\Chart.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\Chart\ChartAxis.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Controls\Chart\ChartData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Controls\Chart\Chart Data\ChartData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\Chart\ChartGrid.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\Chart\Gridline.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\Chart\ChartPadding.cs" />

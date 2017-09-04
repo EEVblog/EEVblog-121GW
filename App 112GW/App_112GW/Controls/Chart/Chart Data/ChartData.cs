@@ -205,6 +205,13 @@ namespace rMultiplatform
             HorozontalSpan  = new Range (0, pTimeSpan);
             VerticalSpan    = new Range (0, 0);
         }
+        
+        public void Reset()
+        {
+            HorozontalSpan.Rescale();
+            VerticalSpan.Rescale();
+            start = DateTime.Now;
+        }
 
         public bool Draw (SKCanvas c)
         {

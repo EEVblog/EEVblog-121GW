@@ -9,7 +9,7 @@ using SkiaSharp;
 
 namespace rMultiplatform
 {
-    class MathChartSettings : Grid
+    class MathChart : Grid
     {
         private static float SqrA_x_B(float A, float B)
         {
@@ -214,7 +214,7 @@ namespace rMultiplatform
             SetColumnSpan(pInput, pXSpan);
             SetRowSpan(pInput, pYSpan);
         }
-        public MathChartSettings ( )
+        public MathChart( )
         {
             A_List.ItemSelected += A_List_ItemSelected;
             B_List.ItemSelected += B_List_ItemSelected;

@@ -21,6 +21,7 @@ namespace rMultiplatform
                 processor.ProcessPacket(pInput);
                 Data.Sample(processor.MainValue);
 
+                VerticalLabel = processor.MainRangeLabel;
                 Screen.Update(processor);
                 Screen.InvalidateSurface();
             }
@@ -48,11 +49,11 @@ namespace rMultiplatform
         }
         Timer stateTimer;
 
-        public Grid                     MultimeterGrid;
-        public MultimeterScreen         Screen;
-        public MultimeterMenu           Menu;
-        public ChartData                Data;
-        public Chart                    _Plot;
+        public Grid             MultimeterGrid;
+        public MultimeterScreen Screen;
+        public MultimeterMenu   Menu;
+        public ChartData        Data;
+        public Chart            _Plot;
         public Chart Plot
         {
             get
@@ -78,10 +79,40 @@ namespace rMultiplatform
             Data.Sample((RandomGen.NextDouble() - 0.5) * 2.0);
         }
 
+        public void Reset()
+        {
+            Data.Data.Clear();
+            Data.Reset();
+            VerticalAxis.Reset();
+            HorozontalAxis.Reset();
+        }
+
+        ChartAxis VerticalAxis;
+        ChartAxis HorozontalAxis;
+        private string _VerticalLabel = "Volts (V)";
+        public string VerticalLabel
+        {
+            get
+            {
+                return _VerticalLabel;
+            }
+            set
+            {
+                if (value != _VerticalLabel)
+                {
+                    _VerticalLabel                  = value;
+                    Data.VerticalLabel              = value;
+                    VerticalAxis.Label              = value;
+                    HorozontalAxis.LockToAxisLabel  = value;
+                    Reset();
+                }
+            }
+        }
+
         public Multimeter ( BLE.IDeviceBLE pDevice )
         {
             Padding = 0;
-            if (pDevice == null)
+            if ( pDevice == null )
                 stateTimer = new Timer(TestCallback, null, 1000, 1000);
             else
             {
@@ -93,7 +124,7 @@ namespace rMultiplatform
             Screen          =   new MultimeterScreen();
             Screen.Clicked  +=  Menu_BackClicked;
             string id;
-            if (pDevice == null)
+            if ( pDevice == null )
                 Menu = new MultimeterMenu();
             else
             {
@@ -107,12 +138,13 @@ namespace rMultiplatform
             Menu.RelClicked         +=  Menu_RelClicked;
             Menu.ModeChanged        +=  Menu_ModeChanged;
             Menu.RangeChanged       +=  Menu_RangeChanged;
+            Menu.ResetClicked += Menu_ResetClicked;
             
-            Data = new ChartData( ChartData.ChartDataMode.eRescaling, "Time (s)", "Volts (V)", 10f );
+            Data = new ChartData( ChartData.ChartDataMode.eRescaling, "Time (s)", _VerticalLabel, 10f );
             Plot = new Chart() { Padding = new ChartPadding( 0.1f ) };
             Plot.AddGrid ( new ChartGrid());
-            Plot.AddAxis ( new ChartAxis(5, 5, 0, 20) {   Label = "Time (s)", Orientation = ChartAxis.AxisOrientation.Horizontal, LockToAxisLabel = "Volts (V)",  LockAlignment = ChartAxis.AxisLock.eEnd, ShowDataKey = false });
-            Plot.AddAxis ( new ChartAxis(5, 5, 0, 0)  {   Label = "Volts (V)",Orientation = ChartAxis.AxisOrientation.Vertical,   LockToAxisLabel = "Time (s)",   LockAlignment = ChartAxis.AxisLock.eStart});
+            Plot.AddAxis (HorozontalAxis = new ChartAxis(5, 5, 0, 20)   {   Label = "Time (s)",     Orientation = ChartAxis.AxisOrientation.Horizontal, LockToAxisLabel = _VerticalLabel,   LockAlignment = ChartAxis.AxisLock.eEnd, ShowDataKey = false });
+            Plot.AddAxis (VerticalAxis = new ChartAxis(5, 5, 0, 0)      {   Label = _VerticalLabel, Orientation = ChartAxis.AxisOrientation.Vertical,   LockToAxisLabel = "Time (s)",       LockAlignment = ChartAxis.AxisLock.eStart});
             Plot.AddData(Data);
             Plot.FullscreenClicked += Plot_FullScreenClicked;
 
@@ -129,6 +161,11 @@ namespace rMultiplatform
             BackgroundColor = Globals.BackgroundColor;
             Content = MultimeterGrid;
             SetView();
+        }
+
+        private void Menu_ResetClicked(object sender, EventArgs e)
+        {
+            Reset();
         }
 
         ActiveItem LastActive;
