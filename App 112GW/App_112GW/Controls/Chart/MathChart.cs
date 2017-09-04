@@ -4,14 +4,13 @@ using System.Text;
 using Xamarin.Forms;
 using System.Diagnostics;
 using App_112GW;
-using System.Collections;
 using SkiaSharp;
 using Xamarin.Forms.PlatformConfiguration;
 using System.Collections.Generic;
 
 namespace rMultiplatform
 {
-    class MathChart : Grid
+    class MathChart : StackLayout
     {
         private string x_label = "Time (s)";
         private string y_label = "Volts (V)";
@@ -240,46 +239,9 @@ namespace rMultiplatform
         public ChartData ChartData;
         public Chart Plot;
 
-        private void AddView(View pInput, int pX, int pY, int pXSpan = 1, int pYSpan = 1)
-        {
-            Children.Add(pInput, pX, pX + pXSpan, pY, pY + pYSpan);
-        }
         private void AddSelectView(View pInput, int pX, int pY, int pXSpan = 1, int pYSpan = 1)
         {
             SelectGrid.Children.Add(pInput, pX, pX + pXSpan, pY, pY + pYSpan);
-        }
-
-        static Label MakeChartLabel(string pText, FontAttributes pAttributes = FontAttributes.None)
-        {
-            return new Label
-            {
-                Text = pText,
-                FontAttributes = pAttributes,
-                HorizontalOptions = LayoutOptions.Fill,
-                HorizontalTextAlignment = TextAlignment.Center,
-                HeightRequest = 20,
-                TextColor = Globals.TextColor,
-                BackgroundColor = Globals.BackgroundColor
-            };
-        }
-        static DataTemplate MakeChartDataTemplate(string pBindTextTo, FontAttributes pAttributes = FontAttributes.None)
-        {
-            return new DataTemplate(() =>
-            {
-                var temp = MakeChartLabel("", pAttributes);
-                temp.SetBinding(Label.TextProperty, pBindTextTo);
-
-                var template = new ViewCell { View = temp };
-                template.Tapped += Template_Tapped;
-                return template;
-            });
-        }
-
-        private static void Template_Tapped(object sender, EventArgs e)
-        {
-            var cell = (ViewCell)sender;
-            var label = (Label)cell.View;
-            label.BackgroundColor = Color.Red;
         }
 
         static ColumnDefinition MakeMinimalColumn()
@@ -350,7 +312,6 @@ namespace rMultiplatform
             //Sets up operator table
             {
                 OperationSelect = new ContentView();
-
                 SelectGrid.ColumnDefinitions.Add(MakeFillColumn());
                 SelectGrid.ColumnDefinitions.Add(MakeFillColumn());
                 SelectGrid.ColumnDefinitions.Add(MakeFillColumn());
@@ -381,16 +342,13 @@ namespace rMultiplatform
                 Plot.AddAxis(VerticalAxis = new ChartAxis(5, 5, 0, 0) { Label = y_label, Orientation = ChartAxis.AxisOrientation.Vertical, LockToAxisLabel = x_label, LockAlignment = ChartAxis.AxisLock.eStart, ShowDataKey = false });
                 Plot.AddData(ChartData);
                 Plot.FullscreenClicked += Plot_FullscreenClicked;
+
+                Plot.VerticalOptions = LayoutOptions.FillAndExpand;
             }
 
             //1 Column, 2 Rows
-            ColumnDefinitions.Add(MakeFillColumn());
-
-            RowDefinitions.Add(MakeMinimalRow());
-            AddView     (OperationSelect, 0, 0);
-
-            RowDefinitions.Add(MakeFillRow());
-            AddView     (Plot, 0, 1);
+            Children.Add(OperationSelect);
+            Children.Add(Plot);
         }
 
         private bool Fullscreen = true;

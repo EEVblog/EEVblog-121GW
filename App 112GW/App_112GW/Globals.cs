@@ -68,7 +68,7 @@ namespace App_112GW
                     case Device.iOS:
                         return Color.FromHex("#C5CCB9");
                     case Device.Android:
-                        return Color.FromHex("#FFFFFF");
+                        return Color.FromHex("#000000");
                     case Device.Windows:
                         return Color.FromHex("#000000");
                     case Device.WinPhone:
@@ -108,7 +108,7 @@ namespace App_112GW
                     case Device.iOS:
                         return Color.FromHex("#111111");
                     case Device.Android:
-                        return Color.FromHex("#111111");
+                        return Color.FromHex("#FFFFFF");
                     case Device.Windows:
                         return Color.FromHex("#FFFFFF");
                     case Device.WinPhone:
