@@ -89,6 +89,11 @@ namespace rMultiplatform
             new OperationItem( "A\u00b2 / B",        SqrA_Div_B      ),
             new OperationItem( "A / B\u00b2",        A_Div_SqrB      )
         };
+        enum Current
+        {
+            L1,
+            L2
+        };
 
         Operation Current_Operation = null;
 
@@ -134,33 +139,30 @@ namespace rMultiplatform
             var valy = my * rx + by;
             return new SKPoint(valx, valy);
         }
-        enum Current
-        {
-            L1,
-            L2
-        };
 
+        private Range VerticalRange = new Range(0 , 0);
+        private int i1 = 1, i2 = 1;
+        private float x_val, y_val1, y_val2;
         void Resample(List<SKPoint> L1, List<SKPoint> L2)
         {
-            Data.Clear();
             var l1_count = L1.Count;
             var l2_count = L2.Count;
+
+            //
             if (Current_Operation != null)
             {
+                if ((i1 >= l1_count) || (i2 >= l2_count))
+                    Rerange();
+
                 if ((l1_count > 1) && (l2_count > 1))
                 {
-                    var i1 = 1;
-                    var i2 = 1;
-                    List<SKPoint> Output = new List<SKPoint>();
-                    while (i1 < l1_count && i2 < l2_count)
+                    while ((i1 < l1_count) && (i2 < l2_count))
                     {
                         var p1 = L1[i1];
                         var p2 = L2[i2];
                         var x1 = p1.X;
                         var x2 = p2.X;
 
-                        float x_val;
-                        float y_val1, y_val2;
                         if (x1 > x2)
                         {
                             x_val = x2;
@@ -185,17 +187,27 @@ namespace rMultiplatform
                             y_val2 = pt.Y;
                             ++i1;
                         }
-                        Data.Add(new SKPoint(x_val, Current_Operation(y_val1, y_val2)));
+                        var op_result = Current_Operation(y_val1, y_val2);
+                        VerticalRange.RescaleRangeToFitValue(op_result);
+                        Data.Add(new SKPoint(x_val, op_result));
                     }
+                    ChartData.Set(Data, VerticalRange);
                 }
             }
-            ChartData.Set(Data);
+        }
+
+        private void Rerange()
+        {
+            VerticalRange.Rescale();
+            i1 = 1; i2 = 1;
+            Data.Clear();
         }
 
         List<SKPoint> Data = new List<SKPoint>();
         Multimeter DeviceA = null, DeviceB = null;
         private void A_List_ItemSelected(object sender, EventArgs e)
         {
+            Rerange();
             var item = (sender as Picker).SelectedItem;
             if (item != null)
             {
@@ -207,6 +219,7 @@ namespace rMultiplatform
         }
         private void B_List_ItemSelected(object sender, EventArgs e)
         {
+            Rerange();
             var item = (sender as Picker).SelectedItem;
             if (item != null)
             {
@@ -219,6 +232,7 @@ namespace rMultiplatform
 
         private void Operation_List_ItemSelected(object sender, EventArgs e)
         {
+            Rerange();
             var sel_item = (sender as Picker).SelectedItem;
             var sel_obj = sel_item as Object;
             var sel_item_type = ((OperationItem)sel_item);

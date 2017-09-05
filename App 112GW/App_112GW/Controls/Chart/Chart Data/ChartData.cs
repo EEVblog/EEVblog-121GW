@@ -277,6 +277,31 @@ namespace rMultiplatform
             return false;
         }
 
+        public void Set(Points pPoints, Range vert)
+        {
+            if (pPoints.Count >= 2)
+            {
+                var horz = new Range(pPoints[0].X, pPoints[pPoints.Count - 1].X);
+                if (horz.Distance > 0 && vert.Distance > 0)
+                {
+                    VerticalSpan.Set(vert);
+                    HorozontalSpan.Set(horz);
+
+                    foreach (var axis in Registrants)
+                    {
+                        if (axis.Orientation == ChartAxis.AxisOrientation.Horizontal)
+                            axis.Set(horz);
+                        else
+                            axis.Set(vert);
+                    }
+
+                    //Data cannot be changed when it is in use.
+                    Data = pPoints;
+                    DataChange();
+                }
+            }
+        }
+
         Mutex DataMux = new Mutex();
         DateTime start = DateTime.Now;
         public void Sample (double pPoint)
