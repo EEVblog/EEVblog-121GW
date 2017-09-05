@@ -210,14 +210,14 @@ namespace rMultiplatform
         {
             HorozontalSpan.Rescale();
             VerticalSpan.Rescale();
-            start = DateTime.Now;
+            DataStart = DateTime.Now;
         }
+
 
         public bool Draw (SKCanvas c)
         {
             if (Data.Count == 0)
                 return false;
-
             if (VerticalSpan == null)
                 return false;
 
@@ -250,20 +250,43 @@ namespace rMultiplatform
                     y == null )
                 throw (new Exception("Graph object must contain an horizontal and vertical axis to plot data."));
 
-            uint DataStart   = ( uint ) Data.FindIndex        (val => (val.X >=    VisX.Minimum    ));
-            uint DataEnd     = ( uint ) Data.FindIndex        (val => (val.X >     VisX.Maximum    ));
-            uint Length      = ( uint ) Data.Count;
-            bool Overflow = DataEnd > Length;
-            if (Overflow)
-                DataEnd = (uint)Data.Count;
+            var DataStart   = Data.FindIndex (val => (val.X >=    VisX.Minimum    ));
+            var DataEnd     = Data.FindIndex (val => (val.X >     VisX.Maximum    ));
+            var Length      = Data.Count;
+
+            if (DataStart < 0)
+                DataStart = 0;
+            if (DataEnd > Length || DataEnd < 0)
+                DataEnd = Length;
+
 
             if (Data.Count > 0)
             {
                 if (DataEnd > DataStart)
                 {
-                    var output = Data.GetRange((int)DataStart, (int)(DataEnd - DataStart)).ToArray();
                     var path = new SKPath();
+                    var output = Data.GetRange(DataStart, (DataEnd - DataStart)).ToArray();
                     path.AddPoly(output, false);
+
+                    if (DataEnd < Length - 1)
+                    {
+                        bool set = true;
+                        double min = 0, max = 0;
+                        foreach (var pt in output)
+                        {
+                            if (set)
+                            {
+                                min = pt.Y;
+                                max = pt.X;
+                                set = false;
+                            }
+                            if (pt.Y > max)
+                                max = pt.Y;
+                            if (pt.Y < min)
+                                min = pt.Y;
+                        }
+                        SetVerticalRange(new Range(min, max));
+                    }
 
                     var y_t = y.Transform();
                     var x_t = x.Transform();
@@ -273,41 +296,24 @@ namespace rMultiplatform
 
                     c.DrawPath(path, DrawPaint);
                 }
+                else
+                {
+                    Debug.WriteLine("HERE");
+                }
+            }
+            else
+            {
+                Debug.WriteLine("FAIL 3");
             }
             return false;
         }
 
-        public void Set(Points pPoints, Range vert)
-        {
-            if (pPoints.Count >= 2)
-            {
-                var horz = new Range(pPoints[0].X, pPoints[pPoints.Count - 1].X);
-                if (horz.Distance > 0 && vert.Distance > 0)
-                {
-                    VerticalSpan.Set(vert);
-                    HorozontalSpan.Set(horz);
-
-                    foreach (var axis in Registrants)
-                    {
-                        if (axis.Orientation == ChartAxis.AxisOrientation.Horizontal)
-                            axis.Set(horz);
-                        else
-                            axis.Set(vert);
-                    }
-
-                    //Data cannot be changed when it is in use.
-                    Data = pPoints;
-                    DataChange();
-                }
-            }
-        }
-
-        Mutex DataMux = new Mutex();
-        DateTime start = DateTime.Now;
+        Mutex DataMux   = new Mutex();
+        DateTime DataStart  = DateTime.Now;
         public void Sample (double pPoint)
         {
-            TimeSpan    t_diff  = DateTime.Now.Subtract(start);
-            double      ms_diff = t_diff.TotalMilliseconds / 1000;
+            TimeSpan t_diff  = DateTime.Now.Subtract(DataStart);
+            double ms_diff = t_diff.TotalMilliseconds / 1000;
             switch (Mode)
             {
                 case ChartDataMode.eRolling:
@@ -320,9 +326,6 @@ namespace rMultiplatform
                         HorozontalSpan.ShiftRangeToFitValue(ms_diff);
                     }
                     break;
-                case ChartDataMode.eRescaling:
-                    HorozontalSpan.RescaleRangeToFitValue(ms_diff);
-                    break;
                 case ChartDataMode.eScreen:
                     if (ms_diff > HorozontalSpan.Maximum)
                     {
@@ -333,12 +336,23 @@ namespace rMultiplatform
                         HorozontalSpan.ShiftRange(HorozontalSpan.Distance);
                     }
                     break;
+                case ChartDataMode.eRescaling:
+                    HorozontalSpan.RescaleRangeToFitValue(ms_diff);
+                    break;
             };
 
             //Rescale vertical
             VerticalSpan.RescaleRangeToFitValue(pPoint);
             Data.Add(new Point((float)ms_diff, (float)pPoint));
             DataChange();
+        }
+
+        public void SetVerticalRange(Range Vertical)
+        {
+            VerticalSpan.Set(Vertical);
+            foreach (var axis in Registrants)
+                if ((axis.Orientation == ChartAxis.AxisOrientation.Vertical))
+                    axis.Set(VerticalSpan);
         }
 
         public (Range, Range) CalculateRanges(Points pPoints)
@@ -378,23 +392,22 @@ namespace rMultiplatform
                     }
             }
         }
-        public void Set(Points pPoints)
+        public void Set(Points pPoints, Range vert)
         {
             if (pPoints.Count >= 2)
             {
-                (var horz, var vert) = CalculateRanges(pPoints);
+                var horz = new Range(pPoints[0].X, pPoints[pPoints.Count - 1].X);
                 if (horz.Distance > 0 && vert.Distance > 0)
                 {
-                    VerticalSpan = vert;
-                    HorozontalSpan = horz;
+                    //Set the ranges
+                    VerticalSpan.Set(vert);
+                    HorozontalSpan.Set(horz);
 
+                    //
                     foreach (var axis in Registrants)
-                    {
-                        if (axis.Orientation == ChartAxis.AxisOrientation.Horizontal)
-                            axis.Set(horz);
-                        else
-                            axis.Set(vert);
-                    }
+                        axis.Set((  axis.Orientation == ChartAxis.AxisOrientation.Horizontal)?
+                                    horz: 
+                                    vert);
 
                     //Data cannot be changed when it is in use.
                     Data = pPoints;
@@ -404,7 +417,7 @@ namespace rMultiplatform
         }
 
         //Required functions by interface defition
-        public bool Register (object o)
+        public bool Register(object o)
         {
             if (o.GetType() != typeof(ChartAxis))
                 return false;
