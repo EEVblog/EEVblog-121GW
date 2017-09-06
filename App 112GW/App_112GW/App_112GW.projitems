@@ -58,7 +58,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Peripherals\Multitouch.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Peripherals\Touch.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)General\VariableMonitor.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Packet\Packet112GW.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Packet\Packet121GW.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Packet\PacketProcessor.cs" />
   </ItemGroup>
   <ItemGroup>

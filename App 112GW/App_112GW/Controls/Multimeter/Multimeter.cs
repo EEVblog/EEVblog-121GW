@@ -15,7 +15,7 @@ namespace rMultiplatform
         PacketProcessor MyProcessor = new PacketProcessor(0xF2, 26);
         void ProcessPacket(byte[] pInput)
         {
-            var processor = new Packet112GW();
+            var processor = new Packet121GW();
             try
             {
                 processor.ProcessPacket(pInput);
@@ -138,8 +138,9 @@ namespace rMultiplatform
             Menu.RelClicked         +=  Menu_RelClicked;
             Menu.ModeChanged        +=  Menu_ModeChanged;
             Menu.RangeChanged       +=  Menu_RangeChanged;
-            Menu.ResetClicked += Menu_ResetClicked;
-            
+            Menu.ResetClicked       +=  Menu_ResetClicked;
+            Menu.SaveClicked        +=  Menu_SaveClicked;
+
             Data = new ChartData( ChartData.ChartDataMode.eRescaling, "Time (s)", _VerticalLabel, 10f );
             Plot = new Chart() { Padding = new ChartPadding( 0.1f ) };
             Plot.AddGrid ( new ChartGrid());
@@ -161,6 +162,11 @@ namespace rMultiplatform
             BackgroundColor = Globals.BackgroundColor;
             Content = MultimeterGrid;
             SetView();
+        }
+
+        private void Menu_SaveClicked(object sender, EventArgs e)
+        {
+            Plot.SaveCSV();
         }
 
         private void Menu_ResetClicked(object sender, EventArgs e)
@@ -199,22 +205,22 @@ namespace rMultiplatform
 
         private void Menu_RangeChanged(object sender, EventArgs e)
         {
-            var data = Packet112GW.GetKeycode(Packet112GW.Keycode.RANGE);
+            var data = Packet121GW.GetKeycode(Packet121GW.Keycode.RANGE);
             SendData(data);
         }
         private void Menu_ModeChanged(object sender, EventArgs e)
         {
-            var data = Packet112GW.GetKeycode(Packet112GW.Keycode.MODE);
+            var data = Packet121GW.GetKeycode(Packet121GW.Keycode.MODE);
             SendData(data);
         }
         private void Menu_RelClicked(object sender, EventArgs e)
         {
-            var data = Packet112GW.GetKeycode(Packet112GW.Keycode.REL);
+            var data = Packet121GW.GetKeycode(Packet121GW.Keycode.REL);
             SendData(data);
         }
         private void Menu_HoldClicked(object sender, EventArgs e)
         {
-            var data = Packet112GW.GetKeycode(Packet112GW.Keycode.HOLD);
+            var data = Packet121GW.GetKeycode(Packet121GW.Keycode.HOLD);
             SendData(data);
         }
 

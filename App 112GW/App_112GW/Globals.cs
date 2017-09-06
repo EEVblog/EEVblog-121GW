@@ -6,14 +6,14 @@ using Xamarin.Forms;
 
 namespace App_112GW
 {
-    public class Globals
+    static public class Globals
     {
+        static private Random random = new Random();
+
         static private T GetResource<T>(string name)
         {
             return (T)Application.Current.Resources[name];
         }
-
-        static Random random = new Random();
         static public double RandomBetween(double min, double max)
         {
             var output = (double)random.NextDouble() * (max - min) + min;

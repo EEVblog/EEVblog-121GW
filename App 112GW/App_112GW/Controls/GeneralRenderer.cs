@@ -13,7 +13,7 @@ using App_112GW;
 namespace rMultiplatform
 {
     public class GeneralRenderer :
-#if __ANDROID__ && ! SOFTWARE_DRAW
+#if __ANDROID__ && ! SOFTWARE_DRAW || true
         SKGLView
 #elif __IOS__ && ! SOFTWARE_DRAW
         SKGLView
@@ -31,7 +31,7 @@ namespace rMultiplatform
             BackgroundColor     =   Globals.BackgroundColor;
         }
 
-#if __ANDROID__ && !SOFTWARE_DRAW
+#if __ANDROID__ && !SOFTWARE_DRAW || true
         protected override void OnPaintSurface(SKPaintGLSurfaceEventArgs e)
 #elif __IOS__ && ! SOFTWARE_DRAW
         protected override void OnPaintSurface(SKPaintGLSurfaceEventArgs e)

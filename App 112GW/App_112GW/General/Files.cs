@@ -1,35 +1,48 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 using Xamarin.Forms;
 using Xamarin.Forms.PlatformConfiguration;
 
-
 namespace rMultiplatform
 {
-    class Files
+    static class Files
     {
-        static public async void SaveFile(string content)
+        static public string UniqueFilename()
+        {
+            string output = "";
+            while (File.Exists(output = Path.GetRandomFileName())) ;
+            return output;
+        }
+
+        static public void SaveFile(string content)
         {
 #if __ANDROID__
-            var documentsPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            //Email or cloud
+            Android.Content.Intent intent = new Android.Content.Intent(Android.Content.Intent.ActionSend);
+            intent.SetType("plain/text");
+            intent.PutExtra(Android.Content.Intent.ExtraSubject, "Logging");
+            intent.PutExtra(Android.Content.Intent.ExtraText, content);
+            Forms.Context.StartActivity(intent);
 #elif __IOS__
-            var documentsPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            //Email or cloud
+
 #else
+            //Anywhere
             var documentpicker = new Windows.Storage.Pickers.FileSavePicker();
             documentpicker.SuggestedStartLocation = Windows.Storage.Pickers.PickerLocationId.DocumentsLibrary;
             //documentpicker.FileTypeChoices.Add("Plain text.", new List<string>() { ".txt" });
             documentpicker.FileTypeChoices.Add("Comma seperated files.", new List<string>() { ".csv" });
             documentpicker.SuggestedFileName = "Logfile";
-
-            var file = await documentpicker.PickSaveFileAsync();
+            var file = documentpicker.PickSaveFileAsync().AsTask().Result;
             if (file != null)
             {
                 Windows.Storage.FileIO.WriteTextAsync(file, content);
             }
 #endif
         }
-        static public async Task<string> LoadFile(string filename)
+        static public string LoadFile(string filename)
         {
 #if __ANDROID__
             var documentsPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
@@ -41,10 +54,10 @@ namespace rMultiplatform
             documentpicker.FileTypeFilter.Add(".txt"); 
             documentpicker.FileTypeFilter.Add(".csv");
 
-            var file = await documentpicker.PickSingleFileAsync();
+            var file = documentpicker.PickSingleFileAsync().AsTask().Result;
             if (file != null)
             {
-                var content = await Windows.Storage.FileIO.ReadTextAsync(file);
+                var content = Windows.Storage.FileIO.ReadTextAsync(file).AsTask().Result;
                 return content;
             }
 #endif

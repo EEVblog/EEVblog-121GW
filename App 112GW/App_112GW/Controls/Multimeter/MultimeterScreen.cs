@@ -450,104 +450,104 @@ namespace rMultiplatform
                     other.Set(State);
         }
 
-        public Packet112GW MainMode
+        public Packet121GW MainMode
         {
             set
             {
                 switch (value.Mode)
                 {
-                    case Packet112GW.eMode.Low_Z:
+                    case Packet121GW.eMode.Low_Z:
                         SetOther("LowZ", true);
                         SetOther("SegV", true);
                         break;
-                    case Packet112GW.eMode.DCV:
+                    case Packet121GW.eMode.DCV:
                         SetOther("SegV", true);
                         break;
-                    case Packet112GW.eMode.ACV:
+                    case Packet121GW.eMode.ACV:
                         SetOther("SegV", true);
                         break;
-                    case Packet112GW.eMode.DCmV:
+                    case Packet121GW.eMode.DCmV:
                         SetOther("SegV", true);
                         SetOther("SegmV", true);
                         break;
-                    case Packet112GW.eMode.ACmV:
+                    case Packet121GW.eMode.ACmV:
                         SetOther("AC", true);
                         SetOther("SegV", true);
                         SetOther("SegmV", true);
                         break;
-                    case Packet112GW.eMode.Temp:
+                    case Packet121GW.eMode.Temp:
                         SetOther("SegTempC", true);
                         break;
-                    case Packet112GW.eMode.Hz:
+                    case Packet121GW.eMode.Hz:
                         SetOther("SegHz", true);
                         break;
-                    case Packet112GW.eMode.mS:
+                    case Packet121GW.eMode.mS:
                         SetOther("Subms", true);
                         break;
-                    case Packet112GW.eMode.Duty:
+                    case Packet121GW.eMode.Duty:
                         SetOther("Sub%", true);
                         break;
-                    case Packet112GW.eMode.Resistor:
+                    case Packet121GW.eMode.Resistor:
                         SetOther("SegR", true);
                         break;
-                    case Packet112GW.eMode.Continuity:
+                    case Packet121GW.eMode.Continuity:
                         SetOther("Beep", true);
                         SetOther("SegR", true);
                         break;
-                    case Packet112GW.eMode.Diode:
+                    case Packet121GW.eMode.Diode:
                         SetOther("Diode", true);
                         SetOther("SegV", true);
                         break;
-                    case Packet112GW.eMode.Capacitor:
+                    case Packet121GW.eMode.Capacitor:
                         SetOther("SegCapF", true);
                         break;
-                    case Packet112GW.eMode.ACuVA:
+                    case Packet121GW.eMode.ACuVA:
                         SetOther("SegV", true);
                         SetOther("SegA", true);
                         SetOther("Segu", true);
                         break;
-                    case Packet112GW.eMode.ACmVA:
+                    case Packet121GW.eMode.ACmVA:
                         SetOther("SegV", true);
                         SetOther("SegA", true);
                         SetOther("SegmV", true);
                         break;
-                    case Packet112GW.eMode.ACVA:
+                    case Packet121GW.eMode.ACVA:
                         SetOther("SegV", true);
                         SetOther("SegA", true);
                         break;
-                    case Packet112GW.eMode.ACuA:
+                    case Packet121GW.eMode.ACuA:
                         SetOther("SegA", true);
                         SetOther("Segu", true);
                         break;
-                    case Packet112GW.eMode.DCuA:
+                    case Packet121GW.eMode.DCuA:
                         SetOther("SegA", true);
                         SetOther("Segu", true);
                         break;
-                    case Packet112GW.eMode.ACmA:
+                    case Packet121GW.eMode.ACmA:
                         SetOther("SegA", true);
                         SetOther("SegmV", true);
                         break;
-                    case Packet112GW.eMode.DCmA:
+                    case Packet121GW.eMode.DCmA:
                         SetOther("SegA", true);
                         SetOther("SegmV", true);
                         break;
-                    case Packet112GW.eMode.ACA:
+                    case Packet121GW.eMode.ACA:
                         SetOther("SegA", true);
                         break;
-                    case Packet112GW.eMode.DCA:
+                    case Packet121GW.eMode.DCA:
                         SetOther("SegA", true);
                         break;
-                    case Packet112GW.eMode.DCuVA:
+                    case Packet121GW.eMode.DCuVA:
                         SetOther("SegV", true);
                         SetOther("SegA", true);
                         SetOther("Segu", true);
                         break;
-                    case Packet112GW.eMode.DCmVA:
+                    case Packet121GW.eMode.DCmVA:
                         SetOther("SegV", true);
                         SetOther("SegA", true);
                         SetOther("SegmV", true);
                         break;
-                    case Packet112GW.eMode.DCVA:
+                    case Packet121GW.eMode.DCVA:
                         SetOther("SegV", true);
                         SetOther("SegA", true);
                         break;
@@ -557,7 +557,7 @@ namespace rMultiplatform
                 }
             }
         }
-        public Packet112GW MainRangeValue
+        public Packet121GW MainRangeValue
         {
             set
             {
@@ -571,7 +571,7 @@ namespace rMultiplatform
                 else
                 {
                     //Negative sign for segments
-                    if (Sign == Packet112GW.eSign.eNegative)
+                    if (Sign == Packet121GW.eSign.eNegative)
                         SetOther("Seg-", true);
                     else
                         SetOther("Seg-", false);
@@ -634,8 +634,8 @@ namespace rMultiplatform
                 }
             }
         }
-        private Packet112GW.eMode _SubMode;
-        public Packet112GW SubMode
+        private Packet121GW.eMode _SubMode;
+        public Packet121GW SubMode
         {
             set
             {
@@ -643,110 +643,110 @@ namespace rMultiplatform
                 _SubMode = mode;
                 switch (mode)
                 {
-                    case Packet112GW.eMode.Low_Z:
+                    case Packet121GW.eMode.Low_Z:
                         SetOther("SubV", true);
                         break;
-                    case Packet112GW.eMode.DCV:
+                    case Packet121GW.eMode.DCV:
                         SetOther("SubDC", true);
                         SetOther("SubV", true);
                         break;
-                    case Packet112GW.eMode.ACV:
+                    case Packet121GW.eMode.ACV:
                         SetOther("SubAC", true);
                         SetOther("SubV", true);
                         break;
-                    case Packet112GW.eMode.DCmV:
+                    case Packet121GW.eMode.DCmV:
                         SetOther("SubDC", true);
                         SetOther("SubV", true);
                         SetOther("Subm", true);
                         break;
-                    case Packet112GW.eMode.ACmV:
+                    case Packet121GW.eMode.ACmV:
                         SetOther("AC", true);
                         SetOther("SegV", true);
                         SetOther("Subm", true);
                         break;
-                    case Packet112GW.eMode.Temp:
+                    case Packet121GW.eMode.Temp:
                         break;
-                    case Packet112GW.eMode.Hz:
+                    case Packet121GW.eMode.Hz:
                         SetOther("SubHz", true);
                         break;
-                    case Packet112GW.eMode.mS:
+                    case Packet121GW.eMode.mS:
                         SetOther("Subms", true);
                         break;
-                    case Packet112GW.eMode.Duty:
+                    case Packet121GW.eMode.Duty:
                         SetOther("Sub%", true);
                         break;
-                    case Packet112GW.eMode.Resistor:
+                    case Packet121GW.eMode.Resistor:
                         SetOther("SubR", true);
                         break;
-                    case Packet112GW.eMode.Continuity:
+                    case Packet121GW.eMode.Continuity:
                         break;
-                    case Packet112GW.eMode.Diode:
+                    case Packet121GW.eMode.Diode:
                         break;
-                    case Packet112GW.eMode.Capacitor:
+                    case Packet121GW.eMode.Capacitor:
                         break;
-                    case Packet112GW.eMode.ACuVA:
+                    case Packet121GW.eMode.ACuVA:
                         break;
-                    case Packet112GW.eMode.ACmVA:
+                    case Packet121GW.eMode.ACmVA:
                         break;
-                    case Packet112GW.eMode.ACVA:
+                    case Packet121GW.eMode.ACVA:
                         SetOther("SubAC", true);
                         SetOther("SubV", true);
                         SetOther("SubA", true);
                         break;
-                    case Packet112GW.eMode.ACuA:
+                    case Packet121GW.eMode.ACuA:
                         break;
-                    case Packet112GW.eMode.DCuA:
+                    case Packet121GW.eMode.DCuA:
                         break;
-                    case Packet112GW.eMode.ACmA:
+                    case Packet121GW.eMode.ACmA:
                         SetOther("SubAC", true);
                         SetOther("SubA", true);
                         SetOther("Subm", true);
                         break;
-                    case Packet112GW.eMode.DCmA:
+                    case Packet121GW.eMode.DCmA:
                         SetOther("SubDC", true);
                         SetOther("SubA", true);
                         SetOther("SubmV", true);
                         break;
-                    case Packet112GW.eMode.ACA:
+                    case Packet121GW.eMode.ACA:
                         SetOther("SubAC", true);
                         SetOther("SubA", true);
                         break;
-                    case Packet112GW.eMode.DCA:
+                    case Packet121GW.eMode.DCA:
                         SetOther("SubDC", true);
                         SetOther("SubA", true);
                         break;
-                    case Packet112GW.eMode.DCuVA:
+                    case Packet121GW.eMode.DCuVA:
                         break;
-                    case Packet112GW.eMode.DCmVA:
+                    case Packet121GW.eMode.DCmVA:
                         break;
-                    case Packet112GW.eMode.DCVA:
+                    case Packet121GW.eMode.DCVA:
                         SetOther("SubDC", true);
                         SetOther("SubV", true);
                         SetOther("SubA", true);
                         break;
-                    case Packet112GW.eMode._Battery:
+                    case Packet121GW.eMode._Battery:
                         SetOther("SubDC", true);
                         SetOther("SubV", true);
                         break;
-                    case Packet112GW.eMode._BURDEN_VOLTAGE:
+                    case Packet121GW.eMode._BURDEN_VOLTAGE:
                         SetOther("SubV", true);
                         break;
-                    case Packet112GW.eMode._YEAR:
+                    case Packet121GW.eMode._YEAR:
                         break;
-                    case Packet112GW.eMode._DATE:
+                    case Packet121GW.eMode._DATE:
                         break;
-                    case Packet112GW.eMode._TIME:
+                    case Packet121GW.eMode._TIME:
                         break;
-                    case Packet112GW.eMode._LCD:
+                    case Packet121GW.eMode._LCD:
                         break;
-                    case Packet112GW.eMode._TempC:
+                    case Packet121GW.eMode._TempC:
                         break;
-                    case Packet112GW.eMode._TempF:
+                    case Packet121GW.eMode._TempF:
                         break;
-                    case Packet112GW.eMode._dBm:
+                    case Packet121GW.eMode._dBm:
                         SetOther("SubdB", true);
                         break;
-                    case Packet112GW.eMode._Interval:
+                    case Packet121GW.eMode._Interval:
                         SetOther("Subm", true);
                         SetOther("SubS", true);
                         break;
@@ -756,7 +756,7 @@ namespace rMultiplatform
                 }
             }
         }
-        public Packet112GW SubRangeValue
+        public Packet121GW SubRangeValue
         {
             set
             {
@@ -770,7 +770,7 @@ namespace rMultiplatform
                 else
                 {
                     //Negative sign for segments
-                    if (Sign == Packet112GW.eSign.eNegative)
+                    if (Sign == Packet121GW.eSign.eNegative)
                         SetOther("Sub-", true);
                     else
                         SetOther("Sub-", false);
@@ -808,11 +808,11 @@ namespace rMultiplatform
                         }
                         switch (_SubMode)
                         {
-                            case Packet112GW.eMode.Temp:
-                            case Packet112GW.eMode._TempC:
+                            case Packet121GW.eMode.Temp:
+                            case Packet121GW.eMode._TempC:
                                 DisplayString += "c";
                                 break;
-                            case Packet112GW.eMode._TempF:
+                            case Packet121GW.eMode._TempF:
                                 DisplayString += "f";
                                 break;
                         }
@@ -821,7 +821,7 @@ namespace rMultiplatform
                 }
             }
         }
-        public Packet112GW BarStatus
+        public Packet121GW BarStatus
         {
             set
             {
@@ -874,7 +874,7 @@ namespace rMultiplatform
                             break;
                     }
 
-                    if (sign == Packet112GW.eSign.eNegative)
+                    if (sign == Packet121GW.eSign.eNegative)
                         SetOther("BarTick -", true);
                     else
                         SetOther("Bar+", true);
@@ -883,7 +883,7 @@ namespace rMultiplatform
                 }
             }
         }
-        public Packet112GW IconStatus
+        public Packet121GW IconStatus
         {
             set
             {
@@ -897,16 +897,16 @@ namespace rMultiplatform
 
                 switch (value.StatusAC_DC)
                 {
-                    case Packet112GW.eAD_DC.eDC:
+                    case Packet121GW.eAD_DC.eDC:
                         SetOther("DC", true);
                         break;
-                    case Packet112GW.eAD_DC.eAC:
+                    case Packet121GW.eAD_DC.eAC:
                         SetOther("AC", true);
                         break;
-                    case Packet112GW.eAD_DC.eACDC:
+                    case Packet121GW.eAD_DC.eACDC:
                         SetOther("DC+AC", true);
                         break;
-                    case Packet112GW.eAD_DC.eNone:
+                    case Packet121GW.eAD_DC.eNone:
                         break;
                 }
 
@@ -954,7 +954,7 @@ namespace rMultiplatform
                 }
             }
         }
-        public void Update(Packet112GW pInput)
+        public void Update(Packet121GW pInput)
         {
             SetOther("BT", true);
             foreach (var other in mOther.mLayers)

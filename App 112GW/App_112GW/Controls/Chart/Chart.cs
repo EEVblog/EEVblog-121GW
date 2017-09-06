@@ -128,9 +128,12 @@ namespace rMultiplatform
 
         public void SaveCSV()
         {
+            string csv_string = "";
             foreach(var Element in ChartElements)
                 if (Element.GetType() == typeof (ChartData))
-                    (Element as ChartData).ToCSV();
+                    csv_string = (Element as ChartData).GetCSV();
+
+            Files.SaveFile(csv_string);
         }
 
         //Renders the chart and child objects

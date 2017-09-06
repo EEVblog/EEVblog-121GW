@@ -5,14 +5,14 @@ using System.Text;
 
 namespace rMultiplatform
 {
-    public class Range112GW
+    public class Range121GW
     {
         public string mUnits;
         public string mLabel;
         public int[] mValues;
         public string mNotation;
 
-        public Range112GW(string pUnits, string pLabel, int[] pValues, string pNotation)
+        public Range121GW(string pUnits, string pLabel, int[] pValues, string pNotation)
         {
             mNotation = pNotation;
             mUnits = pUnits;
@@ -20,7 +20,7 @@ namespace rMultiplatform
             mValues = pValues;
         }
     }
-    public class Packet112GW
+    public class Packet121GW
     {
         private byte ToByte(string pInput)
         {
@@ -67,33 +67,33 @@ namespace rMultiplatform
             _dBm= 180,
             _Interval = 190
         }
-        Range112GW[] RangeLookup =
+        Range121GW[] RangeLookup =
         {
-            new Range112GW("V",     "Voltage Low Z (V)",        new int[]{4}            ," "),      //0
-            new Range112GW("V",     "Voltage DC (V)",           new int[]{1,2,3,4}      ,"    "),   //1
-            new Range112GW("V",     "Voltage AC (V)",           new int[]{1,2,3,4}      ,"    "),   //2
-            new Range112GW("mV",    "Voltage DC (V)",           new int[]{2,3}          ,"mm"),     //3 
-            new Range112GW("mV",    "Voltage AC (V)",           new int[]{2,3}          ,"mm"),     //4
-            new Range112GW("°C",    "Temp (°C)",                new int[]{4}            ," "),      //5
-            new Range112GW("KHz",   "Frequency (Hz)",           new int[]{2,3,1,2,3}    ,"  kkk"),  //6
-            new Range112GW("ms",    "Period (s)",               new int[]{1,2,3}        ,"   "),    //7
-            new Range112GW("%",     "Duty (%)",                 new int[]{4}            ," "),      //8
-            new Range112GW("KΩ",    "Resistance (Ω)",           new int[]{2,3,1,2,3,1,2},"  kkkMM"),//9
-            new Range112GW("KΩ",    "Continuity (Ω)",           new int[]{3}            ," "),      //10
-            new Range112GW("V",     "Diode (V)",                new int[]{1,2}          ,"  "),     //11
-            new Range112GW("ms",    "Capacitance (F)",          new int[]{3,4,2,3,4,5}  ,"nnuuuu"), //12
-            new Range112GW("uVA",   "Power AC (VA)",            new int[]{4,5,2,3}      ,"    "),   //13
-            new Range112GW("mVA",   "Power AC (VA)",            new int[]{4,5,2,3}      ,"mm  "),   //14
-            new Range112GW("mVA",   "Power AC (VA)",            new int[]{4,5,2,3}      ,"mm  "),   //15
-            new Range112GW("uA",    "Current AC (A)",           new int[]{2,3}          ,"  "),     //16
-            new Range112GW("uA",    "Current DC (A)",           new int[]{2,3}          ,"  "),     //17
-            new Range112GW("mA",    "Current AC (A)",           new int[]{3,1,2}        ,"mmm"),    //18
-            new Range112GW("mA",    "Current DC (A)",           new int[]{1,2}          ,"mm"),     //19
-            new Range112GW("A",     "Current AC (A)",           new int[]{3,1,2}        ,"m  "),    //20
-            new Range112GW("A",     "Current DC (A)",           new int[]{3,1,2}        ,"m  "),    //21
-            new Range112GW("uVA",   "Power DC (VA)",            new int[]{3,4,4,5}      ,"    "),   //22
-            new Range112GW("mVA",   "Power DC (VA)",            new int[]{4,5,2,3}      ,"mm  "),   //23
-            new Range112GW("VA",    "Power DC (VA)",            new int[]{4,5,2,3}      ,"mm  ")    //24
+            new Range121GW("V",     "Voltage Low Z (V)",        new int[]{4}            ," "),      //0
+            new Range121GW("V",     "Voltage DC (V)",           new int[]{1,2,3,4}      ,"    "),   //1
+            new Range121GW("V",     "Voltage AC (V)",           new int[]{1,2,3,4}      ,"    "),   //2
+            new Range121GW("mV",    "Voltage DC (V)",           new int[]{2,3}          ,"mm"),     //3 
+            new Range121GW("mV",    "Voltage AC (V)",           new int[]{2,3}          ,"mm"),     //4
+            new Range121GW("°C",    "Temp (°C)",                new int[]{4}            ," "),      //5
+            new Range121GW("KHz",   "Frequency (Hz)",           new int[]{2,3,1,2,3}    ,"  kkk"),  //6
+            new Range121GW("ms",    "Period (s)",               new int[]{1,2,3}        ,"   "),    //7
+            new Range121GW("%",     "Duty (%)",                 new int[]{4}            ," "),      //8
+            new Range121GW("KΩ",    "Resistance (Ω)",           new int[]{2,3,1,2,3,1,2},"  kkkMM"),//9
+            new Range121GW("KΩ",    "Continuity (Ω)",           new int[]{3}            ," "),      //10
+            new Range121GW("V",     "Diode (V)",                new int[]{1,2}          ,"  "),     //11
+            new Range121GW("ms",    "Capacitance (F)",          new int[]{3,4,2,3,4,5}  ,"nnuuuu"), //12
+            new Range121GW("uVA",   "Power AC (VA)",            new int[]{4,5,2,3}      ,"    "),   //13
+            new Range121GW("mVA",   "Power AC (VA)",            new int[]{4,5,2,3}      ,"mm  "),   //14
+            new Range121GW("mVA",   "Power AC (VA)",            new int[]{4,5,2,3}      ,"mm  "),   //15
+            new Range121GW("uA",    "Current AC (A)",           new int[]{2,3}          ,"  "),     //16
+            new Range121GW("uA",    "Current DC (A)",           new int[]{2,3}          ,"  "),     //17
+            new Range121GW("mA",    "Current AC (A)",           new int[]{3,1,2}        ,"mmm"),    //18
+            new Range121GW("mA",    "Current DC (A)",           new int[]{1,2}          ,"mm"),     //19
+            new Range121GW("A",     "Current AC (A)",           new int[]{3,1,2}        ,"m  "),    //20
+            new Range121GW("A",     "Current DC (A)",           new int[]{3,1,2}        ,"m  "),    //21
+            new Range121GW("uVA",   "Power DC (VA)",            new int[]{3,4,4,5}      ,"    "),   //22
+            new Range121GW("mVA",   "Power DC (VA)",            new int[]{4,5,2,3}      ,"mm  "),   //23
+            new Range121GW("VA",    "Power DC (VA)",            new int[]{4,5,2,3}      ,"mm  ")    //24
         };
         private readonly eAD_DC eACDC;
 
@@ -104,7 +104,7 @@ namespace rMultiplatform
                 return (eMode)pData[0];
             }
         }
-        public Range112GW MainRange
+        public Range121GW MainRange
         {
             get
             {
@@ -428,7 +428,7 @@ namespace rMultiplatform
                 return (pData[12] & 0x01) != 0;
             }
         }
-        public Packet112GW()
+        public Packet121GW()
         {
             pData = new List<byte>();
         }

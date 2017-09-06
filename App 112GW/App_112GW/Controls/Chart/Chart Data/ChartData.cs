@@ -41,17 +41,36 @@ namespace rMultiplatform
         public          List<ChartAxis> Registrants;
 
         //
-        public void ToCSV()
+        public string GetCSV()
         {
-            DataMux.WaitOne();
             if (Data.Count > 1)
             {
-                string output = "";
+                //The fallback values of axis labels are X, Y
+                string horozontal_label = "X";
+                string vertical_label   = "Y";
+
+                //Get axis labels
+                foreach (var axis in Registrants)
+                {
+                    if (axis.Orientation == ChartAxis.AxisOrientation.Vertical)
+                        vertical_label = axis.Label;
+                    else if (axis.Orientation == ChartAxis.AxisOrientation.Horizontal)
+                        horozontal_label = axis.Label;
+                }
+
+                //The header row of the CSV
+                string output = horozontal_label + ", " + vertical_label + "\r\n";
+
+                //Print the rows of the CSV to the string.
+                DataMux.WaitOne();
                 foreach (var item in Data)
                     output += item.X.ToString() + ", " + item.Y.ToString() + "\r\n";
-                Files.SaveFile(output);
+                DataMux.ReleaseMutex();
+
+                //Return output ;) troll comment
+                return output;
             }
-            DataMux.ReleaseMutex();
+            return "";
         }
 
         //
@@ -268,25 +287,26 @@ namespace rMultiplatform
                     var output = Data.GetRange(DataStart, (DataEnd - DataStart)).ToArray();
                     path.AddPoly(output, false);
 
-                    if (DataEnd < Length - 1)
-                    {
-                        bool set = true;
-                        double min = 0, max = 0;
-                        foreach (var pt in output)
-                        {
-                            if (set)
-                            {
-                                min = pt.Y;
-                                max = pt.X;
-                                set = false;
-                            }
-                            if (pt.Y > max)
-                                max = pt.Y;
-                            if (pt.Y < min)
-                                min = pt.Y;
-                        }
-                        SetVerticalRange(new Range(min, max));
-                    }
+                    //Enable this to enable zoom to context.
+                    //if (DataEnd < Length - 1)
+                    //{
+                    //    bool set = true;
+                    //    double min = 0, max = 0;
+                    //    foreach (var pt in output)
+                    //    {
+                    //        if (set)
+                    //        {
+                    //            min = pt.Y;
+                    //            max = pt.X;
+                    //            set = false;
+                    //        }
+                    //        if (pt.Y > max)
+                    //            max = pt.Y;
+                    //        if (pt.Y < min)
+                    //            min = pt.Y;
+                    //    }
+                    //    SetVerticalRange(new Range(min, max));
+                    //}
 
                     var y_t = y.Transform();
                     var x_t = x.Transform();
@@ -296,14 +316,6 @@ namespace rMultiplatform
 
                     c.DrawPath(path, DrawPaint);
                 }
-                else
-                {
-                    Debug.WriteLine("HERE");
-                }
-            }
-            else
-            {
-                Debug.WriteLine("FAIL 3");
             }
             return false;
         }
