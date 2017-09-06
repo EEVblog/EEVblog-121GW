@@ -12,7 +12,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
-    <Compile Include="$(MSBuildThisFileDirectory)AutoGrid.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Controls\AutoGrid.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\Chart\Chart Data\ChartDataEvents.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\GeneralPage.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\Multimeter\MathChart.cs" />
