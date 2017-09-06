@@ -13,7 +13,6 @@ namespace rMultiplatform
     public class ChartGrid : IChartRenderer
     {
         public delegate bool    ChartGridEvent(Object o);
-        //List<ChartGridEvent>    Registrants;
 
         private ChartPadding    ParentPadding;
         private double          ParentWidth;

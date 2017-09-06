@@ -12,11 +12,14 @@
     <Compile Include="$(MSBuildThisFileDirectory)App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)AutoGrid.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\Chart\Chart Data\ChartDataEvents.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Controls\Chart\MathChart.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Controls\GeneralPage.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Controls\Multimeter\MathChart.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\GeneralControl.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\GeneralRenderer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\Loading.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Controls\Multimeter\SevenSegment.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\Settings\Settings.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\Timer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)General\CappedRange.cs" />

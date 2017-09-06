@@ -6,7 +6,7 @@ using System.Diagnostics;
 
 namespace rMultiplatform
 {
-    public partial class Multimeter : ContentPage
+    public partial class Multimeter : AutoGrid
     {
         public event EventHandler RequestMaximise;
         public event EventHandler RequestRestore;
@@ -47,14 +47,12 @@ namespace rMultiplatform
                 return Id.Substring(id.Length - 5);
             }
         }
-        Timer stateTimer;
-
-        public Grid             MultimeterGrid;
         public MultimeterScreen Screen;
         public MultimeterMenu   Menu;
+        public ChartMenu        ChartMenu;
         public ChartData        Data;
         public Chart            _Plot;
-        public Chart Plot
+        public Chart            Plot
         {
             get
             {
@@ -69,15 +67,9 @@ namespace rMultiplatform
         enum ActiveItem
         {
             Screen,
-            Menu,
             FullscreenPlot
         }
         ActiveItem Item = ActiveItem.Screen;
-        Random RandomGen = new Random();
-        private void TestCallback(object state)
-        {
-            Data.Sample((RandomGen.NextDouble() - 0.5) * 2.0);
-        }
 
         public void Reset()
         {
@@ -111,56 +103,42 @@ namespace rMultiplatform
 
         public Multimeter ( BLE.IDeviceBLE pDevice )
         {
+            HorizontalOptions = LayoutOptions.Fill;
+            VerticalOptions = LayoutOptions.Fill;
+
             Padding = 0;
-            if ( pDevice == null )
-                stateTimer = new Timer(TestCallback, null, 1000, 1000);
-            else
-            {
-                mDevice = pDevice;
-                mDevice.Change += ValueChanged;
-                MyProcessor.mCallback += ProcessPacket;
-            }
+            mDevice = pDevice ?? throw new Exception("Multimeter must connect to a BLE device, not null.");
 
-            Screen          =   new MultimeterScreen();
-            Screen.Clicked  +=  Menu_BackClicked;
-            string id;
-            if ( pDevice == null )
-                Menu = new MultimeterMenu();
-            else
-            {
-                id = pDevice.Id;
-                Title = "[ " + ShortId + " ]";
-                Menu = new MultimeterMenu(id.Substring(id.Length - 5));
-            }
+            mDevice.Change += ValueChanged;
+            MyProcessor.mCallback += ProcessPacket;
 
-            Menu.BackClicked        +=  Menu_BackClicked;
+            Screen  = new MultimeterScreen();
+            Menu    = new MultimeterMenu(ShortId);
+
             Menu.HoldClicked        +=  Menu_HoldClicked;
             Menu.RelClicked         +=  Menu_RelClicked;
             Menu.ModeChanged        +=  Menu_ModeChanged;
             Menu.RangeChanged       +=  Menu_RangeChanged;
-            Menu.ResetClicked       +=  Menu_ResetClicked;
-            Menu.SaveClicked        +=  Menu_SaveClicked;
 
             Data = new ChartData( ChartData.ChartDataMode.eRescaling, "Time (s)", _VerticalLabel, 10f );
-            Plot = new Chart() { Padding = new ChartPadding( 0.1f ) };
-            Plot.AddGrid ( new ChartGrid());
-            Plot.AddAxis (HorozontalAxis = new ChartAxis(5, 5, 0, 20)   {   Label = "Time (s)",     Orientation = ChartAxis.AxisOrientation.Horizontal, LockToAxisLabel = _VerticalLabel,   LockAlignment = ChartAxis.AxisLock.eEnd, ShowDataKey = false });
-            Plot.AddAxis (VerticalAxis = new ChartAxis(5, 5, 0, 0)      {   Label = _VerticalLabel, Orientation = ChartAxis.AxisOrientation.Vertical,   LockToAxisLabel = "Time (s)",       LockAlignment = ChartAxis.AxisLock.eStart});
+            Plot = new Chart() {Padding = new ChartPadding(0.05)};
+            Plot.AddGrid ( new ChartGrid() );
+            Plot.AddAxis ( HorozontalAxis    = new ChartAxis(5, 5, 0, 20){   Label = "Time (s)",     Orientation = ChartAxis.AxisOrientation.Horizontal, LockToAxisLabel = _VerticalLabel,   LockAlignment = ChartAxis.AxisLock.eEnd, ShowDataKey = false } );
+            Plot.AddAxis ( VerticalAxis      = new ChartAxis(5, 5, 0, 0) {   Label = _VerticalLabel, Orientation = ChartAxis.AxisOrientation.Vertical,   LockToAxisLabel = "Time (s)",       LockAlignment = ChartAxis.AxisLock.eStart} );
             Plot.AddData(Data);
             Plot.FullscreenClicked += Plot_FullScreenClicked;
 
-            MultimeterGrid = new Grid();
-            MultimeterGrid.BackgroundColor = Globals.BackgroundColor;
-            MultimeterGrid.RowDefinitions.Add       (   new RowDefinition      { Height    = new GridLength(1, GridUnitType.Auto)  });
-            MultimeterGrid.RowDefinitions.Add       (   new RowDefinition      { Height    = new GridLength(1, GridUnitType.Star)  });
-            MultimeterGrid.ColumnDefinitions.Add    (   new ColumnDefinition   { Width     = new GridLength(1, GridUnitType.Star)  });
-            MultimeterGrid.Children.Add(Screen, 0, 0);
-            MultimeterGrid.Children.Add(Plot,   0, 1);
-            MultimeterGrid.Children.Add(Menu,   0, 0);
-            Grid.SetRowSpan(Menu, 2);
+            ChartMenu = new ChartMenu(true, true);
+            ChartMenu.SaveClicked += Menu_SaveClicked;
+            ChartMenu.ResetClicked += Menu_ResetClicked;
+
+            DefineGrid(1, 4);
+            AutoAdd(Screen);    FormatCurrentRow(GridUnitType.Auto);
+            AutoAdd(Menu);      FormatCurrentRow(GridUnitType.Auto);
+            AutoAdd(Plot);      FormatCurrentRow(GridUnitType.Star);
+            AutoAdd(ChartMenu); FormatCurrentRow(GridUnitType.Auto);
 
             BackgroundColor = Globals.BackgroundColor;
-            Content = MultimeterGrid;
             SetView();
         }
 
@@ -203,79 +181,40 @@ namespace rMultiplatform
                     chara.Send(pData);
         }
 
+        private void SendKeycode(Packet121GW.Keycode keycode)
+        {
+            SendData(Packet121GW.GetKeycode(keycode));
+        }
         private void Menu_RangeChanged(object sender, EventArgs e)
         {
-            var data = Packet121GW.GetKeycode(Packet121GW.Keycode.RANGE);
-            SendData(data);
+            SendKeycode(Packet121GW.Keycode.RANGE);
         }
         private void Menu_ModeChanged(object sender, EventArgs e)
         {
-            var data = Packet121GW.GetKeycode(Packet121GW.Keycode.MODE);
-            SendData(data);
+            SendKeycode(Packet121GW.Keycode.MODE);
         }
         private void Menu_RelClicked(object sender, EventArgs e)
         {
-            var data = Packet121GW.GetKeycode(Packet121GW.Keycode.REL);
-            SendData(data);
+            SendKeycode(Packet121GW.Keycode.REL);
         }
         private void Menu_HoldClicked(object sender, EventArgs e)
         {
-            var data = Packet121GW.GetKeycode(Packet121GW.Keycode.HOLD);
-            SendData(data);
-        }
-
-
-        private void PlotFullscreen()
-        {
-            Plot.IsVisible = true;
-            Grid.SetRowSpan(Menu, 2);
-        }
-        private void PlotSmall()
-        {
-            Plot.IsVisible = true;
-            Grid.SetRowSpan(Menu, 1);
-        }
-        private void PlotHide()
-        {
-            Plot.IsVisible = false;
+            SendKeycode(Packet121GW.Keycode.HOLD);
         }
 
         private void SetView()
         {
             switch (Item)
             {
-            case ActiveItem.Menu:
-                Menu.IsVisible      =   true;
-                Screen.IsVisible    =   false;
-                PlotHide();
-                break;
             case ActiveItem.Screen:
                 Screen.IsVisible    =   true;
-                Menu.IsVisible      =   false;
-                PlotSmall();
+                Menu.IsVisible      =   true;
                 break;
             case ActiveItem.FullscreenPlot:
                 Screen.IsVisible    =   false;
                 Menu.IsVisible      =   false;
-                PlotFullscreen();
                 break;
             }
-        }
-        public void Menu_BackClicked(object sender, EventArgs e)
-        {
-            switch (Item)
-            {
-                case ActiveItem.Menu:
-                    Item = ActiveItem.Screen;
-                    break;
-                case ActiveItem.Screen:
-                    Item = ActiveItem.Menu;
-                    break;
-                case ActiveItem.FullscreenPlot:
-                    Item = ActiveItem.Screen;
-                    break;
-            }
-            SetView();
         }
     }
 }

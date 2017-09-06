@@ -10,50 +10,43 @@ using Xamarin.Forms;
 
 namespace rMultiplatform
 {
-	public class Settings : ContentPage
-	{
-        private BLEDeviceSelector BLESelectDevice;
+	public class Settings : AutoGrid
+    {
+        public delegate void AddBluetoothDevice(IDeviceBLE pDevice);
+        public event AddBluetoothDevice AddDevice;
 
-        private Grid UserGrid       = new Grid  { HorizontalOptions = LayoutOptions.Fill, VerticalOptions = LayoutOptions.Fill, RowSpacing = 1, ColumnSpacing = 1, Padding = 1 };
+        private BLEDeviceSelector BLESelectDevice = new BLEDeviceSelector();
         private Button ButtonLeft   = new Button();
         private Button ButtonRight  = new Button();
+        private void NoAction(object o, EventArgs e) { }
 
         public Settings ()
         {
-            Title = "< Settings >";
+            HorizontalOptions = LayoutOptions.Fill;
+            VerticalOptions = LayoutOptions.Fill;
 
             //Setup connected event
-            UserGrid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Star) });
-            UserGrid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Star) });
-            UserGrid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(50, GridUnitType.Absolute) });
-            UserGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
-            UserGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+            DefineGrid(2, 2);
+
+            //Setup default display
+            AutoAdd(BLESelectDevice, 2);
+            FormatCurrentRow(GridUnitType.Star);
+
+            AutoAdd(ButtonLeft);
+            AutoAdd(ButtonRight);
+            FormatCurrentRow(GridUnitType.Auto);
 
             //
-            UserGrid.Children.Add(ButtonLeft, 0, 2);
-            UserGrid.Children.Add(ButtonRight, 1, 2);
-            Grid.SetColumnSpan(ButtonLeft, 1);
-            Grid.SetColumnSpan(ButtonRight, 1);
-
-            //
+            BLESelectDevice.Connected += Connected;
             ButtonLeft.Clicked += ButtonLeft_Clicked;
             ButtonRight.Clicked += ButtonRight_Clicked;
 
             //
-            BLESelectDevice = new BLEDeviceSelector();
-            BLESelectDevice.Connected += Connected;
-
-            UserGrid.Children.Add(BLESelectDevice, 0, 0);
-            Grid.SetColumnSpan(BLESelectDevice, 2);
-            Grid.SetRowSpan(BLESelectDevice, 1);
-
             ClearRightButton();
             ClearLeftButton();
 
-            SetRightButton("Remove Devices", (o, e) => { RemoveDevices?.Invoke(); });
+            //
             SetLeftButton("Refresh", RefreshDevices);
-            Content = UserGrid;
-
             BackgroundColor = Globals.BackgroundColor;
         }
 
@@ -61,18 +54,10 @@ namespace rMultiplatform
         {
             BLESelectDevice.mClient.Reset();
         }
-
         public void RemoveDevice()
         {
             BLESelectDevice.RemoveDevices();
         }
-
-        public delegate void AddBluetoothDevice(IDeviceBLE pDevice);
-        public event AddBluetoothDevice AddDevice;
-
-        public delegate void BasicFunction();
-        public event BasicFunction RemoveDevices;
-        
         private void Connected(IDeviceBLE pDevice)
         {
             if (pDevice == null)
@@ -83,6 +68,7 @@ namespace rMultiplatform
 
         private event EventHandler _LeftButtonEvent;
         private event EventHandler _RightButtonEvent;
+
         private event EventHandler LeftButtonEvent
         {
             add
@@ -105,6 +91,7 @@ namespace rMultiplatform
                 _RightButtonEvent -= value;
             }
         }
+
         private void ButtonRight_Clicked(object sender, EventArgs e)
         {
             _RightButtonEvent?.Invoke(sender, e);
@@ -113,8 +100,7 @@ namespace rMultiplatform
         {
             _LeftButtonEvent?.Invoke(sender, e);
         }
-        private void NoAction(object o, EventArgs e) { }
-
+        
         private string LeftButtonText
         {
             set
@@ -129,6 +115,7 @@ namespace rMultiplatform
                 ButtonRight.Text = value;
             }
         }
+
         public void SetLeftButton(string LeftText, EventHandler LeftEvent)
         {
             _LeftButtonEvent = null;
@@ -143,6 +130,7 @@ namespace rMultiplatform
             RightButtonText = RightText;
             ButtonRight.IsVisible = true;
         }
+
         public void ClearRightButton()
         {
             _RightButtonEvent = null;

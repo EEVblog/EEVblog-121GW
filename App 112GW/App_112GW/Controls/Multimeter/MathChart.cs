@@ -10,13 +10,14 @@ using System.Collections.Generic;
 
 namespace rMultiplatform
 {
-    class MathChart : StackLayout
+    class MathChart : AutoGrid
     {
         private string x_label = "Time (s)";
         private string y_label = "Volts (V)";
 
         ChartAxis VerticalAxis = null;
         ChartAxis HorizontalAxis = null;
+        ChartMenu Menu = null;
 
         public string VerticalLabel
         {
@@ -140,6 +141,7 @@ namespace rMultiplatform
             return new SKPoint(valx, valy);
         }
 
+        private bool Fullscreen = true;
         private Range VerticalRange = new Range(0 , 0);
         private int i1 = 1, i2 = 1;
         private float x_val, y_val1, y_val2;
@@ -195,7 +197,6 @@ namespace rMultiplatform
                 }
             }
         }
-
         private void Rerange()
         {
             VerticalRange.Rescale();
@@ -229,7 +230,6 @@ namespace rMultiplatform
                 DeviceB.Plot.DataChanged += DataB_Changed;
             }
         }
-
         private void Operation_List_ItemSelected(object sender, EventArgs e)
         {
             Rerange();
@@ -249,47 +249,8 @@ namespace rMultiplatform
             Resample(DeviceA.Data.Data, Data);
         }
 
-        private Grid SelectGrid = new Grid();
         public ChartData ChartData;
         public Chart Plot;
-
-        private void AddSelectView(View pInput, int pX, int pY, int pXSpan = 1, int pYSpan = 1)
-        {
-            SelectGrid.Children.Add(pInput, pX, pX + pXSpan, pY, pY + pYSpan);
-        }
-
-        static ColumnDefinition MakeMinimalColumn()
-        {
-            return new ColumnDefinition { Width = new GridLength(1, GridUnitType.Auto) };
-        }
-        static ColumnDefinition MakeFillColumn()
-        {
-            return new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) };
-        }
-
-        static RowDefinition MakeMinimalRow()
-        {
-            return new RowDefinition { Height = new GridLength(1, GridUnitType.Auto) };
-        }
-        static RowDefinition MakeFillRow()
-        {
-            return new RowDefinition { Height = new GridLength(1, GridUnitType.Star) };
-        }
-
-        private int RowSpan
-        {
-            get
-            {
-                return SelectGrid.RowDefinitions.Count;
-            }
-        }
-        private int ColumnSpan
-        {
-            get
-            {
-                return SelectGrid.ColumnDefinitions.Count;
-            }
-        }
 
         static LayoutOptions ColumnLayout = LayoutOptions.Fill;
         static Picker MakePicker( EventHandler SelectedHandler, string Title, string BindText)
@@ -306,66 +267,46 @@ namespace rMultiplatform
             return output;
         }
 
+
         public MathChart()
         {
             //Basic default constants, these should be globalised eventually
-            Padding             = 0;
-            HorizontalOptions   = LayoutOptions.Fill;
-            VerticalOptions     = LayoutOptions.Fill;
-            BackgroundColor     = Globals.BackgroundColor;
+            HorizontalOptions = LayoutOptions.Fill;
+            VerticalOptions = LayoutOptions.Fill;
+            Padding = 0;
+            BackgroundColor = Globals.BackgroundColor;
 
             //Setup listviews
-            A_List = MakePicker(A_List_ItemSelected, "Device A", "ShortId");
-            B_List = MakePicker(B_List_ItemSelected, "Device B", "ShortId");
+            Menu = new ChartMenu(true, false);
+            Menu.SaveClicked += Menu_SaveClicked;
 
-            //Operations list is bound to operations
-            Operation_List = MakePicker(Operation_List_ItemSelected, "Operation", "Label");
+            A_List          = MakePicker(A_List_ItemSelected, "Device A", "ShortId");
+            B_List          = MakePicker(B_List_ItemSelected, "Device B", "ShortId");
+            Operation_List  = MakePicker(Operation_List_ItemSelected, "Operation", "Label");
             Operation_List.ItemsSource = Operations;
 
-            ContentView OperationSelect;
-            //Sets up operator table
-            {
-                OperationSelect = new ContentView();
-                SelectGrid.ColumnDefinitions.Add(MakeFillColumn());
-                SelectGrid.ColumnDefinitions.Add(MakeFillColumn());
-                SelectGrid.ColumnDefinitions.Add(MakeFillColumn());
-                SelectGrid.RowDefinitions.Add(MakeMinimalRow());
+            Plot = new Chart() { Padding = new ChartPadding(0.1f) };
+            Plot.AddGrid(new ChartGrid());
+            Plot.AddAxis(HorizontalAxis = new ChartAxis(5, 5, 0, 20) { Label = x_label, Orientation = ChartAxis.AxisOrientation.Horizontal, LockToAxisLabel = y_label, LockAlignment = ChartAxis.AxisLock.eEnd, ShowDataKey = false });
+            Plot.AddAxis(VerticalAxis = new ChartAxis(5, 5, 0, 0) { Label = y_label, Orientation = ChartAxis.AxisOrientation.Vertical, LockToAxisLabel = x_label, LockAlignment = ChartAxis.AxisLock.eStart, ShowDataKey = false });
+            Plot.AddData(ChartData = new ChartData(ChartData.ChartDataMode.eRescaling, x_label, y_label, 10f));
+            Plot.FullscreenClicked += Plot_FullscreenClicked;
 
-                int Column_Count    = 0;
-                int A_Column        = Column_Count++;
-                int OP_Column       = Column_Count++;
-                int B_Column        = Column_Count++;
-                int Current_Row     = 0;
-                var Header_Row      = Current_Row++;
-                var Data_Row        = Current_Row++;
-
-                AddSelectView(A_List, A_Column, Data_Row);
-                AddSelectView(Operation_List, OP_Column, Data_Row);
-                AddSelectView(B_List, B_Column, Data_Row);
-
-                OperationSelect.VerticalOptions = LayoutOptions.Start;
-                OperationSelect.Content = SelectGrid;
-            }
-
-            //Sets up Plot
-            {
-                ChartData = new ChartData(ChartData.ChartDataMode.eRescaling, x_label, y_label, 10f);
-                Plot = new Chart() { Padding = new ChartPadding(0.1f) };
-                Plot.AddGrid(new ChartGrid());
-                Plot.AddAxis(HorizontalAxis = new ChartAxis(5, 5, 0, 20) { Label = x_label, Orientation = ChartAxis.AxisOrientation.Horizontal, LockToAxisLabel = y_label, LockAlignment = ChartAxis.AxisLock.eEnd, ShowDataKey = false });
-                Plot.AddAxis(VerticalAxis = new ChartAxis(5, 5, 0, 0) { Label = y_label, Orientation = ChartAxis.AxisOrientation.Vertical, LockToAxisLabel = x_label, LockAlignment = ChartAxis.AxisLock.eStart, ShowDataKey = false });
-                Plot.AddData(ChartData);
-                Plot.FullscreenClicked += Plot_FullscreenClicked;
-
-                Plot.VerticalOptions = LayoutOptions.FillAndExpand;
-            }
-
-            //1 Column, 2 Rows
-            Children.Add(OperationSelect);
-            Children.Add(Plot);
+            //
+            DefineGrid(3, 3);
+            AutoAdd(A_List);
+            AutoAdd(Operation_List);
+            AutoAdd(B_List);
+            FormatCurrentRow(GridUnitType.Auto);
+            AutoAdd(Plot, 3);
+            FormatCurrentRow(GridUnitType.Star);
+            AutoAdd(Menu, 3);
+            FormatCurrentRow(GridUnitType.Auto);
         }
-
-        private bool Fullscreen = true;
+        private void Menu_SaveClicked(object sender, EventArgs e)
+        {
+            Plot.SaveCSV();
+        }
         private void Plot_FullscreenClicked(object sender, EventArgs e)
         {
             foreach (var item in Children)
