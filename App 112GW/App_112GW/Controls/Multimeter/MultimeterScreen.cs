@@ -1,63 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using Xamarin.Forms;
-using System.Reflection;
-using System.Resources;
 
 using SkiaSharp;
 using SkiaSharp.Views.Forms;
-using System.Runtime.CompilerServices;
-
-using App_112GW;
 using System.Diagnostics;
-using System.Threading.Tasks;
 
 namespace rMultiplatform
 {
-    public class MultimeterScreen : GeneralView
+    public class MultimeterScreen : GeneralRenderedView
     {
         static List<ILayer> mLayerCache;
-        GeneralRenderer mRenderer;
-        public void Disable()
-        {
-            mRenderer = null;
-            Content = null;
-        }
-        public void Enable()
-        {
-            mRenderer = new GeneralRenderer(PaintSurface);
-            Content = mRenderer;
-            mRenderer.InvalidateSurface();
-            InvalidateMeasure();
-        }
-        public new bool IsVisible
-        {
-            set
-            {
-                if (value)  Enable();
-                else        Disable();
-                base.IsVisible = value;
-            }
-        }
-        public SKSize CanvasSize
-        {
-            get
-            {
-                if (mRenderer != null)
-                    return mRenderer.CanvasSize;
-                return new SKSize(0, 0);
-            }
-        }
-        public void InvalidateSurface()
-        {
-            if (mRenderer != null)
-                mRenderer.InvalidateSurface();
-        }
-
-        delegate void CacheImage(ILayer image);
         private Touch mTouch;
 
+        delegate void CacheImage(ILayer image);
         public enum eControlInputState
         {
             eNone,
@@ -68,15 +24,15 @@ namespace rMultiplatform
         public eControlInputState State
         {
             get
-            { return _State; }
+            {
+                return _State;
+            }
             set
             {
                 _State = value;
                 ChangeColors();
             }
         }
-
-
 
         private void MTouch_Pressed(object sender, TouchActionEventArgs args)
         {
@@ -86,11 +42,11 @@ namespace rMultiplatform
         {
             OnClicked(EventArgs.Empty);
         }
-        private void MTouch_Hover(object sender, rMultiplatform.TouchActionEventArgs args)
+        private void MTouch_Hover(object sender, TouchActionEventArgs args)
         {
             State = eControlInputState.eHover;
         }
-        private void MTouch_Release(object sender, rMultiplatform.TouchActionEventArgs args)
+        private void MTouch_Release(object sender, TouchActionEventArgs args)
         {
             State = eControlInputState.eNone;
         }
@@ -969,18 +925,8 @@ namespace rMultiplatform
             }
         }
 
-        SKRect rendrect = new SKRect();
-
-        private float ConvertWidthToPixel(float value)
-        {
-            return (CanvasSize.Width * value / (float)Width);
-        }
-        private float ConvertHeightToPixel(float value)
-        {
-            return (CanvasSize.Height * value / (float)Height);
-        }
-
-        void PaintSurface ( SKCanvas canvas, SKSize dimension )
+        private SKRect rendrect = new SKRect();
+        public override void PaintSurface ( SKCanvas canvas, SKSize dimension )
         {
             if ( RemakeCanvas )
             {
@@ -1030,8 +976,6 @@ namespace rMultiplatform
         }
         public MultimeterScreen()
         {
-            Enable();
-
             //New layer images
             mSegments       = new List<Layers>();
             mSubSegments    = new List<Layers>();

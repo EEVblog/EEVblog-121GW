@@ -119,7 +119,7 @@ namespace rMultiplatform
             Data = new ChartData( ChartData.ChartDataMode.eRescaling, "Time (s)", _VerticalLabel, 10f );
             Plot = new Chart() {Padding = new ChartPadding(0.05)};
             Plot.AddGrid ( new ChartGrid() );
-            Plot.AddAxis ( HorozontalAxis    = new ChartAxis(5, 5, 0, 20){   Label = "Time (s)",     Orientation = ChartAxis.AxisOrientation.Horizontal, LockToAxisLabel = _VerticalLabel,   LockAlignment = ChartAxis.AxisLock.eEnd, ShowDataKey = false } );
+            Plot.AddAxis ( HorozontalAxis    = new ChartAxis(5, 5, 0, 20){   Label = "Time (s)",     Orientation = ChartAxis.AxisOrientation.Horizontal, LockToAxisLabel = _VerticalLabel,   LockAlignment = ChartAxis.AxisLock.eEnd} );
             Plot.AddAxis ( VerticalAxis      = new ChartAxis(5, 5, 0, 0) {   Label = _VerticalLabel, Orientation = ChartAxis.AxisOrientation.Vertical,   LockToAxisLabel = "Time (s)",       LockAlignment = ChartAxis.AxisLock.eStart} );
             Plot.AddData(Data);
             Plot.FullscreenClicked += Plot_FullScreenClicked;
@@ -136,12 +136,10 @@ namespace rMultiplatform
 
             SetView();
         }
-
         private void Menu_SaveClicked(object sender, EventArgs e)
         {
             Plot.SaveCSV();
         }
-
         private void Menu_ResetClicked(object sender, EventArgs e)
         {
             Reset();

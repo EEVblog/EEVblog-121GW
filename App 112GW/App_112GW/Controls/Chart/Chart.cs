@@ -12,23 +12,6 @@ using App_112GW;
 
 namespace rMultiplatform
 {
-    interface IChartRenderer : IComparable
-    {
-        int Layer
-        {
-            get;
-        }
-
-        bool            Register(Object o);
-        List<Type>      RequireRegistration();
-
-        //Return true when redraw is required
-        bool Draw           (SKCanvas c);
-        void SetParentSize  (double w, double h, double scale = 1.0);
-        bool RegisterParent (Object c);
-        void InvalidateParent();
-    };
-
     public class Chart : GeneralView
     {
         GeneralRenderer mRenderer;
@@ -78,7 +61,7 @@ namespace rMultiplatform
         }
 
         //Stores all chart elements, this handles rendering too
-        private List<IChartRenderer> ChartElements;
+        private List<AChartRenderer> ChartElements;
 
         //Registers the change in ChartData if it exists
         public event ChartData.ListChanged DataChanged
@@ -98,7 +81,7 @@ namespace rMultiplatform
         }
 
         //Wrappers for the supported chart elements
-        private void    AddElement(IChartRenderer pInput)
+        private void    AddElement(AChartRenderer pInput)
         {
             ChartElements.Add(pInput);
             ChartElements.Sort();

@@ -3,12 +3,36 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Xamarin.Forms;
+using SkiaSharp;
 
 namespace rMultiplatform
 {
     static public class Globals
     {
         static private Random random = new Random();
+
+        static public SKTypeface Typeface
+        {
+            get
+            {
+                return SKTypeface.FromFamilyName("tahoma", SKTypefaceStyle.Normal);
+            }
+        }
+
+        static public float MajorFontSize
+        {
+            get
+            {
+                return (float)Device.GetNamedSize(NamedSize.Large, typeof(Label)); ;
+            }
+        }
+        static public float MinorFontSize
+        {
+            get
+            {
+                return (float)Device.GetNamedSize(NamedSize.Medium, typeof(Label)); ;
+            }
+        }
 
         static private T GetResource<T>(string name)
         {
@@ -126,7 +150,6 @@ namespace rMultiplatform
                 return Color.Black;
             }
         }
-
 
         static private double _Padding = 1.0;
         static public double Padding

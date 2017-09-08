@@ -12,12 +12,14 @@
     <Compile Include="$(MSBuildThisFileDirectory)App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Controls\Chart\AChartRenderer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\Template Controls\AutoGrid.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\Chart\Chart Data\ChartDataEvents.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\Template Controls\GeneralButton.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\Template Controls\GeneralLabel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\Template Controls\GeneralListView.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\Template Controls\GeneralPage.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Controls\Template Controls\GeneralRenderedView.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\Template Controls\GeneralTabbedPage.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\Template Controls\GeneralView.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\Multimeter\MathChart.cs" />
@@ -34,7 +36,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Peripherals\Bluetooth\Bluetooth.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\Buttons\BackButton.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\Chart\ChartMenu.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Controls\Chart\ChartView.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\Labelled Controls\LabelledBackButton.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\Labelled Controls\LabelledCheckbox.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\Chart\AxisLabel.cs" />

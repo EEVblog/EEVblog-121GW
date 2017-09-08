@@ -35,8 +35,16 @@ namespace rMultiplatform
             Transform = pFunction;
         }
     }
-    public class ChartData : IChartRenderer
+    public class ChartData : AChartRenderer
     {
+        public override int Layer
+        {
+            get
+            {
+                return 2;
+            }
+        }
+
         private Mutex DataMux = new Mutex();
         private DateTime DataStart = DateTime.Now;
 
@@ -77,13 +85,6 @@ namespace rMultiplatform
         }
 
         //
-        public int      Layer
-        {
-            get
-            {
-                return 2;
-            }
-        }
         public enum     ChartDataMode
         {
             eRolling,
@@ -170,7 +171,6 @@ namespace rMultiplatform
         public Range    HorozontalSpan;
         public Range    VerticalSpan;
 
-
         public delegate void ListChanged(List<Point> Data);
         public event ListChanged DataChanged;
         void DataChange()
@@ -206,7 +206,7 @@ namespace rMultiplatform
         ChartDataMode   Mode;
 
         //
-        public      ChartData (ChartDataMode pMode, string pHorzLabel, string pVertLabel, float pTimeSpan)
+        public ChartData(ChartDataMode pMode, string pHorzLabel, string pVertLabel, float pTimeSpan) : base(new List<Type>() { typeof(ChartAxis) })
         {
             Mode = pMode;
             TimeSpan = pTimeSpan;
@@ -238,6 +238,8 @@ namespace rMultiplatform
 
         public bool Draw (SKCanvas c)
         {
+
+
             if (Data.Count == 0)
                 return false;
             if (VerticalSpan == null)
@@ -253,13 +255,13 @@ namespace rMultiplatform
             ChartDataEventReturn x = null, y = null, temp;
             foreach (var axis in Registrants)
             {
-                if (        (temp = axis.ChartDataEvent(new ChartDataEventArgs(ChartAxis.AxisOrientation.Horizontal, horz), ref VisX)) != null)
+                if ((temp = axis.ChartDataEvent(new ChartDataEventArgs(ChartAxis.AxisOrientation.Horizontal, horz), ref VisX)) != null)
                 {
                     if (horz.Update)
                         axis.CalculateScales();
                     x = temp;
                 }
-                else if (   (temp = axis.ChartDataEvent(new ChartDataEventArgs(ChartAxis.AxisOrientation.Vertical, vert),   ref VisY)) != null)
+                else if ((temp = axis.ChartDataEvent(new ChartDataEventArgs(ChartAxis.AxisOrientation.Vertical, vert),   ref VisY)) != null)
                 {
                     if (vert.Update)
                         axis.CalculateScales();
@@ -337,7 +339,6 @@ namespace rMultiplatform
             Data.Add(new Point((float)ms_diff, (float)pPoint));
             DataChange();
         }
-
         public void SetVerticalRange(Range Vertical)
         {
             VerticalSpan.Set(Vertical);
@@ -425,50 +426,6 @@ namespace rMultiplatform
             if (reg)
                 Registrants.Add(axis);
             return true;
-        }
-        public List<Type> RequireRegistration()
-        {
-            var Types = new List<Type>();
-            Types.Add(typeof(ChartAxis));
-            return Types;
-        }
-        public void SetParentSize(double w, double h, double scale)
-        {
-            //Doesn't do anything
-        }
-
-        //For the sortability of layers
-        public int CompareTo(object obj)
-        {
-            if (obj is IChartRenderer)
-            {
-                var ob = obj as IChartRenderer;
-                var layer = ob.Layer;
-
-                if (layer > Layer)
-                    return -1;
-                else if (layer < Layer)
-                    return 1;
-                else
-                    return 0;
-            }
-            return 0;
-        }
-
-        private Chart Parent;
-        public bool RegisterParent(Object c)
-        {
-            if (c is Chart)
-            {
-                Parent = c as Chart;
-                return true;
-            }
-            return false;
-        }
-        public void InvalidateParent()
-        {
-            if (Parent != null)
-                Parent.InvalidateSurface();
         }
     }
 }

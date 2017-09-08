@@ -13,7 +13,7 @@ using System.Diagnostics;
 
 namespace rMultiplatform
 {
-    public class ChartAxis : CappedRange, IChartRenderer
+    public class ChartAxis : CappedRange, AChartRenderer
     {
         public delegate bool ChartAxisDrawEvent(ChartAxisDrawEventArgs o);
         public delegate bool ChartAxisEvent(Object o);
@@ -63,27 +63,6 @@ namespace rMultiplatform
         List<ChartAxisEvent>        AxisDataEvents;
         List<ChartAxisDrawEvent>    AxisDrawEvents;
         
-        //Parent properties
-        private ChartPadding _ParentPadding;
-        private ChartPadding ParentPadding
-        {
-            set
-            {
-                _ParentPadding = value;
-                CalculateScales();
-            }
-            get
-            {
-                return _ParentPadding;
-            }
-        }
-        private double      ParentWidth;
-        private double      ParentHeight;
-
-        //Privates
-        private SKPaint     MajorPaint;
-        private SKPaint     ColorPaint;
-        private SKPaint     MinorPaint;
         private SKPaint     MaskPaint;
 
         private float       SpaceWidth;
@@ -344,14 +323,6 @@ namespace rMultiplatform
             }
         }
 
-        public Color Color
-        {
-            set
-            {
-                MajorPaint.Color = value.ToSKColor();
-                MinorPaint.Color = value.ToSKColor();
-            }
-        }
         public enum AxisLock
         {
             eStart  = 0,
@@ -430,13 +401,24 @@ namespace rMultiplatform
             }
         }
 
-        public bool         ShowDataKey;
-
         //
-        float MajorTextSize = 12;
-        float MinorTextSize = 10;
         public ChartAxis (double MainTicks, double MinorTicks, double Minimum, double Maximum)
-            : base(Minimum, Maximum)
+            : base( Minimum, Maximum, 
+                    new List<Type>() { typeof(ChartPadding), typeof(ChartAxis), typeof(ChartData) },
+                    (object o) => 
+                    {
+                        if (o.GetType() == typeof(ChartData))
+                        {
+                            var d = o as ChartData;
+                            if (Orientation == AxisOrientation.Horizontal)
+                            {
+                                if (d.HorizontalLabel == Label)
+                                    AxisDataColors.Add(d.LineColor);
+                                //
+                                AxisDataRanges.Add(d.HorozontalSpan);
+                            }
+                        }
+                    }), 
         {
             ParentPadding = new ChartPadding(0);
 
@@ -444,32 +426,8 @@ namespace rMultiplatform
             this.MainTicks = MainTicks;
             this.MinorTicks = MinorTicks;
 
-            //
-            MinorPaint = new SKPaint();
-            MinorPaint.StrokeWidth = 1;
-            MinorPaint.StrokeCap = SKStrokeCap.Round;
-            MinorPaint.TextSize = MinorTextSize;
-            MinorPaint.IsAntialias = true;
-            MinorPaint.Typeface = SKTypeface.FromFamilyName("tahoma", SKTypefaceStyle.Normal);
-
-            MajorPaint = new SKPaint();
-            MajorPaint.StrokeWidth = 2;
-            MajorPaint.StrokeCap = SKStrokeCap.Round;
-            MajorPaint.TextSize = MajorTextSize;
-            MajorPaint.IsAntialias = true;
-            MajorPaint.Typeface = SKTypeface.FromFamilyName("tahoma", SKTypefaceStyle.Normal);
-
-            ColorPaint = new SKPaint();
-            ColorPaint.StrokeWidth = 4;
-            ColorPaint.IsAntialias = true;
-            ColorPaint.StrokeCap = SKStrokeCap.Round;
-            ColorPaint.TextSize = 10;
-
             MaskPaint = new SKPaint();
             MaskPaint.Color = Globals.BackgroundColor.ToSKColor();
-
-            //Setup unique color for axis
-            Color = Globals.TextColor;
 
             //Calculate the width of a space charater
             SpaceWidth = MajorPaint.MeasureText(" ");
@@ -488,7 +446,6 @@ namespace rMultiplatform
 
             //
             Rerange         = true;
-            ShowDataKey     = false;
         }
         public SKMatrix GetTransform()
         {
@@ -744,9 +701,9 @@ namespace rMultiplatform
             pth.AddPoly(pts, false);
             c.DrawTextOnPath(txt, pth, 0, hei / 2, MinorPaint);
         }
-        void DrawLabel      (ref SKCanvas c, float length)
+        void DrawLabel (ref SKCanvas c, float length)
         {
-            var hei = MajorPaint.TextSize;
+            var hei = MajorTextSize;
             if (hei > AxisLabelPadding)
                 AxisLabelPadding = hei + SpaceWidth;
 
@@ -811,46 +768,10 @@ namespace rMultiplatform
             //
             pth.Offset(xmakoffset, ymakoffset);
             pts = pth.Points;
-
-            //
-            DrawColors(ref c, ref pts);
-        }
-        void DrawColors (ref SKCanvas c, ref SKPoint[] p)
-        {
-            if (ShowDataKey)
-            {
-                if (p.Length > 2)
-                    throw (new Exception("Must contain two points."));
-
-                //
-                var pt1 = p[0];
-                var pt2 = p[1];
-                var dx  = pt2.X - pt1.X;
-                var dy  = pt2.Y - pt1.Y;
-
-                //
-                var inc = -1.0f;
-                var t = 0.0f;
-                for ( var i = 0; i < AxisDataColors.Count; i++ )
-                {
-                    var x = pt1.X + dx * t;
-                    var y = pt1.Y + dy * t;
-
-                    ColorPaint.IsStroke = true;
-                    ColorPaint.Color    = Globals.BackgroundColor.ToSKColor();
-                    c.DrawCircle(x, y, CircleRadius, ColorPaint);
-
-                    ColorPaint.IsStroke = false;
-                    ColorPaint.Color    = AxisDataColors[i];
-                    c.DrawCircle(x, y, CircleRadius, ColorPaint);
-
-                    t += inc;
-                }
-            }
         }
 
         //Draws the entire system
-        bool IChartRenderer.Draw (SKCanvas c)
+        bool Draw (SKCanvas c)
         {
             var redraw = false;
             if (Ready)
@@ -889,16 +810,10 @@ namespace rMultiplatform
             }
             return redraw;
         }
-        float Scale = 1.0f;
-        void IChartRenderer.SetParentSize( double w, double h, double scale )
+        public void ParentSizeAdjusted()
         {
-            Scale               = (float)scale;
-            MinorPaint.TextSize = MinorTextSize * Scale;
-            MajorPaint.TextSize = MajorTextSize * Scale;
-            SpaceWidth          = MajorPaint.MeasureText(" ");
-            TotalPadding        = 0;
-            ParentWidth         = w;
-            ParentHeight        = h;
+            SpaceWidth = MajorPaint.MeasureText(" ");
+            TotalPadding = 0;
             CalculateScales();
         }
 
@@ -931,46 +846,13 @@ namespace rMultiplatform
                     AxisDataRanges.Add(d.VerticalSpan);
                 }
             }
-
-            else if (o.GetType() == typeof(ChartPadding))
-                ParentPadding = o as ChartPadding;
-
             return true;
         }
         public List<Type> RequireRegistration()
         {
             var lst = new List<Type>();
-            lst.Add(typeof(ChartPadding));
-            lst.Add(typeof(ChartAxis));
-            lst.Add(typeof(ChartData));
+  
             return lst;
-        }
-        public int CompareTo(object obj)
-        {
-            if (obj is IChartRenderer)
-            {
-                var ob = obj as IChartRenderer;
-                var layer = ob.Layer;
-
-                if (layer > Layer)
-                    return -1;
-                else if (layer < Layer)
-                    return 1;
-                else
-                    return 0;
-            }
-            return 0;
-        }
-        public bool RegisterParent(object c)
-        {
-            Parent = c as Chart;
-            return false;
-        }
-
-        private Chart Parent;
-        public void InvalidateParent()
-        {
-            Parent.InvalidateSurface();
         }
     }
 }

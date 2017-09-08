@@ -23,7 +23,6 @@ namespace rMultiplatform
             ResetClicked?.Invoke(sender, e);
         }
 
-
         public ChartMenu(bool ShowSave = true, bool ShowReset = true)
         {
             //Add Relative Button

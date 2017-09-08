@@ -281,8 +281,8 @@ namespace rMultiplatform
 
             Plot = new Chart() { Padding = new ChartPadding(0.1f) };
             Plot.AddGrid(new ChartGrid());
-            Plot.AddAxis(HorizontalAxis = new ChartAxis(5, 5, 0, 20) { Label = x_label, Orientation = ChartAxis.AxisOrientation.Horizontal, LockToAxisLabel = y_label, LockAlignment = ChartAxis.AxisLock.eEnd, ShowDataKey = false });
-            Plot.AddAxis(VerticalAxis = new ChartAxis(5, 5, 0, 0) { Label = y_label, Orientation = ChartAxis.AxisOrientation.Vertical, LockToAxisLabel = x_label, LockAlignment = ChartAxis.AxisLock.eStart, ShowDataKey = false });
+            Plot.AddAxis(HorizontalAxis = new ChartAxis(5, 5, 0, 20) { Label = x_label, Orientation = ChartAxis.AxisOrientation.Horizontal, LockToAxisLabel = y_label, LockAlignment = ChartAxis.AxisLock.eEnd});
+            Plot.AddAxis(VerticalAxis = new ChartAxis(5, 5, 0, 0) { Label = y_label, Orientation = ChartAxis.AxisOrientation.Vertical, LockToAxisLabel = x_label, LockAlignment = ChartAxis.AxisLock.eStart});
             Plot.AddData(ChartData = new ChartData(ChartData.ChartDataMode.eRescaling, x_label, y_label, 10f));
             Plot.FullscreenClicked += Plot_FullscreenClicked;
 

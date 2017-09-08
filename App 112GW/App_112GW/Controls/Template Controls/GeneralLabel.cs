@@ -17,7 +17,7 @@ namespace rMultiplatform
             HorizontalOptions = LayoutOptions.CenterAndExpand;
             VerticalOptions = LayoutOptions.CenterAndExpand;
             TextColor = Globals.TextColor;
-            FontSize = Device.GetNamedSize(NamedSize.Large, typeof(Label));
+            FontSize = Globals.MinorFontSize;
         }
     }
 }

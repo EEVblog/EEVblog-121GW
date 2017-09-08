@@ -10,18 +10,9 @@ using System.Runtime.CompilerServices;
 
 namespace rMultiplatform
 {
-    public class ChartGrid : IChartRenderer
+    public class ChartGrid : AChartRenderer
     {
-        public delegate bool    ChartGridEvent(Object o);
-
-        private ChartPadding    ParentPadding;
-        private double          ParentWidth;
-        private double          ParentHeight;
-        public  bool            EnableMajorLines;
-        public  bool            EnableMinorLines;
-        public  SKPaint         MajorPaint;
-        public  SKPaint         MinorPaint;
-        public  int             Layer
+        public override int Layer
         {
             get
             {
@@ -29,33 +20,25 @@ namespace rMultiplatform
             }
         }
 
-        public                  ChartGrid()
+        public delegate bool    ChartGridEvent(Object o);
+
+        public  bool            EnableMajorLines;
+        public  bool            EnableMinorLines;
+        
+        public                  ChartGrid() : base( new List<Type>() { typeof(ChartAxis), typeof(ChartPadding) })
         {
-            ParentPadding = new ChartPadding(0);
-
-            MajorPaint = new SKPaint();
-            MajorPaint.StrokeWidth = 1;
-            MajorPaint.BlendMode = SKBlendMode.Src;
-            
-            MinorPaint = new SKPaint();
-            MinorPaint.StrokeWidth = 1;
-            MinorPaint.BlendMode = SKBlendMode.Src;
-
-            ParentWidth = 0;
-            ParentHeight = 0;
-
             EnableMajorLines = true;
             EnableMinorLines = false;
         }
-        public bool             Draw(SKCanvas c)
+        public override bool Draw(SKCanvas c)
         {
             return false;
         }
-        private void            DrawGridLine(SKCanvas c, Gridline o)
+        private void DrawGridLine(SKCanvas c, Gridline o)
         {
             o.Draw(c);
         }
-        public bool             ChartAxisEvent(Object o)
+        public bool ChartAxisEvent(Object o)
         {
             var     args = o as ChartAxisEventArgs;
             var     canvas = args.Canvas;
@@ -91,64 +74,6 @@ namespace rMultiplatform
 
             //There may be multiple grids?
             return false;
-        }
-        public void             SetParentSize(double w, double h, double scale)
-        {
-            ParentWidth = w;
-            ParentHeight = h;
-        }
-        public bool             Register(Object o)
-        {
-            if (o.GetType() == typeof(ChartAxis))          
-            {
-                var ax = (o as ChartAxis);
-                ChartAxis.ChartAxisEvent t = ChartAxisEvent;
-                ax.Register(t);
-
-
-                return true;
-            }
-            else if (o.GetType() == typeof(ChartPadding))
-            {
-                ParentPadding = o as ChartPadding;
-            }
-            return true;
-        }
-        public List<Type>       RequireRegistration()
-        {
-            var Types = new List<Type>();
-
-            //Types to register
-            Types.Add(typeof(ChartAxis));
-            Types.Add(typeof(ChartPadding));
-
-            //
-            return Types;
-        }
-        public int              CompareTo(object obj)
-        {
-            if (obj is IChartRenderer)
-            {
-                var ob = obj as IChartRenderer;
-                var layer = ob.Layer;
-
-                if (layer > Layer)
-                    return -1;
-                else if (layer < Layer)
-                    return 1;
-                else
-                    return 0;
-            }
-            return 0;
-        }
-
-        public bool             RegisterParent(object c)
-        {
-            return false;
-        }
-        public void             InvalidateParent()
-        {
-            throw new NotImplementedException();
         }
     }
 }

@@ -5,7 +5,7 @@ using SkiaSharp;
 
 namespace rMultiplatform
 {
-    public class ChartPadding : IChartRenderer
+    public class ChartPadding : AChartRenderer
     {
         //Inherited parent properties
         float ParentWidth;
