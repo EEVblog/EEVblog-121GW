@@ -29,6 +29,7 @@ namespace App_112GW
             var dev = new Multimeter(pDevice);
             AddDevice(dev);
             AddPage("[" + dev.ShortId + "]", dev);
+            CurrentPage = Children[Children.Count - 1];
         }
 
         public MainPage()

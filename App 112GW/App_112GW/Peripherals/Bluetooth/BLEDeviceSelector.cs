@@ -15,13 +15,12 @@ namespace rMultiplatform.BLE
 {
     public class BLEDeviceSelector : GeneralView
     {
-        private Loading Activity = new Loading();
+        private GeneralListView mDevices;
+        private Loading         Activity = new Loading("connecting");
 
         public delegate void DeviceConnected(IDeviceBLE pDevice);
         public event DeviceConnected Connected;
 
-
-        ListView listView;
         public void Reset()
         {
             try
@@ -48,7 +47,7 @@ namespace rMultiplatform.BLE
                 {
                     Content = null;
                     Activity.IsRunning = false;
-                    Content = listView;
+                    Content = mDevices;
                 }
             }
         }
@@ -56,7 +55,6 @@ namespace rMultiplatform.BLE
         public IClientBLE mClient;
         public BLEDeviceSelector()
         {
-
             //Reset BLE
             mClient = null;
             mClient = new ClientBLE(); 
@@ -70,12 +68,10 @@ namespace rMultiplatform.BLE
             template.SetValue   (TextCell.DetailColorProperty,  Globals.HighlightColor);
 
             //
-            listView = new ListView();
-            listView.HorizontalOptions  = LayoutOptions.Fill;
-            listView.VerticalOptions    = LayoutOptions.Fill;
-            listView.ItemTemplate       = template;
-            listView.ItemSelected       += OnSelection;
-            listView.ItemsSource        = mClient.ListDevices();
+            mDevices = new GeneralListView();
+            mDevices.ItemTemplate       = template;
+            mDevices.ItemSelected       += OnSelection;
+            mDevices.ItemsSource        = mClient.ListDevices();
 
             //
             IsBusy = false;

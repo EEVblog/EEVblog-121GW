@@ -37,6 +37,9 @@ namespace rMultiplatform
     }
     public class ChartData : IChartRenderer
     {
+        private Mutex DataMux = new Mutex();
+        private DateTime DataStart = DateTime.Now;
+
         public delegate ChartDataEventReturn ChartDataEvent(ChartDataEventArgs e, ref Range VisRange);
         public          List<ChartAxis> Registrants;
 
@@ -96,7 +99,7 @@ namespace rMultiplatform
         }
         private string  _HorizontalLabel;
         public string   HorizontalLabel
-{
+        {
             get
             {
                 return _HorizontalLabel + " ( " + _HorizontalUnits + " )";
@@ -189,8 +192,8 @@ namespace rMultiplatform
 
         public void CombineDataRanges(ChartData A, ChartData B)
         {
-            var horz = Range.Fit(A.HorozontalSpan, B.HorozontalSpan);
-            var vert = Range.Fit(A.VerticalSpan, B.VerticalSpan);
+            var horz = Range.Fit(A.HorozontalSpan,  B.HorozontalSpan);
+            var vert = Range.Fit(A.VerticalSpan,    B.VerticalSpan);
 
             VerticalSpan.Set(vert.Minimum, vert.Maximum);
             HorozontalSpan.Set(horz.Minimum, horz.Maximum);
@@ -217,7 +220,7 @@ namespace rMultiplatform
             Registrants = new List<ChartAxis>();
 
             //
-            var col = Globals.UniqueColor(new Range(0.7, 0.9));
+            var col = Globals.UniqueColor();
             DrawPaint = new SKPaint () { Color = col.ToSKColor(), IsStroke = true, StrokeWidth = 2, IsAntialias = true };
 
             //
@@ -278,7 +281,6 @@ namespace rMultiplatform
             if (DataEnd > Length || DataEnd < 0)
                 DataEnd = Length;
 
-
             if (Data.Count > 0)
             {
                 if (DataEnd > DataStart)
@@ -286,27 +288,6 @@ namespace rMultiplatform
                     var path = new SKPath();
                     var output = Data.GetRange(DataStart, (DataEnd - DataStart)).ToArray();
                     path.AddPoly(output, false);
-
-                    //Enable this to enable zoom to context.
-                    //if (DataEnd < Length - 1)
-                    //{
-                    //    bool set = true;
-                    //    double min = 0, max = 0;
-                    //    foreach (var pt in output)
-                    //    {
-                    //        if (set)
-                    //        {
-                    //            min = pt.Y;
-                    //            max = pt.X;
-                    //            set = false;
-                    //        }
-                    //        if (pt.Y > max)
-                    //            max = pt.Y;
-                    //        if (pt.Y < min)
-                    //            min = pt.Y;
-                    //    }
-                    //    SetVerticalRange(new Range(min, max));
-                    //}
 
                     var y_t = y.Transform();
                     var x_t = x.Transform();
@@ -320,8 +301,6 @@ namespace rMultiplatform
             return false;
         }
 
-        Mutex DataMux   = new Mutex();
-        DateTime DataStart  = DateTime.Now;
         public void Sample (double pPoint)
         {
             TimeSpan t_diff  = DateTime.Now.Subtract(DataStart);

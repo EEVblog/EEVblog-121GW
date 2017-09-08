@@ -220,8 +220,8 @@ namespace rMultiplatform
         }
         public void SetParentSize(double w, double h, double scale)
         {
-            ParentWidth = (float)w;
-            ParentHeight = (float)h;
+            ParentWidth     = (float)w;
+            ParentHeight    = (float)h;
         }
 
         private Chart Parent;
@@ -243,9 +243,9 @@ namespace rMultiplatform
             if (V < 0)
                 throw (new Exception("Padding cannot be negative"));
 
-            mLeft = V;
-            mRight = V;
-            mTop = V;
+            mLeft   = V;
+            mRight  = V;
+            mTop    = V;
             mBottom = V;
         }
         public ChartPadding(float L, float R, float T, float B)
@@ -253,9 +253,9 @@ namespace rMultiplatform
             if (L < 0 || R < 0 || T < 0 || B < 0)
                 throw (new Exception("Padding cannot be negative"));
 
-            mLeft = L;
-            mRight = R;
-            mTop = T;
+            mLeft   = L;
+            mRight  = R;
+            mTop    = T;
             mBottom = B;
         }
 
@@ -265,9 +265,9 @@ namespace rMultiplatform
             if (V < 0)
                 throw (new Exception("Padding cannot be negative"));
 
-            mLeft = (float)V;
-            mRight = (float)V;
-            mTop = (float)V;
+            mLeft   = (float)V;
+            mRight  = (float)V;
+            mTop    = (float)V;
             mBottom = (float)V;
         }
         public ChartPadding(double L, double R, double T, double B)
@@ -275,9 +275,9 @@ namespace rMultiplatform
             if (L < 0 || R < 0 || T < 0 || B < 0)
                 throw (new Exception("Padding cannot be negative"));
 
-            mLeft = (float)L;
-            mRight = (float)R;
-            mTop = (float)T;
+            mLeft   = (float)L;
+            mRight  = (float)R;
+            mTop    = (float)T;
             mBottom = (float)B;
         }
     }

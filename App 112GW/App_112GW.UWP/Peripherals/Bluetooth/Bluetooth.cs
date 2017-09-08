@@ -60,35 +60,6 @@ namespace rMultiplatform.BLE
                 Debug.WriteLine("Caught Error : private void DeviceWatcher_Updated(DeviceWatcher sender, DeviceInformationUpdate args)");
             }
         }
-        private void DeviceWatcher_Removed  (DeviceWatcher sender, DeviceInformationUpdate  args)
-        {
-            //This aborts device removal.
-            return;
-
-
-            try
-            {
-                if (sender != mDeviceWatcher)
-                    return;
-                if (mVisibleDevices == null)
-                    return;
-
-                MutexBlock(() =>
-                {
-                    var removed_id = args.Id;
-                    for (int i = 0; i < mVisibleDevices.Count; i++)
-                    {
-                        var item = mVisibleDevices[i];
-                        if (item.Id == removed_id)
-                            RunMainThread(() => { mVisibleDevices.Remove(item); });
-                    }
-                }, ((index++).ToString() + " Removed"));
-            }
-            catch
-            {
-                Debug.WriteLine("Caught Error : private void DeviceWatcher_Removed(DeviceWatcher sender, DeviceInformationUpdate  args)");
-            }
-        }
 
         private void ConnectionComplete( UnPairedDeviceBLE input )
         {
@@ -147,7 +118,6 @@ namespace rMultiplatform.BLE
             // Added, Updated and Removed are required to get all nearby devices
             mDeviceWatcher.Added    +=  DeviceWatcher_Added;
             mDeviceWatcher.Updated  +=  DeviceWatcher_Updated;
-            mDeviceWatcher.Removed  +=  DeviceWatcher_Removed;
 
             // Start the watcher.
             Start();
@@ -159,7 +129,6 @@ namespace rMultiplatform.BLE
                 // Unregister the event handlers.
                 mDeviceWatcher.Added    -=  DeviceWatcher_Added;
                 mDeviceWatcher.Updated  -=  DeviceWatcher_Updated;
-                mDeviceWatcher.Removed  -=  DeviceWatcher_Removed;
 
                 // Stop the watcher.
                 Stop();

@@ -28,7 +28,6 @@ namespace rMultiplatform
                 return _BorderWidth;
             }
         }
-
         static private double Brightness(Color A)
         {
             return A.Luminosity;
@@ -37,7 +36,6 @@ namespace rMultiplatform
         {
             return Math.Abs(Brightness(A) - Brightness(B));
         }
-
         static public Color HighlightColor
         {
             get
@@ -56,7 +54,6 @@ namespace rMultiplatform
                 return Color.Black;
             }
         }
-
         static public Color TextColor
         {
             get
@@ -75,7 +72,6 @@ namespace rMultiplatform
                 return Color.Black;
             }
         }
-
         static public Color FocusColor
         {
             get
@@ -94,7 +90,6 @@ namespace rMultiplatform
                 return Color.Black;
             }
         }
-
         static public Color BackgroundColor
         {
             get
@@ -113,7 +108,6 @@ namespace rMultiplatform
                 return Color.Black;
             }
         }
-
         static public Color BorderColor
         {
             get
@@ -134,7 +128,7 @@ namespace rMultiplatform
         }
 
 
-        static private double _Padding = 3.0;
+        static private double _Padding = 1.0;
         static public double Padding
         {
             get
@@ -146,8 +140,7 @@ namespace rMultiplatform
                 _Padding = value;
             }
         }
-
-        static public Color UniqueColor(rMultiplatform.Range ContrastRange)
+        static public Color UniqueColor(Range ContrastRange)
         {
             int maxtest = 0;
             while (maxtest++ < 10000)
@@ -162,6 +155,10 @@ namespace rMultiplatform
             }
 
             return Color.DodgerBlue;
+        }
+        static public Color UniqueColor()
+        {
+            return UniqueColor(new Range(0.6, 0.9));
         }
     };
 }

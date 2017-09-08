@@ -17,6 +17,7 @@ namespace rMultiplatform
 {
     public class MultimeterScreen : GeneralView
     {
+        static List<ILayer> mLayerCache;
         GeneralRenderer mRenderer;
         public void Disable()
         {
@@ -188,14 +189,14 @@ namespace rMultiplatform
             Clicked?.Invoke(this, e);
         }
 
-        Layers mOther;
+        private Layers mOther;
         public SKBitmap mLayer;
         public SKCanvas mCanvas;
-        Layers mBargraph;
-        List<Layers> mSegments;
-        static List<ILayer> mLayerCache;
-        List<Layers> mSubSegments;
-        int mDecimalPosition;
+        private Layers mBargraph;
+        private List<Layers> mSegments;
+        private List<Layers> mSubSegments;
+        private int mDecimalPosition;
+        private SKRect mDrawRectangle;
 
         protected virtual void LayerChange(object o, EventArgs e)
         {
@@ -731,16 +732,16 @@ namespace rMultiplatform
                         break;
                 }
 
-                SetOther("auto", value.StatusAuto);
-                SetOther("apo", value.StatusAPO);
+                SetOther("auto",    value.StatusAuto);
+                SetOther("apo",     value.StatusAPO);
                 SetOther("Battery", value.StatusBAT);
-                SetOther("Arrow", value.StatusArrow);
-                SetOther("REL", value.StatusRel);
-                SetOther("SubdB", value.StatusdBm);
+                SetOther("Arrow",   value.StatusArrow);
+                SetOther("REL",     value.StatusRel);
+                SetOther("SubdB",   value.StatusdBm);
 
                 //NOTE UNKONWN MIN/MAX bits config
-                SetOther("TEST", value.StatusTest);
-                SetOther("MEM", value.StatusMem > 0);
+                SetOther("TEST",    value.StatusTest);
+                SetOther("MEM",     value.StatusMem > 0);
 
                 switch (value.StatusAHold)
                 {
@@ -838,7 +839,6 @@ namespace rMultiplatform
         {
             CacheFunction?.Invoke((new ImageLayer(Image, filename) as ILayer));
 
-
             if (filename.Contains("seg"))
                 segments.AddLayer(Image, filename);
             else if (filename.Contains("sub"))
@@ -869,10 +869,10 @@ namespace rMultiplatform
         private void SetupTouch()
         {
             //Add the gesture recognizer 
-            mTouch = new rMultiplatform.Touch();
-            mTouch.Tap += MTouch_Tap;
-            mTouch.Pressed += MTouch_Pressed;
-            mTouch.Hover += MTouch_Hover;
+            mTouch          = new rMultiplatform.Touch();
+            mTouch.Tap      += MTouch_Tap;
+            mTouch.Pressed  += MTouch_Pressed;
+            mTouch.Hover    += MTouch_Hover;
             mTouch.Released += MTouch_Release;
             Effects.Add(mTouch);
         }
@@ -899,7 +899,6 @@ namespace rMultiplatform
             return (LayerAspect, LayerX, LayerY);
         }
 
-
         //Only maintains aspect ratio
         protected override void OnSizeAllocated(double width, double height)
         {
@@ -925,7 +924,6 @@ namespace rMultiplatform
             return base.OnMeasure(widthConstraint, heightConstraint);
         }
 
-        SKRect mDrawRectangle;
 
         private void Rescale()
         {

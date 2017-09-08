@@ -99,6 +99,18 @@ namespace rMultiplatform.BLE
             if (mConnectedDevices != null)
                 mConnectedDevices.Clear();
         }
+
+        public void RemoveDevice(string pId)
+        {
+            foreach (var dev in mVisibleDevices)
+                if (dev.Id == pId)
+                    mVisibleDevices.Remove(dev);
+        }
+        public void RemoveDevice(IDeviceBLE pInput)
+        {
+            RemoveDevice(pInput.Id);
+        }
+
         public void TriggerDeviceConnected(IDeviceBLE pInput)
         {
             RunMainThread(() =>
@@ -106,8 +118,11 @@ namespace rMultiplatform.BLE
                 Debug.WriteLine("Finished connecting to : " + pInput.Id);
                 if (mConnectedDevices != null)
                     mConnectedDevices.Add(pInput);
+
                 DeviceConnected?.Invoke(pInput);
+                RemoveDevice(pInput);
             });
+
         }
 
         public void MutexBlock(Action Function, string tag = "")
@@ -136,7 +151,7 @@ namespace rMultiplatform.BLE
             }
         }
 
-        public bool AddUniqueItem(IDeviceBLE pInput)
+        public bool AddUniqueItem ( IDeviceBLE pInput )
         {
             if (pInput != null)
             {
@@ -180,7 +195,7 @@ namespace rMultiplatform.BLE
                 {
                     Debug.WriteLine("Error Caught :  public void RunMainThread(Action input)");
                 }
-        });
+            });
         }
     }
 }

@@ -16,7 +16,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)Controls\Chart\Chart Data\ChartDataEvents.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\Template Controls\GeneralButton.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\Template Controls\GeneralLabel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Controls\Template Controls\GeneralListView.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\Template Controls\GeneralPage.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Controls\Template Controls\GeneralTabbedPage.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\Template Controls\GeneralView.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\Multimeter\MathChart.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\Template Controls\GeneralControl.cs" />
