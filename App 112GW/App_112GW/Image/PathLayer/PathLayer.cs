@@ -67,12 +67,12 @@ namespace rMultiplatform
 
             mDrawPaint = new SKPaint();
             mDrawPaint.BlendMode = SKBlendMode.Src;
-            mDrawPaint.Color = App_112GW.Globals.TextColor.ToSKColor();
+            mDrawPaint.Color = Globals.TextColor.ToSKColor();
             mDrawPaint.ColorFilter = SKColorFilter.CreateBlendMode(transparency, SKBlendMode.Dst);
 
             mUndrawPaint = new SKPaint();
             mUndrawPaint.BlendMode = SKBlendMode.Src;
-            mUndrawPaint.Color = App_112GW.Globals.BackgroundColor.ToSKColor();
+            mUndrawPaint.Color = Globals.BackgroundColor.ToSKColor();
             mUndrawPaint.ColorFilter = SKColorFilter.CreateBlendMode(transparency, SKBlendMode.Dst);
 
             Off();

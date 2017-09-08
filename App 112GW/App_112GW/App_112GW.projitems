@@ -12,12 +12,15 @@
     <Compile Include="$(MSBuildThisFileDirectory)App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
-    <Compile Include="$(MSBuildThisFileDirectory)Controls\AutoGrid.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Controls\Template Controls\AutoGrid.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\Chart\Chart Data\ChartDataEvents.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Controls\GeneralPage.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Controls\Template Controls\GeneralButton.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Controls\Template Controls\GeneralLabel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Controls\Template Controls\GeneralPage.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Controls\Template Controls\GeneralView.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\Multimeter\MathChart.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Controls\GeneralControl.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Controls\GeneralRenderer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Controls\Template Controls\GeneralControl.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Controls\Template Controls\GeneralRenderer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\Loading.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\Multimeter\SevenSegment.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\Settings\Settings.cs" />
@@ -58,7 +61,6 @@
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Controls\Multimeter\MultimeterScreen.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Image\SVGLayer\SVGLayer.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Peripherals\Multitouch.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Peripherals\Touch.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)General\VariableMonitor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Packet\Packet121GW.cs" />

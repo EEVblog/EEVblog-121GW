@@ -167,18 +167,7 @@ namespace rMultiplatform
         {
             _Label = Label;
             ControlView = Control;
-            LabelView = new Label()
-            {
-                TextColor  = Globals.TextColor,
-                Text = Label,
-                VerticalOptions = LayoutOptions.Fill,
-                VerticalTextAlignment = TextAlignment.Center
-            };
-
-            //Setup the default options
-            HorizontalOptions = LayoutOptions.Fill;
-            VerticalOptions = LayoutOptions.StartAndExpand;
-            Padding = 10;
+            LabelView = new GeneralLabel() { Text = Label };
 
             //Setup grid definitions
             RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Auto) });

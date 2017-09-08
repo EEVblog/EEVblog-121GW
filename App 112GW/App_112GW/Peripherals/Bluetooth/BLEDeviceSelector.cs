@@ -13,7 +13,7 @@ using Xamarin.Forms.PlatformConfiguration.WindowsSpecific;
 
 namespace rMultiplatform.BLE
 {
-    public class BLEDeviceSelector : ContentView
+    public class BLEDeviceSelector : GeneralView
     {
         private Loading Activity = new Loading();
 
@@ -79,9 +79,6 @@ namespace rMultiplatform.BLE
 
             //
             IsBusy = false;
-            BackgroundColor     = Globals.BackgroundColor;
-            HorizontalOptions   = LayoutOptions.Fill;
-            VerticalOptions     = LayoutOptions.Fill;
         }
 
         public void RemoveDevices()

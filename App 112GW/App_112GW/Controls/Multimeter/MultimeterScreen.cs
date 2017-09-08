@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 
 namespace rMultiplatform
 {
-    public class MultimeterScreen : ContentView
+    public class MultimeterScreen : GeneralView
     {
         GeneralRenderer mRenderer;
         public void Disable()
@@ -806,8 +806,7 @@ namespace rMultiplatform
         }
         bool ProcessImage(string filename, Polycurve Image)
         {
-            if (CacheFunction != null)
-                CacheFunction((new PathLayer(Image, filename) as ILayer));
+            CacheFunction?.Invoke((new PathLayer(Image, filename) as ILayer));
 
             if (filename.Contains("seg"))
                 segments.AddLayer(Image, filename);
@@ -822,8 +821,7 @@ namespace rMultiplatform
         }
         bool ProcessImage(string filename, SKSvg Image)
         {
-            if (CacheFunction != null)
-                CacheFunction((new SVGLayer(Image, filename) as ILayer));
+            CacheFunction?.Invoke((new SVGLayer(Image, filename) as ILayer));
 
             if (filename.Contains("seg"))
                 segments.AddLayer(Image, filename);
@@ -838,8 +836,7 @@ namespace rMultiplatform
         }
         bool ProcessImage(string filename, SKImage Image)
         {
-            if (CacheFunction != null)
-                CacheFunction((new ImageLayer(Image, filename) as ILayer));
+            CacheFunction?.Invoke((new ImageLayer(Image, filename) as ILayer));
 
 
             if (filename.Contains("seg"))
@@ -1037,10 +1034,6 @@ namespace rMultiplatform
         {
             Enable();
 
-            //Default size options
-            HorizontalOptions   = LayoutOptions.Fill;
-            VerticalOptions     = LayoutOptions.Fill;
-
             //New layer images
             mSegments       = new List<Layers>();
             mSubSegments    = new List<Layers>();
@@ -1115,8 +1108,6 @@ namespace rMultiplatform
             rendrect.Right = 0;
             rendrect.Left = 0;
             rendrect.Top = 0;
-
-            BackgroundColor = Globals.BackgroundColor;
         }
     }
 }

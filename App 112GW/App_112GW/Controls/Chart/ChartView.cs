@@ -3,7 +3,7 @@ using Xamarin.Forms;
 
 namespace rMultiplatform
 {
-    public partial class ChartView : ContentView
+    public partial class ChartView : GeneralView
     {
         private Chart       mChart;
 
@@ -48,9 +48,6 @@ namespace rMultiplatform
 
         public ChartView()
         {
-            VerticalOptions     =   LayoutOptions.Fill;
-            HorizontalOptions   =   LayoutOptions.Fill;
-
             //Add
             Content = (mChart = new Chart());
         }

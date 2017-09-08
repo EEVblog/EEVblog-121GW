@@ -9,35 +9,10 @@ namespace rMultiplatform
 {
     public class ChartMenu : AutoGrid
     {
-        private         Button          mSave;
-        private         Button          mReset;
+        private         GeneralButton   mSave;
+        private         GeneralButton   mReset;
         public event    EventHandler    SaveClicked;
         public event    EventHandler    ResetClicked;
-
-        public ChartMenu(bool ShowSave = true, bool ShowReset = true)
-        {
-            HorizontalOptions = LayoutOptions.Fill;
-            VerticalOptions = LayoutOptions.Fill;
-            Padding = 0;
-
-            //Add Relative Button
-            mReset = new Button() { Text = "Reset" };
-            mReset.Clicked += ButtonPress_Reset;
-
-            //Add Hold Button
-            mSave = new Button() { Text = "Save" };
-            mSave.Clicked += ButtonPress_Save;
-
-            //Define Grid
-            DefineGrid(2, 1);
-            if (ShowReset)
-                AutoAdd(mReset);
-            if (ShowSave)
-                AutoAdd(mSave);
-
-            //Background Color
-            BackgroundColor         = Globals.BackgroundColor;
-        }
 
         private void ButtonPress_Save (object sender, EventArgs e)
         {
@@ -46,6 +21,19 @@ namespace rMultiplatform
         private void ButtonPress_Reset(object sender, EventArgs e)
         {
             ResetClicked?.Invoke(sender, e);
+        }
+
+
+        public ChartMenu(bool ShowSave = true, bool ShowReset = true)
+        {
+            //Add Relative Button
+            mReset = new GeneralButton("Reset", ButtonPress_Reset);
+            mSave = new GeneralButton("Save", ButtonPress_Save);
+
+            //Define Grid
+            DefineGrid(2, 1);
+            if (ShowReset) AutoAdd(mReset);
+            if (ShowSave) AutoAdd(mSave);
         }
     }
 }

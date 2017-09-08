@@ -103,10 +103,6 @@ namespace rMultiplatform
 
         public Multimeter ( BLE.IDeviceBLE pDevice )
         {
-            HorizontalOptions = LayoutOptions.Fill;
-            VerticalOptions = LayoutOptions.Fill;
-
-            Padding = 0;
             mDevice = pDevice ?? throw new Exception("Multimeter must connect to a BLE device, not null.");
 
             mDevice.Change += ValueChanged;
@@ -138,7 +134,6 @@ namespace rMultiplatform
             AutoAdd(Plot);      FormatCurrentRow(GridUnitType.Star);
             AutoAdd(ChartMenu); FormatCurrentRow(GridUnitType.Auto);
 
-            BackgroundColor = Globals.BackgroundColor;
             SetView();
         }
 

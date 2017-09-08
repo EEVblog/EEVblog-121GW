@@ -76,5 +76,13 @@ namespace rMultiplatform
             AddView(view, x, y, width, height);
             return view;
         }
+
+        public AutoGrid()
+        {
+            BackgroundColor = Globals.BackgroundColor;
+            HorizontalOptions = LayoutOptions.Fill;
+            VerticalOptions = LayoutOptions.Fill;
+            Padding = Globals.Padding;
+        }
     }
 }

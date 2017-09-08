@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using Xamarin.Forms;
 
-namespace App_112GW
+namespace rMultiplatform
 {
     static public class Globals
     {
@@ -20,16 +20,16 @@ namespace App_112GW
             return output;
         }
 
-        static public double _BorderWidth;
+        static private int _BorderWidth = 3;
         static public int BorderWidth
         {
             get
             {
-                return 3;
+                return _BorderWidth;
             }
         }
 
-        static public double Brightness(Color A)
+        static private double Brightness(Color A)
         {
             return A.Luminosity;
         }
@@ -38,7 +38,6 @@ namespace App_112GW
             return Math.Abs(Brightness(A) - Brightness(B));
         }
 
-        static public Color _HighlightColor;
         static public Color HighlightColor
         {
             get
@@ -58,7 +57,6 @@ namespace App_112GW
             }
         }
 
-        static public Color _TextColor;
         static public Color TextColor
         {
             get
@@ -78,7 +76,6 @@ namespace App_112GW
             }
         }
 
-        static public Color _FocusColor;
         static public Color FocusColor
         {
             get
@@ -98,7 +95,6 @@ namespace App_112GW
             }
         }
 
-        static public Color _BackgroundColor;
         static public Color BackgroundColor
         {
             get
@@ -118,7 +114,6 @@ namespace App_112GW
             }
         }
 
-        static public Color _BorderColor;
         static public Color BorderColor
         {
             get
@@ -135,6 +130,20 @@ namespace App_112GW
                         return Color.FromHex("#292F33");
                 }
                 return Color.Black;
+            }
+        }
+
+
+        static private double _Padding = 3.0;
+        static public double Padding
+        {
+            get
+            {
+                return _Padding;
+            }
+            set
+            {
+                _Padding = value;
             }
         }
 

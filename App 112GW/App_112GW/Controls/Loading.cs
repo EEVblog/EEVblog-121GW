@@ -10,7 +10,7 @@ using System.Threading;
 
 namespace rMultiplatform
 {
-    class Loading : ContentView
+    class Loading : GeneralView
     {
         private TimeSpan    Now     = new TimeSpan(0, 0, 0, 0, 0);
         private TimeSpan    Period  = new TimeSpan(0, 0, 0, 0, 100);
@@ -19,13 +19,7 @@ namespace rMultiplatform
         const string dots_string = ".................";
         private int dots = 0;
 
-        private Label LoadingText = new Label()
-        {
-            TextColor = Globals.TextColor,
-            HorizontalOptions = LayoutOptions.CenterAndExpand,
-            VerticalOptions = LayoutOptions.CenterAndExpand,
-            FontSize = Device.GetNamedSize(NamedSize.Large, typeof(Label))
-        };
+        private GeneralLabel LoadingText = new GeneralLabel();
         private void Update()
         {
             Device.BeginInvokeOnMainThread(() =>
@@ -46,9 +40,6 @@ namespace rMultiplatform
 
         public Loading()
         {
-            BackgroundColor = Globals.BackgroundColor;
-            HorizontalOptions = LayoutOptions.FillAndExpand;
-            VerticalOptions = LayoutOptions.FillAndExpand;
             Updater = new Timer((obj) => { Update(); }, null, Now, Period);
             Content = LoadingText;
         }

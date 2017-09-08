@@ -11,7 +11,7 @@ using SkiaSharp.Views.Forms;
 using App_112GW;
 namespace rMultiplatform
 {
-    public class GeneralControl : ContentView
+    public class GeneralControl : GeneralView
     {
         GeneralRenderer mRenderer;
         public void Disable()
@@ -162,9 +162,6 @@ namespace rMultiplatform
         
         public GeneralControl(SKPoint[] pPoints)
         {
-            HorizontalOptions = LayoutOptions.Start;
-            VerticalOptions = LayoutOptions.Fill;
-
             mPoints = pPoints;
 
             IdleStyle = new SKPaint();
@@ -187,7 +184,6 @@ namespace rMultiplatform
             PressStyle.IsAntialias = true;
             HoverStyle.IsAntialias = true;
 
-            BackgroundColor = Globals.BackgroundColor.ToSKColor();
             BorderWidth = Globals.BorderWidth;
             PressColor = Globals.FocusColor.ToSKColor();
             HoverColor = Globals.HighlightColor.ToSKColor();
@@ -201,6 +197,7 @@ namespace rMultiplatform
             scaledpoints = new SKPoint[3];
 
             State = eControlInputState.eNone;
+            Padding = Globals.Padding;
         }
         public void HidePoints()
         {

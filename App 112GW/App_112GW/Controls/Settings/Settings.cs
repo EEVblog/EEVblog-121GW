@@ -16,14 +16,13 @@ namespace rMultiplatform
         public event AddBluetoothDevice AddDevice;
 
         private BLEDeviceSelector BLESelectDevice = new BLEDeviceSelector();
-        private Button ButtonLeft   = new Button();
-        private Button ButtonRight  = new Button();
-        private void NoAction(object o, EventArgs e) { }
+        private GeneralButton ButtonLeft;
+        private GeneralButton ButtonRight;
 
         public Settings ()
         {
-            HorizontalOptions = LayoutOptions.Fill;
-            VerticalOptions = LayoutOptions.Fill;
+            ButtonLeft = new GeneralButton("", ButtonLeft_Clicked);
+            ButtonRight = new GeneralButton("", ButtonRight_Clicked);
 
             //Setup connected event
             DefineGrid(2, 2);
@@ -31,23 +30,16 @@ namespace rMultiplatform
             //Setup default display
             AutoAdd(BLESelectDevice, 2);
             FormatCurrentRow(GridUnitType.Star);
-
+            
             AutoAdd(ButtonLeft);
             AutoAdd(ButtonRight);
             FormatCurrentRow(GridUnitType.Auto);
-
-            //
-            BLESelectDevice.Connected += Connected;
-            ButtonLeft.Clicked += ButtonLeft_Clicked;
-            ButtonRight.Clicked += ButtonRight_Clicked;
-
-            //
+            
             ClearRightButton();
             ClearLeftButton();
 
-            //
             SetLeftButton("Refresh", RefreshDevices);
-            BackgroundColor = Globals.BackgroundColor;
+            BLESelectDevice.Connected += Connected;
         }
 
         private void RefreshDevices(object sender, EventArgs e)
@@ -134,13 +126,11 @@ namespace rMultiplatform
         public void ClearRightButton()
         {
             _RightButtonEvent = null;
-            RightButtonEvent += NoAction;
             ButtonRight.IsVisible = false;
         }
         public void ClearLeftButton()
         {
             _LeftButtonEvent = null;
-            LeftButtonEvent += NoAction;
             ButtonLeft.IsVisible = false;
         }
     }

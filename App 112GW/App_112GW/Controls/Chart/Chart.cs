@@ -29,7 +29,7 @@ namespace rMultiplatform
         void InvalidateParent();
     };
 
-    public class Chart : ContentView
+    public class Chart : GeneralView
     {
         GeneralRenderer mRenderer;
         public void Disable()
@@ -290,10 +290,6 @@ namespace rMultiplatform
         {
             Enable();
 
-            //Must always fill parent container
-            HorizontalOptions       = LayoutOptions.Fill;
-            VerticalOptions         = LayoutOptions.Fill;
-
             //Setup chart elements
             mDrawPaint              = new SKPaint();
             ChartElements           = new List<IChartRenderer>();
@@ -308,7 +304,6 @@ namespace rMultiplatform
 
             //Setup touch input
             SetupTouch();
-            BackgroundColor = Globals.BackgroundColor;
         }
     }
 }

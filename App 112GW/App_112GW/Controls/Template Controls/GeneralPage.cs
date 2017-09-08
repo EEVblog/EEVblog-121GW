@@ -10,9 +10,10 @@ namespace rMultiplatform
     {
         public GeneralPage(string pTitle, View pContent)
         {
-            Title = pTitle;
-            Content = pContent;
-            Padding = 0;
+            Title           = pTitle;
+            Content         = pContent;
+            Padding         = Globals.Padding;
+            BackgroundColor = Globals.BackgroundColor;
         }
     }
 }

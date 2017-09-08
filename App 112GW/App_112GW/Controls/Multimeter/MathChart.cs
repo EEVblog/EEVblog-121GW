@@ -270,12 +270,6 @@ namespace rMultiplatform
 
         public MathChart()
         {
-            //Basic default constants, these should be globalised eventually
-            HorizontalOptions = LayoutOptions.Fill;
-            VerticalOptions = LayoutOptions.Fill;
-            Padding = 0;
-            BackgroundColor = Globals.BackgroundColor;
-
             //Setup listviews
             Menu = new ChartMenu(true, false);
             Menu.SaveClicked += Menu_SaveClicked;
