@@ -9,7 +9,6 @@ namespace rMultiplatform
         public static float SpaceWidth = MajorPaint.MeasureText(" ");
         public float        Value;
 
-
         public static bool  ShowTick        { get; set; }
         public static bool  ShowMajorLabel  { get; set; }
         public static bool  ShowGridline    { get; set; }
@@ -48,9 +47,9 @@ namespace rMultiplatform
             }
         }
 
-        protected abstract (float x, float y) TickStart { get; }
-        protected abstract (float x, float y) TickEnd   { get; }
-        protected abstract (SKPoint x, SKPoint y) LabelLine(string Text);
+        protected abstract (float x, float y)       TickStart { get; }
+        protected abstract (float x, float y)       TickEnd   { get; }
+        protected abstract (SKPoint x, SKPoint y)   LabelLine(string Text);
 
         public void Draw(SKCanvas Canvas)
         {
@@ -60,6 +59,11 @@ namespace rMultiplatform
             if (ShowTick)
             {
                 Canvas.DrawLine(start_x, start_y, end_x, end_y, MajorPaint);
+
+                if ()
+                {
+
+                }
                 if (ShowMajorLabel)
                 {
                     var txt = SIPrefix.ToString(Value);
