@@ -88,7 +88,6 @@ namespace rMultiplatform
             }
         }
 
-
         //Used in the creation of an axis pair
         public float Scaling
         {
