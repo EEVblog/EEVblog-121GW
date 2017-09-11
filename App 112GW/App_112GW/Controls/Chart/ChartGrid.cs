@@ -48,7 +48,7 @@ namespace rMultiplatform
             else
                 (p1, p2) = ParentPadding.GetHorozontalLine((float)args.Position);
 
-            switch (args.EventType)     
+            switch (args.EventType)
             {
                 case ChartAxisEventArgs.ChartAxisEventType.DrawMajorTick:
                     if (EnableMajorLines)

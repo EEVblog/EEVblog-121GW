@@ -4,7 +4,44 @@ using System.Text;
 
 namespace rMultiplatform
 {
-    public class CappedRange
+    interface ICappedRange
+    {
+        double Minimum
+        {
+            get;
+            set;
+        }
+        double Maximum
+        {
+            get;
+            set;
+        }
+        double Distance
+        {
+            get;
+        }
+        void SetBoundary(Range Input);
+
+        void Reset();
+
+        void Set            (Range Input);
+        void Set            (double ValA, double ValB);
+
+        bool InRange        (double Value);
+        void AddToMaximum   (double Value);
+        void AddToMinimum   (double Value);
+
+        void ShiftRange     (double Value);
+        void ShiftFit       (double Value);
+        void ExpandFit      (double Value);
+        void Pan            (double Amount);
+        void Zoom           (double Amount, double About);
+
+        Range GetRange();
+        Range Combine(List<Range> mRanges);
+    }
+
+    public class CappedRange: ICappedRange
     {
         private enum Current
         {
@@ -22,7 +59,7 @@ namespace rMultiplatform
             return B - A;
         }
 
-        public double   Minimum
+        public double Minimum
         {
             get
             {
@@ -54,7 +91,7 @@ namespace rMultiplatform
                 }
             }
         }
-        public double   Maximum
+        public double Maximum
         {
             get
             {
@@ -86,7 +123,7 @@ namespace rMultiplatform
                 }
             }
         }
-        public double   Distance
+        public double Distance
         {
             get
             {
@@ -131,7 +168,7 @@ namespace rMultiplatform
             Visible.Minimum = Input.Minimum;
             Visible.Maximum = Input.Maximum;
         }
-        public void     Set(double ValA, double ValB)
+        public void Set(double ValA, double ValB)
         {
             if (ValA > ValB)    Set(new Range(ValB, ValA));
             else                Set(new Range(ValA, ValB));

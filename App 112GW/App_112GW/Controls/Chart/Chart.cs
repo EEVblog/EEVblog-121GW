@@ -68,13 +68,13 @@ namespace rMultiplatform
         {
             add
             {
-                foreach (IChartRenderer item in ChartElements)
+                foreach (var item in ChartElements)
                     if (item.GetType() == typeof(ChartData))
                         (item as ChartData).DataChanged += value;
             }
             remove
             {
-                foreach (IChartRenderer item in ChartElements)
+                foreach (var item in ChartElements)
                     if (item.GetType() == typeof(ChartData))
                         (item as ChartData).DataChanged -= value;
             }
@@ -88,15 +88,15 @@ namespace rMultiplatform
         }
         public void     AddAxis(ChartAxis pInput)
         {
-            AddElement(pInput as IChartRenderer);
+            AddElement(pInput as AChartRenderer);
         }
         public void     AddData(ChartData pInput)
         {
-            AddElement(pInput as IChartRenderer);
+            AddElement(pInput as AChartRenderer);
         }
         public void     AddGrid(ChartGrid pInput)
         {
-            AddElement(pInput as IChartRenderer);
+            AddElement(pInput as AChartRenderer);
         }
 
         //Resizes the control and registers resize with parents
@@ -130,7 +130,7 @@ namespace rMultiplatform
                 Element.RegisterParent(this);
 
                 //Get list of types to register
-                var Types = Element.RequireRegistration();
+                var Types = Element.RequireRegistration;
                 if (Types == null)
                     continue;
 
@@ -153,7 +153,7 @@ namespace rMultiplatform
             //As base class initialises first the onSizeAllocated can be triggered before padding is intiialised
             if (Padding != null)
                 Padding.SetParentSize(Size.Width, Size.Height, Size.Width / Width);
-            foreach (IChartRenderer Element in ChartElements)
+            foreach (var Element in ChartElements)
                 Element.SetParentSize(Size.Width, Size.Height, Size.Width / Width);
         }
         void PaintSurface(SKCanvas canvas, SKSize dimension)
@@ -237,10 +237,9 @@ namespace rMultiplatform
         {
             FullscreenClicked?.Invoke(sender, EventArgs.Empty);
         }
-
         private void MTouch_Pan     (object sender, TouchPanActionEventArgs args)
         {
-            foreach (IChartRenderer Element in ChartElements)
+            foreach (var Element in ChartElements)
                 if (Element.GetType() == typeof(ChartAxis))
                 {
                     var element = (Element as ChartAxis);
@@ -254,7 +253,7 @@ namespace rMultiplatform
             var zoomY = (float)args.Pinch.ZoomY;
             var zoomCenter = args.Pinch.Center;
 
-            foreach (IChartRenderer Element in ChartElements)
+            foreach (var Element in ChartElements)
                 if (Element.GetType() == typeof(ChartAxis))
                 {
                     var element = (Element as ChartAxis);
@@ -275,7 +274,7 @@ namespace rMultiplatform
 
             //Setup chart elements
             mDrawPaint              = new SKPaint();
-            ChartElements           = new List<IChartRenderer>();
+            ChartElements           = new List<AChartRenderer>();
 
             //Setup the padding object
             ChartElements.Add(new ChartPadding(0));

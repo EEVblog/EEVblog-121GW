@@ -43,9 +43,9 @@ namespace rMultiplatform
                 }
 
                 if (RegistrationFilter == null)
-                    RequireRegistration.Add(o.GetType());
+                    RequireRegistration?.Add(o.GetType());
                 else if (RegistrationFilter(o))
-                    RequireRegistration.Add(o.GetType());
+                    RequireRegistration?.Add(o.GetType());
             }
         }
         public Chart Parent { get; private set; }
@@ -175,10 +175,10 @@ namespace rMultiplatform
             }
         }
 
-        public AChartRenderer(List<Type> pRegisteredTypes, RegisterFilter pRegisterFilter = null)
+        public AChartRenderer(List<Type> pRegisteredTypes = null)
         {
             RequireRegistration = pRegisteredTypes;
-            RegistrationFilter = pRegisterFilter;
+            RegistrationFilter = null;
         }
     };
 }

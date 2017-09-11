@@ -13,28 +13,97 @@ using System.Diagnostics;
 
 namespace rMultiplatform
 {
-    public class ChartAxis : CappedRange, AChartRenderer
+    public class ChartAxis : AChartRenderer, ICappedRange
     {
+        private CappedRange MyRange;
+        //Fowarding functions for CappedRange
+#region
+        public void SetBoundary(Range Input)
+        {
+            MyRange.SetBoundary(Input);
+            CalculateScales();
+        }
+        public void Set(Range Input)
+        {
+            MyRange.SetBoundary(Input);
+            CalculateScales();
+        }
+        public void Set(double ValA, double ValB)
+        {
+            MyRange.Set(ValA, ValB);
+            CalculateScales();
+        }
+        public bool InRange(double Value)
+        {
+            return MyRange.InRange(Value);
+        }
+        public void AddToMaximum(double Value)
+        {
+            MyRange.AddToMaximum(Value);
+        }
+        public void AddToMinimum(double Value)
+        {
+            MyRange.AddToMinimum(Value);
+        }
+        public void ShiftRange(double Value)
+        {
+            MyRange.ShiftRange(Value);
+        }
+        public void ShiftFit(double Value)
+        {
+            MyRange.ShiftFit(Value);
+        }
+        public void ExpandFit(double Value)
+        {
+            MyRange.ExpandFit(Value);
+        }
+        public void Pan(double Amount)
+        {
+            MyRange.Pan(Amount);
+        }
+        public void Zoom(double Amount, double About)
+        {
+            MyRange.Zoom(Amount, About);
+        }
+        public Range GetRange()
+        {
+            return MyRange.GetRange();
+        }
+        public Range Combine(List<Range> mRanges)
+        {
+            return MyRange.Combine(mRanges);
+        }
+
+        public double Minimum { get { return MyRange.Minimum; } set { MyRange.Minimum = value; } }
+        public double Maximum { get { return MyRange.Maximum; } set { MyRange.Maximum = value; } }
+        public double Distance { get { return MyRange.Distance; }}
+        #endregion
+        //Render priority via layering
+        public override int Layer
+        {
+            get
+            {
+                return 3;
+            }
+        }
+
+
         public delegate bool ChartAxisDrawEvent(ChartAxisDrawEventArgs o);
         public delegate bool ChartAxisEvent(Object o);
 
-        public new void Reset()
+        public void Reset()
         {
-            base.Reset();
+            MyRange.Reset();
             CalculateScales();
             InvalidateParent();
         }
 
-        double Dist (double A, double B)
-        {
-            return (A > B) ? (A - B) : (B - A);
-        }
-        public void Pan(double X, double Y)
+        public void Pan (double X, double Y)
         {
             double dist = 1.0f;
 
             dist = -GetScalePoint((Orientation == AxisOrientation.Vertical) ? Y : X);
-            base.Pan(dist);
+            Pan(dist);
             CalculateScales();
             InvalidateParent();
         }
@@ -53,7 +122,7 @@ namespace rMultiplatform
                 about = GetPoint(About.X);
             }
 
-            base.Zoom(zoom, about);
+            Zoom(zoom, about);
             CalculateScales();
             InvalidateParent();
         }
@@ -69,7 +138,7 @@ namespace rMultiplatform
         private double      MainTickDrawDistance;
         private double      MinorTickDrawDistance;
         private bool        Ready = false;
-        public void CalculateScales()
+        public void         CalculateScales()
         {
             var rangesize = Distance;
             if (rangesize > 0)
@@ -92,7 +161,7 @@ namespace rMultiplatform
         }
 
         //Properties
-        private AxisLabel _Label = new AxisLabel("Unknown (none)");
+        private AxisLabel   _Label = new AxisLabel("Unknown (none)");
         public string       Label
         {
             get
@@ -161,24 +230,21 @@ namespace rMultiplatform
             }
         }
 
-        public enum         AxisDirection
+        public enum AxisDirection
         {
-            Standard,
-            Inverted
+            Standard, Inverted
         }
         public enum AxisOrientation
         {
-            Vertical,
-            Horizontal
+            Vertical, Horizontal
         }
-        public              AxisDirection       Direction
+        public AxisDirection Direction
         {
             get; set;
         }
-        public              AxisOrientation     Orientation
+        public AxisOrientation Orientation
         {
-            get;
-            set;
+            get; set;
         }
 
         private double      VisualScale
@@ -315,13 +381,6 @@ namespace rMultiplatform
                 _Rerange = value;
             }
         }
-        public int          Layer
-        {
-            get
-            {
-                return 3;
-            }
-        }
 
         public enum AxisLock
         {
@@ -365,29 +424,27 @@ namespace rMultiplatform
         }
 
         private float       _MajorTickLineSize;
+        private float       _MinorTickLineSize;
         public float        MajorTickLineSize
         {
             set
             {
                 _MajorTickLineSize = value;
+                _MinorTickLineSize = value / 2;
             }
             get
             {
                 return _MajorTickLineSize;
             }
         }
-        private float       _MinorTickLineSize;
         public float        MinorTickLineSize
         {
-            set
-            {
-                _MinorTickLineSize = value;
-            }
             get
             {
                 return _MinorTickLineSize;
             }
         }
+
         private float       _CircleRadius;
         public float        CircleRadius
         {
@@ -401,26 +458,25 @@ namespace rMultiplatform
             }
         }
 
+
         //
-        public ChartAxis (double MainTicks, double MinorTicks, double Minimum, double Maximum)
-            : base( Minimum, Maximum, 
-                    new List<Type>() { typeof(ChartPadding), typeof(ChartAxis), typeof(ChartData) },
-                    (object o) => 
-                    {
-                        if (o.GetType() == typeof(ChartData))
-                        {
-                            var d = o as ChartData;
-                            if (Orientation == AxisOrientation.Horizontal)
-                            {
-                                if (d.HorizontalLabel == Label)
-                                    AxisDataColors.Add(d.LineColor);
-                                //
-                                AxisDataRanges.Add(d.HorozontalSpan);
-                            }
-                        }
-                    }), 
+        public ChartAxis (double MainTicks, double MinorTicks, double pMinimum, double pMaximum)
+            : base( new List<Type>() { typeof(ChartPadding), typeof(ChartAxis), typeof(ChartData) })
         {
-            ParentPadding = new ChartPadding(0);
+            MyRange = new CappedRange(pMinimum, pMaximum);
+
+            //This filters when what children are added to this instance of ChartAxis
+            RegistrationFilter = (
+                (object o) => 
+                {
+                    if (o.GetType() == typeof(ChartData))
+                    {
+                        var d = o as ChartData;
+                        var axis_label = (Orientation == AxisOrientation.Horizontal) ? d.HorizontalLabel : d.VerticalLabel;
+                        return (Label == axis_label);
+                    }
+                    return false;
+                });
 
             //Setup divisions
             this.MainTicks = MainTicks;
@@ -436,7 +492,6 @@ namespace rMultiplatform
             AxisLocation = 0.5;
             CircleRadius = SpaceWidth * 2;
             MajorTickLineSize = 5;
-            MinorTickLineSize = 3;
 
             //
             AxisDrawEvents  = new List<ChartAxisDrawEvent>();
@@ -447,6 +502,8 @@ namespace rMultiplatform
             //
             Rerange         = true;
         }
+
+
         public SKMatrix GetTransform()
         {
             var scale = AxisSize / Distance;
@@ -527,18 +584,12 @@ namespace rMultiplatform
             if (e.Orientation == Orientation)
             {
                 VisRange = GetRange();
-                base.SetBoundary(Combine(AxisDataRanges));
+                SetBoundary(Combine(AxisDataRanges));
                 return new ChartDataEventReturn(GetTransform);
             }
             return null;
         }
 
-        public new void Set(Range Input)
-        {
-            base.SetBoundary(Input);
-            CalculateScales();
-        }
-        
         public bool ChartDrawEvent (ChartAxisDrawEventArgs e)
         {
             //No lock position set
@@ -580,20 +631,20 @@ namespace rMultiplatform
             switch (Orientation)      
             {
                 case AxisOrientation.Vertical:
-                    c.DrawLine(
+                    c.DrawLine (
                         _AxisLocation - length, //x1
                         Position,               //y1
                         _AxisLocation + length, //x2
                         Position,               //y2
-                        TickPaint);
+                        TickPaint );
                     break;
                 case AxisOrientation.Horizontal:
-                    c.DrawLine(
+                    c.DrawLine (
                         Position,               //x1
                         _AxisLocation - length, //y1
                         Position,               //x2
                         _AxisLocation + length, //y2
-                        TickPaint);
+                        TickPaint );
                     break;
                 default:
                     break;
@@ -602,14 +653,13 @@ namespace rMultiplatform
         
         void DrawMajorTick (ref SKCanvas c, float Position, int index)
         {
-            SendEvent(ref c, MajorPaint.Color, Position, index, ChartAxisEventArgs.ChartAxisEventType.DrawMajorTick);
-            DrawTick(ref c, Position, MajorTickLineSize, MajorPaint);
+            SendEvent   (ref c, MajorPaint.Color, Position, index, ChartAxisEventArgs.ChartAxisEventType.DrawMajorTick);
+            DrawTick    (ref c, Position, MajorTickLineSize, MajorPaint);
         }
-        
         void DrawMinorTick (ref SKCanvas c, float Position)
         {
-            SendEvent(ref c, MinorPaint.Color, Position, 0, ChartAxisEventArgs.ChartAxisEventType.DrawMinorTick);
-            DrawTick(ref c, Position, MinorTickLineSize, MinorPaint);
+            SendEvent   (ref c, MinorPaint.Color, Position, 0, ChartAxisEventArgs.ChartAxisEventType.DrawMinorTick);
+            DrawTick    (ref c, Position, MinorTickLineSize, MinorPaint);
         }
 
         float   _LabelPadding = 0;
@@ -771,7 +821,7 @@ namespace rMultiplatform
         }
 
         //Draws the entire system
-        bool Draw (SKCanvas c)
+        public override bool Draw(SKCanvas c)
         {
             var redraw = false;
             if (Ready)
@@ -810,7 +860,7 @@ namespace rMultiplatform
             }
             return redraw;
         }
-        public void ParentSizeAdjusted()
+        public override void ParentSizeAdjusted()
         {
             SpaceWidth = MajorPaint.MeasureText(" ");
             TotalPadding = 0;
@@ -818,41 +868,34 @@ namespace rMultiplatform
         }
 
         //Required 
-        public bool Register( Object o )
-        {
-            if      (o.GetType() == typeof(ChartAxisEvent))
-                AxisDataEvents.Add(o as ChartAxisEvent);
-
-            else if (o.GetType() == typeof(ChartAxis))
-            {
-                var v = o as ChartAxis;
-                AxisDrawEvents.Add(v.ChartDrawEvent);
-            }
-            else if (o.GetType() == typeof(ChartData))
-            {
-                var d = o as ChartData;
-                if (Orientation == AxisOrientation.Horizontal)
-                {
-                    if (d.HorizontalLabel == Label)
-                        AxisDataColors.Add(d.LineColor);
-                    //
-                    AxisDataRanges.Add(d.HorozontalSpan);
-                }
-                else
-                {
-                    if (d.VerticalLabel == Label)
-                        AxisDataColors.Add(d.LineColor);
-                    //
-                    AxisDataRanges.Add(d.VerticalSpan);
-                }
-            }
-            return true;
-        }
-        public List<Type> RequireRegistration()
-        {
-            var lst = new List<Type>();
-  
-            return lst;
-        }
+        //public override bool Register( Object o )
+        //{
+        //    if      (o.GetType() == typeof(ChartAxisEvent))
+        //        AxisDataEvents.Add(o as ChartAxisEvent);
+        //    else if (o.GetType() == typeof(ChartAxis))
+        //    {
+        //        var v = o as ChartAxis;
+        //        AxisDrawEvents.Add(v.ChartDrawEvent);
+        //    }
+        //    else if (o.GetType() == typeof(ChartData))
+        //    {
+        //        var d = o as ChartData;
+        //        if (Orientation == AxisOrientation.Horizontal)
+        //        {
+        //            if (d.HorizontalLabel == Label)
+        //                AxisDataColors.Add(d.LineColor);
+        //            //
+        //            AxisDataRanges.Add(d.HorozontalSpan);
+        //        }
+        //        else
+        //        {
+        //            if (d.VerticalLabel == Label)
+        //                AxisDataColors.Add(d.LineColor);
+        //            //
+        //            AxisDataRanges.Add(d.VerticalSpan);
+        //        }
+        //    }
+        //    return true;
+        //}
     }
 }

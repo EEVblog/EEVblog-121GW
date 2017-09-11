@@ -18,7 +18,6 @@ namespace rMultiplatform
                 return SKTypeface.FromFamilyName("tahoma", SKTypefaceStyle.Normal);
             }
         }
-
         static public float MajorFontSize
         {
             get

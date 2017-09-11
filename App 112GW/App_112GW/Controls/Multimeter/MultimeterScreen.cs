@@ -704,11 +704,11 @@ namespace rMultiplatform
                     case 0:
                         break;
                     case 1:
-                        SetOther("HOLD", true);
-                        SetOther("A-", true);
+                        SetOther("HOLD",    true);
+                        SetOther("A-",      true);
                         break;
                     case 2:
-                        SetOther("HOLD", true);
+                        SetOther("HOLD",    true);
                         break;
                 }
                 switch (value.StatusMinMax)
@@ -716,18 +716,18 @@ namespace rMultiplatform
                     case 0:
                         break;
                     case 1:
-                        SetOther("MAX", true);
+                        SetOther("MAX",     true);
                         break;
                     case 2:
-                        SetOther("MIN", true);
+                        SetOther("MIN",     true);
                         break;
                     case 3:
-                        SetOther("AVG", true);
+                        SetOther("AVG",     true);
                         break;
                     case 4:
-                        SetOther("AVG", true);
-                        SetOther("MIN", true);
-                        SetOther("MAX", true);
+                        SetOther("AVG",     true);
+                        SetOther("MIN",     true);
+                        SetOther("MAX",     true);
                         break;
                 }
             }

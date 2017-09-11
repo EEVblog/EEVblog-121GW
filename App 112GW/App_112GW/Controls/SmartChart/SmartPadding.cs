@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using SkiaSharp;
 
 namespace rMultiplatform
 {
-    public class ChartPadding : AChartRenderer
+    public class SmartPadding
     {
         //System borders
         float mLeft;
@@ -16,7 +14,7 @@ namespace rMultiplatform
         //Returns the (1-Val)
         private float OtherSide(float Val)
         {
-            return (float)1 - Val;
+            return 1 - Val;
         }
         private bool WithinPadding(SKPoint pInput)
         {
@@ -35,42 +33,42 @@ namespace rMultiplatform
         {
             get
             {
-                return mLeft * (float)ParentWidth;
+                return mLeft * ParentWidth;
             }
         }
         public float GetRightPosition
         {
             get
             {
-                return OtherSide(mRight) * (float)ParentWidth;
+                return OtherSide(mRight) * ParentWidth;
             }
         }
         public float GetTopPosition
         {
             get
             {
-                return mTop * (float)ParentHeight;
+                return mTop * ParentHeight;
             }
         }
         public float GetBottomPosition
         {
             get
             {
-                return OtherSide(mBottom) * (float)ParentHeight;
+                return OtherSide(mBottom) * ParentHeight;
             }
         }
         public float PaddedWidth
         {
             get
             {
-                return (float)ParentWidth * (1 - mLeft - mRight);
+                return ParentWidth * (1 - mLeft - mRight);
             }
         }
         public float PaddedHeight
         {
             get
             {
-                return (float)ParentHeight * (1 - mTop - mBottom);
+                return ParentHeight * (1 - mTop - mBottom);
             }
         }
 
@@ -79,52 +77,48 @@ namespace rMultiplatform
         {
             get
             {
-                return mLeft * (float)ParentWidth;
+                return mLeft * ParentWidth;
             }
             set
             {
-                var ratio = value / (float)ParentWidth;
+                var ratio = value / ParentWidth;
                 mLeft = ratio;
-                InvalidateParent();
             }
         }
         public float R
         {
             get
             {
-                return mRight * (float)ParentWidth;
+                return mRight * ParentWidth;
             }
             set
             {
                 var ratio = value / ParentWidth;
-                mRight = (float)ratio;
-                InvalidateParent();
+                mRight = ratio;
             }
         }
         public float T
         {
             get
             {
-                return mTop * (float)ParentHeight;
+                return mTop * ParentHeight;
             }
             set
             {
                 var ratio = value / ParentHeight;
-                mTop = (float)ratio;
-                InvalidateParent();
+                mTop = ratio;
             }
         }
         public float B
         {
             get
             {
-                return mBottom * (float)ParentHeight;
+                return mBottom * ParentHeight;
             }
             set
             {
                 var ratio = value / ParentHeight;
-                mBottom = (float)ratio;
-                InvalidateParent();
+                mBottom = ratio;
             }
         }
         public float W
@@ -142,28 +136,12 @@ namespace rMultiplatform
             }
         }
 
-        //0'th priority
-        public override int Layer { get { return 0; } }
-        private bool _DrawBoundary;
-        public bool DrawBoundary
-        {
-            get
-            {
-                return _DrawBoundary;
-            }
-            set
-            {
-                _DrawBoundary = value;
-                InvalidateParent();
-            }
-        }
-
         //This returns the paddnig rectangle
         public SKRect Rectangle
         {
             get
             {
-                return new SkiaSharp.SKRect(GetLeftPosition, GetTopPosition, GetRightPosition, GetBottomPosition);
+                return new SKRect(GetLeftPosition, GetTopPosition, GetRightPosition, GetBottomPosition);
             }
         }
 
@@ -181,7 +159,6 @@ namespace rMultiplatform
                     return (p1, p2);
 
             return (p1, p2);
-            //throw (new Exception("Point is not within padding boundaries."));
         }
         public (SKPoint P1, SKPoint P2) GetVerticalLine(float Position)
         {
@@ -196,58 +173,28 @@ namespace rMultiplatform
                     return (p1, p2);
 
             return (p1, p2);
-            //throw (new Exception("Point is not within padding boundaries."));
-        }
-
-        public override bool Draw(SKCanvas c)
-        {
-            if (DrawBoundary)
-                c.DrawRect(Rectangle, new SKPaint() {StrokeWidth = 2, IsStroke = true, Color = SKColors.White});
-            return false;
-        }
-
-        //Padding constructors
-        public ChartPadding(float V)
-        {
-            if (V < 0)
-                throw (new Exception("Padding cannot be negative"));
-
-            mLeft   = V;
-            mRight  = V;
-            mTop    = V;
-            mBottom = V;
-        }
-        public ChartPadding(float L, float R, float T, float B)
-        {
-            if (L < 0 || R < 0 || T < 0 || B < 0)
-                throw (new Exception("Padding cannot be negative"));
-
-            mLeft   = L;
-            mRight  = R;
-            mTop    = T;
-            mBottom = B;
         }
 
         //To simplify code
-        public ChartPadding(double V)
+        public SmartPadding(float V)
         {
             if (V < 0)
                 throw (new Exception("Padding cannot be negative"));
 
-            mLeft   = (float)V;
-            mRight  = (float)V;
-            mTop    = (float)V;
-            mBottom = (float)V;
+            mLeft = V;
+            mRight = V;
+            mTop = V;
+            mBottom = V;
         }
-        public ChartPadding(double L, double R, double T, double B)
+        public SmartPadding(float L, float R, float T, float B)
         {
             if (L < 0 || R < 0 || T < 0 || B < 0)
                 throw (new Exception("Padding cannot be negative"));
 
-            mLeft   = (float)L;
-            mRight  = (float)R;
-            mTop    = (float)T;
-            mBottom = (float)B;
+            mLeft = L;
+            mRight = R;
+            mTop = T;
+            mBottom = B;
         }
     }
 }

@@ -208,6 +208,25 @@ namespace rMultiplatform
         //
         public ChartData(ChartDataMode pMode, string pHorzLabel, string pVertLabel, float pTimeSpan) : base(new List<Type>() { typeof(ChartAxis) })
         {
+            //This filters when what children are added to this instance of ChartAxis
+            RegistrationFilter = (
+            (object o) => {
+                if (o.GetType() != typeof(ChartAxis))
+                    return false;
+
+                //Add the object to registrants after testing whether axis is of relevant units
+                var axis = o as ChartAxis;
+                bool reg = false;
+                if (axis.Orientation == ChartAxis.AxisOrientation.Horizontal)
+                    if (axis.Label == HorizontalLabel)
+                        reg = true;
+                if (axis.Orientation == ChartAxis.AxisOrientation.Vertical)
+                    if (axis.Label == VerticalLabel)
+                        reg = true;
+
+                return reg;
+            });
+
             Mode = pMode;
             TimeSpan = pTimeSpan;
 
@@ -235,11 +254,8 @@ namespace rMultiplatform
             DataStart = DateTime.Now;
         }
 
-
-        public bool Draw (SKCanvas c)
+        public override bool Draw (SKCanvas c)
         {
-
-
             if (Data.Count == 0)
                 return false;
             if (VerticalSpan == null)
@@ -406,26 +422,6 @@ namespace rMultiplatform
                     DataChange();
                 }
             }
-        }
-
-        //Required functions by interface defition
-        public bool Register(object o)
-        {
-            if (o.GetType() != typeof(ChartAxis))
-                return false;
-
-            //Add the object to registrants after testing whether axis is of relevant units
-            var axis = o as ChartAxis;
-            bool reg = false;
-            if (axis.Orientation == ChartAxis.AxisOrientation.Horizontal)
-                if (axis.Label == HorizontalLabel)
-                    reg = true;
-            if (axis.Orientation == ChartAxis.AxisOrientation.Vertical)
-                if (axis.Label == VerticalLabel)
-                    reg = true;
-            if (reg)
-                Registrants.Add(axis);
-            return true;
         }
     }
 }
