@@ -15,24 +15,24 @@ namespace rMultiplatform
         private string x_label = "Time (s)";
         private string y_label = "Volts (V)";
 
-        ChartAxis VerticalAxis = null;
-        ChartAxis HorizontalAxis = null;
-        ChartMenu Menu = null;
+        //ChartAxis VerticalAxis = null;
+        //ChartAxis HorizontalAxis = null;
+        //ChartMenu Menu = null;
 
         public string VerticalLabel
         {
             set
             {
-                if (VerticalAxis != null)
-                    VerticalAxis.Label = value;
+                //if (VerticalAxis != null)
+                //    VerticalAxis.Label = value;
             }
         }
         public string HorozontalLabel
         {
             set
             {
-                if (HorizontalAxis != null)
-                    HorizontalAxis.Label = value;
+                //if (HorizontalAxis != null)
+                //    HorizontalAxis.Label = value;
             }
         }
         
@@ -193,7 +193,7 @@ namespace rMultiplatform
                         VerticalRange.RescaleRangeToFitValue(op_result);
                         Data.Add(new SKPoint(x_val, op_result));
                     }
-                    ChartData.Set(Data, VerticalRange);
+                    //ChartData.Set(Data, VerticalRange);
                 }
             }
         }
@@ -212,10 +212,10 @@ namespace rMultiplatform
             var item = (sender as Picker).SelectedItem;
             if (item != null)
             {
-                if (DeviceA != null)
-                    DeviceA.Plot.DataChanged -= DataA_Changed;
-                DeviceA = item as Multimeter;
-                DeviceA.Plot.DataChanged += DataA_Changed;
+                //if (DeviceA != null)
+                    //DeviceA.Plot.DataChanged -= DataA_Changed;
+                //DeviceA = item as Multimeter;
+                //DeviceA.Plot.DataChanged += DataA_Changed;
             }
         }
         private void B_List_ItemSelected(object sender, EventArgs e)
@@ -224,10 +224,10 @@ namespace rMultiplatform
             var item = (sender as Picker).SelectedItem;
             if (item != null)
             {
-                if (DeviceB != null)
-                    DeviceB.Plot.DataChanged -= DataB_Changed;
-                DeviceB = item as Multimeter;
-                DeviceB.Plot.DataChanged += DataB_Changed;
+                //if (DeviceB != null)
+                //    DeviceB.Plot.DataChanged -= DataB_Changed;
+                //DeviceB = item as Multimeter;
+                //DeviceB.Plot.DataChanged += DataB_Changed;
             }
         }
         private void Operation_List_ItemSelected(object sender, EventArgs e)
@@ -242,15 +242,15 @@ namespace rMultiplatform
 
         private void DataA_Changed(List<SKPoint> Data)
         {
-            Resample(Data, DeviceB.Data.Data);
+            //Resample(Data, DeviceB.Data.Data);
         }
         private void DataB_Changed(List<SKPoint> Data)
         {
-            Resample(DeviceA.Data.Data, Data);
+            //Resample(DeviceA.Data.Data, Data);
         }
 
-        public ChartData ChartData;
-        public Chart Plot;
+        //public ChartData ChartData;
+        //public Chart Plot;
 
         static LayoutOptions ColumnLayout = LayoutOptions.Fill;
         static Picker MakePicker( EventHandler SelectedHandler, string Title, string BindText)
@@ -271,8 +271,8 @@ namespace rMultiplatform
         public MathChart()
         {
             //Setup listviews
-            Menu = new ChartMenu(true, false);
-            Menu.SaveClicked += Menu_SaveClicked;
+            //Menu = new ChartMenu(true, false);
+            //Menu.SaveClicked += Menu_SaveClicked;
 
             //
             A_List          = MakePicker(A_List_ItemSelected, "Device A", "ShortId");
@@ -281,12 +281,12 @@ namespace rMultiplatform
             Operation_List.ItemsSource = Operations;
 
             //
-            Plot = new Chart() { Padding = new ChartPadding(0.1f) };
-            Plot.AddGrid(new ChartGrid());
-            Plot.AddAxis(HorizontalAxis = new ChartAxis(5, 5, 0, 20) { Label = x_label, Orientation = ChartAxis.AxisOrientation.Horizontal, LockToAxisLabel = y_label, LockAlignment = ChartAxis.AxisLock.eEnd});
-            Plot.AddAxis(VerticalAxis   = new ChartAxis(5, 5, 0, 0 ) { Label = y_label, Orientation = ChartAxis.AxisOrientation.Vertical, LockToAxisLabel = x_label, LockAlignment = ChartAxis.AxisLock.eStart});
-            Plot.AddData(ChartData      = new ChartData(ChartData.ChartDataMode.eRescaling, x_label, y_label, 10f));
-            Plot.FullscreenClicked += Plot_FullscreenClicked;
+            //Plot = new Chart() { Padding = new ChartPadding(0.1f) };
+            //Plot.AddGrid(new ChartGrid());
+            //Plot.AddAxis(HorizontalAxis = new ChartAxis(5, 5, 0, 20) { Label = x_label, Orientation = ChartAxis.AxisOrientation.Horizontal, LockToAxisLabel = y_label, LockAlignment = ChartAxis.AxisLock.eEnd});
+            //Plot.AddAxis(VerticalAxis   = new ChartAxis(5, 5, 0, 0 ) { Label = y_label, Orientation = ChartAxis.AxisOrientation.Vertical, LockToAxisLabel = x_label, LockAlignment = ChartAxis.AxisLock.eStart});
+            //Plot.AddData(ChartData      = new ChartData(ChartData.ChartDataMode.eRescaling, x_label, y_label, 10f));
+            //Plot.FullscreenClicked += Plot_FullscreenClicked;
 
             //
             DefineGrid(3, 3);
@@ -294,14 +294,14 @@ namespace rMultiplatform
             AutoAdd(Operation_List);
             AutoAdd(B_List);
             FormatCurrentRow(GridUnitType.Auto);
-            AutoAdd(Plot, 3);
-            FormatCurrentRow(GridUnitType.Star);
-            AutoAdd(Menu, 3);
-            FormatCurrentRow(GridUnitType.Auto);
+            //AutoAdd(Plot, 3);
+            //FormatCurrentRow(GridUnitType.Star);
+            //AutoAdd(Menu, 3);
+            //FormatCurrentRow(GridUnitType.Auto);
         }
         private void Menu_SaveClicked(object sender, EventArgs e)
         {
-            Plot.SaveCSV();
+            //Plot.SaveCSV();
         }
         private void Plot_FullscreenClicked(object sender, EventArgs e)
         {
@@ -309,13 +309,13 @@ namespace rMultiplatform
             {
                 if (Fullscreen)
                 {
-                    if (item.GetType() != typeof(Chart))
-                        item.IsVisible = false;
+                    //if (item.GetType() != typeof(Chart))
+                    //    item.IsVisible = false;
                 }
                 else
                 {
-                    if (item.GetType() != typeof(Chart))
-                        item.IsVisible = true;
+                    //if (item.GetType() != typeof(Chart))
+                    //    item.IsVisible = true;
                 }
             }
             Fullscreen = !Fullscreen;

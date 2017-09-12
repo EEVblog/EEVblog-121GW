@@ -22,14 +22,14 @@ namespace rMultiplatform
         {
             get
             {
-                return (float)Device.GetNamedSize(NamedSize.Large, typeof(Label)); ;
+                return (float)Device.GetNamedSize(NamedSize.Small, typeof(Label)); ;
             }
         }
         static public float MinorFontSize
         {
             get
             {
-                return (float)Device.GetNamedSize(NamedSize.Medium, typeof(Label)); ;
+                return (float)Device.GetNamedSize(NamedSize.Small, typeof(Label)); ;
             }
         }
 
@@ -42,6 +42,7 @@ namespace rMultiplatform
             var output = (double)random.NextDouble() * (max - min) + min;
             return output;
         }
+        static public float RandomBetween(float min, float max) => (float)RandomBetween((double)min, (double)max);
 
         static private int _BorderWidth = 3;
         static public int BorderWidth

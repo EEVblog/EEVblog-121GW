@@ -2,11 +2,11 @@
 
 namespace rMultiplatform
 {
-    abstract class ASmartAxisPair : ASmartElement
+    public abstract class ASmartAxisPair : ASmartElement
     {
         public ASmartData Parent;
         public ASmartAxis Horizontal, Vertical;
-        public abstract SKMatrix Transform { get; }
+        public abstract SKMatrix Transform(SKSize dimension);
 
         public void Reset()
         {
@@ -29,35 +29,35 @@ namespace rMultiplatform
             Vertical.Range.Set(Boundary.Top, Boundary.Bottom);
         }
 
-        public abstract void Draw(SKCanvas Canvas, SKSize dimension);
+        public abstract void Draw(SKCanvas canvas, SKSize dimension);
     }
 
-    class SmartAxisPair : ASmartAxisPair
+    public class SmartAxisPair : ASmartAxisPair
     {
-        SmartAxisPair(ASmartAxis pHorizontal, ASmartAxis pVertical)
+        public SmartAxisPair(ASmartAxis pHorizontal, ASmartAxis pVertical)
         {
             Horizontal = pHorizontal;
             Vertical = pVertical;
         }
 
         //Takes a SKPath and transforms it based on the transformations present in the axis
-        public override SKMatrix Transform
+        public override SKMatrix Transform(SKSize dimension)
         {
-            get
-            {
-                var matrix = SKMatrix.MakeIdentity();
-                matrix.ScaleX   = Horizontal.Scaling;
-                matrix.TransX   = Horizontal.Translation;
-                matrix.ScaleY   = Vertical.Scaling;
-                matrix.TransY   = Vertical.Translation;
-                return matrix;
-            }
+            var matrix = SKMatrix.MakeIdentity();
+            matrix.ScaleX   = Horizontal.Scaling    (dimension.Width);
+            matrix.TransX   = Horizontal.Translation(dimension.Width);
+            matrix.ScaleY   = Vertical.Scaling      (dimension.Height);
+            matrix.TransY   = Vertical.Translation  (dimension.Height);
+            return matrix;
         }
 
-        public override void Draw(SKCanvas Canvas, SKSize dimension)
+        public override void Draw(SKCanvas canvas, SKSize dimension)
         {
-            Horizontal.Draw(Canvas, dimension);
-            Vertical.Draw(Canvas, dimension);
+            Horizontal.Position = Padding.BottomPosition(dimension.Height);
+            Vertical.Position   = Padding.LeftPosition  (dimension.Width);
+
+            Horizontal.Draw(canvas, dimension);
+            Vertical.Draw(canvas, dimension);
         }
     }
 }

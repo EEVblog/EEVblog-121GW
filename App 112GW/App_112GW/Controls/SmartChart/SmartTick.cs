@@ -1,19 +1,35 @@
 ﻿using SkiaSharp;
+using System;
+using System.Collections.Generic;
+using System.Text;
 
 namespace rMultiplatform
 {
-    abstract class ASmartTick : ASmartElement
+    public abstract class ASmartTick : ASmartElement
     {
         public ASmartAxis Parent        { get; private set; }
+        public float Value;
+        public enum SmartTickType
+        {
+            Major,
+            Minor
+        }
+        public SmartTickType TickType;
+
+        public float Position(float dimension) => Parent.CoordinateFromValue(dimension, Value);
 
         public static float SpaceWidth = MajorPaint.MeasureText(" ");
-        public float        Value;
+        public static bool ShowTick             { get; set; } = true;
+        public static bool ShowMajorLabel       { get; set; } = true;
+        public static bool ShowMajorGridline    { get; set; } = true;
+        public static bool ShowMinorGridline    { get; set; } = false;
 
-        public static bool  ShowTick        { get; set; }
-        public static bool  ShowMajorLabel  { get; set; }
-        public static bool  ShowGridline    { get; set; }
+        public bool ShowGridline => (TickType == SmartTickType.Major) ? ShowMajorGridline : ShowMinorGridline;
 
-        private static float _MajorTickLength;
+        public bool IsMajorTick => TickType == SmartTickType.Major;
+        public bool IsMinorTick => TickType == SmartTickType.Minor;
+
+        private static float _MajorTickLength = 5.0f;
         private static float MajorTickLength
         {
             get
@@ -33,13 +49,7 @@ namespace rMultiplatform
             }
         }
 
-        public enum SmartTickType
-        {
-            Major,
-            Minor
-        }
-        private SmartTickType TickType;
-        public float TickLength
+        public float            TickLength
         {
             get
             {
@@ -47,88 +57,93 @@ namespace rMultiplatform
             }
         }
 
-        protected abstract (float x, float y)       TickStart { get; }
-        protected abstract (float x, float y)       TickEnd   { get; }
-        protected abstract (SKPoint x, SKPoint y)   LabelLine(string Text);
-
-        public void Draw(SKCanvas Canvas)
+        protected abstract (float x, float y) TickStart(SKSize dimensoin);
+        protected abstract (float x, float y) TickEnd(SKSize dimensoin);
+        protected abstract (float x, float y) TickCentre(SKSize dimension);
+        private (float x1, float y1, float x2, float y2) TickLine(SKSize dimension)
         {
-            (var start_x,   var start_y)    = TickStart;
-            (var end_x,     var end_y)      = TickEnd;
+            (var start_x, var start_y) = TickStart(dimension);
+            (var end_x, var end_y) = TickEnd(dimension);
+            return (start_x, start_y, end_x, end_y);
+        }
 
+        protected float GridLineDimension(SKSize dimensions) => Parent.Dimension(dimensions);
+        protected abstract (float x1, float y1, float x2, float y2) GridLine(SKSize dimension);
+
+        protected abstract (SKPoint x, SKPoint y) LabelLine(SKSize dimension, string Text);
+        private (string, SKPath) LabelPath(SKSize dimension)
+        {
+            var txt = SIPrefix.ToString(Value);
+            (var pt1, var pt2) = LabelLine(dimension, txt);
+            var pts = new SKPoint[] { pt1, pt2 };
+            var pth = new SKPath();
+            pth.AddPoly(pts, false);
+            return (txt, pth);
+        }
+
+        public void Draw ( SKCanvas canvas, SKSize dimension)
+        {
             if (ShowTick)
             {
-                Canvas.DrawLine(start_x, start_y, end_x, end_y, MajorPaint);
+                (var start_x, var start_y, var end_x, var end_y) = TickLine(dimension);
+                canvas.DrawLine(start_x, start_y, end_x, end_y, MajorPaint);
 
-                if ()
+                if (IsMajorTick)
                 {
-
-                }
-                if (ShowMajorLabel)
-                {
-                    var txt = SIPrefix.ToString(Value);
-                    (var pt1, var pt2) = LabelLine(txt);
-                    var pts = new SKPoint[] { pt1, pt2 };
-                    var pth = new SKPath();
-                    pth.AddPoly(pts, false);
-                    Canvas.DrawTextOnPath(txt, pth, 0, 0, MinorPaint);
+                    if (ShowMajorLabel)
+                    {
+                        (var txt, var pth) = LabelPath(dimension);
+                        canvas.DrawTextOnPath(txt, pth, 0, 0, MajorPaint);
+                    }
                 }
             }
+            if (ShowGridline)
+            {
+                (var x1, var y1, var x2, var y2) = GridLine(dimension);
+                canvas.DrawLine(x1, y1, x2, y2, GridPaint);
+            }
+        }
 
-            //if (ShowGridline)
-            //    Canvas.DrawLine();
+        public ASmartTick(ASmartAxis pParent, SmartTickType Type)
+        {
+            Parent = pParent;
+            TickType = Type;
         }
     }
-    class SmartTickHorizontal : ASmartTick
+    public class SmartTickHorizontal : ASmartTick
     {
-        protected override (float x, float y) TickStart
+        protected override (float x, float y)   TickStart   (SKSize dimension) => (Position(dimension.Width), Parent.Position - TickLength);
+        protected override (float x, float y)   TickEnd     (SKSize dimension) => (Position(dimension.Width), Parent.Position + TickLength);
+        protected override (float x, float y)   TickCentre  (SKSize dimension) => (Position(dimension.Width), Parent.Position);
+
+        protected override (float x1, float y1, float x2, float y2) GridLine    (SKSize dimension) => Padding.GetVerticalLine(dimension.Height, Position(dimension.Width));
+        protected override (SKPoint x, SKPoint y)                   LabelLine   (SKSize dimension, string Text)
         {
-            get
-            {
-                var value = Parent.CoordinateFromValue(Value);
-                return (Value, Parent.Location - TickLength);
-            }
-        }
-        protected override (float x, float y) TickEnd
-        {
-            get
-            {
-                var value = Parent.CoordinateFromValue(Value);
-                return (Value, Parent.Location + TickLength);
-            }
+            (var wid,   var hei)    = MeasureMajorText(Text);
+            (var tx,    var ty)     = TickEnd(dimension);
+            var pt1 = new SKPoint(tx, ty + SpaceWidth + wid);
+            var pt2 = new SKPoint(tx, ty + SpaceWidth);
+            return (pt1, pt2);
         }
 
-        protected override (SKPoint x, SKPoint y) LabelLine(string Text)
-        {
-            (var wid, var hei) = MeasureText(Text);
-            return (new SKPoint(Position, Parent.AxisStart + SpaceWidth + wid),
-                    new SKPoint(Position, Parent.AxisStart + SpaceWidth));
-        }
+        public SmartTickHorizontal(ASmartAxis Parent, SmartTickType Type) : base(Parent, Type) { }
     }
-    class SmartTickVertical : ASmartTick
+    public class SmartTickVertical : ASmartTick
     {
-        protected override (float x, float y) TickStart
+        protected override (float x, float y)   TickStart   (SKSize dimension) => (Parent.Position - TickLength, Position(dimension.Height));
+        protected override (float x, float y)   TickEnd     (SKSize dimension) => (Parent.Position + TickLength, Position(dimension.Height));
+        protected override (float x, float y)   TickCentre  (SKSize dimension) => (Parent.Position, Position(dimension.Height));
+
+        protected override (float x1, float y1, float x2, float y2) GridLine    (SKSize dimension) => Padding.GetHorizontalLine(dimension.Width, Position(dimension.Height));
+        protected override (SKPoint x, SKPoint y)                   LabelLine   (SKSize dimension, string Text)
         {
-            get
-            {
-                var value = Parent.CoordinateFromValue(Value);
-                return (Parent.Location - TickLength, Value);
-            }
-        }
-        protected override (float x, float y) TickEnd
-        {
-            get
-            {
-                var value = Parent.CoordinateFromValue(Value);
-                return (Parent.Location + TickLength, Value);
-            }
+            (var wid,   var hei)    = MeasureMajorText(Text);
+            (var tx,    var ty)     = TickStart(dimension);
+            var pt1 = new SKPoint(tx - SpaceWidth - wid, ty);
+            var pt2 = new SKPoint(tx - SpaceWidth, ty);
+            return (pt1, pt2);
         }
 
-        protected override (SKPoint x, SKPoint y) LabelLine(string Text)
-        {
-            (var wid, var hei) = MeasureText(Text);
-            return (new SKPoint(Parent.AxisStart - SpaceWidth - wid,    Position),
-                    new SKPoint(Parent.AxisStart - SpaceWidth,          Position));
-        }
+        public SmartTickVertical(ASmartAxis Parent, SmartTickType Type) : base(Parent, Type) { }
     }
 }

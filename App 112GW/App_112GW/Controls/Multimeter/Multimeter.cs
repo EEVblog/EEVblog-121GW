@@ -19,7 +19,7 @@ namespace rMultiplatform
             try
             {
                 processor.ProcessPacket(pInput);
-                Data.Sample(processor.MainValue);
+                //Data.Sample(processor.MainValue);
 
                 VerticalLabel = processor.MainRangeLabel;
                 Screen.Update(processor);
@@ -49,20 +49,23 @@ namespace rMultiplatform
         }
         public MultimeterScreen Screen;
         public MultimeterMenu   Menu;
-        public ChartMenu        ChartMenu;
-        public ChartData        Data;
-        public Chart            _Plot;
-        public Chart            Plot
-        {
-            get
-            {
-                return _Plot;
-            }
-            private set
-            {
-                _Plot = value;
-            }
-        }
+        public SmartChart TestChart;
+
+
+        //public ChartMenu        ChartMenu;
+        //public ChartData        Data;
+        //public Chart            _Plot;
+        //public Chart            Plot
+        //{
+        //    get
+        //    {
+        //        return _Plot;
+        //    }
+        //    private set
+        //    {
+        //        _Plot = value;
+        //    }
+        //}
 
         enum ActiveItem
         {
@@ -73,14 +76,14 @@ namespace rMultiplatform
 
         public void Reset()
         {
-            Data.Data.Clear();
-            Data.Reset();
-            VerticalAxis.Reset();
-            HorozontalAxis.Reset();
+            //Data.Data.Clear();
+            //Data.Reset();
+            //VerticalAxis.Reset();
+            //HorozontalAxis.Reset();
         }
 
-        ChartAxis VerticalAxis;
-        ChartAxis HorozontalAxis;
+        //ChartAxis VerticalAxis;
+        //ChartAxis HorozontalAxis;
         private string _VerticalLabel = "Volts (V)";
         public string VerticalLabel
         {
@@ -93,9 +96,9 @@ namespace rMultiplatform
                 if (value != _VerticalLabel)
                 {
                     _VerticalLabel                  = value;
-                    Data.VerticalLabel              = value;
-                    VerticalAxis.Label              = value;
-                    HorozontalAxis.LockToAxisLabel  = value;
+                    //Data.VerticalLabel              = value;
+                    //VerticalAxis.Label              = value;
+                    //HorozontalAxis.LockToAxisLabel  = value;
                     Reset();
                 }
             }
@@ -116,29 +119,36 @@ namespace rMultiplatform
             Menu.ModeChanged        +=  Menu_ModeChanged;
             Menu.RangeChanged       +=  Menu_RangeChanged;
 
-            Data = new ChartData( ChartData.ChartDataMode.eRescaling, "Time (s)", _VerticalLabel, 10f );
-            Plot = new Chart() {Padding = new ChartPadding(0.05)};
-            Plot.AddGrid ( new ChartGrid() );
-            Plot.AddAxis ( HorozontalAxis    = new ChartAxis(5, 5, 0, 20){   Label = "Time (s)",     Orientation = ChartAxis.AxisOrientation.Horizontal, LockToAxisLabel = _VerticalLabel,   LockAlignment = ChartAxis.AxisLock.eEnd} );
-            Plot.AddAxis ( VerticalAxis      = new ChartAxis(5, 5, 0, 0) {   Label = _VerticalLabel, Orientation = ChartAxis.AxisOrientation.Vertical,   LockToAxisLabel = "Time (s)",       LockAlignment = ChartAxis.AxisLock.eStart} );
-            Plot.AddData(Data);
-            Plot.FullscreenClicked += Plot_FullScreenClicked;
+            TestChart = 
+                new SmartChart(
+                new SmartData(
+                    new SmartAxisPair(
+                        new SmartAxisHorizontal("Horizontal", -0.1f, 0.1f), 
+                        new SmartAxisVertical("Vertical", -0.2f, 0.1f))));
+            //Data = new ChartData( ChartData.ChartDataMode.eRescaling, "Time (s)", _VerticalLabel, 10f );
+            //Plot = new Chart() {Padding = new ChartPadding(0.05)};
+            //Plot.AddGrid ( new ChartGrid() );
+            //Plot.AddAxis ( HorozontalAxis    = new ChartAxis(5, 5, 0, 20){   Label = "Time (s)",     Orientation = ChartAxis.AxisOrientation.Horizontal, LockToAxisLabel = _VerticalLabel,   LockAlignment = ChartAxis.AxisLock.eEnd} );
+            //Plot.AddAxis ( VerticalAxis      = new ChartAxis(5, 5, 0, 0) {   Label = _VerticalLabel, Orientation = ChartAxis.AxisOrientation.Vertical,   LockToAxisLabel = "Time (s)",       LockAlignment = ChartAxis.AxisLock.eStart} );
+            //Plot.AddData(Data);
+            //Plot.FullscreenClicked += Plot_FullScreenClicked;
 
-            ChartMenu = new ChartMenu(true, true);
-            ChartMenu.SaveClicked += Menu_SaveClicked;
-            ChartMenu.ResetClicked += Menu_ResetClicked;
+            //ChartMenu = new ChartMenu(true, true);
+            //ChartMenu.SaveClicked += Menu_SaveClicked;
+            //ChartMenu.ResetClicked += Menu_ResetClicked;
 
-            DefineGrid(1, 4);
+            DefineGrid(1, 3);
             AutoAdd(Screen);    FormatCurrentRow(GridUnitType.Auto);
             AutoAdd(Menu);      FormatCurrentRow(GridUnitType.Auto);
-            AutoAdd(Plot);      FormatCurrentRow(GridUnitType.Star);
-            AutoAdd(ChartMenu); FormatCurrentRow(GridUnitType.Auto);
+            AutoAdd(TestChart); FormatCurrentRow(GridUnitType.Star);
+            //AutoAdd(Plot);      FormatCurrentRow(GridUnitType.Star);
+            //AutoAdd(ChartMenu); FormatCurrentRow(GridUnitType.Auto);
 
             SetView();
         }
         private void Menu_SaveClicked(object sender, EventArgs e)
         {
-            Plot.SaveCSV();
+            //Plot.SaveCSV();
         }
         private void Menu_ResetClicked(object sender, EventArgs e)
         {

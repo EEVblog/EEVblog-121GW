@@ -64,7 +64,7 @@ namespace rMultiplatform
                     {
                         MinorPaint.ColorFilter = SKColorFilter.CreateBlendMode(args.Color, SKBlendMode.DstOver);
                         MinorPaint.Color = args.Color;
-                        MajorPaint.PathEffect = SKPathEffect.CreateDash(new[] { 1f, 1f }, 0);
+                        MinorPaint.PathEffect = SKPathEffect.CreateDash(new[] { 1f, 1f }, 0);
                         DrawGridLine(canvas, new Gridline(p1, p2, MinorPaint));
                     }
                     break;
