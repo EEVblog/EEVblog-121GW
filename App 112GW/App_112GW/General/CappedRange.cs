@@ -149,6 +149,10 @@ namespace rMultiplatform
                 Visible.Maximum = Input.Maximum;
             }
         }
+        public void SetBoundary(float A, float B)
+        {
+            SetBoundary(new Range(A, B));
+        }
 
         public void Reset()
         {
@@ -301,6 +305,8 @@ namespace rMultiplatform
             Boundary = new Range(A, B);
             Visible = new Range(A, B);
             Set(A, B);
+            Boundary.Rescale();
+            Visible.Rescale();
         }
     }
 }

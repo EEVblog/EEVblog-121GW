@@ -16,14 +16,14 @@ namespace rMultiplatform
         public ASmartTick Ticker;
         public float Position { get; set; }
 
-        public abstract float Dimension(SKSize dimensions);
-        public abstract float AxisStart(float WidthXorHeight);
-        public abstract float AxisEnd(float WidthXorHeight);
+        public abstract float Dimension (SKSize dimensions      );
+        public abstract float AxisStart (float WidthXorHeight   );
+        public abstract float AxisEnd   (float WidthXorHeight   );
 
-        public float AxisSize(float WidthXorHeight) => Math.Abs(AxisEnd(WidthXorHeight) - AxisStart(WidthXorHeight));
+        public float AxisSize(float WidthXorHeight) => (AxisEnd(WidthXorHeight) - AxisStart(WidthXorHeight));
 
-        public float ValueStart => (float)Range.Minimum;
-        public float ValueEnd   => (float)Range.Maximum;
+        public float ValueStart => (float) Range.Minimum;
+        public float ValueEnd   => (float) Range.Maximum;
 
         public uint MinorTicks  { get; set; } = 5;
         private uint MajorTicks { get; set; } = 4;
@@ -32,24 +32,23 @@ namespace rMultiplatform
         private float MinorTickDistance => MajorTickDistance / MinorTicks;
 
         //Used in the creation of an axis pair
-        public float Scaling    (float dimension)   => AxisSize (dimension) / Distance;
-        public float Translation(float dimension)   => AxisStart(dimension);
+        public abstract float Translation(float dimension);
+        public abstract float Scaling(float dimension);
 
         //Used to interface with touch screen
         public float ValueFromCoordinate(float dimension, float Value)
         {
-            Value -= AxisStart(dimension);
+            Value -= Translation(dimension);
             Value /= Scaling(dimension);
-            Value += ValueStart;
             return Value;
         }
         public float CoordinateFromValue(float dimension, float Value)
         {
-            Value -= ValueStart;
             Value *= Scaling(dimension);
-            Value += AxisStart(dimension);
+            Value += Translation(dimension);
             return Value;
-        }
+        }        //Used to interface with touch screen
+
 
         //
         public void Draw(SKCanvas canvas, SKSize dimension)
@@ -66,13 +65,12 @@ namespace rMultiplatform
                 var draw_value_minor_end    = Ticker.Value + MajorTickDistance - MinorTickDistance / 2;
                 var draw_value_minor_start  = Ticker.Value + MinorTickDistance;
                 var value = Ticker.Value;
+
                 if (draw_value_minor_end < draw_value_major_end)
                     for (Ticker.Value = draw_value_minor_start; 
                         Ticker.Value <= draw_value_minor_end; 
                         Ticker.Value += MinorTickDistance)
-
                         Ticker.Draw(canvas, dimension);
-
 
                 Ticker.Value = value;
             }
@@ -88,6 +86,9 @@ namespace rMultiplatform
         public override float AxisStart (float Width)   => Padding.LeftPosition(Width);
         public override float AxisEnd   (float Width)   => Padding.RightPosition(Width);
 
+        public override float Translation(float Width) => AxisStart(Width) + Scaling(Width) * ValueStart;
+        public override float Scaling(float dimension) => AxisSize(dimension) / Distance;
+
         public override float Dimension(SKSize dimensions) => dimensions.Height;
         public SmartAxisHorizontal(string pLabel, float pMinimum, float pMaximum) : base(pLabel, pMinimum, pMaximum)
         {
@@ -98,6 +99,9 @@ namespace rMultiplatform
     {
         public override float AxisStart (float Height)  => Padding.TopPosition(Height);
         public override float AxisEnd   (float Height)  => Padding.BottomPosition(Height);
+
+        public override float Translation(float Height) => AxisEnd(Height) + Scaling(Height) * ValueStart;
+        public override float Scaling(float dimension) => -AxisSize(dimension) / Distance;
 
         public override float Dimension(SKSize dimensions) => dimensions.Width;
         public SmartAxisVertical(string pLabel, float pMinimum, float pMaximum) : base(pLabel, pMinimum, pMaximum)

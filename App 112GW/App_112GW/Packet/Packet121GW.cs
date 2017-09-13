@@ -161,14 +161,14 @@ namespace rMultiplatform
             }
         }
 
-        public double   MainValue
+        public float   MainValue
         {
             get
             {
                 var msb = (int)pData[2];
                 var lsb = (int)pData[3];
-                var val = (double)((int)((msb << 8) | lsb));
-                return val * MainRangeMultiple / Math.Pow(10.0, ( 5 - (double)MainRangeValue));
+                var val = (float)((int)((msb << 8) | lsb));
+                return val * (float)MainRangeMultiple / (float)Math.Pow(10.0, ( 5 - (float)MainRangeValue));
             }
         }
 

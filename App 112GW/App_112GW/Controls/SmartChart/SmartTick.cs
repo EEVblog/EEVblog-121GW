@@ -17,12 +17,12 @@ namespace rMultiplatform
         public SmartTickType TickType;
 
         public float Position(float dimension) => Parent.CoordinateFromValue(dimension, Value);
-
+        
         public static float SpaceWidth = MajorPaint.MeasureText(" ");
-        public static bool ShowTick             { get; set; } = true;
-        public static bool ShowMajorLabel       { get; set; } = true;
-        public static bool ShowMajorGridline    { get; set; } = true;
-        public static bool ShowMinorGridline    { get; set; } = false;
+        public static bool  ShowTick             { get; set; } = true;
+        public static bool  ShowMajorLabel       { get; set; } = true;
+        public static bool  ShowMajorGridline    { get; set; } = true;
+        public static bool  ShowMinorGridline    { get; set; } = false;
 
         public bool ShowGridline => (TickType == SmartTickType.Major) ? ShowMajorGridline : ShowMinorGridline;
 
@@ -130,9 +130,9 @@ namespace rMultiplatform
     }
     public class SmartTickVertical : ASmartTick
     {
-        protected override (float x, float y)   TickStart   (SKSize dimension) => (Parent.Position - TickLength, Position(dimension.Height));
-        protected override (float x, float y)   TickEnd     (SKSize dimension) => (Parent.Position + TickLength, Position(dimension.Height));
-        protected override (float x, float y)   TickCentre  (SKSize dimension) => (Parent.Position, Position(dimension.Height));
+        protected override (float x, float y)   TickStart   (SKSize dimension) => (Parent.Position - TickLength,    dimension.Height - Position(dimension.Height));
+        protected override (float x, float y)   TickEnd     (SKSize dimension) => (Parent.Position + TickLength,    dimension.Height - Position(dimension.Height));
+        protected override (float x, float y)   TickCentre  (SKSize dimension) => (Parent.Position,                 dimension.Height - Position(dimension.Height));
 
         protected override (float x1, float y1, float x2, float y2) GridLine    (SKSize dimension) => Padding.GetHorizontalLine(dimension.Width, Position(dimension.Height));
         protected override (SKPoint x, SKPoint y)                   LabelLine   (SKSize dimension, string Text)

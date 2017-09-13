@@ -1,5 +1,9 @@
-﻿using System.Collections.Generic;
-using SkiaSharp;
+﻿using SkiaSharp;
+using SkiaSharp.Views.Forms;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
+using System;
 
 namespace rMultiplatform
 {
@@ -8,25 +12,51 @@ namespace rMultiplatform
         public SmartChart       Parent = null;
         public ASmartAxisPair   Axis = null;
 
-        public List<SKPoint> Points;
+        protected SKPaint DataPaint = MakeDefaultPaint(Globals.TextColor, 1, Globals.MajorFontSize, Globals.Typeface, IsStroke:true);
+
+
+        public ObservableCollection<SKPoint> Points;
         private List<SKPoint> VisiblePoints
         {
             get
             {
-                var DataStart   = Points.FindIndex(val => (val.X >= Axis.Horizontal.ValueStart  ));
-                var DataEnd     = Points.FindIndex(val => (val.X >  Axis.Horizontal.ValueEnd    ));
+                int DataStart = -1;
+                int DataEnd = -1;
+                bool IsDataStart(SKPoint arg, int index)
+                {
+                    var result = arg.X >= Axis.Horizontal.ValueStart;
+                    if (DataStart == -1)
+                        if (result)
+                            DataStart = index;
+                    return result;
+                }
+                bool IsDataEnd(SKPoint arg, int index)
+                {
+                    var result = arg.X > Axis.Horizontal.ValueEnd;
+                    if (DataEnd == -1)
+                        if (result)
+                            DataStart = index;
+                    return result;
+                }
+                Points.Where(IsDataStart);
+                Points.Where(IsDataEnd);
+
                 var Length = Points.Count;
 
                 if (DataStart < 0)
                     DataStart = 0;
+
                 if (DataEnd > Length || DataEnd < 0)
                     DataEnd = Length;
+
                 if (DataEnd < DataStart)
                     DataStart = DataEnd;
 
-                return Points.GetRange(DataStart, (DataEnd - DataStart));
+                return Points.ToList().GetRange(DataStart, (DataEnd - DataStart));
             }
         }
+
+
         protected (SKPath, SKRect) VisiblePath
         {
             get
@@ -41,9 +71,12 @@ namespace rMultiplatform
         
         public ASmartData(ASmartAxisPair pAxis)
         {
-            Points = new List<SKPoint>();
+            Points = new ObservableCollection<SKPoint>();
             Axis = pAxis;
-            for (var time = 0.0f; time < 10.0f; time += 0.1f)
+
+            pAxis.Horizontal.Range.Set(-1, 10);
+            pAxis.Vertical.Range.Set(-1, 1);
+            for (var time = 0.0f; time < 10999.0f; time += 0.1f)
                 Points.Add(new SKPoint(time, Globals.RandomBetween(-1.0f, 1.0f)));
         }
     }
@@ -52,19 +85,27 @@ namespace rMultiplatform
     {
         public override void Draw(SKCanvas Canvas, SKSize dimension)
         {
-            if (Points.Count > 0)
-            {
-                (var path, var bounds) = VisiblePath;
+            if (Points.Count == 0)
+                return;
 
-                Axis.Set        (bounds);                       //Set the axis limits
-                Axis.Draw       (Canvas, dimension);            //Render the axis with limits
-                path.Transform  (Axis.Transform(dimension));    //Transform the path to fit limits
-                Canvas.DrawPath (path, MajorPaint);             //Render scaled and shifted path
-            }
+            (var path, var bounds) = VisiblePath;
+
+            Axis.Set        (bounds);                       //Set the axis limits
+            Axis.Draw       (Canvas, dimension);            //Render the axis with limits
+            path.Transform  (Axis.Transform(dimension));    //Transform the path to fit limits
+            Canvas.DrawPath (path, DataPaint);              //Render scaled and shifted path
         }
-        public SmartData(ASmartAxisPair pAxis) : base(pAxis)
+        public SmartData(ASmartAxisPair pAxis, ObservableCollection<SKPoint> pData) : base(pAxis)
         {
-            Axis.Parent = this;
+            DataPaint.IsStroke  = true;
+            DataPaint.Color     = Globals.UniqueColor().ToSKColor();
+            Axis.Parent         = this;
+            Points = pData;
+            Points.CollectionChanged += Points_CollectionChanged;
+        }
+        private void Points_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            //Parent.InvalidateSurface();
         }
     }
 }

@@ -12,6 +12,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Controls\SmartChart\SmartChartLogger.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\SmartChart\SmartAxis.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\SmartChart\SmartAxisPair.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\SmartChart\SmartChart.cs" />

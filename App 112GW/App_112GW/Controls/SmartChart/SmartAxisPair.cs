@@ -25,8 +25,8 @@ namespace rMultiplatform
         }
         public void Set(SKRect Boundary)
         {
-            Horizontal.Range.Set(Boundary.Left, Boundary.Right);
-            Vertical.Range.Set(Boundary.Top, Boundary.Bottom);
+            Horizontal.Range.SetBoundary(Boundary.Left, Boundary.Right);
+            Vertical.Range.SetBoundary(Boundary.Top, Boundary.Bottom);
         }
 
         public abstract void Draw(SKCanvas canvas, SKSize dimension);

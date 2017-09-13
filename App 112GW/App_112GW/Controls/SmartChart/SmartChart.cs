@@ -6,7 +6,7 @@ namespace rMultiplatform
 {
     public abstract class ASmartElement
     {
-        static private SKPaint MakeDefaultPaint(Color pColor, float pStrokeWidth, float pFontSize, SKTypeface pTypeface, bool Dotted = false)
+        static public SKPaint MakeDefaultPaint(Color pColor, float pStrokeWidth, float pFontSize, SKTypeface pTypeface, bool Dotted = false, bool IsStroke = false)
         {
             var output = new SKPaint()
             {
@@ -16,6 +16,7 @@ namespace rMultiplatform
                 TextSize = pFontSize,
                 StrokeCap = SKStrokeCap.Round,
                 BlendMode = SKBlendMode.Src,
+                IsStroke = IsStroke,
                 IsAntialias = true
             };
             if (Dotted)
@@ -26,7 +27,7 @@ namespace rMultiplatform
             return output;
         }
 
-        static private  SKPaint _MajorPaint  = MakeDefaultPaint(Globals.TextColor,       2,  Globals.MajorFontSize,  Globals.Typeface);
+        static private  SKPaint _MajorPaint  = MakeDefaultPaint(Globals.TextColor,       1,  Globals.MajorFontSize,  Globals.Typeface);
         static private  SKPaint _MinorPaint  = MakeDefaultPaint(Globals.TextColor,       1,  Globals.MinorFontSize,  Globals.Typeface);
         static private  SKPaint _MaskPaint   = MakeDefaultPaint(Globals.BackgroundColor, 1,  Globals.MinorFontSize,  Globals.Typeface);
         static private  SKPaint _GridPaint   = MakeDefaultPaint(Globals.TextColor,       1,  Globals.MinorFontSize,  Globals.Typeface, Dotted:true);
@@ -115,6 +116,10 @@ namespace rMultiplatform
                 else Disable();
                 base.IsVisible = value;
             }
+        }
+        public void InvalidateSurface()
+        {
+            mRenderer?.InvalidateSurface();
         }
         #endregion
 

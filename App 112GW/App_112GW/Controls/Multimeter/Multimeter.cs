@@ -8,6 +8,9 @@ namespace rMultiplatform
 {
     public partial class Multimeter : AutoGrid
     {
+        public SmartChart Chart;
+        public SmartChartLogger Logger = new SmartChartLogger(10, SmartChartLogger.LoggerMode.Rescaling);
+
         public event EventHandler RequestMaximise;
         public event EventHandler RequestRestore;
 
@@ -19,6 +22,7 @@ namespace rMultiplatform
             try
             {
                 processor.ProcessPacket(pInput);
+                Logger.Sample(processor.MainValue);
                 //Data.Sample(processor.MainValue);
 
                 VerticalLabel = processor.MainRangeLabel;
@@ -49,7 +53,6 @@ namespace rMultiplatform
         }
         public MultimeterScreen Screen;
         public MultimeterMenu   Menu;
-        public SmartChart TestChart;
 
 
         //public ChartMenu        ChartMenu;
@@ -119,12 +122,12 @@ namespace rMultiplatform
             Menu.ModeChanged        +=  Menu_ModeChanged;
             Menu.RangeChanged       +=  Menu_RangeChanged;
 
-            TestChart = 
+            Chart = 
                 new SmartChart(
                 new SmartData(
                     new SmartAxisPair(
                         new SmartAxisHorizontal("Horizontal", -0.1f, 0.1f), 
-                        new SmartAxisVertical("Vertical", -0.2f, 0.1f))));
+                        new SmartAxisVertical("Vertical", -0.2f, 0.1f)), Logger.Data));
             //Data = new ChartData( ChartData.ChartDataMode.eRescaling, "Time (s)", _VerticalLabel, 10f );
             //Plot = new Chart() {Padding = new ChartPadding(0.05)};
             //Plot.AddGrid ( new ChartGrid() );
@@ -140,7 +143,7 @@ namespace rMultiplatform
             DefineGrid(1, 3);
             AutoAdd(Screen);    FormatCurrentRow(GridUnitType.Auto);
             AutoAdd(Menu);      FormatCurrentRow(GridUnitType.Auto);
-            AutoAdd(TestChart); FormatCurrentRow(GridUnitType.Star);
+            AutoAdd(Chart); FormatCurrentRow(GridUnitType.Star);
             //AutoAdd(Plot);      FormatCurrentRow(GridUnitType.Star);
             //AutoAdd(ChartMenu); FormatCurrentRow(GridUnitType.Auto);
 
