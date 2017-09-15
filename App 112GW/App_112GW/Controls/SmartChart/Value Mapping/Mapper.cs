@@ -45,25 +45,14 @@ namespace rMultiplatform
             return Create1D((float)A.Minimum, (float)A.Maximum, MinB, MaxB);
         }
 
-        public static Func<float, float> Create2D(float MinA, float MaxA, float MinB, float MaxB)
+        public static SkiaSharp.SKMatrix CreateMatrix(Map1D Horizontal, Map1D Vertical)
         {
-            var SpanA = MaxA - MinA;
-            var SpanB = MaxB - MinB;
-            return (float value) => ((value - MinA) * (SpanB / SpanA)) + MinB;
+            var matrix = SkiaSharp.SKMatrix.MakeIdentity();
+            matrix.ScaleX = Horizontal.Scale;
+            matrix.TransX = Horizontal.Translation;
+            matrix.ScaleY = Vertical.Scale;
+            matrix.TransY = Vertical.Translation;
+            return matrix;
         }
-        //public static Func<float, float> Create2D(Range A, Range B)
-        //{
-        //    return Create1D((float)A.Minimum, (float)A.Maximum, (float)B.Minimum, (float)B.Maximum);
-        //}
-        //public static Func<float, float> Create2D(float MinA, float MaxA, Range B)
-        //{
-        //    return Create1D(MinA, MaxA, (float)B.Minimum, (float)B.Maximum);
-        //}
-        //public static Func<float, float> Create2D(Range A, float MinB, float MaxB)
-        //{
-        //    return Create1D((float)A.Minimum, (float)A.Maximum, MinB, MaxB);
-        //}
-
-
     }
 }

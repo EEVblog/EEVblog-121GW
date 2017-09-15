@@ -43,14 +43,9 @@ namespace rMultiplatform
         //Takes a SKPath and transforms it based on the transformations present in the axis
         public override SKMatrix Transform(SKSize dimension)
         {
-            var matrix      = SKMatrix.MakeIdentity();
             var horz_map    = Horizontal.CoordinateFromValue(dimension.Width);
             var vert_map    = Vertical.CoordinateFromValue(dimension.Height);
-            matrix.ScaleX   = horz_map.Scale;
-            matrix.TransX   = horz_map.Translation;
-            matrix.ScaleY   = vert_map.Scale;
-            matrix.TransY   = vert_map.Translation;
-            return matrix;
+            return Map.CreateMatrix(horz_map, vert_map);
         }
 
         public override void Draw(SKCanvas canvas, SKSize dimension)
