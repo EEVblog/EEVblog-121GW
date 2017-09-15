@@ -31,28 +31,22 @@ namespace rMultiplatform
         private float MajorTickDistance => Distance / MajorTicks;
         private float MinorTickDistance => MajorTickDistance / MinorTicks;
 
-        //Used in the creation of an axis pair
-        public abstract float Translation(float dimension);
-        public abstract float Scaling(float dimension);
-
         //Used to interface with touch screen
-        public float ValueFromCoordinate(float dimension, float Value)
+        public Map.Map1D ValueFromCoordinate(float dimension)
         {
-            Value -= Translation(dimension);
-            Value /= Scaling(dimension);
-            return Value;
+            return Map.Create1D(AxisStart(dimension), AxisEnd(dimension), ValueStart, ValueEnd);
         }
-        public float CoordinateFromValue(float dimension, float Value)
+        public Map.Map1D CoordinateFromValue(float dimension)
         {
-            Value *= Scaling(dimension);
-            Value += Translation(dimension);
-            return Value;
-        }        //Used to interface with touch screen
-
+            return Map.Create1D(ValueStart, ValueEnd, AxisStart(dimension), AxisEnd(dimension));
+        }
 
         //
         public void Draw(SKCanvas canvas, SKSize dimension)
         {
+            if (MajorTickDistance == 0.0)
+                return;
+
             var draw_value_major_end = ValueEnd + MajorTickDistance / 2;
             for (Ticker.Value = ValueStart;
                 Ticker.Value <= draw_value_major_end; 
@@ -86,9 +80,6 @@ namespace rMultiplatform
         public override float AxisStart (float Width)   => Padding.LeftPosition(Width);
         public override float AxisEnd   (float Width)   => Padding.RightPosition(Width);
 
-        public override float Translation(float Width) => AxisStart(Width) + Scaling(Width) * ValueStart;
-        public override float Scaling(float dimension) => AxisSize(dimension) / Distance;
-
         public override float Dimension(SKSize dimensions) => dimensions.Height;
         public SmartAxisHorizontal(string pLabel, float pMinimum, float pMaximum) : base(pLabel, pMinimum, pMaximum)
         {
@@ -99,9 +90,6 @@ namespace rMultiplatform
     {
         public override float AxisStart (float Height)  => Padding.TopPosition(Height);
         public override float AxisEnd   (float Height)  => Padding.BottomPosition(Height);
-
-        public override float Translation(float Height) => AxisEnd(Height) + Scaling(Height) * ValueStart;
-        public override float Scaling(float dimension) => -AxisSize(dimension) / Distance;
 
         public override float Dimension(SKSize dimensions) => dimensions.Width;
         public SmartAxisVertical(string pLabel, float pMinimum, float pMaximum) : base(pLabel, pMinimum, pMaximum)

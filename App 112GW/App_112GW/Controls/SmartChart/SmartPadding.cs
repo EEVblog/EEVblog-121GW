@@ -42,7 +42,7 @@ namespace rMultiplatform
         {
             return Height * (1 - (Top + Bottom));
         }
-
+        
         //This returns the paddnig rectangle
         public SKRect Rectangle(float Height, float Width)
         {

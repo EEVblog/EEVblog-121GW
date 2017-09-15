@@ -16,7 +16,7 @@ namespace rMultiplatform
         }
         public SmartTickType TickType;
 
-        public float Position(float dimension) => Parent.CoordinateFromValue(dimension, Value);
+        public float Position(float dimension) => Parent.CoordinateFromValue(dimension).Calculate(Value);
         
         public static float SpaceWidth = MajorPaint.MeasureText(" ");
         public static bool  ShowTick             { get; set; } = true;

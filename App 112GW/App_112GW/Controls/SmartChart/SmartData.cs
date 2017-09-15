@@ -74,8 +74,8 @@ namespace rMultiplatform
             Points = new ObservableCollection<SKPoint>();
             Axis = pAxis;
 
-            pAxis.Horizontal.Range.Set(-1, 10);
-            pAxis.Vertical.Range.Set(-1, 1);
+            pAxis.Horizontal.Range.Set(0, 10);
+            pAxis.Vertical.Range.Set(-10, 10);
             for (var time = 0.0f; time < 10999.0f; time += 0.1f)
                 Points.Add(new SKPoint(time, Globals.RandomBetween(-1.0f, 1.0f)));
         }
@@ -105,7 +105,7 @@ namespace rMultiplatform
         }
         private void Points_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
-            //Parent.InvalidateSurface();
+            Parent.InvalidateSurface();
         }
     }
 }

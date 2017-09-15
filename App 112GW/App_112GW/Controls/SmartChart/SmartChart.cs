@@ -126,6 +126,7 @@ namespace rMultiplatform
         private SmartData Data;
         private void Draw(SKCanvas canvas, SKSize dimension)
         {
+            canvas.Clear(BackgroundColor.ToSKColor());
             Data.Draw(canvas, dimension);
         }
         public SmartChart(SmartData pData)

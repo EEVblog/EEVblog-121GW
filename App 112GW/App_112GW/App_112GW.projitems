@@ -19,6 +19,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Controls\SmartChart\SmartData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\SmartChart\SmartPadding.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\SmartChart\SmartTick.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Controls\SmartChart\Value Mapping\Mapper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\Template Controls\AutoGrid.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\Template Controls\GeneralButton.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\Template Controls\GeneralLabel.cs" />
