@@ -10,6 +10,7 @@ namespace rMultiplatform
         public event    EventHandler        RelClicked;
         public event    EventHandler        ModeChanged;
         public event    EventHandler        RangeChanged;
+
         private         GeneralButton       mMode;
         private         GeneralButton       mHold;
         private         GeneralButton       mRange;
@@ -31,7 +32,6 @@ namespace rMultiplatform
         {
             ModeChanged?.Invoke(sender, e);
         }
-
 
         public MultimeterMenu(string pSerialNumber = "SN0000")
         {

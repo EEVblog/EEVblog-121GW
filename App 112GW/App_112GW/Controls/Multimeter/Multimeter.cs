@@ -9,6 +9,7 @@ namespace rMultiplatform
     public partial class Multimeter : AutoGrid
     {
         public SmartChart Chart;
+        public SmartChartMenu ChartMenu;
         public SmartChartLogger Logger = new SmartChartLogger(10, SmartChartLogger.LoggerMode.Rescaling);
 
         public event EventHandler RequestMaximise;
@@ -23,7 +24,6 @@ namespace rMultiplatform
             {
                 processor.ProcessPacket(pInput);
                 Logger.Sample(processor.MainValue);
-                //Data.Sample(processor.MainValue);
 
                 VerticalLabel = processor.MainRangeLabel;
                 Screen.Update(processor);
@@ -54,22 +54,6 @@ namespace rMultiplatform
         public MultimeterScreen Screen;
         public MultimeterMenu   Menu;
 
-
-        //public ChartMenu        ChartMenu;
-        //public ChartData        Data;
-        //public Chart            _Plot;
-        //public Chart            Plot
-        //{
-        //    get
-        //    {
-        //        return _Plot;
-        //    }
-        //    private set
-        //    {
-        //        _Plot = value;
-        //    }
-        //}
-
         enum ActiveItem
         {
             Screen,
@@ -79,29 +63,18 @@ namespace rMultiplatform
 
         public void Reset()
         {
-            //Data.Data.Clear();
-            //Data.Reset();
-            //VerticalAxis.Reset();
-            //HorozontalAxis.Reset();
+            Logger.Reset();
         }
 
-        //ChartAxis VerticalAxis;
-        //ChartAxis HorozontalAxis;
-        private string _VerticalLabel = "Volts (V)";
+        private string _VerticalLabel = "";
         public string VerticalLabel
         {
-            get
-            {
-                return _VerticalLabel;
-            }
             set
             {
                 if (value != _VerticalLabel)
                 {
-                    _VerticalLabel                  = value;
-                    //Data.VerticalLabel              = value;
-                    //VerticalAxis.Label              = value;
-                    //HorozontalAxis.LockToAxisLabel  = value;
+                    _VerticalLabel = value;
+                    Chart.Title = value;
                     Reset();
                 }
             }
@@ -128,30 +101,23 @@ namespace rMultiplatform
                     new SmartAxisPair(
                         new SmartAxisHorizontal("Horizontal", -0.1f, 0.1f), 
                         new SmartAxisVertical("Vertical", -0.2f, 0.1f)), Logger.Data));
-            //Data = new ChartData( ChartData.ChartDataMode.eRescaling, "Time (s)", _VerticalLabel, 10f );
-            //Plot = new Chart() {Padding = new ChartPadding(0.05)};
-            //Plot.AddGrid ( new ChartGrid() );
-            //Plot.AddAxis ( HorozontalAxis    = new ChartAxis(5, 5, 0, 20){   Label = "Time (s)",     Orientation = ChartAxis.AxisOrientation.Horizontal, LockToAxisLabel = _VerticalLabel,   LockAlignment = ChartAxis.AxisLock.eEnd} );
-            //Plot.AddAxis ( VerticalAxis      = new ChartAxis(5, 5, 0, 0) {   Label = _VerticalLabel, Orientation = ChartAxis.AxisOrientation.Vertical,   LockToAxisLabel = "Time (s)",       LockAlignment = ChartAxis.AxisLock.eStart} );
-            //Plot.AddData(Data);
-            //Plot.FullscreenClicked += Plot_FullScreenClicked;
+            Chart.Clicked += Plot_FullScreenClicked;
 
-            //ChartMenu = new ChartMenu(true, true);
-            //ChartMenu.SaveClicked += Menu_SaveClicked;
-            //ChartMenu.ResetClicked += Menu_ResetClicked;
+            ChartMenu = new SmartChartMenu(true, true);
+            ChartMenu.SaveClicked += Menu_SaveClicked;
+            ChartMenu.ResetClicked += Menu_ResetClicked;
 
-            DefineGrid(1, 3);
-            AutoAdd(Screen);    FormatCurrentRow(GridUnitType.Auto);
+            DefineGrid(1, 4);
+            AutoAdd(Screen);    FormatCurrentRow(GridUnitType.Star);
             AutoAdd(Menu);      FormatCurrentRow(GridUnitType.Auto);
-            AutoAdd(Chart); FormatCurrentRow(GridUnitType.Star);
-            //AutoAdd(Plot);      FormatCurrentRow(GridUnitType.Star);
-            //AutoAdd(ChartMenu); FormatCurrentRow(GridUnitType.Auto);
+            AutoAdd(Chart);     FormatCurrentRow(GridUnitType.Star);
+            AutoAdd(ChartMenu); FormatCurrentRow(GridUnitType.Auto);
 
             SetView();
         }
         private void Menu_SaveClicked(object sender, EventArgs e)
         {
-            //Plot.SaveCSV();
+            Chart.SaveCSV();
         }
         private void Menu_ResetClicked(object sender, EventArgs e)
         {

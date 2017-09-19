@@ -13,7 +13,7 @@ namespace rMultiplatform
             Maximum = 0;
             FirstScaling = true;
         }
-        public bool FirstScale(double Value)
+        public bool FirstScale(float Value)
         {
             if (FirstScaling)
             {
@@ -24,7 +24,7 @@ namespace rMultiplatform
             }
             return false;
         }
-        public bool FirstScale(double Min, double Max)
+        public bool FirstScale(float Min, float Max)
         {
             if (FirstScaling)
             {
@@ -35,11 +35,11 @@ namespace rMultiplatform
             }
             return false;
         }
-        private void AddToMaximum(double Value)
+        private void AddToMaximum(float Value)
         {
             Maximum += Value;
         }
-        private void AddToMinimum(double Value)
+        private void AddToMinimum(float Value)
         {
             Minimum += Value;
         }
@@ -59,8 +59,8 @@ namespace rMultiplatform
             }
         }
 
-        private double _Maximum;
-        public double Maximum
+        private float _Maximum;
+        public float Maximum
         {
             get
             {
@@ -73,8 +73,8 @@ namespace rMultiplatform
             }
         }
 
-        private double _Minimum;
-        public double Minimum
+        private float _Minimum;
+        public float Minimum
         {
             get
             {
@@ -95,7 +95,7 @@ namespace rMultiplatform
             }
         }
 
-        public double Distance
+        public float Distance
         {
             get { return Maximum - Minimum; }
         }
@@ -106,7 +106,7 @@ namespace rMultiplatform
 
             FirstScaling = false;
         }
-        public void Set(double ValA, double ValB)
+        public void Set(float ValA, float ValB)
         {
             Update = true;
             FirstScaling = false;
@@ -121,16 +121,16 @@ namespace rMultiplatform
                 Maximum = ValB;
             }
         }
-        public      Range   (double ValA, double ValB)
+        public      Range   (float ValA, float ValB)
         {
             Set(ValA, ValB);
         }
 
-        public bool InRange (double Val)
+        public bool InRange (float Val)
         {
             return (Minimum <= Val) && (Val <= Maximum);
         }
-        public void ShiftRange(double Value)
+        public void ShiftRange(float Value)
         {
             if (!FirstScale(Value))
             {
@@ -138,11 +138,11 @@ namespace rMultiplatform
                 AddToMinimum(Value);
             }
         }
-        public void ShiftRangeToFitValue(double Value)
+        public void ShiftRangeToFitValue(float Value)
         {
             if (!FirstScale(Value))
             {
-                var diff = (double)0;
+                var diff = (float)0;
                 if (Value > Maximum)
                     diff = Value - Maximum;
                 else if (Value < Minimum)
@@ -152,7 +152,7 @@ namespace rMultiplatform
                 ShiftRange(diff);
             }
         }
-        public void RescaleRangeToFitValue(double Value)
+        public void RescaleRangeToFitValue(float Value)
         {
             if (!FirstScale(Value))
             {

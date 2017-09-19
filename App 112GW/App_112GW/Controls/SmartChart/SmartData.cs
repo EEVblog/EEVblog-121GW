@@ -4,83 +4,82 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System;
+using System.Threading;
 
 namespace rMultiplatform
 {
     public abstract class ASmartData : ASmartElement
     {
-        public SmartChart       Parent = null;
-        public ASmartAxisPair   Axis = null;
+        public SmartChart       Parent  = null;
+        public ASmartAxisPair   Axis    = null;
 
         protected SKPaint DataPaint = MakeDefaultPaint(Globals.TextColor, 1, Globals.MajorFontSize, Globals.Typeface, IsStroke:true);
 
+        public TSObservableCollection<SKPoint>    Points;
 
-        public ObservableCollection<SKPoint> Points;
-        private List<SKPoint> VisiblePoints
+        public void Reset()
+        {
+            Points.Clear();
+        }
+
+        private List<SKPoint> PointsList
         {
             get
             {
-                int DataStart = -1;
-                int DataEnd = -1;
-                bool IsDataStart(SKPoint arg, int index)
-                {
-                    var result = arg.X >= Axis.Horizontal.ValueStart;
-                    if (DataStart == -1)
-                        if (result)
-                            DataStart = index;
-                    return result;
-                }
-                bool IsDataEnd(SKPoint arg, int index)
-                {
-                    var result = arg.X > Axis.Horizontal.ValueEnd;
-                    if (DataEnd == -1)
-                        if (result)
-                            DataStart = index;
-                    return result;
-                }
-                Points.Where(IsDataStart);
-                Points.Where(IsDataEnd);
-
-                var Length = Points.Count;
-
-                if (DataStart < 0)
-                    DataStart = 0;
-
-                if (DataEnd > Length || DataEnd < 0)
-                    DataEnd = Length;
-
-                if (DataEnd < DataStart)
-                    DataStart = DataEnd;
-
-                return Points.ToList().GetRange(DataStart, (DataEnd - DataStart));
+                return Points.ToList();
             }
         }
-
-
-        protected (SKPath, SKRect) VisiblePath
+        private SKPoint[] PointsArray
+        {
+            get
+            {
+                return Points.ToList().ToArray();
+            }
+        }
+        protected (SKPath, SKRect) Path
         {
             get
             {
                 var path = new SKPath();
-                path.AddPoly(VisiblePoints.ToArray(), false);
-                return (path, path.Bounds);
+                path.AddPoly(PointsArray, false);
+                var bounds = path.Bounds;
+                return (path, bounds);
             }
+        }
+
+        public string GetCSV()
+        {
+            var points = PointsList;
+            if (points.Count > 1)
+            {
+                //The fallback values of axis labels are X, Y
+                string horozontal_label = "time (s)";
+                string vertical_label = Parent.Title;
+
+                //The header row of the CSV
+                string output = horozontal_label + ", " + vertical_label + "\r\n";
+
+                //Print the rows of the CSV to the string.
+                foreach (var item in points)
+                    output += item.X.ToString() + ", " + item.Y.ToString() + "\r\n";
+
+                //Return output ;) troll comment
+                return output;
+            }
+            return "";
         }
 
         public abstract void Draw(SKCanvas Canvas, SKSize dimension);
         
         public ASmartData(ASmartAxisPair pAxis)
         {
-            Points = new ObservableCollection<SKPoint>();
+            Points = new TSObservableCollection<SKPoint>();
             Axis = pAxis;
 
-            pAxis.Horizontal.Range.Set(0, 10);
-            pAxis.Vertical.Range.Set(-10, 10);
-            for (var time = 0.0f; time < 10999.0f; time += 0.1f)
-                Points.Add(new SKPoint(time, Globals.RandomBetween(-1.0f, 1.0f)));
+            pAxis.Horizontal.Range.Set(0f, 0.1f);
+            pAxis.Vertical.Range.Set(-0.1f, 0.1f);
         }
     }
-
     public class SmartData : ASmartData
     {
         public override void Draw(SKCanvas Canvas, SKSize dimension)
@@ -88,14 +87,17 @@ namespace rMultiplatform
             if (Points.Count == 0)
                 return;
 
-            (var path, var bounds) = VisiblePath;
+            (var path, var bounds) = Path;
 
             Axis.Set        (bounds);                       //Set the axis limits
             Axis.Draw       (Canvas, dimension);            //Render the axis with limits
             path.Transform  (Axis.Transform(dimension));    //Transform the path to fit limits
+
+            //This only draws the path in the render region (between axis)
+            Canvas.ClipRect (Axis.AxisClip(dimension));
             Canvas.DrawPath (path, DataPaint);              //Render scaled and shifted path
         }
-        public SmartData(ASmartAxisPair pAxis, ObservableCollection<SKPoint> pData) : base(pAxis)
+        public SmartData(ASmartAxisPair pAxis, TSObservableCollection<SKPoint> pData) : base(pAxis)
         {
             DataPaint.IsStroke  = true;
             DataPaint.Color     = Globals.UniqueColor().ToSKColor();

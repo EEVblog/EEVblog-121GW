@@ -12,13 +12,16 @@
     <Compile Include="$(MSBuildThisFileDirectory)App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Controls\Multimeter\TSObservableCollection.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\SmartChart\SmartChartLogger.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\SmartChart\SmartAxis.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\SmartChart\SmartAxisPair.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\SmartChart\SmartChart.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Controls\SmartChart\SmartChartMenu.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\SmartChart\SmartData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\SmartChart\SmartPadding.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\SmartChart\SmartTick.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Controls\SmartChart\SmartTitle.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\SmartChart\Value Mapping\Mapper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\Template Controls\AutoGrid.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\Template Controls\GeneralButton.cs" />

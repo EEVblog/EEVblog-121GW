@@ -32,14 +32,13 @@ namespace rMultiplatform
             //Anywhere
             var documentpicker = new Windows.Storage.Pickers.FileSavePicker();
             documentpicker.SuggestedStartLocation = Windows.Storage.Pickers.PickerLocationId.DocumentsLibrary;
-            //documentpicker.FileTypeChoices.Add("Plain text.", new List<string>() { ".txt" });
             documentpicker.FileTypeChoices.Add("Comma seperated files.", new List<string>() { ".csv" });
             documentpicker.SuggestedFileName = "Logfile";
-            var file = documentpicker.PickSaveFileAsync().AsTask().Result;
-            if (file != null)
+            documentpicker.PickSaveFileAsync().AsTask().ContinueWith((Task<Windows.Storage.StorageFile> resutl)=> 
             {
+                var file = resutl.Result;
                 Windows.Storage.FileIO.WriteTextAsync(file, content);
-            }
+            });
 #endif
         }
         static public string LoadFile(string filename)

@@ -6,17 +6,17 @@ namespace rMultiplatform
 {
     interface ICappedRange
     {
-        double Minimum
+        float Minimum
         {
             get;
             set;
         }
-        double Maximum
+        float Maximum
         {
             get;
             set;
         }
-        double Distance
+        float Distance
         {
             get;
         }
@@ -25,17 +25,17 @@ namespace rMultiplatform
         void Reset();
 
         void Set            (Range Input);
-        void Set            (double ValA, double ValB);
+        void Set            (float ValA, float ValB);
 
-        bool InRange        (double Value);
-        void AddToMaximum   (double Value);
-        void AddToMinimum   (double Value);
+        bool InRange        (float Value);
+        void AddToMaximum   (float Value);
+        void AddToMinimum   (float Value);
 
-        void ShiftRange     (double Value);
-        void ShiftFit       (double Value);
-        void ExpandFit      (double Value);
-        void Pan            (double Amount);
-        void Zoom           (double Amount, double About);
+        void ShiftRange     (float Value);
+        void ShiftFit       (float Value);
+        void ExpandFit      (float Value);
+        void Pan            (float Amount);
+        void Zoom           (float Amount, float About);
 
         Range GetRange();
         Range Combine(List<Range> mRanges);
@@ -49,17 +49,19 @@ namespace rMultiplatform
             Boundary
         };
 
+        public bool IsCapped => Select == Current.Visible;
+
         private Range   Visible;
         private Range   Boundary;
         private Current Select;
-        private double  Dist(double A, double B)
+        private float  Dist(float A, float B)
         {
             if (A > B)
                 return A - B;
             return B - A;
         }
 
-        public double Minimum
+        public float Minimum
         {
             get
             {
@@ -91,7 +93,7 @@ namespace rMultiplatform
                 }
             }
         }
-        public double Maximum
+        public float Maximum
         {
             get
             {
@@ -123,7 +125,7 @@ namespace rMultiplatform
                 }
             }
         }
-        public double Distance
+        public float Distance
         {
             get
             {
@@ -172,29 +174,29 @@ namespace rMultiplatform
             Visible.Minimum = Input.Minimum;
             Visible.Maximum = Input.Maximum;
         }
-        public void Set(double ValA, double ValB)
+        public void Set(float ValA, float ValB)
         {
             if (ValA > ValB)    Set(new Range(ValB, ValA));
             else                Set(new Range(ValA, ValB));
         }
 
-        public bool InRange(double Value)
+        public bool InRange(float Value)
         {
             return (Minimum <= Value) && (Value <= Maximum);
         }
 
-        public void AddToMaximum(double Value)
+        public void AddToMaximum(float Value)
         {
             Maximum += Value;
             if (Maximum < Minimum) Minimum = Minimum;
         }
-        public void AddToMinimum(double Value)
+        public void AddToMinimum(float Value)
         {
             Minimum += Value;
             if (Minimum > Maximum) Maximum = Minimum;
         }
 
-        public void ShiftRange(double Value)
+        public void ShiftRange(float Value)
         {
             if (Value == 0.0)
                 return;
@@ -202,22 +204,22 @@ namespace rMultiplatform
             Minimum = Minimum + Value;
             Maximum = Maximum + Value;
         }
-        public void ShiftFit(double Value)
+        public void ShiftFit(float Value)
         {
-            double diff = 0.0;
+            float diff = 0.0f;
             if      (Value > Maximum)
                 diff = Value - Maximum;
             else if (Value < Minimum)
                 diff = Minimum - Value;
             ShiftRange(diff);
         }
-        public void ExpandFit(double Value)
+        public void ExpandFit(float Value)
         {
             if      (Value > Maximum) Maximum = Value;
             else if (Value < Minimum) Minimum = Value;
         }
 
-        public void Pan(double Amount)
+        public void Pan(float Amount)
         {
             if (Select != Current.Visible)  return;
 
@@ -230,7 +232,7 @@ namespace rMultiplatform
                 Visible.Maximum = max;
             }
         }
-        public void Zoom(double Amount, double About)
+        public void Zoom(float Amount, float About)
         {
             if (Amount == 1.0)
                 return;
@@ -300,7 +302,7 @@ namespace rMultiplatform
             return output;
         }
 
-        public CappedRange(double A, double B)
+        public CappedRange(float A, float B)
         {
             Boundary = new Range(A, B);
             Visible = new Range(A, B);

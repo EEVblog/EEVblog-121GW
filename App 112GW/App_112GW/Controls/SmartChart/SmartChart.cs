@@ -1,6 +1,9 @@
 ﻿using Xamarin.Forms;
 using SkiaSharp;
 using SkiaSharp.Views.Forms;
+using static rMultiplatform.GeneralControl;
+using System;
+using System.Diagnostics;
 
 namespace rMultiplatform
 {
@@ -79,7 +82,10 @@ namespace rMultiplatform
         } = 1.0f;
         static public float MinorTextSize => Globals.MinorFontSize * Scale;
         static public float MajorTextSize => Globals.MajorFontSize * Scale;
-
+        static public (float x, float y) MeasureText(string Input, SKPaint Paint)
+        {
+            return (Paint.MeasureText(Input), Globals.TitleFontSize);
+        }
         static public (float x, float y) MeasureMajorText(string Input)
         {
             return (MajorPaint.MeasureText(Input), MajorTextSize);
@@ -88,15 +94,51 @@ namespace rMultiplatform
         {
             return (MinorPaint.MeasureText(Input), MinorTextSize);
         }
-
-        public static SmartPadding Padding { get; private set; } = new SmartPadding(0.25f);
-
+        public static SmartPadding Padding { get; private set; } = new SmartPadding(0);
         public ASmartElement(){}
     }
 
     public class SmartChart : GeneralView
     {
-        #region GENERALVIEW_RENDER_REGION
+        #region EVENTS
+        public event EventHandler Clicked;
+        #endregion
+        #region TOUCHSCREEN
+        private Touch mTouch;
+        private void MTouch_Press   (object sender, TouchActionEventArgs args)  {}
+        private void MTouch_Hover   (object sender, TouchActionEventArgs args)  {}
+        private void MTouch_Release (object sender, TouchActionEventArgs args)  {}
+        private void SetupTouch()
+        {
+            //Add the gesture recognizer 
+            mTouch = new Touch();
+            mTouch.Tap      += MTouch_Tap;
+            mTouch.Pressed  += MTouch_Press;
+            mTouch.Hover    += MTouch_Hover;
+            mTouch.Released += MTouch_Release;
+            mTouch.Pinch    += MTouch_Pinch;
+            mTouch.Pan      += MTouch_Pan;
+            Effects.Add(mTouch);
+        }
+        private void MTouch_Tap(object sender, Touch.TouchTapEventArgs args)
+        {
+            Clicked?.Invoke(sender, EventArgs.Empty);
+        }
+        private void MTouch_Pan(object sender, TouchPanActionEventArgs args)
+        {
+            Data.Axis.Pan((float)args.Dx, (float)args.Dy);
+        }
+        private void MTouch_Pinch(object sender, TouchPinchActionEventArgs args)
+        {
+            var zoomX = (float)args.Pinch.ZoomX;
+            var zoomY = (float)args.Pinch.ZoomY;
+            var Center = args.Pinch.Center;
+
+            Debug.WriteLine(zoomX.ToString() + " " + zoomY.ToString());
+            Data.Axis.Zoom(zoomX, zoomY, (float)Center.X, (float)Center.Y);
+        }
+        #endregion
+        #region RENDERER
         GeneralRenderer mRenderer;
         public void Disable()
         {
@@ -123,17 +165,37 @@ namespace rMultiplatform
         }
         #endregion
 
+        public void SaveCSV()
+        {
+            Files.SaveFile(Data.GetCSV());
+        }
+
         private SmartData Data;
+        private SmartTitle _Title = new SmartTitle() { Title = "Untitled" };
+        public string Title
+        {
+            get
+            {
+                return _Title.Title;
+            }
+            set
+            {
+                _Title.Title = value;
+            }
+        }
+
         private void Draw(SKCanvas canvas, SKSize dimension)
         {
             canvas.Clear(BackgroundColor.ToSKColor());
+            (var x1, var y1, var x2, var y2) = ASmartElement.Padding.GetHorizontalLine(dimension.Width, 10);
+            _Title.Draw(canvas, dimension);
             Data.Draw(canvas, dimension);
         }
         public SmartChart(SmartData pData)
         {
             Data = pData;
             Data.Parent = this;
-
+            SetupTouch();
             IsVisible = true;
         }
     }

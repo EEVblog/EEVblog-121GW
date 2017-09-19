@@ -57,6 +57,13 @@ namespace rMultiplatform
             }
         }
 
+        public enum TickLabelSide
+        {
+            Inside,
+            Outside
+        }
+        public TickLabelSide LabelSide { get; set; } = TickLabelSide.Inside;
+
         protected abstract (float x, float y) TickStart(SKSize dimensoin);
         protected abstract (float x, float y) TickEnd(SKSize dimensoin);
         protected abstract (float x, float y) TickCentre(SKSize dimension);
@@ -67,7 +74,6 @@ namespace rMultiplatform
             return (start_x, start_y, end_x, end_y);
         }
 
-        protected float GridLineDimension(SKSize dimensions) => Parent.Dimension(dimensions);
         protected abstract (float x1, float y1, float x2, float y2) GridLine(SKSize dimension);
 
         protected abstract (SKPoint x, SKPoint y) LabelLine(SKSize dimension, string Text);
@@ -121,9 +127,21 @@ namespace rMultiplatform
         {
             (var wid,   var hei)    = MeasureMajorText(Text);
             (var tx,    var ty)     = TickEnd(dimension);
-            var pt1 = new SKPoint(tx, ty + SpaceWidth + wid);
-            var pt2 = new SKPoint(tx, ty + SpaceWidth);
-            return (pt1, pt2);
+
+            if (LabelSide == TickLabelSide.Inside)
+            {
+                ty -= SpaceWidth * 3;
+                tx -= SpaceWidth;
+                var pt1 = new SKPoint(tx, ty);
+                var pt2 = new SKPoint(tx, ty - wid);
+                return (pt1, pt2);
+            }
+            else
+            {
+                var pt1 = new SKPoint(tx, ty + SpaceWidth + wid);
+                var pt2 = new SKPoint(tx, ty + SpaceWidth);
+                return (pt1, pt2);
+            }
         }
 
         public SmartTickHorizontal(ASmartAxis Parent, SmartTickType Type) : base(Parent, Type) { }
@@ -139,9 +157,20 @@ namespace rMultiplatform
         {
             (var wid,   var hei)    = MeasureMajorText(Text);
             (var tx,    var ty)     = TickStart(dimension);
-            var pt1 = new SKPoint(tx - SpaceWidth - wid, ty);
-            var pt2 = new SKPoint(tx - SpaceWidth, ty);
-            return (pt1, pt2);
+            if (LabelSide == TickLabelSide.Inside)
+            {
+                tx += SpaceWidth * 3;
+                ty -= hei/2;
+                var pt1 = new SKPoint(tx , ty);
+                var pt2 = new SKPoint(tx + wid, ty);
+                return (pt1, pt2);
+            }
+            else
+            {
+                var pt1 = new SKPoint(tx - SpaceWidth - wid, ty);
+                var pt2 = new SKPoint(tx - SpaceWidth, ty);
+                return (pt1, pt2);
+            }
         }
 
         public SmartTickVertical(ASmartAxis Parent, SmartTickType Type) : base(Parent, Type) { }

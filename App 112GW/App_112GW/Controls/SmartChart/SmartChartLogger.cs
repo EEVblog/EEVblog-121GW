@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Collections.ObjectModel;
 using SkiaSharp;
+using System.Threading;
 
 namespace rMultiplatform
 {
@@ -15,10 +16,10 @@ namespace rMultiplatform
             Screen
         }
 
-        private float FrameLength = 10; //in ms
-        private LoggerMode Mode = LoggerMode.Rescaling;
-        private DateTime DataStart = DateTime.Now;
-        public ObservableCollection<SKPoint> Data;
+        private float FrameLength                       = 10;
+        private LoggerMode Mode                         = LoggerMode.Rescaling;
+        private DateTime DataStart                      = DateTime.Now;
+        public  TSObservableCollection<SKPoint> Data    = new TSObservableCollection<SKPoint>();
 
         public void Reset()
         {
@@ -50,7 +51,7 @@ namespace rMultiplatform
         {
             FrameLength = pFrameLength;
             Mode = pMode;
-            Data = new ObservableCollection<SKPoint>();
+            Data = new TSObservableCollection<SKPoint>();
         }
     }
 }

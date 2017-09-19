@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Xamarin.Forms;
 using SkiaSharp;
+using System.Diagnostics;
 
 namespace rMultiplatform
 {
@@ -11,12 +12,34 @@ namespace rMultiplatform
     {
         static private Random random = new Random();
 
+        static public void RunMainThread(Action input)
+        {
+            Device.BeginInvokeOnMainThread(() =>
+            {
+                try
+                {
+                    input?.Invoke();
+                }
+                catch
+                {
+                    Debug.WriteLine("Error Caught :  public void RunMainThread(Action input)");
+                }
+            });
+        }
+
         static public SKTypeface Typeface
         {
             get
             {
                 var output = SKTypeface.FromFamilyName("tahoma", 100, 1, SKFontStyleSlant.Upright);
                 return output;
+            }
+        }
+        static public float TitleFontSize
+        {
+            get
+            {
+                return (float)Device.GetNamedSize(NamedSize.Medium, typeof(Label)); ;
             }
         }
         static public float MajorFontSize
@@ -57,9 +80,9 @@ namespace rMultiplatform
         {
             return A.Luminosity;
         }
-        static public double Contrast(Color A, Color B)
+        static public float Contrast(Color A, Color B)
         {
-            return Math.Abs(Brightness(A) - Brightness(B));
+            return (float)(Math.Abs(Brightness(A) - Brightness(B)));
         }
         static public Color HighlightColor
         {
@@ -182,7 +205,7 @@ namespace rMultiplatform
         }
         static public Color UniqueColor()
         {
-            return UniqueColor(new Range(0.6, 0.9));
+            return UniqueColor(new Range(0.6f, 0.9f));
         }
     };
 }
