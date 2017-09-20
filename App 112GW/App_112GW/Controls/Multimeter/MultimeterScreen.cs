@@ -14,12 +14,7 @@ namespace rMultiplatform
         private Touch mTouch;
 
         delegate void CacheImage(ILayer image);
-        public enum eControlInputState
-        {
-            eNone,
-            ePressed,
-            eHover
-        }
+        public enum eControlInputState      { eNone, ePressed, eHover }
         private eControlInputState _State;
         public eControlInputState State
         {
@@ -34,22 +29,10 @@ namespace rMultiplatform
             }
         }
 
-        private void MTouch_Pressed(object sender, TouchActionEventArgs args)
-        {
-            State = eControlInputState.ePressed;
-        }
-        private void MTouch_Tap(object sender, Touch.TouchTapEventArgs args)
-        {
-            OnClicked(EventArgs.Empty);
-        }
-        private void MTouch_Hover(object sender, TouchActionEventArgs args)
-        {
-            State = eControlInputState.eHover;
-        }
-        private void MTouch_Release(object sender, TouchActionEventArgs args)
-        {
-            State = eControlInputState.eNone;
-        }
+        private void MTouch_Tap     (object sender, Touch.TouchTapEventArgs args)   =>  OnClicked(EventArgs.Empty);
+        private void MTouch_Pressed (object sender, TouchActionEventArgs args)      =>  State = eControlInputState.ePressed;
+        private void MTouch_Hover   (object sender, TouchActionEventArgs args)      =>  State = eControlInputState.eHover;
+        private void MTouch_Release (object sender, TouchActionEventArgs args)      =>  State = eControlInputState.eNone;
 
         private SKColor _IdleColor;
         public Color IdleColor
@@ -140,24 +123,17 @@ namespace rMultiplatform
         }
 
         public event EventHandler Clicked;
-        protected virtual void OnClicked(EventArgs e)
-        {
-            Clicked?.Invoke(this, e);
-        }
+        protected virtual void  OnClicked(EventArgs e) => Clicked?.Invoke(this, e);
 
-        private Layers mOther;
-        public SKBitmap mLayer;
-        public SKCanvas mCanvas;
-        private Layers mBargraph;
-        private List<Layers> mSegments;
-        private List<Layers> mSubSegments;
-        private int mDecimalPosition;
-        private SKRect mDrawRectangle;
+        private Layers          mOther;
+        public  SKBitmap        mLayer;
+        public  SKCanvas        mCanvas;
+        private Layers          mBargraph;
+        private List<Layers>    mSegments;
+        private List<Layers>    mSubSegments;
+        private int             mDecimalPosition;
+        private SKRect          mDrawRectangle;
 
-        protected virtual void LayerChange(object o, EventArgs e)
-        {
-
-        }
         private void    SetLargeSegments(string pInput)
         {
             if (pInput.EndsWith("."))
@@ -175,14 +151,14 @@ namespace rMultiplatform
 
             SetSegments(pInput.PadLeft(mSubSegments.Count, ' '), ref mSubSegments);
         }
-        public float    LargeSegments
+        public float LargeSegments
         {
             set
             {
                 SetLargeSegments(value.ToString());
             }
         }
-        public string   LargeSegmentsWord
+        public string LargeSegmentsWord
         {
             set
             {
@@ -221,11 +197,32 @@ namespace rMultiplatform
             for (int i = 0; i < mBargraph.mLayers.Count; i++)
                 mBargraph.mLayers[i].Set(pInput >= i);
         }
-        private void    SetOther(string Label, bool State)
+
+        ILayer LowZ;
+        ILayer SegV;
+        ILayer SegmV;
+        ILayer AC;
+        ILayer DC;
+        ILayer SegTempC;
+        ILayer SegHz;
+        ILayer SubPercent;
+        ILayer SegCapF;
+        ILayer Diode;
+        ILayer Subms;
+        ILayer SegR;
+        ILayer Segu;
+        ILayer SegA;
+
+        public ILayer GetOther(string Label, bool State)
         {
             foreach (var other in mOther.mLayers)
                 if (other.Name == Label)
-                    other.Set(State);
+                    return other;
+            return null;
+        }
+        private void    SetOther(string Label, bool State)
+        {
+            GetOther(Label, State).Set(State);
         }
 
         public Packet121GW MainMode
@@ -755,12 +752,7 @@ namespace rMultiplatform
 
         Layers segments = new Layers("mSegments");
         Layers subsegments = new Layers("mSubsegments");
-
-        CacheImage CacheFunction;
-        void Cacher(ILayer image)
-        {
-            mLayerCache.Add(image);
-        }
+        CacheImage CacheFunction = (image) => { mLayerCache.Add(image); };
         bool ProcessImage(string filename, Polycurve Image)
         {
             CacheFunction?.Invoke((new PathLayer(Image, filename) as ILayer));
@@ -844,10 +836,7 @@ namespace rMultiplatform
             mOther.Redraw();
             InvalidateSurface();
         }
-        private void Invalidate()
-        {
-            InvalidateSurface();
-        }
+        private void Invalidate() => InvalidateSurface();
 
         float LayerAspect = 1, LayerX = 0, LayerY = 0;
         public (float aspect, float width, float height) GetResultSize(double Width = 0)
@@ -879,8 +868,6 @@ namespace rMultiplatform
             RemakeCanvas = true;
             return base.OnMeasure(widthConstraint, heightConstraint);
         }
-
-
         private void Rescale()
         {
             var width = CanvasSize.Width;
@@ -900,7 +887,6 @@ namespace rMultiplatform
 
             mDrawRectangle = new SKRect(0, 0, imageWidth, imageHeight);
         }
-        bool RemakeCanvas = true;
         static private void SetSegment(char pInput, bool dp, Layers pSegment)
         {
             SevenSegment.SetSegment(pInput, dp, ref pSegment);
@@ -924,7 +910,7 @@ namespace rMultiplatform
                 i++;
             }
         }
-
+        bool RemakeCanvas = true;
         private SKRect rendrect = new SKRect();
         public override void PaintSurface ( SKCanvas canvas, SKSize dimension )
         {
@@ -987,10 +973,7 @@ namespace rMultiplatform
             if (mLayerCache == null)
             {
                 mLayerCache = new List<ILayer>();
-                CacheFunction = Cacher;
-
-                //Sort images into appropreate layered images
-                var Loader = new PathLoader(ProcessImage);
+                var Loader  = new PathLoader(ProcessImage);
             }
             else
                 foreach (var layer in mLayerCache)
@@ -1026,17 +1009,17 @@ namespace rMultiplatform
             foreach (var temp in mSegments)
             {
                 temp.ToBottom("dp");
-                temp.OnChanged += LayerChange;
+                temp.OnChanged += (e, o) => { };
             }
             foreach (var temp in mSubSegments)
             {
                 temp.ToBottom("dp");
-                temp.OnChanged += LayerChange;
+                temp.OnChanged += (e, o) => { };
             }
 
             //
-            mOther.OnChanged += LayerChange;
-            mBargraph.OnChanged += LayerChange;
+            mOther.OnChanged    += (e, o) => { };
+            mBargraph.OnChanged += (e, o) => { };
 
             //Add the gesture recognizer 
             SetupTouch();

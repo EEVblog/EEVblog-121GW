@@ -80,26 +80,20 @@ namespace rMultiplatform
         {
             get; private set;
         } = 1.0f;
-        static public float MinorTextSize => Globals.MinorFontSize * Scale;
-        static public float MajorTextSize => Globals.MajorFontSize * Scale;
-        static public (float x, float y) MeasureText(string Input, SKPaint Paint)
-        {
-            return (Paint.MeasureText(Input), Globals.TitleFontSize);
-        }
-        static public (float x, float y) MeasureMajorText(string Input)
-        {
-            return (MajorPaint.MeasureText(Input), MajorTextSize);
-        }
-        static public (float x, float y) MeasureMinorText(string Input)
-        {
-            return (MinorPaint.MeasureText(Input), MinorTextSize);
-        }
+        static public float MinorTextSize                                           => Globals.MinorFontSize * Scale;
+        static public float MajorTextSize                                           => Globals.MajorFontSize * Scale;
+        static public (float x, float y) MeasureText(string Input, SKPaint Paint)   =>  (Paint.MeasureText(Input), Globals.TitleFontSize);
+        static public (float x, float y) MeasureMajorText(string Input)             =>  (MajorPaint.MeasureText(Input), MajorTextSize);
+        static public (float x, float y) MeasureMinorText(string Input)             =>  (MinorPaint.MeasureText(Input), MinorTextSize);
         public static SmartPadding Padding { get; private set; } = new SmartPadding(0);
         public ASmartElement(){}
     }
 
     public class SmartChart : GeneralView
     {
+        private SmartData   Data;
+        private SmartTitle  _Title = new SmartTitle() { Title = "Untitled" };
+
         #region EVENTS
         public event EventHandler Clicked;
         #endregion
@@ -165,13 +159,12 @@ namespace rMultiplatform
         }
         #endregion
 
+        //Told you it'd be easy
         public void SaveCSV()
         {
             Files.SaveFile(Data.GetCSV());
         }
 
-        private SmartData Data;
-        private SmartTitle _Title = new SmartTitle() { Title = "Untitled" };
         public string Title
         {
             get

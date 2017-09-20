@@ -142,12 +142,12 @@ namespace rMultiplatform
         private float x_val, y_val1, y_val2;
         void Resample(List<SKPoint> L1, List<SKPoint> L2)
         {
-            var l1_count = L1.Count;
-            var l2_count = L2.Count;
-
-            //
-            if (Current_Operation != null)
+            if (RenderReady())
             {
+                var l1_count = L1.Count;
+                var l2_count = L2.Count;
+
+                //
                 if ((i1 >= l1_count) || (i2 >= l2_count))
                     Rerange();
 
@@ -190,14 +190,18 @@ namespace rMultiplatform
                 }
             }
         }
+        TSObservableCollection<SKPoint> Data = new TSObservableCollection<SKPoint>();
+        Multimeter DeviceA = null, DeviceB = null;
         private void Rerange()
         {
             i1 = 1; i2 = 1;
-            Data.Clear();
+            Data?.Clear();
         }
 
-        TSObservableCollection<SKPoint> Data = new TSObservableCollection<SKPoint>();
-        Multimeter DeviceA = null, DeviceB = null;
+        private bool RenderReady()
+        {
+            return ((DeviceA != null) && (DeviceB != null) && (Current_Operation != null));
+        }
         private void A_List_ItemSelected(object sender, EventArgs e)
         {
             Rerange();
@@ -210,8 +214,6 @@ namespace rMultiplatform
                 DeviceA.Logger.Data.CollectionChanged += DataA_Changed;
             }
         }
-
-
         private void B_List_ItemSelected(object sender, EventArgs e)
         {
             Rerange();
@@ -233,7 +235,6 @@ namespace rMultiplatform
         {
             Resample(DeviceA.Logger.Data.ToList(), DeviceB.Logger.Data.ToList());
         }
-
         private void Operation_List_ItemSelected(object sender, EventArgs e)
         {
             Rerange();
@@ -276,8 +277,8 @@ namespace rMultiplatform
             Chart = new SmartChart(
                                 new SmartData(
                                     new SmartAxisPair(
-                                        new SmartAxisHorizontal("Horizontal", -0.1f, 0.1f),
-                                        new SmartAxisVertical("Vertical", -0.2f, 0.1f)), Data));
+                                        new SmartAxisHorizontal ("Horizontal",  +0, 1),
+                                        new SmartAxisVertical   ("Vertical",    -1, 1)), Data));
             Chart.Clicked += Plot_FullscreenClicked;
 
             //
