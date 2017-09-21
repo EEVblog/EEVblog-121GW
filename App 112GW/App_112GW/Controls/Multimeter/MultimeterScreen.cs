@@ -10,11 +10,12 @@ namespace rMultiplatform
 {
     public class MultimeterScreen : GeneralRenderedView
     {
-        static List<ILayer> mLayerCache;
+        static List<ILayer> mLayerCache = null;
         private Touch mTouch;
 
         delegate void CacheImage(ILayer image);
-        public enum eControlInputState      { eNone, ePressed, eHover }
+
+        public enum eControlInputState { eNone, ePressed, eHover }
         private eControlInputState _State;
         public eControlInputState State
         {
@@ -198,31 +199,152 @@ namespace rMultiplatform
                 mBargraph.mLayers[i].Set(pInput >= i);
         }
 
-        ILayer LowZ;
-        ILayer SegV;
-        ILayer SegmV;
-        ILayer AC;
-        ILayer DC;
-        ILayer SegTempC;
-        ILayer SegHz;
-        ILayer SubPercent;
-        ILayer SegCapF;
-        ILayer Diode;
-        ILayer Subms;
-        ILayer SegR;
-        ILayer Segu;
-        ILayer SegA;
+        ILayer 
+            LowZ, 
+            SegV, 
+            SegmV, 
+            AC, 
+            DC, 
+            SegTempC, 
+            SegHz, 
+            SubPercent, 
+            SegCapF, 
+            Diode, 
+            Subms, 
+            SegR, 
+            Segu, 
+            SegA, 
+            Beep, 
+            SegM, 
+            Segk, 
+            Segn, 
+            SubV, 
+            SubDC, 
+            SubAC,
+            Subm, 
+            SubHz, 
+            SubR, 
+            SubA, 
+            SubS, 
+            SubdB, 
+            Seg_Minus, 
+            Sub_Minus, 
+            BarTick_Minus, 
+            BarTick_Plus, 
+            BarTick1_2, 
+            BarTick2_4, 
+            BarTick3_6, 
+            BarTick4_8, 
+            BarTick5_0, 
+            BarTick5_1, 
+            BarTick0_0, 
+            BarTick1_1, 
+            BarTick2_2, 
+            BarTick3_3, 
+            BarTick4_4, 
+            BarTick5_5,
+            Bar500_5_0, 
+            Bar500_0_1, 
+            Bar500_0_2, 
+            Bar1000_1_0,
+            Bar1000_0_1,
+            Bar1000_0_2,
+            Bar1000_0_3,
+            One_kHz,
+            Sub1, 
+            auto, 
+            apo, 
+            Battery, 
+            REL, 
+            DC_Plus_AC, 
+            TEST, 
+            MEM, 
+            HOLD, 
+            A_Minus, 
+            MAX, 
+            MIN, 
+            AVG, 
+            BT;
 
-        public ILayer GetOther(string Label, bool State)
+        public ILayer   GetOther(string Label)
         {
             foreach (var other in mOther.mLayers)
-                if (other.Name == Label)
+                if (other.Name.Contains(Label))
                     return other;
-            return null;
+            throw new Exception("Cannot find layer.");
         }
-        private void    SetOther(string Label, bool State)
+        private void    SetLayer(ILayer Layer, bool State)
         {
-            GetOther(Label, State).Set(State);
+            Layer.Set(State);
+        }
+
+        public void     SetupOtherCache()
+        {
+            LowZ            = GetOther("LowZ"       );
+            SegV            = GetOther("SegV"       );
+            SegmV           = GetOther("SegmV"      );
+            AC              = GetOther("AC"         );
+            DC              = GetOther("DC"         );
+            SegTempC        = GetOther("SegTempC"   );
+            SegHz           = GetOther("SegHz"      );
+            SubPercent      = GetOther("Sub%"       );
+            SegCapF         = GetOther("SegCapF"    );
+            Diode           = GetOther("Diode"      );
+            Subms           = GetOther("Subms"      );
+            SegR            = GetOther("SegR"       );
+            Segu            = GetOther("Segu"       );
+            SegA            = GetOther("SegA"       );
+            Beep            = GetOther("Beep"       );
+            SegM            = GetOther("SegM"       );
+            Segk            = GetOther("Segk"       );
+            Segn            = GetOther("Segn"       );
+            SubV            = GetOther("SubV"       );
+            SubDC           = GetOther("SubDC"      );
+            SubAC           = GetOther("SubAC"      );
+            Subm            = GetOther("Subm"       );
+            SubS            = GetOther("SubS"       );
+            SubdB           = GetOther("SubdB"      );
+            Sub_Minus       = GetOther("Sub-"       );
+            BarTick_Minus   = GetOther("Bar+"       );
+            BarTick_Plus    = GetOther("BarTick-"   );
+            BarTick1_2      = GetOther("BarTick1_2" );
+            BarTick2_4      = GetOther("BarTick2_4" );
+            BarTick3_6      = GetOther("BarTick3_6" );
+            BarTick4_8      = GetOther("BarTick4_8" );
+            BarTick5_0      = GetOther("BarTick5_0" );
+            BarTick5_1      = GetOther("BarTick5_1" );
+            BarTick0_0      = GetOther("BarTick0_0" );
+            BarTick1_1      = GetOther("BarTick1_1" );
+            BarTick2_2      = GetOther("BarTick2_2" );
+            BarTick3_3      = GetOther("BarTick3_3" );
+            BarTick4_4      = GetOther("BarTick4_4" );
+            BarTick5_5      = GetOther("BarTick5_5" );
+            Bar500_5_0      = GetOther("Bar500_5_0" );
+            Bar500_0_1      = GetOther("Bar500_0_1" );
+            Bar500_0_2      = GetOther("Bar500_0_2" );
+            Bar1000_1_0     = GetOther("Bar1000_1_0");
+            Bar1000_0_1     = GetOther("Bar1000_0_1");
+            Bar1000_0_2     = GetOther("Bar1000_0_2");
+            Bar1000_0_3     = GetOther("Bar1000_0_3");
+            One_kHz         = GetOther("1 kHz");
+            Sub1            = GetOther("Sub1");
+            auto            = GetOther("auto");
+            apo             = GetOther("apo");
+            Battery         = GetOther("Battery");
+            REL             = GetOther("REL");
+            DC_Plus_AC      = GetOther("DC+AC");
+            TEST            = GetOther("TEST");
+            MEM             = GetOther("MEM");
+            HOLD            = GetOther("HOLD");
+            A_Minus         = GetOther("A-");
+            MAX             = GetOther("MAX");
+            MIN             = GetOther("MIN");
+            AVG             = GetOther("AVG");
+            BT              = GetOther("bt");
+            Seg_Minus       = GetOther("Seg-");
+            SubA            = GetOther("SubA");
+            SubR            = GetOther("SubR");
+            SubHz           = GetOther("SubHz");
         }
 
         public Packet121GW MainMode
@@ -232,99 +354,99 @@ namespace rMultiplatform
                 switch (value.Mode)
                 {
                     case Packet121GW.eMode.Low_Z:
-                        SetOther("LowZ", true);
-                        SetOther("SegV", true);
+                        SetLayer(LowZ, true);
+                        SetLayer(SegV, true);
                         break;
                     case Packet121GW.eMode.DCV:
-                        SetOther("SegV", true);
+                        SetLayer(SegV, true);
                         break;
                     case Packet121GW.eMode.ACV:
-                        SetOther("SegV", true);
+                        SetLayer(SegV, true);
                         break;
                     case Packet121GW.eMode.DCmV:
-                        SetOther("SegV", true);
-                        SetOther("SegmV", true);
+                        SetLayer(SegV, true);
+                        SetLayer(SegmV, true);
                         break;
                     case Packet121GW.eMode.ACmV:
-                        SetOther("AC", true);
-                        SetOther("SegV", true);
-                        SetOther("SegmV", true);
+                        SetLayer(AC, true);
+                        SetLayer(SegV, true);
+                        SetLayer(SegmV, true);
                         break;
                     case Packet121GW.eMode.Temp:
-                        SetOther("SegTempC", true);
+                        SetLayer(SegTempC, true);
                         break;
                     case Packet121GW.eMode.Hz:
-                        SetOther("SegHz", true);
+                        SetLayer(SegHz, true);
                         break;
                     case Packet121GW.eMode.mS:
-                        SetOther("Subms", true);
+                        SetLayer(Subms, true);
                         break;
                     case Packet121GW.eMode.Duty:
-                        SetOther("Sub%", true);
+                        SetLayer(SubPercent, true);
                         break;
                     case Packet121GW.eMode.Resistor:
-                        SetOther("SegR", true);
+                        SetLayer(SegR, true);
                         break;
                     case Packet121GW.eMode.Continuity:
-                        SetOther("Beep", true);
-                        SetOther("SegR", true);
+                        SetLayer(Beep, true);
+                        SetLayer(SegR, true);
                         break;
                     case Packet121GW.eMode.Diode:
-                        SetOther("Diode", true);
-                        SetOther("SegV", true);
+                        SetLayer(Diode, true);
+                        SetLayer(SegV, true);
                         break;
                     case Packet121GW.eMode.Capacitor:
-                        SetOther("SegCapF", true);
+                        SetLayer(SegCapF, true);
                         break;
                     case Packet121GW.eMode.ACuVA:
-                        SetOther("SegV", true);
-                        SetOther("SegA", true);
-                        SetOther("Segu", true);
+                        SetLayer(SegV, true);
+                        SetLayer(SegA, true);
+                        SetLayer(Segu, true);
                         break;
                     case Packet121GW.eMode.ACmVA:
-                        SetOther("SegV", true);
-                        SetOther("SegA", true);
-                        SetOther("SegmV", true);
+                        SetLayer(SegV, true);
+                        SetLayer(SegA, true);
+                        SetLayer(SegmV, true);
                         break;
                     case Packet121GW.eMode.ACVA:
-                        SetOther("SegV", true);
-                        SetOther("SegA", true);
+                        SetLayer(SegV, true);
+                        SetLayer(SegA, true);
                         break;
                     case Packet121GW.eMode.ACuA:
-                        SetOther("SegA", true);
-                        SetOther("Segu", true);
+                        SetLayer(SegA, true);
+                        SetLayer(Segu, true);
                         break;
                     case Packet121GW.eMode.DCuA:
-                        SetOther("SegA", true);
-                        SetOther("Segu", true);
+                        SetLayer(SegA, true);
+                        SetLayer(Segu, true);
                         break;
                     case Packet121GW.eMode.ACmA:
-                        SetOther("SegA", true);
-                        SetOther("SegmV", true);
+                        SetLayer(SegA, true);
+                        SetLayer(SegmV, true);
                         break;
                     case Packet121GW.eMode.DCmA:
-                        SetOther("SegA", true);
-                        SetOther("SegmV", true);
+                        SetLayer(SegA, true);
+                        SetLayer(SegmV, true);
                         break;
                     case Packet121GW.eMode.ACA:
-                        SetOther("SegA", true);
+                        SetLayer(SegA, true);
                         break;
                     case Packet121GW.eMode.DCA:
-                        SetOther("SegA", true);
+                        SetLayer(SegA, true);
                         break;
                     case Packet121GW.eMode.DCuVA:
-                        SetOther("SegV", true);
-                        SetOther("SegA", true);
-                        SetOther("Segu", true);
+                        SetLayer(SegV, true);
+                        SetLayer(SegA, true);
+                        SetLayer(Segu, true);
                         break;
                     case Packet121GW.eMode.DCmVA:
-                        SetOther("SegV", true);
-                        SetOther("SegA", true);
-                        SetOther("SegmV", true);
+                        SetLayer(SegV, true);
+                        SetLayer(SegA, true);
+                        SetLayer(SegmV, true);
                         break;
                     case Packet121GW.eMode.DCVA:
-                        SetOther("SegV", true);
-                        SetOther("SegA", true);
+                        SetLayer(SegV, true);
+                        SetLayer(SegA, true);
                         break;
                     default:
                         Debug.WriteLine("Other mode recieved" + value.ToString());
@@ -346,10 +468,7 @@ namespace rMultiplatform
                 else
                 {
                     //Negative sign for segments
-                    if (Sign == Packet121GW.eSign.eNegative)
-                        SetOther("Seg-", true);
-                    else
-                        SetOther("Seg-", false);
+                    SetLayer(Seg_Minus, (Sign == Packet121GW.eSign.eNegative));
 
                     //Calculate the position of the decimal point
                     mDecimalPosition = Range;
@@ -386,22 +505,12 @@ namespace rMultiplatform
                     var units = value.MainRangeUnits;
                     switch (units)
                     {
-                        case 'm':
-                            SetOther("SegmV", true);
-                            break;
-                        case 'M':
-                            SetOther("SegM", true);
-                            break;
-                        case 'k':
-                            SetOther("Segk", true);
-                            break;
-                        case 'u':
-                            SetOther("Segu", true);
-                            break;
-                        case 'n':
-                            SetOther("Segn", true);
-                            break;
-                    }
+                        case 'm':   SetLayer(SegmV, true);  break;
+                        case 'M':   SetLayer(SegM,  true);  break;
+                        case 'k':   SetLayer(Segk,  true);  break;
+                        case 'u':   SetLayer(Segu,  true);  break;
+                        case 'n':   SetLayer(Segn,  true);  break;
+                    };
 
                     //Output the value to the emulated LCD
                     outstring = outstring.PadLeft(5, ' ').Replace(" .", "0.");
@@ -419,39 +528,39 @@ namespace rMultiplatform
                 switch (mode)
                 {
                     case Packet121GW.eMode.Low_Z:
-                        SetOther("SubV", true);
+                        SetLayer(SubV,  true);
                         break;
                     case Packet121GW.eMode.DCV:
-                        SetOther("SubDC", true);
-                        SetOther("SubV", true);
+                        SetLayer(SubDC, true);
+                        SetLayer(SubV,  true);
                         break;
                     case Packet121GW.eMode.ACV:
-                        SetOther("SubAC", true);
-                        SetOther("SubV", true);
+                        SetLayer(SubAC, true);
+                        SetLayer(SubV,  true);
                         break;
                     case Packet121GW.eMode.DCmV:
-                        SetOther("SubDC", true);
-                        SetOther("SubV", true);
-                        SetOther("Subm", true);
+                        SetLayer(SubDC, true);
+                        SetLayer(SubV,  true);
+                        SetLayer(Subm,  true);
                         break;
                     case Packet121GW.eMode.ACmV:
-                        SetOther("AC", true);
-                        SetOther("SegV", true);
-                        SetOther("Subm", true);
+                        SetLayer(AC,    true);
+                        SetLayer(SegV,  true);
+                        SetLayer(Subm,  true);
                         break;
                     case Packet121GW.eMode.Temp:
                         break;
                     case Packet121GW.eMode.Hz:
-                        SetOther("SubHz", true);
+                        SetLayer(SubHz, true);
                         break;
                     case Packet121GW.eMode.mS:
-                        SetOther("Subms", true);
+                        SetLayer(Subms, true);
                         break;
                     case Packet121GW.eMode.Duty:
-                        SetOther("Sub%", true);
+                        SetLayer(SubPercent, true);
                         break;
                     case Packet121GW.eMode.Resistor:
-                        SetOther("SubR", true);
+                        SetLayer(SubR,  true);
                         break;
                     case Packet121GW.eMode.Continuity:
                         break;
@@ -464,47 +573,47 @@ namespace rMultiplatform
                     case Packet121GW.eMode.ACmVA:
                         break;
                     case Packet121GW.eMode.ACVA:
-                        SetOther("SubAC", true);
-                        SetOther("SubV", true);
-                        SetOther("SubA", true);
+                        SetLayer(SubAC, true);
+                        SetLayer(SubV, true);
+                        SetLayer(SubA, true);
                         break;
                     case Packet121GW.eMode.ACuA:
                         break;
                     case Packet121GW.eMode.DCuA:
                         break;
                     case Packet121GW.eMode.ACmA:
-                        SetOther("SubAC", true);
-                        SetOther("SubA", true);
-                        SetOther("Subm", true);
+                        SetLayer(SubAC, true);
+                        SetLayer(SubA, true);
+                        SetLayer(Subm, true);
                         break;
                     case Packet121GW.eMode.DCmA:
-                        SetOther("SubDC", true);
-                        SetOther("SubA", true);
-                        SetOther("SubmV", true);
+                        SetLayer(SubDC, true);
+                        SetLayer(SubA, true);
+                        SetLayer(Subm, true);
                         break;
                     case Packet121GW.eMode.ACA:
-                        SetOther("SubAC", true);
-                        SetOther("SubA", true);
+                        SetLayer(SubAC, true);
+                        SetLayer(SubA, true);
                         break;
                     case Packet121GW.eMode.DCA:
-                        SetOther("SubDC", true);
-                        SetOther("SubA", true);
+                        SetLayer(SubDC, true);
+                        SetLayer(SubA, true);
                         break;
                     case Packet121GW.eMode.DCuVA:
                         break;
                     case Packet121GW.eMode.DCmVA:
                         break;
                     case Packet121GW.eMode.DCVA:
-                        SetOther("SubDC", true);
-                        SetOther("SubV", true);
-                        SetOther("SubA", true);
+                        SetLayer(SubDC, true);
+                        SetLayer(SubV, true);
+                        SetLayer(SubA, true);
                         break;
                     case Packet121GW.eMode._Battery:
-                        SetOther("SubDC", true);
-                        SetOther("SubV", true);
+                        SetLayer(SubDC, true);
+                        SetLayer(SubV, true);
                         break;
                     case Packet121GW.eMode._BURDEN_VOLTAGE:
-                        SetOther("SubV", true);
+                        SetLayer(SubV, true);
                         break;
                     case Packet121GW.eMode._YEAR:
                         break;
@@ -519,11 +628,11 @@ namespace rMultiplatform
                     case Packet121GW.eMode._TempF:
                         break;
                     case Packet121GW.eMode._dBm:
-                        SetOther("SubdB", true);
+                        SetLayer(SubdB, true);
                         break;
                     case Packet121GW.eMode._Interval:
-                        SetOther("Subm", true);
-                        SetOther("SubS", true);
+                        SetLayer(Subm, true);
+                        SetLayer(SubS, true);
                         break;
                     default:
                         Debug.WriteLine("Other mode recieved" + value.ToString());
@@ -545,10 +654,7 @@ namespace rMultiplatform
                 else
                 {
                     //Negative sign for segments
-                    if (Sign == Packet121GW.eSign.eNegative)
-                        SetOther("Sub-", true);
-                    else
-                        SetOther("Sub-", false);
+                    SetLayer(Sub_Minus, (Sign == Packet121GW.eSign.eNegative));
 
                     //Calculate the position of the decimal point
                     mDecimalPosition = (int)Range / 10 + 1;
@@ -608,51 +714,51 @@ namespace rMultiplatform
                 if (On)
                 {
                     //Setup bargraph ranges
-                    SetOther("BarTick0_0", true);
+                    SetLayer(BarTick0_0, true);
                     if (_0_150)
                     {
-                        SetOther("BarTick1_2", true);
-                        SetOther("BarTick2_4", true);
-                        SetOther("BarTick3_6", true);
-                        SetOther("BarTick4_8", true);
-                        SetOther("BarTick5_1", true);
-                        SetOther("BarTick5_0", true);
+                        SetLayer(BarTick1_2, true);
+                        SetLayer(BarTick2_4, true);
+                        SetLayer(BarTick3_6, true);
+                        SetLayer(BarTick4_8, true);
+                        SetLayer(BarTick5_1, true);
+                        SetLayer(BarTick5_0, true);
                     }
                     else
                     {
-                        SetOther("BarTick1_1", true);
-                        SetOther("BarTick2_2", true);
-                        SetOther("BarTick3_3", true);
-                        SetOther("BarTick4_4", true);
-                        SetOther("BarTick5_5", true);
+                        SetLayer(BarTick1_1, true);
+                        SetLayer(BarTick2_2, true);
+                        SetLayer(BarTick3_3, true);
+                        SetLayer(BarTick4_4, true);
+                        SetLayer(BarTick5_5, true);
                     }
 
                     switch (_1000_500)
                     {
                         case 0://5
-                            SetOther("Bar500_5_0",  true);
+                            SetLayer(Bar500_5_0,  true);
                             break;
                         case 1://50
-                            SetOther("Bar500_5_0",  true);
-                            SetOther("Bar500_0_1",  true);
+                            SetLayer(Bar500_5_0,  true);
+                            SetLayer(Bar500_0_1,  true);
                             break;
                         case 2://500
-                            SetOther("Bar500_5_0",  true);
-                            SetOther("Bar500_0_1",  true);
-                            SetOther("Bar500_0_2",  true);
+                            SetLayer(Bar500_5_0,  true);
+                            SetLayer(Bar500_0_1,  true);
+                            SetLayer(Bar500_0_2,  true);
                             break;
                         case 3://1000
-                            SetOther("Bar1000_1_0", true);
-                            SetOther("Bar1000_0_1", true);
-                            SetOther("Bar1000_0_2", true);
-                            SetOther("Bar1000_0_3", true);
+                            SetLayer(Bar1000_1_0, true);
+                            SetLayer(Bar1000_0_1, true);
+                            SetLayer(Bar1000_0_2, true);
+                            SetLayer(Bar1000_0_3, true);
                             break;
                     }
 
                     if (sign == Packet121GW.eSign.eNegative)
-                        SetOther("BarTick -", true);
+                        SetLayer(BarTick_Minus, true);
                     else
-                        SetOther("Bar+", true);
+                        SetLayer(BarTick_Plus, true);
 
                     Bargraph = barval + 1;
                 }
@@ -662,50 +768,49 @@ namespace rMultiplatform
         {
             set
             {
-                SetOther("1 kHz", value.Status1KHz);
+                SetLayer(One_kHz, value.Status1KHz);
 
                 if (value.Status1ms)
                 {
-                    SetOther("Subms", true);
-                    SetOther("Sub1", true);
+                    SetLayer(Subms, true);
+                    SetLayer(Sub1, true);
                 }
 
                 switch (value.StatusAC_DC)
                 {
                     case Packet121GW.eAD_DC.eDC:
-                        SetOther("DC", true);
+                        SetLayer(DC, true);
                         break;
                     case Packet121GW.eAD_DC.eAC:
-                        SetOther("AC", true);
+                        SetLayer(AC, true);
                         break;
                     case Packet121GW.eAD_DC.eACDC:
-                        SetOther("DC+AC", true);
+                        SetLayer(DC_Plus_AC, true);
                         break;
                     case Packet121GW.eAD_DC.eNone:
                         break;
                 }
 
-                SetOther("auto",    value.StatusAuto);
-                SetOther("apo",     value.StatusAPO);
-                SetOther("Battery", value.StatusBAT);
-                SetOther("Arrow",   value.StatusArrow);
-                SetOther("REL",     value.StatusRel);
-                SetOther("SubdB",   value.StatusdBm);
+                SetLayer(auto,    value.StatusAuto);
+                SetLayer(apo,     value.StatusAPO);
+                SetLayer(Battery, value.StatusBAT);
+                SetLayer(REL,     value.StatusRel);
+                SetLayer(SubdB,   value.StatusdBm);
 
                 //NOTE UNKONWN MIN/MAX bits config
-                SetOther("TEST",    value.StatusTest);
-                SetOther("MEM",     value.StatusMem > 0);
+                SetLayer(TEST,    value.StatusTest);
+                SetLayer(MEM,     value.StatusMem > 0);
 
                 switch (value.StatusAHold)
                 {
                     case 0:
                         break;
                     case 1:
-                        SetOther("HOLD",    true);
-                        SetOther("A-",      true);
+                        SetLayer(HOLD, true);
+                        SetLayer(A_Minus, true);
                         break;
                     case 2:
-                        SetOther("HOLD",    true);
+                        SetLayer(HOLD, true);
                         break;
                 }
                 switch (value.StatusMinMax)
@@ -713,25 +818,25 @@ namespace rMultiplatform
                     case 0:
                         break;
                     case 1:
-                        SetOther("MAX",     true);
+                        SetLayer(MAX, true);
                         break;
                     case 2:
-                        SetOther("MIN",     true);
+                        SetLayer(MIN, true);
                         break;
                     case 3:
-                        SetOther("AVG",     true);
+                        SetLayer(AVG, true);
                         break;
                     case 4:
-                        SetOther("AVG",     true);
-                        SetOther("MIN",     true);
-                        SetOther("MAX",     true);
+                        SetLayer(AVG, true);
+                        SetLayer(MIN, true);
+                        SetLayer(MAX, true);
                         break;
                 }
             }
         }
         public void Update(Packet121GW pInput)
         {
-            SetOther("BT", true);
+            SetLayer(BT, true);
             foreach (var other in mOther.mLayers)
                 other.Off();
 
@@ -750,8 +855,8 @@ namespace rMultiplatform
             IconStatus = pInput;
         }
 
-        Layers segments = new Layers("mSegments");
-        Layers subsegments = new Layers("mSubsegments");
+        Layers segments     = new Layers("mSegments");
+        Layers subsegments  = new Layers("mSubsegments");
         CacheImage CacheFunction = (image) => { mLayerCache.Add(image); };
         bool ProcessImage(string filename, Polycurve Image)
         {
@@ -839,10 +944,7 @@ namespace rMultiplatform
         private void Invalidate() => InvalidateSurface();
 
         float LayerAspect = 1, LayerX = 0, LayerY = 0;
-        public (float aspect, float width, float height) GetResultSize(double Width = 0)
-        {
-            return (LayerAspect, LayerX, LayerY);
-        }
+        public (float aspect, float width, float height) GetResultSize(double Width = 0) => (LayerAspect, LayerX, LayerY);
 
         //Only maintains aspect ratio
         protected override void OnSizeAllocated(double width, double height)
@@ -962,18 +1064,24 @@ namespace rMultiplatform
         }
         public MultimeterScreen()
         {
+
             //New layer images
             mSegments       = new List<Layers>();
             mSubSegments    = new List<Layers>();
             mBargraph       = new Layers("mBargraph");
             mOther          = new Layers("mOther");
 
+
+
             //Setup the image cache if it doesn't exist
             CacheFunction = null;
             if (mLayerCache == null)
             {
                 mLayerCache = new List<ILayer>();
+                CacheFunction = (image) => { mLayerCache.Add(image); };
+
                 var Loader  = new PathLoader(ProcessImage);
+
             }
             else
                 foreach (var layer in mLayerCache)
@@ -985,6 +1093,7 @@ namespace rMultiplatform
             mBargraph.Sort();
             segments.Sort();
             mOther.Sort();
+            SetupOtherCache();
 
             mOther.On();
             foreach (var item in mOther.mLayers)
@@ -1033,6 +1142,7 @@ namespace rMultiplatform
             rendrect.Right = 0;
             rendrect.Left = 0;
             rendrect.Top = 0;
+
         }
     }
 }
