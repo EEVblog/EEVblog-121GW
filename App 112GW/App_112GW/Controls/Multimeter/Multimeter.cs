@@ -8,20 +8,39 @@ namespace rMultiplatform
 {
     public partial class Multimeter : AutoGrid
     {
-        enum ActiveItem
-        {
-            Screen,
-            FullscreenPlot
-        }
         public BLE.IDeviceBLE       mDevice;
         public SmartChart           Chart;
         public SmartChartMenu       ChartMenu;
         public SmartChartLogger     Logger = new SmartChartLogger(10, SmartChartLogger.LoggerMode.Rescaling);
-        public event EventHandler   RequestMaximise;
-        public event EventHandler   RequestRestore;
-        private ActiveItem          Item = ActiveItem.Screen;
+
+        public enum ActiveItem
+        {
+            Screen,
+            FullscreenPlot
+        }
+        private ActiveItem _Item = ActiveItem.Screen;
+        public ActiveItem Item
+        {
+            set
+            {
+                _Item = value;
+                switch (Item)
+                {
+                    case ActiveItem.Screen:
+                        RestoreItems();
+                        break;
+                    case ActiveItem.FullscreenPlot:
+                        MaximiseItem(Chart);
+                        break;
+                }
+            }
+            get
+            {
+                return _Item;
+            }
+        }
+
         private PacketProcessor     MyProcessor = new PacketProcessor(0xF2, 26);
-        private ActiveItem          LastActive;
         public MultimeterScreen     Screen;
         public MultimeterMenu       Menu;
         private string _VerticalLabel = "";
@@ -103,44 +122,19 @@ namespace rMultiplatform
             AutoAdd(Chart);     FormatCurrentRow(GridUnitType.Star);
             AutoAdd(ChartMenu); FormatCurrentRow(GridUnitType.Auto);
 
-            SetView();
+            Item = ActiveItem.Screen;
         }
         private void Plot_FullScreenClicked(object sender, EventArgs e)
         {
-            if (Item == ActiveItem.FullscreenPlot)
-            {
-                RequestRestore?.Invoke(this, e);
-                Item = LastActive;
-            }
-            else
-            {
-                RequestMaximise?.Invoke(this, e);
-                LastActive = Item;
-                Item = ActiveItem.FullscreenPlot;
-            }
-            SetView();
+            Item = (Item == ActiveItem.FullscreenPlot)?
+                ActiveItem.Screen : 
+                ActiveItem.FullscreenPlot;
         }
-
         private void SendData   (byte[] pData)
         {
             foreach (var serv in mDevice.Services)
                 foreach(var chara in serv.Characteristics)
                     chara.Send(pData);
-        }
-
-        private void SetView()
-        {
-            switch (Item)
-            {
-            case ActiveItem.Screen:
-                Screen.IsVisible    =   true;
-                Menu.IsVisible      =   true;
-                break;
-            case ActiveItem.FullscreenPlot:
-                Screen.IsVisible    =   false;
-                Menu.IsVisible      =   false;
-                break;
-            }
         }
     }
 }

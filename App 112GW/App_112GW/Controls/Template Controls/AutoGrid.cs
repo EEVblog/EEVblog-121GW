@@ -65,6 +65,63 @@ namespace rMultiplatform
                 current_row++;
             }
         }
+
+        public struct ItemState
+        {
+            public View Item;
+            public int row, column, row_span, column_span;
+            public bool visibility;
+
+            public ItemState(View pItem)
+            {
+                Item = pItem;
+                visibility = Item.IsVisible;
+                row = Grid.GetRow(Item);
+                column = Grid.GetColumn(Item);
+                row_span = Grid.GetRowSpan(Item);
+                column_span = Grid.GetColumnSpan(Item);
+            }
+            
+            public void Restore()
+            {
+                Item.IsVisible      = visibility;
+                Grid.SetRow         (Item, row);
+                Grid.SetColumn      (Item, column);
+                Grid.SetRowSpan     (Item, row_span);
+                Grid.SetColumnSpan  (Item, column_span);
+            }
+        }
+
+        private List<ItemState> RestoreList  = null;
+        public void MaximiseItem(View pItem)
+        {
+            if (RestoreList == null)
+            {
+                RestoreList = new List<ItemState>();
+                foreach (var child in Children)
+                {
+                    RestoreList.Add(new ItemState(child));
+
+                    if (!child.Equals(pItem))
+                        child.IsVisible = false;
+                }
+
+                Grid.SetRow(pItem, 0);
+                Grid.SetColumn(pItem, 0);
+                Grid.SetRowSpan(pItem, RowDefinitions.Count);
+                Grid.SetColumnSpan(pItem, ColumnDefinitions.Count);
+            }
+        }
+        public void RestoreItems()
+        {
+            if (RestoreList != null)
+            {
+                foreach (var item in RestoreList)
+                    item.Restore();
+                RestoreList = null;
+            }
+        }
+
         public void DefineGrid(int Width, int Height)
         {
             DefineColumns(Width);
