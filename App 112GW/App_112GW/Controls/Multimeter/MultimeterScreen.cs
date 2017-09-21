@@ -1013,7 +1013,6 @@ namespace rMultiplatform
             }
         }
         bool RemakeCanvas = true;
-        private SKRect rendrect = new SKRect();
         public override void PaintSurface ( SKCanvas canvas, SKSize dimension )
         {
             if ( RemakeCanvas )
@@ -1028,18 +1027,6 @@ namespace rMultiplatform
                 Redraw();
                 if (dimension.Width == 0 || dimension.Height == 0)
                     return;
-
-                //Shift canvas as required
-                rendrect.Right = mDrawRectangle.Right;
-                rendrect.Bottom = mDrawRectangle.Bottom;
-                var offset_x = (float)Width - rendrect.Width;
-                if (offset_x > 0)
-                    rendrect.Offset(offset_x / 2, 0);
-                else
-                {
-                    rendrect.Right = canvas.DeviceClipBounds.Width;
-                    rendrect.Bottom = canvas.DeviceClipBounds.Height;
-                }
 
                 //Setup a clear bitmap
                 mLayer = new SKBitmap((int)mDrawRectangle.Width, (int)mDrawRectangle.Height);
@@ -1060,18 +1047,15 @@ namespace rMultiplatform
 
             //Draw bitmap
             canvas.Clear();
-            canvas.DrawBitmap(mLayer, rendrect);
+            canvas.DrawBitmap(mLayer, base.Bounds.ToSKRect());
         }
         public MultimeterScreen()
         {
-
             //New layer images
             mSegments       = new List<Layers>();
             mSubSegments    = new List<Layers>();
             mBargraph       = new Layers("mBargraph");
             mOther          = new Layers("mOther");
-
-
 
             //Setup the image cache if it doesn't exist
             CacheFunction = null;
@@ -1080,8 +1064,8 @@ namespace rMultiplatform
                 mLayerCache = new List<ILayer>();
                 CacheFunction = (image) => { mLayerCache.Add(image); };
 
-                var Loader  = new PathLoader(ProcessImage);
-
+                //Loads on construction.
+                var Loader = new PathLoader(ProcessImage);
             }
             else
                 foreach (var layer in mLayerCache)
@@ -1099,9 +1083,9 @@ namespace rMultiplatform
             foreach (var item in mOther.mLayers)
                 item.Off();
 
-            PressColor = Globals.FocusColor;
-            HoverColor = Globals.HighlightColor;
-            IdleColor = Globals.TextColor;
+            PressColor  = Globals.FocusColor;
+            HoverColor  = Globals.HighlightColor;
+            IdleColor   = Globals.TextColor;
 
             //Setup the different segments
             Layers returned;
@@ -1136,13 +1120,6 @@ namespace rMultiplatform
 
             (LayerX, LayerY) = mBargraph.GetResultSize();
             LayerAspect = LayerY / LayerX;
-
-            //
-            rendrect.Bottom = 0;
-            rendrect.Right = 0;
-            rendrect.Left = 0;
-            rendrect.Top = 0;
-
         }
     }
 }
