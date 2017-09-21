@@ -19,7 +19,7 @@ namespace rMultiplatform
         private float FrameLength                       = 10;
         private LoggerMode Mode                         = LoggerMode.Rescaling;
         private DateTime DataStart                      = DateTime.Now;
-        public  TSObservableCollection<SKPoint> Data    = new TSObservableCollection<SKPoint>();
+        public  ObservableList<SKPoint> Data = new ObservableList<SKPoint>();
 
         public void Reset()
         {
@@ -51,7 +51,7 @@ namespace rMultiplatform
         {
             FrameLength = pFrameLength;
             Mode = pMode;
-            Data = new TSObservableCollection<SKPoint>();
+            Data = new ObservableList<SKPoint>();
         }
     }
 }

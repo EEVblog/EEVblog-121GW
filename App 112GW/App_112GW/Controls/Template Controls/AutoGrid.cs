@@ -105,7 +105,6 @@ namespace rMultiplatform
                     if (!child.Equals(pItem))
                         child.IsVisible = false;
                 }
-
                 Grid.SetRow(pItem, 0);
                 Grid.SetColumn(pItem, 0);
                 Grid.SetRowSpan(pItem, RowDefinitions.Count);

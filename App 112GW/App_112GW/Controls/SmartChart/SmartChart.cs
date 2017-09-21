@@ -85,7 +85,7 @@ namespace rMultiplatform
         static public (float x, float y) MeasureText(string Input, SKPaint Paint)   =>  (Paint.MeasureText(Input), Globals.TitleFontSize);
         static public (float x, float y) MeasureMajorText(string Input)             =>  (MajorPaint.MeasureText(Input), MajorTextSize);
         static public (float x, float y) MeasureMinorText(string Input)             =>  (MinorPaint.MeasureText(Input), MinorTextSize);
-        public static SmartPadding Padding { get; private set; } = new SmartPadding(0);
+        public static SmartPadding Padding { get; private set; } = new SmartPadding(0.05f, 0, 0.1f, 0);
         public ASmartElement(){}
     }
 

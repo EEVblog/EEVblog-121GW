@@ -59,9 +59,9 @@ namespace rMultiplatform
             if (Amount == 0)
                 return;
 
-            var dimension = Dimension(LastDimension);
-            var map = ScaleFromCoordinate(dimension);
-            var amount = map.Calculate(Amount);
+            var dimension   = Dimension(LastDimension);
+            var map         = ScaleFromCoordinate(dimension);
+            var amount      = map.Calculate(Amount);
             Range.Pan(-amount);
         }
 
@@ -103,8 +103,8 @@ namespace rMultiplatform
     }
     public class SmartAxisHorizontal : ASmartAxis
     {
-        public override float AxisStart (float Width)   => Padding.LeftPosition(Width);
-        public override float AxisEnd   (float Width)   => Padding.RightPosition(Width);
+        public override float AxisStart (float Width) => Padding.LeftPosition(Width);
+        public override float AxisEnd   (float Width) => Padding.RightPosition(Width);
 
         public override float Dimension(SKSize dimensions) => dimensions.Width;
         public SmartAxisHorizontal(string pLabel, float pMinimum, float pMaximum) : base(pLabel, pMinimum, pMaximum)
@@ -114,8 +114,8 @@ namespace rMultiplatform
     }
     public class SmartAxisVertical : ASmartAxis
     {
-        public override float AxisStart (float Height)  => Padding.TopPosition(Height);
-        public override float AxisEnd   (float Height)  => Padding.BottomPosition(Height);
+        public override float AxisStart (float Height) => Padding.BottomPosition(Height); 
+        public override float AxisEnd   (float Height) => Padding.TopPosition(Height);
 
         public override float Dimension(SKSize dimensions) => dimensions.Height;
         public SmartAxisVertical(string pLabel, float pMinimum, float pMaximum) : base(pLabel, pMinimum, pMaximum)

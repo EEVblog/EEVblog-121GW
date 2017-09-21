@@ -32,35 +32,7 @@ namespace rMultiplatform
                     Chart.Title = value;
             }
         }
-        
-        private static float SqrA_x_B(float A, float B)
-        {
-            return (A * A) * B;
-        }
-        private static float SqrA_Div_B(float A, float B)
-        {
-            return (A * A) / B;
-        }
-        private static float A_Div_SqrB(float A, float B)
-        {
-            return A / (B * B);
-        }
-        private static float Division(float A, float B)
-        {
-            return A / B;
-        }
-        private static float Addition(float A, float B)
-        {
-            return A + B;
-        }
-        private static float Subtraction(float A, float B)
-        {
-            return A - B;
-        }
-        private static float Multiplication(float A, float B)
-        {
-            return A * B;
-        }
+
         public delegate float Operation(float A, float B);
 
         public class OperationItem
@@ -73,27 +45,19 @@ namespace rMultiplatform
             {
                 Label = pLabel;
                 Function = pFunction;
-
                 Color = Globals.BackgroundColor;
             }
         }
-        List<OperationItem> Operations = new List<OperationItem>()
+        static List<OperationItem> Operations = new List<OperationItem>()
         {
-            new OperationItem( "A + B",              Addition        ),
-            new OperationItem( "A - B",              Subtraction     ),
-            new OperationItem( "A x B",              Multiplication  ),
-            new OperationItem( "A / B",              Division        ),
-            new OperationItem( "A\u00b2 x B",        SqrA_x_B        ),
-            new OperationItem( "A\u00b2 / B",        SqrA_Div_B      ),
-            new OperationItem( "A / B\u00b2",        A_Div_SqrB      )
+            new OperationItem( "A + B",              (A, B) => A + B                    ),
+            new OperationItem( "A - B",              (A, B) => A - B                    ),
+            new OperationItem( "A x B",              (A, B) => A * B                    ),
+            new OperationItem( "A / B",              (A, B) => A / B                    ),
+            new OperationItem( "A\u00b2 x B",        (A, B) => (float)Math.Sqrt(A) * B  ),
+            new OperationItem( "A\u00b2 / B",        (A, B) => (float)Math.Sqrt(A) / B  ),
+            new OperationItem( "A / B\u00b2",        (A, B) => A / (float)Math.Sqrt(A)  )
         };
-        enum Current
-        {
-            L1,
-            L2
-        };
-
-        Operation Current_Operation = null;
 
         Picker A_List         = new Picker();
         Picker B_List         = new Picker();
@@ -101,25 +65,13 @@ namespace rMultiplatform
 
         public IList SourceA
         {
-            set
-            {
-                A_List.ItemsSource = value;
-            }
-            private get
-            {
-                return A_List.ItemsSource;
-            }
+            set         {   A_List.ItemsSource = value; }
+            private get {   return A_List.ItemsSource;  }
         }
         public IList SourceB
         {
-            set
-            {
-                B_List.ItemsSource = value;
-            }
-            private get
-            {
-                return B_List.ItemsSource;
-            }
+            set         {   B_List.ItemsSource = value;}
+            private get {   return B_List.ItemsSource; }
         }
 
         SKPoint Interpolate(SKPoint A, SKPoint B, float X)
@@ -149,10 +101,11 @@ namespace rMultiplatform
 
                 //
                 if ((i1 >= l1_count) || (i2 >= l2_count))
-                    Rerange();
+                    PreparePlot();
 
                 if ((l1_count > 1) && (l2_count > 1))
                 {
+                    Data.Modify();
                     while ((i1 < l1_count) && (i2 < l2_count))
                     {
                         var p1 = L1[i1];
@@ -187,62 +140,63 @@ namespace rMultiplatform
                         var op_result = Current_Operation(y_val1, y_val2);
                         Data.Add(new SKPoint(x_val, op_result));
                     }
+                    Data.Trigger();
                 }
             }
         }
-        TSObservableCollection<SKPoint> Data = new TSObservableCollection<SKPoint>();
+        TriggerList<SKPoint> Data = new TriggerList<SKPoint>();
+        private void Data_Changed(object sender, NotifyCollectionChangedEventArgs e) => Resample(DeviceA.Logger.Data.ToList(), DeviceB.Logger.Data.ToList());
+
+        
+        //Returns true only when nothing is null
+        private bool RenderReady() =>  ((DeviceA != null) && (DeviceB != null) && (Current_Operation != null));
+
+        private void AddEvents()
+        {
+            if (DeviceA != null)    DeviceA.Logger.Data.CollectionChanged += Data_Changed;
+            if (DeviceB != null)    DeviceB.Logger.Data.CollectionChanged += Data_Changed;
+        }
+
+
+        private void PreparePlot()
+        {
+            if (RenderReady())
+            {
+                i1 = 1; i2 = 1;
+                Data?.Clear();
+                AddEvents();
+            }
+        }
+
+        Operation Current_Operation = null;
         Multimeter DeviceA = null, DeviceB = null;
-        private void Rerange()
+        private void List_ItemSelected(ref Multimeter Device, object sender, EventArgs e)
         {
-            i1 = 1; i2 = 1;
-            Data?.Clear();
-        }
-
-        private bool RenderReady()
-        {
-            return ((DeviceA != null) && (DeviceB != null) && (Current_Operation != null));
-        }
-        private void A_List_ItemSelected(object sender, EventArgs e)
-        {
-            Rerange();
             var item = (sender as Picker).SelectedItem;
             if (item != null)
             {
-                if (DeviceA != null)
-                    DeviceA.Logger.Data.CollectionChanged -= DataA_Changed;
-                DeviceA = item as Multimeter;
-                DeviceA.Logger.Data.CollectionChanged += DataA_Changed;
-            }
-        }
-        private void B_List_ItemSelected(object sender, EventArgs e)
-        {
-            Rerange();
-            var item = (sender as Picker).SelectedItem;
-            if (item != null)
-            {
-                if (DeviceB != null)
-                    DeviceB.Logger.Data.CollectionChanged -= DataB_Changed;
-                DeviceB = item as Multimeter;
-                DeviceB.Logger.Data.CollectionChanged += DataB_Changed;
+                try
+                {
+                    if (Device != null)
+                        Device.Logger.Data.CollectionChanged -= Data_Changed;
+
+                    Device = item as Multimeter;
+                }
+                catch
+                {
+                    Debug.WriteLine("WTF");
+                }
+                PreparePlot();
             }
         }
 
-        private void DataA_Changed(object sender, NotifyCollectionChangedEventArgs e)
-        {
-            Resample(DeviceA.Logger.Data.ToList(), DeviceB.Logger.Data.ToList());
-        }
-        private void DataB_Changed(object sender, NotifyCollectionChangedEventArgs e)
-        {
-            Resample(DeviceA.Logger.Data.ToList(), DeviceB.Logger.Data.ToList());
-        }
+        
         private void Operation_List_ItemSelected(object sender, EventArgs e)
         {
-            Rerange();
-            var sel_item = (sender as Picker).SelectedItem;
-            var sel_obj = sel_item as Object;
-            var sel_item_type = ((OperationItem)sel_item);
-            Current_Operation = sel_item_type.Function;
-            VerticalLabel = "(" + sel_item_type.Label + ")";
+            var sel_item = (sender as Picker).SelectedItem as OperationItem;
+            Current_Operation = sel_item.Function;
+            VerticalLabel = "(" + sel_item.Label + ")";
+            PreparePlot();
         }
 
         static LayoutOptions ColumnLayout = LayoutOptions.Fill;
@@ -253,7 +207,6 @@ namespace rMultiplatform
             output.VerticalOptions = LayoutOptions.StartAndExpand;
             output.HorizontalOptions = ColumnLayout;
             output.SelectedIndexChanged += SelectedHandler;
-
             output.ItemDisplayBinding = new Binding(BindText);
 
             //TODO : This is a bug in xamarin, row height need to be made automatic
@@ -265,11 +218,11 @@ namespace rMultiplatform
         {
             //Setup listviews
             Menu = new SmartChartMenu(true, false);
-            Menu.SaveClicked += Menu_SaveClicked;
+            Menu.SaveClicked += (o, e) => { Chart.SaveCSV(); };
 
             //
-            A_List          = MakePicker(A_List_ItemSelected, "Device A", "ShortId");
-            B_List          = MakePicker(B_List_ItemSelected, "Device B", "ShortId");
+            A_List          = MakePicker((o, e) => { List_ItemSelected(ref DeviceA, o, e); }, "Device A", "ShortId");
+            B_List          = MakePicker((o, e) => { List_ItemSelected(ref DeviceB, o, e); }, "Device B", "ShortId");
             Operation_List  = MakePicker(Operation_List_ItemSelected, "Operation", "Label");
             Operation_List.ItemsSource = Operations;
 
@@ -283,34 +236,22 @@ namespace rMultiplatform
 
             //
             DefineGrid(3, 3);
+
+            //RowDefinition 1
             AutoAdd(A_List);
             AutoAdd(Operation_List);
-            AutoAdd(B_List);
-            FormatCurrentRow(GridUnitType.Auto);
-            AutoAdd(Chart, 3);
-            FormatCurrentRow(GridUnitType.Star);
-            AutoAdd(Menu, 3);
-            FormatCurrentRow(GridUnitType.Auto);
-        }
-        private void Menu_SaveClicked(object sender, EventArgs e)
-        {
-            Chart.SaveCSV();
+            AutoAdd(B_List);    FormatCurrentRow(GridUnitType.Auto);
+
+            //RowDefinition 2
+            AutoAdd(Chart, 3);  FormatCurrentRow(GridUnitType.Star);
+
+            //RowDefinition 3
+            AutoAdd(Menu, 3);   FormatCurrentRow(GridUnitType.Auto);
         }
         private void Plot_FullscreenClicked(object sender, EventArgs e)
         {
-            foreach (var item in Children)
-            {
-                if (Fullscreen)
-                {
-                    if (item.GetType() != typeof(SmartChart))
-                        item.IsVisible = false;
-                }
-                else
-                {
-                    if (item.GetType() != typeof(SmartChart))
-                        item.IsVisible = true;
-                }
-            }
+            if (Fullscreen) MaximiseItem(Chart);
+            else            RestoreItems();
             Fullscreen = !Fullscreen;
         }
     }

@@ -15,7 +15,7 @@ namespace rMultiplatform
 
         protected SKPaint DataPaint = MakeDefaultPaint(Globals.TextColor, 1, Globals.MajorFontSize, Globals.Typeface, IsStroke:true);
 
-        public TSObservableCollection<SKPoint>    Points;
+        public IObservableList<SKPoint> Points;
 
         public void Reset()
         {
@@ -73,7 +73,6 @@ namespace rMultiplatform
         
         public ASmartData(ASmartAxisPair pAxis)
         {
-            Points = new TSObservableCollection<SKPoint>();
             Axis = pAxis;
 
             pAxis.Horizontal.Range.Set(0f, 0.1f);
@@ -97,7 +96,7 @@ namespace rMultiplatform
             Canvas.ClipRect (Axis.AxisClip(dimension));
             Canvas.DrawPath (path, DataPaint);              //Render scaled and shifted path
         }
-        public SmartData(ASmartAxisPair pAxis, TSObservableCollection<SKPoint> pData) : base(pAxis)
+        public SmartData(ASmartAxisPair pAxis, IObservableList<SKPoint> pData) : base(pAxis)
         {
             DataPaint.IsStroke  = true;
             DataPaint.Color     = Globals.UniqueColor().ToSKColor();
