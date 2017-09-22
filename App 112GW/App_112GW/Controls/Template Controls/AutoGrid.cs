@@ -74,23 +74,34 @@ namespace rMultiplatform
 
             public ItemState(View pItem)
             {
-                Item = pItem;
-                visibility = Item.IsVisible;
-                row = Grid.GetRow(Item);
-                column = Grid.GetColumn(Item);
-                row_span = Grid.GetRowSpan(Item);
-                column_span = Grid.GetColumnSpan(Item);
+                Item            = pItem;
+
+                visibility      = Item.IsVisible;
+                row             = Grid.GetRow(Item);
+                column          = Grid.GetColumn(Item);
+                row_span        = Grid.GetRowSpan(Item);
+                column_span     = Grid.GetColumnSpan(Item);
             }
-            
+
+            public void SetVisibility(View pItem, bool state)
+            {
+                Type item_type = pItem.GetType();
+
+                if (item_type == typeof(MultimeterScreen))
+                    (pItem as MultimeterScreen).IsVisible = state;
+                else
+                    pItem.IsVisible = state;
+            }
             public void Restore()
             {
-                Item.IsVisible      = visibility;
+                SetVisibility(Item, visibility);
                 Grid.SetRow         (Item, row);
                 Grid.SetColumn      (Item, column);
                 Grid.SetRowSpan     (Item, row_span);
                 Grid.SetColumnSpan  (Item, column_span);
             }
         }
+
 
         private List<ItemState> RestoreList  = null;
         public void MaximiseItem(View pItem)
@@ -100,10 +111,10 @@ namespace rMultiplatform
                 RestoreList = new List<ItemState>();
                 foreach (var child in Children)
                 {
-                    RestoreList.Add(new ItemState(child));
-
+                    var restoreitem = new ItemState(child);
+                    RestoreList.Add(restoreitem);
                     if (!child.Equals(pItem))
-                        child.IsVisible = false;
+                        restoreitem.SetVisibility(child, false);
                 }
                 Grid.SetRow(pItem, 0);
                 Grid.SetColumn(pItem, 0);

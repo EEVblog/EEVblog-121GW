@@ -97,6 +97,7 @@ namespace rMultiplatform
         #region EVENTS
         public event EventHandler Clicked;
         #endregion
+        
         #region TOUCHSCREEN
         private Touch mTouch;
         private void MTouch_Press   (object sender, TouchActionEventArgs args)  {}
@@ -132,6 +133,7 @@ namespace rMultiplatform
             Data.Axis.Zoom(zoomX, zoomY, (float)Center.X, (float)Center.Y);
         }
         #endregion
+        
         #region RENDERER
         GeneralRenderer mRenderer;
         public void Disable()

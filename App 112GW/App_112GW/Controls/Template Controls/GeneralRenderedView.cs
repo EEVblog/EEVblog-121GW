@@ -27,8 +27,8 @@ namespace rMultiplatform
             {
                 if (value != base.IsVisible)
                 {
-                    if (value) Enable();
-                    else Disable();
+                    if (value)  Enable();
+                    else        Disable();
                     base.IsVisible = value;
                 }
             }

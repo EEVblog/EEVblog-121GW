@@ -3,102 +3,98 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Threading;
+using System.Collections.Specialized;
 
 namespace rMultiplatform
 {
     public interface IObservableList<T>
     {
         int Count { get; }
-        event System.Collections.Specialized.NotifyCollectionChangedEventHandler CollectionChanged;
+        event NotifyCollectionChangedEventHandler CollectionChanged;
 
+        T this[int key] { get; }
         void RemoveAt(int Index);
         void Clear();
         void Add(T Item);
 
-        T this[int key] { get; }
         List<T> ToList();
     }
 
     public class TriggerList<T> : IObservableList<T>
     {
-        private Mutex Mutex = new Mutex();
-        public List<T> Data = new List<T>();
-
-        public T this[int key] => Data[key];
-
-        public int Count => Data.Count;
-
         public event NotifyCollectionChangedEventHandler CollectionChanged;
+        private List<T> Data = new List<T>();
 
-        public void Add(T Item)         => Data.Add(Item);
-        public void Clear()             => Data.Clear();
-        public void RemoveAt(int Index) => Data.RemoveAt(Index);
-        public void Modify() => Mutex.WaitOne();
-        public void Trigger()
+        #region IOBSERVABLE_FUNCTIONS
+        private T at(int key)
         {
-            Mutex.ReleaseMutex();
-            CollectionChanged?.Invoke(this, null);
+            T output;
+            lock(Data) output = Data[key];
+            return output;
         }
-
+        public T this[int key] => at(key);
+        public int  Count => Data.Count;
+        public void RemoveAt(int Index)
+        {
+            lock (Data) Data.RemoveAt(Index);
+        }
+        public void Clear()
+        {
+            lock (Data) Data.Clear();
+        }
+        public void Add(T Item)
+        {
+            lock (Data) Data.Add(Item);
+        }
         public List<T> ToList()
         {
-            Mutex.WaitOne();
-            var output = new List<T>(Data);
-            Mutex.ReleaseMutex();
+            List<T> output;
+            lock (Data) output = new List<T>(Data);
             return output;
+        }
+        #endregion
+
+        public void Trigger()
+        {
+            CollectionChanged?.Invoke(this, null);
         }
     }
 
-    public class ObservableList<T>: IObservableList<T>
+    public class ObservableList<T> : IObservableList<T>
     {
         public event NotifyCollectionChangedEventHandler CollectionChanged;
-        private Mutex   Mutex;
-        public List<T>  Data;
-        public int      Count => Data.Count;
+        private List<T> Data = new List<T>();
 
+        #region IOBSERVABLE_FUNCTIONS
+        private T at(int key)
+        {
+            T output;
+            lock (Data) output = Data[key];
+            return output;
+        }
+        T IObservableList<T>.this[int key] => at(key);
+        public int  Count => Data.Count;
         public void RemoveAt(int Index)
         {
-            Mutex.WaitOne();
-            Data.RemoveAt(Index);
-            Mutex.ReleaseMutex();
+            lock(Data) Data.RemoveAt(Index);
             CollectionChanged?.Invoke(this, null);
         }
         public void Clear()
         {
-            Mutex.WaitOne();
-            Data.Clear();
-            Mutex.ReleaseMutex();
+            lock (Data) Data.Clear();
             CollectionChanged?.Invoke(this, null);
         }
         public void Add(T Item)
         {
-            Mutex.WaitOne();
-            Data.Add(Item);
-            Mutex.ReleaseMutex();
+            lock(Data) Data.Add(Item);
             CollectionChanged?.Invoke(this, null);
-        }
-        T IObservableList<T>.this[int key]
-        {
-            get
-            {
-                Mutex.WaitOne();
-                var output = Data[key];
-                Mutex.ReleaseMutex();
-                return output;
-            }
         }
         public List<T> ToList()
         {
-            Mutex.WaitOne();
-            var output = new List<T>(Data);
-            Mutex.ReleaseMutex();
+            List<T> output;
+            lock (Data) output = new List<T>(Data);
             return output;
         }
-
-        public ObservableList()
-        {
-            Data = new List<T>();
-            Mutex = new Mutex();
-        }
+        #endregion
     }
 }
