@@ -1046,7 +1046,7 @@ namespace rMultiplatform
             mOther.Render(ref mCanvas, mDrawRectangle);
 
             //Draw bitmap
-            canvas.Clear();
+            canvas.Clear(Globals.BackgroundColor.ToSKColor());
             canvas.DrawBitmap(mLayer, new SKRect(0, 0, dimension.Width, dimension.Height));
         }
         public MultimeterScreen()
