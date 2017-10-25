@@ -33,7 +33,7 @@ namespace rMultiplatform
 			ModeChanged?.Invoke(sender, e);
 		}
 
-		public MultimeterMenu(string pSerialNumber = "SN0000")
+		public MultimeterMenu()
 		{
 			//##################################################
 			mHold = new GeneralButton("Hold", ButtonPress_Hold);

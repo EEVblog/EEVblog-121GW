@@ -8,6 +8,8 @@ namespace rMultiplatform
 {
 	public partial class Multimeter : AutoGrid
 	{
+        public event EventHandler IdChanged;
+
 		public BLE.IDeviceBLE	   mDevice;
 		public SmartChart		   Chart;
 		public SmartChartMenu	   ChartMenu;
@@ -41,18 +43,22 @@ namespace rMultiplatform
 			}
 		}
 
-		private PacketProcessor	 MyProcessor = new PacketProcessor(0xF2, 52);
-		public MultimeterScreen	 Screen;
-		public MultimeterMenu	   Menu;
+		private PacketProcessor MyProcessor = new PacketProcessor(0xF2, 52);
+		public MultimeterScreen Screen;
+		public MultimeterMenu Menu;
 		private string _VerticalLabel = "";
 
-		void ProcessPacket(byte[] pInput)
+        public string Id = "";
+        void ProcessPacket(byte[] pInput)
 		{
 			var processor = new Packet121GW();
 			try
 			{
 				processor.ProcessPacket(pInput);
-				Logger.Sample(processor.MainValue);
+                Id = processor.Serial.ToString();
+                IdChanged?.Invoke(this, EventArgs.Empty);
+
+                Logger.Sample(processor.MainValue);
 
 				VerticalLabel = processor.MainRangeLabel;
 				Screen.Update(processor);
@@ -64,8 +70,6 @@ namespace rMultiplatform
 			}
 		}
 
-		public new string   Id	  => mDevice.Id;
-		public string	   ShortId => Id.Substring(Id.Length - 5);
 		public void		 Reset() => Logger.Reset();
 
 		public string VerticalLabel
@@ -89,7 +93,7 @@ namespace rMultiplatform
 			MyProcessor.mCallback += ProcessPacket;
 
 			Screen  = new MultimeterScreen();
-			Menu	= new MultimeterMenu(ShortId);
+			Menu	= new MultimeterMenu();
 
 			#region MULTIMETER_BUTTON_EVENTS
 			void SendKeycode(Packet121GW.Keycode keycode)

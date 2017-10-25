@@ -27,8 +27,21 @@ namespace App_112GW
 		private void Button_AddDevice(IDeviceBLE pDevice)
 		{
 			var dev = new Multimeter(pDevice);
+            dev.IdChanged += (o, e) => 
+            {
+                foreach (var cld in Children)
+                {
+                    var pg = cld as GeneralPage;
+                    if (pg.Content.GetType() == typeof(Multimeter))
+                    {
+                        var mul = pg.Content as Multimeter;
+                        Globals.RunMainThread(() => { pg.Title = "[ " + mul.Id + " ]"; });
+                    }
+                }
+            };
+
 			AddDevice(dev);
-			AddPage("[" + dev.ShortId + "]", dev);
+			AddPage("[ " + dev.Id + " ]", dev);
 			CurrentPage = Children[Children.Count - 1];
 		}
 
