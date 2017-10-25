@@ -7,32 +7,32 @@ using Xamarin.Forms;
 
 namespace rMultiplatform
 {
-    public class SmartChartMenu : AutoGrid
-    {
-        private GeneralButton mSave;
-        private GeneralButton mReset;
-        public event EventHandler SaveClicked;
-        public event EventHandler ResetClicked;
+	public class SmartChartMenu : AutoGrid
+	{
+		private GeneralButton mSave;
+		private GeneralButton mReset;
+		public event EventHandler SaveClicked;
+		public event EventHandler ResetClicked;
 
-        private void ButtonPress_Save(object sender, EventArgs e)
-        {
-            SaveClicked?.Invoke(sender, e);
-        }
-        private void ButtonPress_Reset(object sender, EventArgs e)
-        {
-            ResetClicked?.Invoke(sender, e);
-        }
+		private void ButtonPress_Save(object sender, EventArgs e)
+		{
+			SaveClicked?.Invoke(sender, e);
+		}
+		private void ButtonPress_Reset(object sender, EventArgs e)
+		{
+			ResetClicked?.Invoke(sender, e);
+		}
 
-        public SmartChartMenu(bool ShowSave = true, bool ShowReset = true)
-        {
-            //Add Relative Button
-            mReset = new GeneralButton("Reset", ButtonPress_Reset);
-            mSave = new GeneralButton("Save", ButtonPress_Save);
+		public SmartChartMenu(bool ShowSave = true, bool ShowReset = true)
+		{
+			//Add Relative Button
+			mReset = new GeneralButton("Reset", ButtonPress_Reset);
+			mSave = new GeneralButton("Save", ButtonPress_Save);
 
-            //Define Grid
-            DefineGrid(2, 1);
-            if (ShowReset) AutoAdd(mReset);
-            if (ShowSave) AutoAdd(mSave);
-        }
-    }
+			//Define Grid
+			DefineGrid(2, 1);
+			if (ShowReset) AutoAdd(mReset);
+			if (ShowSave) AutoAdd(mSave);
+		}
+	}
 }

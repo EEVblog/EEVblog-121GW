@@ -4,8 +4,8 @@ using System.Text;
 
 namespace rMultiplatform
 {
-    class EventManager<T>
-    {
+	class EventManager<T>
+	{
 
-    }
+	}
 }

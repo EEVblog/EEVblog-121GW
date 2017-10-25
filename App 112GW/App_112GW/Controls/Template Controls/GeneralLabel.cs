@@ -10,14 +10,14 @@ using SkiaSharp.Views.Forms;
 
 namespace rMultiplatform
 {
-    public class GeneralLabel : Label
-    {
-        public GeneralLabel()
-        {
-            HorizontalOptions = LayoutOptions.CenterAndExpand;
-            VerticalOptions = LayoutOptions.CenterAndExpand;
-            TextColor = Globals.TextColor;
-            FontSize = Globals.MinorFontSize;
-        }
-    }
+	public class GeneralLabel : Label
+	{
+		public GeneralLabel()
+		{
+			HorizontalOptions = LayoutOptions.CenterAndExpand;
+			VerticalOptions = LayoutOptions.CenterAndExpand;
+			TextColor = Globals.TextColor;
+			FontSize = Globals.MinorFontSize;
+		}
+	}
 }

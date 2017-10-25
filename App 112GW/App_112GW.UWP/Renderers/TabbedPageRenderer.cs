@@ -9,29 +9,29 @@ using Xamarin.Forms.Platform.UWP;
 [assembly: ExportRenderer(typeof(Xamarin.Forms.TabbedPage), typeof(CustomTabbedPageRenderer))]
 namespace rMultiplatform
 {
-    public class CustomTabbedPageRenderer : TabbedPageRenderer
-    {
+	public class CustomTabbedPageRenderer : TabbedPageRenderer
+	{
 
-        protected override void OnElementChanged(VisualElementChangedEventArgs e)
-        {
-            base.OnElementChanged(e);
+		protected override void OnElementChanged(VisualElementChangedEventArgs e)
+		{
+			base.OnElementChanged(e);
 
-            if (Control != null)
-                Control.Loaded += Control_Loaded;
+			if (Control != null)
+				Control.Loaded += Control_Loaded;
 
-            if (e.OldElement == null)
-                return;
+			if (e.OldElement == null)
+				return;
 
-            // Unhook when disposing control
-            if (Control != null)
-                Control.Loaded -= Control_Loaded;
-        }
+			// Unhook when disposing control
+			if (Control != null)
+				Control.Loaded -= Control_Loaded;
+		}
 
-        private void Control_Loaded(object sender, Windows.UI.Xaml.RoutedEventArgs e)
-        {
-            // Disable UWP swipe gesture on tabbled page
-            if (Control.ItemsPanelRoot != null)
-                Control.ItemsPanelRoot.ManipulationMode = Windows.UI.Xaml.Input.ManipulationModes.None;
-        }
-    }
+		private void Control_Loaded(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+		{
+			// Disable UWP swipe gesture on tabbled page
+			if (Control.ItemsPanelRoot != null)
+				Control.ItemsPanelRoot.ManipulationMode = Windows.UI.Xaml.Input.ManipulationModes.None;
+		}
+	}
 }

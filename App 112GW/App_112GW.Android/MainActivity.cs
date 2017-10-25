@@ -16,34 +16,34 @@ namespace App_112GW.Droid
 	public class MainActivity : global::Xamarin.Forms.Platform.Android.FormsAppCompatActivity
 	{
 
-        void HandleAndroidException(object sender, RaiseThrowableEventArgs e)
-        {
-            e.Handled = true;
-            Console.Write(e.Exception.ToString());
-        }
-        static void HandleExceptions(object sender, UnhandledExceptionEventArgs e)
-        {
-            Console.WriteLine(e.ExceptionObject.ToString());
-        }
+		void HandleAndroidException(object sender, RaiseThrowableEventArgs e)
+		{
+			e.Handled = true;
+			Console.Write(e.Exception.ToString());
+		}
+		static void HandleExceptions(object sender, UnhandledExceptionEventArgs e)
+		{
+			Console.WriteLine(e.ExceptionObject.ToString());
+		}
 
 
-        protected override void OnCreate (Bundle bundle)
+		protected override void OnCreate (Bundle bundle)
 		{
 			TabLayoutResource = Resource.Layout.Tabbar;
 			ToolbarResource = Resource.Layout.Toolbar;
 
-            base.OnCreate (bundle);
+			base.OnCreate (bundle);
 
-            AppDomain.CurrentDomain.UnhandledException += HandleExceptions;
-            AndroidEnvironment.UnhandledExceptionRaiser += HandleAndroidException;
+			AppDomain.CurrentDomain.UnhandledException += HandleExceptions;
+			AndroidEnvironment.UnhandledExceptionRaiser += HandleAndroidException;
 
-            global::Xamarin.Forms.Forms.Init (this, bundle);
+			global::Xamarin.Forms.Forms.Init (this, bundle);
 			LoadApplication (new App_112GW.App ());
 
-            //var x = typeof(Xamarin.Forms.Themes.DarkThemeResources);
-            //x = typeof(Xamarin.Forms.Themes.LightThemeResources);
-            //x = typeof(Xamarin.Forms.Themes.Android.UnderlineEffect);
-        }
+			//var x = typeof(Xamarin.Forms.Themes.DarkThemeResources);
+			//x = typeof(Xamarin.Forms.Themes.LightThemeResources);
+			//x = typeof(Xamarin.Forms.Themes.Android.UnderlineEffect);
+		}
 	}
 }
 

@@ -11,16 +11,16 @@ using Xamarin.Forms.Platform.iOS;
 [assembly: ExportRenderer(typeof(rMultiplatform.Button), typeof(rMultiplatform.iOS.Renderers.ButtonRenderer))]
 namespace rMultiplatform.iOS.Renderers
 {
-    class ButtonRenderer : ButtonRenderer
-    {
-        protected override void OnElementChanged(ElementChangedEventArgs<Button> e)
-        {
-            base.OnElementChanged(e);
+	class ButtonRenderer : ButtonRenderer
+	{
+		protected override void OnElementChanged(ElementChangedEventArgs<Button> e)
+		{
+			base.OnElementChanged(e);
 
-            var button = this.Control;
-            if (button != null)
-            {
-            }
-        }
-    }
+			var button = this.Control;
+			if (button != null)
+			{
+			}
+		}
+	}
 }
