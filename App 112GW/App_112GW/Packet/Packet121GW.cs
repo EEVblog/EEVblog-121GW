@@ -22,7 +22,7 @@ namespace rMultiplatform
 	}
 	public class Packet121GW
 	{
-        List<char> pNibbles;
+        string pNibbles;
 
 		public enum eMode
 		{
@@ -74,12 +74,7 @@ namespace rMultiplatform
 			eNone   = 0,
 			eDC,
 			eAC,
-			eACDC,
-
-            //0 : AC Off,   DC Off
-            //1 : AC Off,   DC On
-            //2 : AC On,    DC Off
-            //3 : AC On,    DC On
+			eACDC
         }
         public enum eBarRange
         {
@@ -91,31 +86,31 @@ namespace rMultiplatform
 
 		Range121GW[] RangeLookup =
 		{
-			new Range121GW("V",		"Voltage Low Z (V)",	new int[]{4}			," "	),	//0
-			new Range121GW("V",		"Voltage DC (V)",		new int[]{1,2,3,4}		,"	"	),	//1
-			new Range121GW("V",		"Voltage AC (V)",		new int[]{1,2,3,4}		,"	"	),	//2
-			new Range121GW("mV",	"Voltage DC (V)",		new int[]{2,3}			,"mm"	),	//3 
-			new Range121GW("mV",	"Voltage AC (V)",		new int[]{2,3}			,"mm"	),	//4
-			new Range121GW("°C",	"Temp (°C)",			new int[]{4}			," "	),	//5
+			new Range121GW("V",		"Voltage Low Z (V)",	new int[]{4}			," "    ),    //0
+			new Range121GW("V",		"Voltage DC (V)",		new int[]{1,2,3,4}		,"    "    ),    //1
+			new Range121GW("V",		"Voltage AC (V)",		new int[]{1,2,3,4}		,"    "    ),    //2
+			new Range121GW("mV",	"Voltage DC (V)",		new int[]{2,3}			,"mm"    ),    //3 
+			new Range121GW("mV",	"Voltage AC (V)",		new int[]{2,3}			,"mm"    ),    //4
+			new Range121GW("°C",	"Temp (°C)",			new int[]{4}			," "    ),    //5
 			new Range121GW("KHz",   "Frequency (Hz)",		new int[]{2,3,1,2,3}	,"  kkk"),  //6
-			new Range121GW("ms",	"Period (s)",			new int[]{1,2,3}		,"   "	),	//7
-			new Range121GW("%",		"Duty (%)",				new int[]{4}			," "	),	//8
+			new Range121GW("ms",	"Period (s)",			new int[]{1,2,3}		,"   "    ),    //7
+			new Range121GW("%",		"Duty (%)",				new int[]{4}			," "    ),    //8
 			new Range121GW("KΩ",	"Resistance (Ω)",		new int[]{2,3,1,2,3,1,2},"  kkkMM"),//9
-			new Range121GW("KΩ",	"Continuity (Ω)",		new int[]{3}			," "	),	//10
-			new Range121GW("V",		"Diode (V)",			new int[]{1,2}			,"  "	),	//11
+			new Range121GW("KΩ",	"Continuity (Ω)",		new int[]{3}			," "    ),    //10
+			new Range121GW("V",		"Diode (V)",			new int[]{1,2}			,"  "    ),    //11
 			new Range121GW("ms",	"Capacitance (F)",		new int[]{3,4,2,3,4,5}  ,"nnuuuu"), //12
-			new Range121GW("uVA",   "Power AC (VA)",		new int[]{4,5,2,3}		,"	"	),	//13
-			new Range121GW("mVA",   "Power AC (VA)",		new int[]{4,5,2,3}		,"mm  "	),	//14
-			new Range121GW("mVA",   "Power AC (VA)",		new int[]{4,5,2,3}		,"mm  "	),	//15
-			new Range121GW("uA",	"Current AC (A)",		new int[]{2,3}			,"  "	),	//16
-			new Range121GW("uA",	"Current DC (A)",		new int[]{2,3}			,"  "	),	//17
-			new Range121GW("mA",	"Current AC (A)",		new int[]{3,1,2}		,"mmm"	),	//18
-			new Range121GW("mA",	"Current DC (A)",		new int[]{1,2}			,"mm"	),	//19
-			new Range121GW("A",		"Current AC (A)",		new int[]{3,1,2}		,"m  "	),	//20
-			new Range121GW("A",		"Current DC (A)",		new int[]{3,1,2}		,"m  "	),	//21
-			new Range121GW("uVA",   "Power DC (VA)",		new int[]{3,4,4,5}		,"	"	),	//22
-			new Range121GW("mVA",   "Power DC (VA)",		new int[]{4,5,2,3}		,"mm  "	),	//23
-			new Range121GW("VA",	"Power DC (VA)",		new int[]{4,5,2,3}		,"mm  "	)	//24
+			new Range121GW("uVA",   "Power AC (VA)",		new int[]{4,5,2,3}		,"    "    ),    //13
+			new Range121GW("mVA",   "Power AC (VA)",		new int[]{4,5,2,3}		,"mm  "    ),    //14
+			new Range121GW("mVA",   "Power AC (VA)",		new int[]{4,5,2,3}		,"mm  "    ),    //15
+			new Range121GW("uA",	"Current AC (A)",		new int[]{2,3}			,"  "    ),    //16
+			new Range121GW("uA",	"Current DC (A)",		new int[]{2,3}			,"  "    ),    //17
+			new Range121GW("mA",	"Current AC (A)",		new int[]{3,1,2}		,"mmm"    ),    //18
+			new Range121GW("mA",	"Current DC (A)",		new int[]{1,2}			,"mm"    ),    //19
+			new Range121GW("A",		"Current AC (A)",		new int[]{3,1,2}		,"m  "    ),    //20
+			new Range121GW("A",		"Current DC (A)",		new int[]{3,1,2}		,"m  "    ),    //21
+			new Range121GW("uVA",   "Power DC (VA)",		new int[]{3,4,4,5}		,"    "    ),    //22
+			new Range121GW("mVA",   "Power DC (VA)",		new int[]{4,5,2,3}		,"mm  "    ),    //23
+			new Range121GW("VA",	"Power DC (VA)",		new int[]{4,5,2,3}		,"mm  "    )    //24
 		};
 
 		public int BoolToInt(bool value) => (value) ? 1 : 0;
@@ -131,9 +126,9 @@ namespace rMultiplatform
         public char HexAToHex(char value)
         {
             char ten = ((char)(byte)10);
-            if      (value >= '0' && value <= '9') value = (char)((int)value - (int)'0');
-            else if (value >= 'a' && value <= 'f') value = (char)((int)value + ((int)ten - (int)'a'));
-            else if (value >= 'A' && value <= 'F') value = (char)((int)value + ((int)ten - (int)'A'));
+            if      (value >= '0' && value <= '9') value = (char)(value - '0');
+            else if (value >= 'a' && value <= 'f') value = (char)(value + (ten - 'a'));
+            else if (value >= 'A' && value <= 'F') value = (char)(value + (ten - 'A'));
             return value;
         }
         public int NibbleToValue(int start, int length)
@@ -158,11 +153,10 @@ namespace rMultiplatform
 		public bool			MainOverload	=>	(					NibbleToValue(	11,	1	) & 0x8)	> 0;
 		public eSign		MainSign		=>	(eSign)BoolToInt((	NibbleToValue(	11,	1	) & 0x4)	> 0);
 
-		public int			MainRangeValue	=>  MainRange.mValues[	NibbleToValue(	12,	1	)];
+		public int			MainRangeValue	=>  MainRange.mValues  [NibbleToValue(	12,	1	)];
 		public char			MainRangeUnits	=>  MainRange.mNotation[NibbleToValue(	12,	1	)];
 
 		public int			MainIntValue	=>                      NibbleToValue(	13,	4	);
-
 		public eMode		SubMode			=>	(eMode)				NibbleToValue(	17,	2	);
 
 		public bool			SubOverload		=>	(					NibbleToValue(	19,	1	) & 0x8)	!= 0;
@@ -177,7 +171,7 @@ namespace rMultiplatform
 		public bool			Bar0_150		=>	((					NibbleToValue(	26,	1	) & 0x8)	!= 0);
 		public eSign		BarSign			=>	(eSign)BoolToInt((	NibbleToValue(	26,	1	) & 0x4)	> 0);
 		public eBarRange    Bar1000_500		=>	(eBarRange)(		NibbleToValue(	26,	1	) & 3);
-		public int			BarValue		=>						NibbleToValue(	27,	2	);
+		public int			BarValue		=>						NibbleToValue(	27,	2	) & 0x1F;
         public byte         Status1         =>  (byte)NibbleToValue(29, 2);
         public byte         Status2         =>  (byte)NibbleToValue(31, 2);
         public byte         Status3         =>  (byte)NibbleToValue(33, 2);
@@ -201,10 +195,18 @@ namespace rMultiplatform
 
 		public Packet121GW()
 		{
-			pNibbles = new List<char>();
+			pNibbles =  "";
 		}
 
-		public Range121GW   MainRange		=>  RangeLookup[(int)Mode];
+		public Range121GW MainRange
+        {
+            get
+            {
+                var index = (int)Mode;
+                return RangeLookup[index];
+            }
+        }
+
 		public float		MainValue		=>	(float)MainIntValue * (float)MainRangeMultiple / (float)Math.Pow(10.0, ( 5 - (float)MainRangeValue));
 		public string		MainRangeLabel	=>  MainRange.mLabel;
 
@@ -235,12 +237,8 @@ namespace rMultiplatform
 		// completes
 		public void ProcessPacket(byte[] pInput)
 		{
-			var str = Encoding.UTF8.GetString(pInput);
-
-            Debug.WriteLine(str);
-			pNibbles.Clear();
-			foreach(char a in str)
-				pNibbles.Add(a);
+            pNibbles = Encoding.UTF8.GetString(pInput);
+            Debug.WriteLine(pNibbles);
 		}
 
 		private static byte[] KEYCODE_RANGE			= { (byte)0xF4, 0x30, 0x31, 0x30, 0x31 };
