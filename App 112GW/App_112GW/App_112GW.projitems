@@ -20,6 +20,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Controls\SmartChart\SmartChartMenu.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\SmartChart\SmartData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\SmartChart\SmartPadding.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Controls\SmartChart\SmartDPI.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\SmartChart\SmartTick.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\SmartChart\SmartTitle.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\SmartChart\Value Mapping\Mapper.cs" />

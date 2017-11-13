@@ -1013,7 +1013,7 @@ namespace rMultiplatform
 			}
 		}
 		bool RemakeCanvas = true;
-		public override void PaintSurface ( SKCanvas canvas, SKSize dimension )
+		public override void PaintSurface ( SKCanvas canvas, SKSize dimension, SKSize viewsize)
 		{
 			if ( RemakeCanvas )
 			{

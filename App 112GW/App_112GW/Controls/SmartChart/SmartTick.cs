@@ -17,8 +17,8 @@ namespace rMultiplatform
 		public SmartTickType TickType;
 
 		public float Position(float dimension) => Parent.CoordinateFromValue(dimension).Calculate(Value);
-		
-		public static float SpaceWidth = MajorPaint.MeasureText(" ");
+
+        public float SpaceWidth(float scale) => (scale * MajorPaint.MeasureText(" "));
 		public static bool  ShowTick			 { get; set; } = true;
 		public static bool  ShowMajorLabel	   { get; set; } = true;
 		public static bool  ShowMajorGridline	{ get; set; } = true;
@@ -76,18 +76,18 @@ namespace rMultiplatform
 
 		protected abstract (float x1, float y1, float x2, float y2) GridLine(SKSize dimension);
 
-		protected abstract (SKPoint x, SKPoint y) LabelLine(SKSize dimension, string Text);
-		private (string, SKPath) LabelPath(SKSize dimension)
+		protected abstract (SKPoint x, SKPoint y) LabelLine(float scale, SKSize dimension, string Text);
+		private (string, SKPath) LabelPath(float scale, SKSize dimension)
 		{
 			var txt = SIPrefix.ToString(Value);
-			(var pt1, var pt2) = LabelLine(dimension, txt);
+			(var pt1, var pt2) = LabelLine(scale, dimension, txt);
 			var pts = new SKPoint[] { pt1, pt2 };
 			var pth = new SKPath();
 			pth.AddPoly(pts, false);
 			return (txt, pth);
 		}
 
-		public void Draw ( SKCanvas canvas, SKSize dimension)
+		public void Draw ( SKCanvas canvas, SKSize dimension, SKSize view)
 		{
 			if (ShowTick)
 			{
@@ -98,8 +98,13 @@ namespace rMultiplatform
 				{
 					if (ShowMajorLabel)
 					{
-						(var txt, var pth) = LabelPath(dimension);
-						canvas.DrawTextOnPath(txt, pth, 0, 0, MajorPaint);
+                        //Handles different DPI
+                        (var scalex, var scaley) = SmartDPI.GetScale(canvas, dimension, view);
+                        var temp_paint = MajorPaint.Clone();
+                        temp_paint.TextSize *= scaley;
+
+						(var txt, var pth) = LabelPath(scaley, dimension);
+                        canvas.DrawTextOnPath(txt, pth, 0, 0, temp_paint);
 					}
 				}
 			}
@@ -119,27 +124,27 @@ namespace rMultiplatform
 	public class SmartTickHorizontal : ASmartTick
 	{
 		protected override (float x, float y)   TickStart   (SKSize dimension) => (Position(dimension.Width), Parent.Position - TickLength);
-		protected override (float x, float y)   TickEnd	 (SKSize dimension) => (Position(dimension.Width), Parent.Position + TickLength);
+		protected override (float x, float y)   TickEnd	    (SKSize dimension) => (Position(dimension.Width), Parent.Position + TickLength);
 		protected override (float x, float y)   TickCentre  (SKSize dimension) => (Position(dimension.Width), Parent.Position);
 
 		protected override (float x1, float y1, float x2, float y2) GridLine	(SKSize dimension) => Padding.GetVerticalLine(dimension.Height, Position(dimension.Width));
-		protected override (SKPoint x, SKPoint y)				   LabelLine   (SKSize dimension, string Text)
+		protected override (SKPoint x, SKPoint y)				   LabelLine    (float scale, SKSize dimension, string Text)
 		{
-			(var wid,   var hei)	= MeasureMajorText(Text);
-			(var tx,	var ty)	 = TickEnd(dimension);
+			(var wid,   var hei)    = MeasureMajorText(scale, Text);
+			(var tx,	var ty)	    = TickEnd(dimension);
 
 			if (LabelSide == TickLabelSide.Inside)
 			{
-				ty -= SpaceWidth * 3;
-				tx -= SpaceWidth;
+				ty -= SpaceWidth(scale) * 3;
+				tx -= SpaceWidth(scale);
 				var pt1 = new SKPoint(tx, ty);
-				var pt2 = new SKPoint(tx, ty - wid);
+				var pt2 = new SKPoint(tx, ty - wid * scale);
 				return (pt1, pt2);
 			}
 			else
 			{
-				var pt1 = new SKPoint(tx, ty + SpaceWidth + wid);
-				var pt2 = new SKPoint(tx, ty + SpaceWidth);
+				var pt1 = new SKPoint(tx, ty + SpaceWidth(scale) + wid * scale);
+				var pt2 = new SKPoint(tx, ty + SpaceWidth(scale));
 				return (pt1, pt2);
 			}
 		}
@@ -149,26 +154,30 @@ namespace rMultiplatform
 	public class SmartTickVertical : ASmartTick
 	{
 		protected override (float x, float y)   TickStart   (SKSize dimension) => (Parent.Position - TickLength,	Position(dimension.Height));
-		protected override (float x, float y)   TickEnd	 (SKSize dimension) => (Parent.Position + TickLength,	Position(dimension.Height));
-		protected override (float x, float y)   TickCentre  (SKSize dimension) => (Parent.Position,				 Position(dimension.Height));
+		protected override (float x, float y)   TickEnd	    (SKSize dimension) => (Parent.Position + TickLength,    Position(dimension.Height));
+		protected override (float x, float y)   TickCentre  (SKSize dimension) => (Parent.Position,				    Position(dimension.Height));
 
-		protected override (float x1, float y1, float x2, float y2) GridLine	(SKSize dimension) => Padding.GetHorizontalLine(dimension.Width, Position(dimension.Height));
-		protected override (SKPoint x, SKPoint y)				   LabelLine   (SKSize dimension, string Text)
+		protected override (float x1, float y1, float x2, float y2) GridLine(SKSize dimension) => Padding.GetHorizontalLine(dimension.Width, Position(dimension.Height));
+		protected override (SKPoint x, SKPoint y) LabelLine(float scale, SKSize dimension, string Text)
 		{
-			(var wid,   var hei)	= MeasureMajorText(Text);
-			(var tx,	var ty)	 = TickStart(dimension);
+			(var wid,   var hei)	= MeasureMajorText(scale, Text);
+            hei *= scale;
+
+            (var tx,	var ty)	 = TickStart(dimension);
 			if (LabelSide == TickLabelSide.Inside)
 			{
-				tx += SpaceWidth * 3;
-				ty -= hei/2;
-				var pt1 = new SKPoint(tx , ty);
+				tx += SpaceWidth(scale);
+
+                var pt1 = new SKPoint(tx , ty);
 				var pt2 = new SKPoint(tx + wid, ty);
+
 				return (pt1, pt2);
 			}
 			else
 			{
-				var pt1 = new SKPoint(tx - SpaceWidth - wid, ty);
-				var pt2 = new SKPoint(tx - SpaceWidth, ty);
+				var pt1 = new SKPoint(tx - SpaceWidth(scale) - wid * scale, ty);
+				var pt2 = new SKPoint(tx - SpaceWidth(scale), ty);
+
 				return (pt1, pt2);
 			}
 		}

@@ -55,7 +55,7 @@ namespace rMultiplatform
 		{
 			return (CanvasSize.Height * value / (float)Height);
 		}
-		public abstract void PaintSurface(SKCanvas canvas, SKSize dimension);
+		public abstract void PaintSurface(SKCanvas canvas, SKSize dimension, SKSize viewsize);
 
 		public GeneralRenderedView()
 		{

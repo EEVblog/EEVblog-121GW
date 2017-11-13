@@ -55,7 +55,7 @@ namespace rMultiplatform
 			Vertical.Range.SetBoundary(Boundary.Top, Boundary.Bottom);
 		}
 
-		public abstract void Draw(SKCanvas canvas, SKSize dimension);
+		public abstract void Draw(SKCanvas canvas, SKSize dimension, SKSize view);
 	}
 
 	public class SmartAxisPair : ASmartAxisPair
@@ -72,12 +72,12 @@ namespace rMultiplatform
 			var vert_map	= Vertical.CoordinateFromValue(dimension.Height);
 			return Map.CreateMatrix(horz_map, vert_map);
 		}
-		public override void Draw(SKCanvas canvas, SKSize dimension)
+		public override void Draw(SKCanvas canvas, SKSize dimension, SKSize view)
 		{
 			Horizontal.Position = Padding.BottomPosition(dimension.Height);
 			Vertical.Position   = Padding.LeftPosition  (dimension.Width);
-			Horizontal.Draw(canvas, dimension);
-			Vertical.Draw(canvas, dimension);
+			Horizontal.Draw(canvas, dimension, view);
+			Vertical.Draw(canvas, dimension, view);
 		}
 	}
 }

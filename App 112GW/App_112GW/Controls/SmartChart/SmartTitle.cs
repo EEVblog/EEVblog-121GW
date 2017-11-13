@@ -26,31 +26,37 @@ namespace rMultiplatform
 		}
 		public LabelPosition Position = LabelPosition.TopRight;
 
-		public void Draw(SKCanvas canvas, SKSize dimension)
-		{
-			float x = 0, y = 0;
-			(var dx, var dy) = MeasureText(Title, TitlePaint);
+        bool once = true;
+        public void Draw(SKCanvas canvas, SKSize dimension, SKSize view)
+        {
+            float x = 0, y = 0;
 
-			switch (Position)
+            //Handles different DPI
+            (var scalex, var scaley) = SmartDPI.GetScale(canvas, dimension, view);
+            var temp_paint = ScaledPaint(scaley, MajorPaint);
+            (var dx, var dy) = MeasureText(Title, temp_paint);
+
+            switch (Position)
 			{
 				case LabelPosition.TopLeft:
-					x = Padding.LeftPosition(dimension.Width) + dy;
-					y = Padding.TopPosition(dimension.Height) + dy * 2;
+					x = Padding.LeftPosition   (dimension.Width)   + dy;
+					y = Padding.TopPosition    (dimension.Height)  + dy;
 					break;
 				case LabelPosition.TopRight:
-					x = Padding.RightPosition(dimension.Width) - dy - dx;
-					y = Padding.TopPosition(dimension.Height) + dy * 2;
+					x = Padding.RightPosition  (dimension.Width)   - dy - dx;
+					y = Padding.TopPosition    (dimension.Height)  + dy;
 					break;
 				case LabelPosition.BottomLeft:
-					x = Padding.LeftPosition(dimension.Width) + dy;
-					y = Padding.BottomPosition(dimension.Height) - dy * 2;
+					x = Padding.LeftPosition   (dimension.Width)   + dy;
+					y = Padding.BottomPosition (dimension.Height)  - dy;
 					break;
 				case LabelPosition.BottomRight:
-					x = Padding.RightPosition(dimension.Width) - dy - dx;
-					y = Padding.BottomPosition(dimension.Height) - dy * 2;
+					x = Padding.RightPosition  (dimension.Width)   - dy - dx;
+					y = Padding.BottomPosition (dimension.Height)  - dy;
 					break;
-			}
-			canvas.DrawText(Title, x, y, TitlePaint);
+			};
+
+			canvas.DrawText(Title, x, y, temp_paint);
 		}
 	}
 }

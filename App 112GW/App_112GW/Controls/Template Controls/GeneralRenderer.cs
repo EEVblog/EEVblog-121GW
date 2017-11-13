@@ -21,14 +21,14 @@ namespace rMultiplatform
 		SKCanvasView
 #endif
 	{
-		public delegate void PaintCanvas(SKCanvas c, SKSize s);
+		public delegate void PaintCanvas(SKCanvas c, SKSize s, SKSize v);
 		public event PaintCanvas Paint;
 		public GeneralRenderer(PaintCanvas PaintEvent)
 		{
 			Paint			   +=  PaintEvent;
 			HorizontalOptions   =   LayoutOptions.Fill;
-			VerticalOptions	 =   LayoutOptions.Fill;
-			BackgroundColor	 =   Globals.BackgroundColor;
+			VerticalOptions	    =   LayoutOptions.Fill;
+			BackgroundColor	    =   Globals.BackgroundColor;
 		}
 
 #if __ANDROID__ && !SOFTWARE_DRAW
@@ -39,7 +39,7 @@ namespace rMultiplatform
 		protected override void OnPaintSurface(SKPaintSurfaceEventArgs e)
 #endif
 		{
-			Paint?.Invoke(e.Surface.Canvas, CanvasSize);
+			Paint?.Invoke(e.Surface.Canvas, CanvasSize, base.Bounds.Size.ToSKSize());
 		}
 	}
 }

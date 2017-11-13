@@ -7,84 +7,89 @@ using System.Diagnostics;
 
 namespace rMultiplatform
 {
-	public abstract class ASmartElement
-	{
-		static public SKPaint MakeDefaultPaint(Color pColor, float pStrokeWidth, float pFontSize, SKTypeface pTypeface, bool Dotted = false, bool IsStroke = false)
-		{
-			var output = new SKPaint()
-			{
-				Color = pColor.ToSKColor(),
-				StrokeWidth = pStrokeWidth,
-				Typeface = pTypeface,
-				TextSize = pFontSize,
-				StrokeCap = SKStrokeCap.Round,
-				BlendMode = SKBlendMode.Src,
-				IsStroke = IsStroke,
-				IsAntialias = true
-			};
-			if (Dotted)
-			{
-				output.ColorFilter = SKColorFilter.CreateBlendMode(pColor.ToSKColor(), SKBlendMode.Dst);
-				output.PathEffect = SKPathEffect.CreateDash(new[] { 1f, 1f }, 0);
-			}
-			return output;
-		}
+    public abstract class ASmartElement
+    {
+        static public SKPaint MakeDefaultPaint(Color pColor, float pStrokeWidth, float pFontSize, SKTypeface pTypeface, bool Dotted = false, bool IsStroke = false)
+        {
+            var output = new SKPaint()
+            {
+                Color = pColor.ToSKColor(),
+                StrokeWidth = pStrokeWidth,
+                Typeface = pTypeface,
+                TextSize = pFontSize,
+                StrokeCap = SKStrokeCap.Round,
+                BlendMode = SKBlendMode.Src,
+                IsStroke = IsStroke,
+                IsAntialias = true
+            };
+            if (Dotted)
+            {
+                output.ColorFilter = SKColorFilter.CreateBlendMode(pColor.ToSKColor(), SKBlendMode.Dst);
+                output.PathEffect = SKPathEffect.CreateDash(new[] { 1f, 1f }, 0);
+            }
+            return output;
+        }
 
-		static private  SKPaint _MajorPaint  = MakeDefaultPaint(Globals.TextColor,	   1,  Globals.MajorFontSize,  Globals.Typeface);
-		static private  SKPaint _MinorPaint  = MakeDefaultPaint(Globals.TextColor,	   1,  Globals.MinorFontSize,  Globals.Typeface);
-		static private  SKPaint _MaskPaint   = MakeDefaultPaint(Globals.BackgroundColor, 1,  Globals.MinorFontSize,  Globals.Typeface);
-		static private  SKPaint _GridPaint   = MakeDefaultPaint(Globals.TextColor,	   1,  Globals.MinorFontSize,  Globals.Typeface, Dotted:true);
+        static private SKPaint _MajorPaint = MakeDefaultPaint(Globals.TextColor, 1, Globals.MajorFontSize, Globals.Typeface);
+        static private SKPaint _MinorPaint = MakeDefaultPaint(Globals.TextColor, 1, Globals.MinorFontSize, Globals.Typeface);
+        static private SKPaint _MaskPaint = MakeDefaultPaint(Globals.BackgroundColor, 1, Globals.MinorFontSize, Globals.Typeface);
+        static private SKPaint _GridPaint = MakeDefaultPaint(Globals.TextColor, 1, Globals.MinorFontSize, Globals.Typeface, Dotted: true);
 
-		static public   SKPaint MajorPaint
-		{
-			get
-			{
-				return _MajorPaint;
-			}
-			private set
-			{
-				_MajorPaint = value;
-			}
-		}
-		static public   SKPaint MinorPaint
-		{
-			get
-			{
-				return _MinorPaint;
-			}
-			private set
-			{
-				_MinorPaint = value;
-			}
-		}
-		static public   SKPaint MaskPaint
-		{
-			get
-			{
-				return _MaskPaint;
-			}
-			private set
-			{
-				_MaskPaint = value;
-			}
-		}
-		static public   SKPaint GridPaint
-		{
-			get
-			{
-				return _GridPaint;
-			}
-		}
+        static public SKPaint MajorPaint
+        {
+            get
+            {
+                return _MajorPaint;
+            }
+            private set
+            {
+                _MajorPaint = value;
+            }
+        }
+        static public SKPaint MinorPaint
+        {
+            get
+            {
+                return _MinorPaint;
+            }
+            private set
+            {
+                _MinorPaint = value;
+            }
+        }
+        static public SKPaint MaskPaint
+        {
+            get
+            {
+                return _MaskPaint;
+            }
+            private set
+            {
+                _MaskPaint = value;
+            }
+        }
+        static public SKPaint GridPaint
+        {
+            get
+            {
+                return _GridPaint;
+            }
+        }
 
-		static public float Scale
-		{
-			get; private set;
-		} = 1.0f;
-		static public float MinorTextSize										   => Globals.MinorFontSize * Scale;
-		static public float MajorTextSize										   => Globals.MajorFontSize * Scale;
-		static public (float x, float y) MeasureText(string Input, SKPaint Paint)   =>  (Paint.MeasureText(Input), Globals.TitleFontSize);
-		static public (float x, float y) MeasureMajorText(string Input)			 =>  (MajorPaint.MeasureText(Input), MajorTextSize);
-		static public (float x, float y) MeasureMinorText(string Input)			 =>  (MinorPaint.MeasureText(Input), MinorTextSize);
+        static public float MinorTextSize => Globals.MinorFontSize;
+        static public float MajorTextSize => Globals.MajorFontSize;
+
+        static public (float x, float y) MeasureText(string Input, SKPaint Paint) => (Paint.MeasureText(Input), Paint.TextSize);
+        static public (float x, float y) MeasureMajorText(float Scale, string Input) => (Scale*MajorPaint.MeasureText(Input), Scale*MajorPaint.TextSize);
+        static public (float x, float y) MeasureMinorText(float Scale, string Input) => (Scale*MajorPaint.MeasureText(Input), Scale*MajorPaint.TextSize);
+
+        static public SKPaint ScaledPaint(float scale, SKPaint paint)
+        {
+            var cpy = paint.Clone();
+            cpy.TextSize *= scale;
+            return cpy;
+        }
+
 		public static SmartPadding Padding { get; private set; } = new SmartPadding(0.05f, 0, 0.1f, 0);
 		public ASmartElement(){}
 	}
@@ -179,12 +184,12 @@ namespace rMultiplatform
 			}
 		}
 
-		private void Draw(SKCanvas canvas, SKSize dimension)
+		private void Draw(SKCanvas canvas, SKSize dimension, SKSize viewsize)
 		{
 			canvas.Clear(BackgroundColor.ToSKColor());
 			(var x1, var y1, var x2, var y2) = ASmartElement.Padding.GetHorizontalLine(dimension.Width, 10);
-			_Title.Draw(canvas, dimension);
-			Data.Draw(canvas, dimension);
+			_Title.Draw(canvas, dimension, viewsize);
+			Data.Draw(canvas, dimension, viewsize);
 		}
 		public SmartChart(SmartData pData)
 		{

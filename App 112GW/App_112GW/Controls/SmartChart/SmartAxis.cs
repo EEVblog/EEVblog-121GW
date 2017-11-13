@@ -67,7 +67,7 @@ namespace rMultiplatform
 
 
 		//
-		public void Draw(SKCanvas canvas, SKSize dimension)
+		public void Draw(SKCanvas canvas, SKSize dimension, SKSize view)
 		{
 			LastDimension = dimension;
 			if (MajorTickDistance == 0.0)
@@ -79,7 +79,7 @@ namespace rMultiplatform
 				Ticker.Value += MajorTickDistance)
 			{
 				Ticker.TickType = ASmartTick.SmartTickType.Major;
-				Ticker.Draw(canvas, dimension);
+				Ticker.Draw(canvas, dimension, view);
 
 				Ticker.TickType = ASmartTick.SmartTickType.Minor;
 				var draw_value_minor_end	= Ticker.Value + MajorTickDistance - MinorTickDistance / 2;
@@ -90,7 +90,7 @@ namespace rMultiplatform
 					for (Ticker.Value = draw_value_minor_start; 
 						Ticker.Value <= draw_value_minor_end; 
 						Ticker.Value += MinorTickDistance)
-						Ticker.Draw(canvas, dimension);
+						Ticker.Draw(canvas, dimension, view);
 
 				Ticker.Value = value;
 			}

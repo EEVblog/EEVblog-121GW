@@ -351,7 +351,7 @@ namespace rMultiplatform
 			}
 		}
 
-		void PaintSurface(SKCanvas canvas, SKSize dimension)
+		void PaintSurface(SKCanvas canvas, SKSize dimension, SKSize viewsize)
 		{
 			canvas.Clear(BackgroundColor);
 			canvas.DrawRect(FitRectange(canvas.DeviceClipBounds), curStyle);

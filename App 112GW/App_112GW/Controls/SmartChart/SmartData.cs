@@ -69,7 +69,7 @@ namespace rMultiplatform
 			return "";
 		}
 
-		public abstract void Draw(SKCanvas Canvas, SKSize dimension);
+		public abstract void Draw(SKCanvas Canvas, SKSize dimension, SKSize view);
 		
 		public ASmartData(ASmartAxisPair pAxis)
 		{
@@ -81,15 +81,15 @@ namespace rMultiplatform
 	}
 	public class SmartData : ASmartData
 	{
-		public override void Draw(SKCanvas Canvas, SKSize dimension)
+		public override void Draw(SKCanvas Canvas, SKSize dimension, SKSize view)
 		{
 			if (Points.Count == 0)
 				return;
 
 			(var path, var bounds) = Path;
 
-			Axis.Set		(bounds);					   //Set the axis limits
-			Axis.Draw	   (Canvas, dimension);			//Render the axis with limits
+			Axis.Set		(bounds);					    //Set the axis limits
+			Axis.Draw	    (Canvas, dimension, view);		//Render the axis with limits
 			path.Transform  (Axis.Transform(dimension));	//Transform the path to fit limits
 
 			//This only draws the path in the render region (between axis)
