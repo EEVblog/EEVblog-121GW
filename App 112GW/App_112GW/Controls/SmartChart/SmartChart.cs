@@ -35,14 +35,14 @@ namespace rMultiplatform
         static private SKPaint _MaskPaint   = MakeDefaultPaint(Globals.BackgroundColor, 1, Globals.MinorFontSize, Globals.Typeface);
         static private SKPaint _GridPaint   = MakeDefaultPaint(Globals.TextColor, 1, Globals.MinorFontSize, Globals.Typeface, Dotted: true);
 
-        static public SKPaint ScaledPaint(float scale, SKPaint paint)
+        static public SKPaint ScaledPaint   (float scale, SKPaint paint)
         {
             var cpy = paint.Clone();
             cpy.TextSize *= scale;
             return cpy;
         }
-        static public SKPaint MajorPaint(float scale) => ScaledPaint(scale, _MajorPaint);
-        static public SKPaint MinorPaint(float scale) => ScaledPaint(scale, _MajorPaint);
+        static public SKPaint MajorPaint    (float scale) => ScaledPaint(scale, _MajorPaint);
+        static public SKPaint MinorPaint    (float scale) => ScaledPaint(scale, _MajorPaint);
 
         static public SKPaint MaskPaint
         {
@@ -163,19 +163,19 @@ namespace rMultiplatform
 			}
 		}
 
-		private void Draw(SKCanvas canvas, SKSize dimension, SKSize viewsize)
-		{
-			canvas.Clear(BackgroundColor.ToSKColor());
-			(var x1, var y1, var x2, var y2) = ASmartElement.Padding.GetHorizontalLine(dimension.Width, 10);
-			_Title.Draw(canvas, dimension, viewsize);
-			Data.Draw(canvas, dimension, viewsize);
-		}
-		public SmartChart(SmartData pData)
-		{
-			Data = pData;
-			Data.Parent = this;
-			SetupTouch();
-			IsVisible = true;
-		}
+        private void Draw(SKCanvas canvas, SKSize dimension, SKSize viewsize)
+        {
+            canvas.Clear(BackgroundColor.ToSKColor());
+            (var x1, var y1, var x2, var y2) = ASmartElement.Padding.GetHorizontalLine(dimension.Width, 10);
+            _Title.Draw(canvas, dimension, viewsize);
+            Data.Draw(canvas, dimension, viewsize);
+        }
+        public SmartChart(SmartData pData)
+        {
+            Data = pData;
+            Data.Parent = this;
+            SetupTouch();
+            IsVisible = true;
+        }
 	}
 }

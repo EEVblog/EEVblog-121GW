@@ -26,13 +26,13 @@ namespace rMultiplatform
 		public SmartChartMenu(bool ShowSave = true, bool ShowReset = true)
 		{
 			//Add Relative Button
-			mReset = new GeneralButton("Reset", ButtonPress_Reset);
-			mSave = new GeneralButton("Save", ButtonPress_Save);
+			mReset  = new GeneralButton("Reset",    ButtonPress_Reset);
+			mSave   = new GeneralButton("Save",     ButtonPress_Save);
 
 			//Define Grid
 			DefineGrid(2, 1);
-			if (ShowReset) AutoAdd(mReset);
-			if (ShowSave) AutoAdd(mSave);
+			if (ShowReset)  AutoAdd(mReset);
+			if (ShowSave)   AutoAdd(mSave);
 		}
 	}
 }

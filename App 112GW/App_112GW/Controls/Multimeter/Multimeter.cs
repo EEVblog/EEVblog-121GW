@@ -3,17 +3,18 @@ using System.Threading;
 using App_112GW;
 using Xamarin.Forms;
 using System.Diagnostics;
+using System.Threading.Tasks;
 
 namespace rMultiplatform
 {
 	public partial class Multimeter : AutoGrid
 	{
-        public event EventHandler IdChanged;
+        public event EventHandler   IdChanged;
 
-		public BLE.IDeviceBLE	   mDevice;
-		public SmartChart		   Chart;
-		public SmartChartMenu	   ChartMenu;
-		public SmartChartLogger	 Logger = new SmartChartLogger(10, SmartChartLogger.LoggerMode.Rescaling);
+		public BLE.IDeviceBLE	    mDevice;
+		public SmartChart		    Chart;
+		public SmartChartMenu	    ChartMenu;
+		public SmartChartLogger	    Logger = new SmartChartLogger(10, SmartChartLogger.LoggerMode.Rescaling);
 
 		public enum ActiveItem
 		{
@@ -47,7 +48,7 @@ namespace rMultiplatform
 		public MultimeterMenu Menu;
 		private string _VerticalLabel = "";
 
-        public string Id { get; set; }
+        public new string Id { get; set; } = "";
         void ProcessPacket(byte[] pInput)
 		{
 			var processor = new Packet121GW();
@@ -110,9 +111,13 @@ namespace rMultiplatform
 				new SmartChart(
 				new SmartData(
 					new SmartAxisPair(
-						new SmartAxisHorizontal("Horizontal", -0.1f, 0.1f), 
-						new SmartAxisVertical("Vertical", -0.2f, 0.1f)), Logger.Data));
-			Chart.Clicked += Plot_FullScreenClicked;
+						new SmartAxisHorizontal ("Horizontal",  -0.1f,  0.1f), 
+						new SmartAxisVertical   ("Vertical",    -0.2f,  0.1f)), Logger.Data));
+
+			Chart.Clicked += (o, e) => 
+            {
+                Plot_FullScreenClicked(o, e);
+            };
 			#endregion
 
 			ChartMenu = new SmartChartMenu(true, true);
@@ -120,19 +125,16 @@ namespace rMultiplatform
 			ChartMenu.ResetClicked  += (s, e) => { Reset();		 };
 
 			DefineGrid(1, 4);
-
 			AutoAdd(Screen);	FormatCurrentRow(GridUnitType.Star);
-			AutoAdd(Menu);	  FormatCurrentRow(GridUnitType.Auto);
-			AutoAdd(Chart);	 FormatCurrentRow(GridUnitType.Star);
-			AutoAdd(ChartMenu); FormatCurrentRow(GridUnitType.Auto);
+			AutoAdd(Menu);	    FormatCurrentRow(GridUnitType.Auto);
+			AutoAdd(Chart);	    FormatCurrentRow(GridUnitType.Star);
+            AutoAdd(ChartMenu); FormatCurrentRow(GridUnitType.Auto);
 
 			Item = ActiveItem.Screen;
 		}
 		private void Plot_FullScreenClicked(object sender, EventArgs e)
 		{
-			Item = (Item == ActiveItem.FullscreenPlot)?
-				ActiveItem.Screen : 
-				ActiveItem.FullscreenPlot;
+			Item = (Item == ActiveItem.FullscreenPlot) ? ActiveItem.Screen : ActiveItem.FullscreenPlot;
 		}
 		private void SendData   (byte[] pData)
 		{
@@ -140,5 +142,5 @@ namespace rMultiplatform
 				foreach(var chara in serv.Characteristics)
 					chara.Send(pData);
 		}
-	}
+    }
 }

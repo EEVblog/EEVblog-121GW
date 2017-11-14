@@ -259,23 +259,18 @@ namespace rMultiplatform
 			DeviceBEvent.CollectionChanged += Data_Changed;
 
 			//Setup listviews
-			Menu = new SmartChartMenu(true, false);
-			Menu.SaveClicked += (o, e) => { Chart.SaveCSV(); };
+			Menu = new SmartChartMenu(true, true);
+			Menu.SaveClicked    += (o, e) => { Chart.SaveCSV(); };
+            Menu.ResetClicked   += (o, e) => { InvalidateLayout();};
 
             //
-            A_List = MakePicker((o, e) => 
-            {
-                List_ItemSelected(ref DeviceA, o, e);
-            }, 
+            A_List = MakePicker((o, e) => { List_ItemSelected(ref DeviceA, o, e); }, 
             "Device A", "Id");
 
-			B_List = MakePicker((o, e) => 
-            {
-                List_ItemSelected(ref DeviceB, o, e);
-            }, 
+			B_List = MakePicker((o, e) => { List_ItemSelected(ref DeviceB, o, e); }, 
             "Device B", "Id");
 
-			Operation_List  = MakePicker(Operation_List_ItemSelected, "Operation", "Label");
+			Operation_List = MakePicker(Operation_List_ItemSelected, "Operation", "Label");
 			Operation_List.ItemsSource = Operations;
 
 			//

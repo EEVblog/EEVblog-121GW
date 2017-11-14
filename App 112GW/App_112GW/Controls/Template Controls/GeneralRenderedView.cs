@@ -9,17 +9,17 @@ namespace rMultiplatform
 {
 	public abstract class GeneralRenderedView : GeneralView
 	{
-		private GeneralRenderer mRenderer;
+		private GeneralRenderer mRenderer = null;
 		public void Disable()
 		{
-			mRenderer = null;
+            mRenderer = null;
 			Content = null;
 		}
 		public void Enable()
 		{
-			mRenderer = new GeneralRenderer(PaintSurface);
-			Content = mRenderer;
-			mRenderer.InvalidateSurface();
+            mRenderer = new GeneralRenderer(PaintSurface);
+            Content = mRenderer;
+            mRenderer.InvalidateSurface();
 		}
 		public new bool IsVisible
 		{

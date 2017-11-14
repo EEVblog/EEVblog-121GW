@@ -37,7 +37,7 @@ namespace rMultiplatform
 		{
 			//##################################################
 			mHold = new GeneralButton("Hold", ButtonPress_Hold);
-			mRelative = new GeneralButton("Relative", ButtonPress_Relative);
+			mRelative = new GeneralButton("Rel", ButtonPress_Relative);
 			mRange = new GeneralButton("Range", PickerChange_Range);
 			mMode = new GeneralButton("Mode", PickerChange_Mode);
 			//##################################################

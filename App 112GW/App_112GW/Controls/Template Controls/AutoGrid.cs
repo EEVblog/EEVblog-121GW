@@ -102,13 +102,13 @@ namespace rMultiplatform
 			}
 		}
 
-
 		private List<ItemState> RestoreList  = null;
 		public void MaximiseItem(View pItem)
 		{
 			if (RestoreList == null)
 			{
 				RestoreList = new List<ItemState>();
+
 				foreach (var child in Children)
 				{
 					var restoreitem = new ItemState(child);
@@ -126,8 +126,8 @@ namespace rMultiplatform
 		{
 			if (RestoreList != null)
 			{
-				foreach (var item in RestoreList)
-					item.Restore();
+                foreach (var item in RestoreList)
+                    item.Restore();
 				RestoreList = null;
 			}
 		}
