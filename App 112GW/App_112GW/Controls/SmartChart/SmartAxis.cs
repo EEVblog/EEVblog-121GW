@@ -65,9 +65,6 @@ namespace rMultiplatform
 			Range.Pan(-amount);
 		}
 
-
-
-
 		//
 		public void Draw(SKCanvas canvas, SKSize dimension, SKSize view)
 		{

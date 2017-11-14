@@ -54,8 +54,7 @@ namespace rMultiplatform
 		}
 		public void AutoAdd(View Item, int Width = 1)
 		{
-			if (current_row == RowDefinitions.Count)
-				throw new Exception("Adding too many items to multimeter menu.");
+			if (current_row == RowDefinitions.Count) throw new Exception("Adding too many items to multimeter menu.");
 
 			AddView(Item, current_column, current_row, Width);
 			current_column += Width;
@@ -74,13 +73,13 @@ namespace rMultiplatform
 
 			public ItemState(View pItem)
 			{
-				Item			= pItem;
+				Item = pItem;
 
-				visibility	  = Item.IsVisible;
-				row			 = Grid.GetRow(Item);
-				column		  = Grid.GetColumn(Item);
-				row_span		= Grid.GetRowSpan(Item);
-				column_span	 = Grid.GetColumnSpan(Item);
+				visibility = Item.IsVisible;
+				row = Grid.GetRow(Item);
+				column = Grid.GetColumn(Item);
+				row_span = Grid.GetRowSpan(Item);
+				column_span = Grid.GetColumnSpan(Item);
 			}
 
 			public void SetVisibility(View pItem, bool state)
@@ -109,27 +108,29 @@ namespace rMultiplatform
 			{
 				RestoreList = new List<ItemState>();
 
-				foreach (var child in Children)
+                base.BatchBegin();
+                foreach (var child in Children)
 				{
 					var restoreitem = new ItemState(child);
 					RestoreList.Add(restoreitem);
-					if (!child.Equals(pItem))
-						restoreitem.SetVisibility(child, false);
+					if (!child.Equals(pItem)) restoreitem.SetVisibility(child, false);
 				}
 				Grid.SetRow(pItem, 0);
 				Grid.SetColumn(pItem, 0);
 				Grid.SetRowSpan(pItem, RowDefinitions.Count);
 				Grid.SetColumnSpan(pItem, ColumnDefinitions.Count);
-			}
+                base.BatchCommit();
+            }
 		}
 		public void RestoreItems()
 		{
 			if (RestoreList != null)
 			{
-                foreach (var item in RestoreList)
-                    item.Restore();
+                base.BatchBegin();
+                foreach (var item in RestoreList) item.Restore();
 				RestoreList = null;
-			}
+                base.BatchCommit();
+            }
 		}
 
 		public void DefineGrid(int Width, int Height)
@@ -145,8 +146,8 @@ namespace rMultiplatform
 		}
 
 		public AutoGrid()
-		{
-			BackgroundColor = Globals.BackgroundColor;
+        {
+            BackgroundColor = Globals.BackgroundColor;
 			HorizontalOptions = LayoutOptions.Fill;
 			VerticalOptions = LayoutOptions.Fill;
 			Padding = Globals.Padding;

@@ -23,7 +23,8 @@ namespace rMultiplatform
 			eMoved,
 			eHover,
 			ePressed,
-			eReleased
+			eReleased,
+            eScroll
 		};
 
 		public Point			Position;
@@ -57,12 +58,18 @@ namespace rMultiplatform
 		{
 			return new TouchPoint(pInput, TouchPoint.eTouchType.eReleased);
 		}
-	}
+        public static TouchPoint Scroll(Point pInput)
+        {
+            return new TouchPoint(pInput, TouchPoint.eTouchType.eScroll);
+        }
+    }
 	public class		TouchActionEventArgs : EventArgs
 	{
-		public TouchActionEventArgs(TouchPoint pLocation, uint pID)
+        public int ScrollDelta { get; private set; }
+		public TouchActionEventArgs(TouchPoint pLocation, uint pID, int delta = 0)
 		{
-			Location = pLocation;
+            ScrollDelta = delta;
+            Location = pLocation;
 			ID = pID;
 		}
 		public uint ID
@@ -285,7 +292,22 @@ namespace rMultiplatform
 			Point = pPoint;
 		}
 	}
-	public class TouchDoubleTapEventArgs : EventArgs
+
+    public class ScrollActionEventArgs : EventArgs
+    {
+        private int     _Steps;
+        public  int     Steps => _Steps;
+        private Point   _About;
+        public  Point   About => _About;
+
+        public ScrollActionEventArgs(Point pAbout, int Steps)
+        {
+            _About = pAbout;
+            _Steps = Steps;
+        }
+    }
+
+    public class TouchDoubleTapEventArgs : EventArgs
 	{
 
 	}
@@ -296,25 +318,27 @@ namespace rMultiplatform
 
 	public class Touch : RoutingEffect
 	{
-		public delegate void	TouchActionEventHandler		 (object sender, TouchActionEventArgs		args);
+		public delegate void	TouchActionEventHandler		    (object sender, TouchActionEventArgs		args);
 		public delegate void	TouchPinchActionEventHandler	(object sender, TouchPinchActionEventArgs   args);
-		public delegate void	TouchPanActionEventHandler	  (object sender, TouchPanActionEventArgs	 args);
-		public delegate void	TouchDoubleTapActionEventHandler(object sender, TouchDoubleTapEventArgs	 args);
-		public delegate void	TouchTapEventArgs			   (object sender, TouchTapEventArgs		   args);
+		public delegate void	TouchPanActionEventHandler	    (object sender, TouchPanActionEventArgs	    args);
+        public delegate void    ScrollActionEventHandler        (object sender, ScrollActionEventArgs       args);
+        public delegate void	TouchDoubleTapActionEventHandler(object sender, TouchDoubleTapEventArgs	    args);
+		public delegate void	TouchTapEventArgs			    (object sender, TouchTapEventArgs		    args);
 
 		public event TouchActionEventHandler			Pressed;
 		public event TouchActionEventHandler			Released;
 		public event TouchActionEventHandler			Hover;
 		public event TouchActionEventHandler			PressedMoved;
 
-		public event TouchPanActionEventHandler		 Pan;
-		public event TouchPinchActionEventHandler	   Pinch;
+        public event ScrollActionEventHandler           Scroll;
+		public event TouchPanActionEventHandler		    Pan;
+		public event TouchPinchActionEventHandler	    Pinch;
 
-		private double								  GestureThreshold;
+		private double								    GestureThreshold;
 		CancellableTimer								TapTimer;
-		private int									 TapTimeout;
-		private int									 TapCount;
-		public event TouchTapEventArgs				  Tap;
+		private int									    TapTimeout;
+		private int									    TapCount;
+		public event TouchTapEventArgs				    Tap;
 		public event TouchDoubleTapActionEventHandler   DoubleTap;
 		private void TapTimer_Expired()
 		{
@@ -447,7 +471,7 @@ namespace rMultiplatform
 		{
 			PlainEvent(Hover, element, args);
 		}
-		private void SafePressed	(Element element, TouchActionEventArgs args)
+        private void SafePressed	(Element element, TouchActionEventArgs args)
 		{
 			//Start the tap timer
 			TapProcess();
@@ -473,6 +497,9 @@ namespace rMultiplatform
 			var change = type != PreviousType;
 			switch (type)
 			{
+                case TouchPoint.eTouchType.eScroll:
+                    Scroll.Invoke(e, new ScrollActionEventArgs(a.Location.Position, a.ScrollDelta));
+                    break;
 				case TouchPoint.eTouchType.eMoved:
 					switch (PreviousType)
 					{
@@ -506,8 +533,12 @@ namespace rMultiplatform
 		public void RaiseAction(TouchActionEventArgs Action)
 		{
 			OnTouchAction(Element, Action);
-		}
-		public void ReleasedHandler(object sender, Point pt, uint ID)
+        }
+        public void ScrollHandler(object sender, Point pt, int delta, uint ID)
+        {
+            RaiseAction(new TouchActionEventArgs(TouchPointFactory.Released(pt), ID, delta));
+        }
+        public void ReleasedHandler(object sender, Point pt, uint ID)
 		{
 			RaiseAction(new TouchActionEventArgs(TouchPointFactory.Released(pt), ID));
 		}

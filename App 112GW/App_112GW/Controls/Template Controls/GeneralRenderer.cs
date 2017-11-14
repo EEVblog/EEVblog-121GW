@@ -25,10 +25,11 @@ namespace rMultiplatform
 		public event PaintCanvas Paint;
 		public GeneralRenderer(PaintCanvas PaintEvent)
 		{
-			Paint			   +=  PaintEvent;
+			Paint			   +=   PaintEvent;
 			HorizontalOptions   =   LayoutOptions.Fill;
 			VerticalOptions	    =   LayoutOptions.Fill;
 			BackgroundColor	    =   Globals.BackgroundColor;
+
 		}
 
 #if __ANDROID__ && !SOFTWARE_DRAW
@@ -40,6 +41,6 @@ namespace rMultiplatform
 #endif
 		{
 			Paint?.Invoke(e.Surface.Canvas, CanvasSize, base.Bounds.Size.ToSKSize());
-		}
+        }
 	}
 }

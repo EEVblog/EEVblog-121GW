@@ -27,7 +27,8 @@ namespace rMultiplatform.UWP
 
 			if (effect != null && view != null)
 			{
-				// Set event handlers on FrameworkElement
+                // Set event handlers on FrameworkElement
+                view.PointerWheelChanged += ScrollHandler;
 				view.PointerEntered += MoveHandler;
 				view.PointerMoved += MoveHandler;
 				view.PointerPressed += PressedHandler;
@@ -36,28 +37,38 @@ namespace rMultiplatform.UWP
 				view.PointerCanceled += ReleasedHandler;
 			}
 		}
-		protected override void OnDetached()
+        protected override void OnDetached()
 		{
-			// Release event handlers on FrameworkElement
-			view.PointerEntered -= MoveHandler;
-			view.PointerMoved -= MoveHandler;
-			view.PointerPressed -= PressedHandler;
-			view.PointerReleased -= ReleasedHandler;
-			view.PointerExited -= ReleasedHandler;
-			view.PointerCanceled -= ReleasedHandler;
-		}
+            // Release event handlers on FrameworkElement
+            view.PointerWheelChanged    -= ScrollHandler;
+            view.PointerEntered         -= MoveHandler;
+			view.PointerMoved           -= MoveHandler;
+			view.PointerPressed         -= PressedHandler;
+			view.PointerReleased        -= ReleasedHandler;
+			view.PointerExited          -= ReleasedHandler;
+			view.PointerCanceled        -= ReleasedHandler;
+        }
 
-		//Shared handler functions
-		private Point GetPoint(object sender, PointerRoutedEventArgs args)
+        //Shared handler functions
+        private Point GetPoint(object sender, PointerRoutedEventArgs args)
 		{
 			var sndr = sender as UIElement;
 			var p = args.GetCurrentPoint(sndr).Position;
-
 			return new Point(p.X, p.Y);
 		}
 
-		// Common handlers
-		void ReleasedHandler(object sender, PointerRoutedEventArgs args)
+        // Common handlers
+        private void ScrollHandler(object sender, PointerRoutedEventArgs args)
+        {
+            var sndr = sender as UIElement;
+            var p = args.GetCurrentPoint(sndr);
+            var delta = p.Properties.MouseWheelDelta;
+            var temp = p.Position;
+            var pt = new Point(temp.X, temp.Y);
+
+            effect.ScrollHandler(sender, GetPoint(sender, args), delta, args.Pointer.PointerId);
+        }
+        void ReleasedHandler(object sender, PointerRoutedEventArgs args)
 		{
 			effect.ReleasedHandler  (sender, GetPoint(sender, args), args.Pointer.PointerId);
 		}

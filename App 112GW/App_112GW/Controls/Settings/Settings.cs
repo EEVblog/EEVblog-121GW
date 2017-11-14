@@ -21,7 +21,7 @@ namespace rMultiplatform
 
 		public Settings ()
 		{
-			ButtonLeft = new GeneralButton("", ButtonLeft_Clicked);
+			ButtonLeft  = new GeneralButton("", ButtonLeft_Clicked);
 			ButtonRight = new GeneralButton("", ButtonRight_Clicked);
 
 			//Setup connected event

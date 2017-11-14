@@ -45,6 +45,10 @@ namespace rMultiplatform.Droid
 			// Get the id to identify a finger over the course of its progress
 			switch (actn & MotionEventActions.Mask)
 			{
+                case MotionEventActions.Scroll:
+                    var delta = evnt.GetAxisValue(Axis.Vscroll);
+                    effect.ScrollHandler(sender, GetPoint(args, pointer_count), (int)delta, (uint)pointer_count);
+                    break;
 				case MotionEventActions.Down:
 				case MotionEventActions.PointerDown:
 					for (var i = 0; i < pointer_count; ++i)

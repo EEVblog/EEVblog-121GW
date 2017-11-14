@@ -40,7 +40,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Controls\Settings\Settings.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\Timer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)General\CappedRange.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)General\EventManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)General\SIPrefix.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Globals.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Peripherals\Bluetooth\BLEDeviceSelector.cs" />

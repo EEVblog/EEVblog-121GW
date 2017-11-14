@@ -66,7 +66,13 @@ namespace rMultiplatform
         static public float MinorTextSize => Globals.MinorFontSize;
         static public float MajorTextSize => Globals.MajorFontSize;
 
-        static public (float x, float y) MeasureText(string Input, SKPaint Paint) => (Paint.MeasureText(Input), Paint.TextSize);
+        static public (float x, float y) MeasureText(string Input, SKPaint Paint)
+        {
+            SKRect temp = new SKRect(0, 0, 0, 0);
+            Paint.MeasureText(Input, ref temp);
+            //Compensates for cropping of pixels
+            return (temp.Width + 2, temp.Height + 2);
+        }
         static public float SpaceWidth(SKPaint Paint) => (Paint.MeasureText(" "));
 
         public static SmartPadding Padding { get; private set; } = new SmartPadding(0.05f, 0, 0.1f, 0);

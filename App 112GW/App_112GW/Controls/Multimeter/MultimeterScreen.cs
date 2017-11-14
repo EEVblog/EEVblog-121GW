@@ -1002,8 +1002,7 @@ namespace rMultiplatform
 			for (int j = 0; j < pInput.Length; j++)
 			{
 				char cur = pInput[j];
-				if (cur == '.')
-					continue;
+				if (cur == '.') continue;
 
 				char nxt = (j + 1 < pInput.Length) ? pInput[j + 1] : ' ';
 				var dp = (nxt == '.');
