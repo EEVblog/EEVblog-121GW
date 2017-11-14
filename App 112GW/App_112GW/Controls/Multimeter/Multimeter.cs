@@ -33,8 +33,7 @@ namespace rMultiplatform
 						RestoreItems();
 						break;
 					case ActiveItem.FullscreenPlot:
-						MaximiseItem(Chart);
-						break;
+						MaximiseItem(Chart);    break;
 				}
 			}
 			get
@@ -48,7 +47,7 @@ namespace rMultiplatform
 		public MultimeterMenu Menu;
 		private string _VerticalLabel = "";
 
-        public string Id = "";
+        public string Id { get; set; }
         void ProcessPacket(byte[] pInput)
 		{
 			var processor = new Packet121GW();

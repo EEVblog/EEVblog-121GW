@@ -7,28 +7,28 @@ namespace rMultiplatform
 {
 	public abstract class ASmartAxis : ASmartElement
 	{
-		public ASmartAxisPair   Parent  { get; }
-		public CappedRange	  Range   { get; set; }
-		public string		   Label   { get; set; }
+		public ASmartAxisPair Parent { get; }
+		public CappedRange Range { get; set; }
+		public string Label { get; set; }
 
 		public float Distance => (float)Range.Distance;
 
 		public ASmartTick Ticker;
 		public float Position { get; set; }
 
-		public abstract float Dimension (SKSize dimensions	  );
-		public abstract float AxisStart (float WidthXorHeight   );
-		public abstract float AxisEnd   (float WidthXorHeight   );
-		public float AxisSize(float WidthXorHeight) => (AxisEnd(WidthXorHeight) - AxisStart(WidthXorHeight));
+		public abstract float Dimension (SKSize dimensions);
+		public abstract float AxisStart (float WidthXorHeight);
+		public abstract float AxisEnd   (float WidthXorHeight);
+		public float          AxisSize  (float WidthXorHeight) => (AxisEnd(WidthXorHeight) - AxisStart(WidthXorHeight));
 
-		public float ValueStart => (float) Range.Minimum;
-		public float ValueEnd   => (float) Range.Maximum;
+		public float ValueStart => Range.Minimum;
+		public float ValueEnd   => Range.Maximum;
 
-		public uint	 MinorTicks  { get; set; } = 5;
-		private uint	MajorTicks  { get; set; } = 4;
+		public  float MinorTicks  { get; set; } = 5;
+		private float MajorTicks  { get; set; } = 4;
 
-		private float   MajorTickDistance => Distance / MajorTicks;
-		private float   MinorTickDistance => MajorTickDistance / MinorTicks;
+		private float MajorTickDistance => Distance / MajorTicks;
+		private float MinorTickDistance => MajorTickDistance / MinorTicks;
 
 		//Used to interface with touch screen
 		SKSize LastDimension = new SKSize(0, 0);
@@ -50,8 +50,8 @@ namespace rMultiplatform
 				return;
 
 			var dimension   = Dimension(LastDimension);
-			var map		 = ValueFromCoordinate(dimension);
-			var about	   = map.Calculate(About);
+			var map		    = ValueFromCoordinate(dimension);
+			var about	    = map.Calculate(About);
 			Range.Zoom(Amount, about);
 		}
 		public void Pan(float Amount)
@@ -60,10 +60,12 @@ namespace rMultiplatform
 				return;
 
 			var dimension   = Dimension(LastDimension);
-			var map		 = ScaleFromCoordinate(dimension);
-			var amount	  = map.Calculate(Amount);
+			var map		    = ScaleFromCoordinate(dimension);
+			var amount	    = map.Calculate(Amount);
 			Range.Pan(-amount);
 		}
+
+
 
 
 		//
@@ -74,9 +76,9 @@ namespace rMultiplatform
 				return;
 
 			var draw_value_major_end = ValueEnd + MajorTickDistance / 2;
-			for (Ticker.Value = ValueStart;
-				Ticker.Value <= draw_value_major_end; 
-				Ticker.Value += MajorTickDistance)
+			for (Ticker.Value =  ValueStart;
+				 Ticker.Value <= draw_value_major_end; 
+				 Ticker.Value += MajorTickDistance)
 			{
 				Ticker.TickType = ASmartTick.SmartTickType.Major;
 				Ticker.Draw(canvas, dimension, view);
@@ -95,6 +97,11 @@ namespace rMultiplatform
 				Ticker.Value = value;
 			}
 		}
+
+
+
+
+
 		public ASmartAxis(string pLabel, float pMinimum, float pMaximum)
 		{
 			Label = pLabel;

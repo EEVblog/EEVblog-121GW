@@ -30,33 +30,20 @@ namespace rMultiplatform
             return output;
         }
 
-        static private SKPaint _MajorPaint = MakeDefaultPaint(Globals.TextColor, 1, Globals.MajorFontSize, Globals.Typeface);
-        static private SKPaint _MinorPaint = MakeDefaultPaint(Globals.TextColor, 1, Globals.MinorFontSize, Globals.Typeface);
-        static private SKPaint _MaskPaint = MakeDefaultPaint(Globals.BackgroundColor, 1, Globals.MinorFontSize, Globals.Typeface);
-        static private SKPaint _GridPaint = MakeDefaultPaint(Globals.TextColor, 1, Globals.MinorFontSize, Globals.Typeface, Dotted: true);
+        static private SKPaint _MajorPaint  = MakeDefaultPaint(Globals.TextColor, 1, Globals.MajorFontSize, Globals.Typeface);
+        static private SKPaint _MinorPaint  = MakeDefaultPaint(Globals.TextColor, 1, Globals.MinorFontSize, Globals.Typeface);
+        static private SKPaint _MaskPaint   = MakeDefaultPaint(Globals.BackgroundColor, 1, Globals.MinorFontSize, Globals.Typeface);
+        static private SKPaint _GridPaint   = MakeDefaultPaint(Globals.TextColor, 1, Globals.MinorFontSize, Globals.Typeface, Dotted: true);
 
-        static public SKPaint MajorPaint
+        static public SKPaint ScaledPaint(float scale, SKPaint paint)
         {
-            get
-            {
-                return _MajorPaint;
-            }
-            private set
-            {
-                _MajorPaint = value;
-            }
+            var cpy = paint.Clone();
+            cpy.TextSize *= scale;
+            return cpy;
         }
-        static public SKPaint MinorPaint
-        {
-            get
-            {
-                return _MinorPaint;
-            }
-            private set
-            {
-                _MinorPaint = value;
-            }
-        }
+        static public SKPaint MajorPaint(float scale) => ScaledPaint(scale, _MajorPaint);
+        static public SKPaint MinorPaint(float scale) => ScaledPaint(scale, _MajorPaint);
+
         static public SKPaint MaskPaint
         {
             get
@@ -68,29 +55,21 @@ namespace rMultiplatform
                 _MaskPaint = value;
             }
         }
-        static public SKPaint GridPaint
+        static public SKPaint GridPaint(float scale)
         {
-            get
-            {
-                return _GridPaint;
-            }
+            var temp = ScaledPaint(scale, _GridPaint);
+            temp.ColorFilter = SKColorFilter.CreateBlendMode(temp.Color, SKBlendMode.Dst);
+            temp.PathEffect = SKPathEffect.CreateDash(new[] { 2 * scale, 2 * scale }, 0);
+            return temp;
         }
 
         static public float MinorTextSize => Globals.MinorFontSize;
         static public float MajorTextSize => Globals.MajorFontSize;
 
         static public (float x, float y) MeasureText(string Input, SKPaint Paint) => (Paint.MeasureText(Input), Paint.TextSize);
-        static public (float x, float y) MeasureMajorText(float Scale, string Input) => (Scale*MajorPaint.MeasureText(Input), Scale*MajorPaint.TextSize);
-        static public (float x, float y) MeasureMinorText(float Scale, string Input) => (Scale*MajorPaint.MeasureText(Input), Scale*MajorPaint.TextSize);
+        static public float SpaceWidth(SKPaint Paint) => (Paint.MeasureText(" "));
 
-        static public SKPaint ScaledPaint(float scale, SKPaint paint)
-        {
-            var cpy = paint.Clone();
-            cpy.TextSize *= scale;
-            return cpy;
-        }
-
-		public static SmartPadding Padding { get; private set; } = new SmartPadding(0.05f, 0, 0.1f, 0);
+        public static SmartPadding Padding { get; private set; } = new SmartPadding(0.05f, 0, 0.1f, 0);
 		public ASmartElement(){}
 	}
 

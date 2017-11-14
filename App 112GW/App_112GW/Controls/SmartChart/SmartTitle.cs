@@ -33,7 +33,7 @@ namespace rMultiplatform
 
             //Handles different DPI
             (var scalex, var scaley) = SmartDPI.GetScale(canvas, dimension, view);
-            var temp_paint = ScaledPaint(scaley, MajorPaint);
+            var temp_paint = MajorPaint(scaley);
             (var dx, var dy) = MeasureText(Title, temp_paint);
 
             switch (Position)

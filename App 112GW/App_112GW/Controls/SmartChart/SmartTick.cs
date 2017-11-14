@@ -11,14 +11,12 @@ namespace rMultiplatform
 		public float Value;
 		public enum SmartTickType
 		{
-			Major,
-			Minor
+			Major, Minor
 		}
 		public SmartTickType TickType;
 
 		public float Position(float dimension) => Parent.CoordinateFromValue(dimension).Calculate(Value);
 
-        public float SpaceWidth(float scale) => (scale * MajorPaint.MeasureText(" "));
 		public static bool  ShowTick			 { get; set; } = true;
 		public static bool  ShowMajorLabel	   { get; set; } = true;
 		public static bool  ShowMajorGridline	{ get; set; } = true;
@@ -87,22 +85,20 @@ namespace rMultiplatform
 			return (txt, pth);
 		}
 
-		public void Draw ( SKCanvas canvas, SKSize dimension, SKSize view)
-		{
-			if (ShowTick)
-			{
-				(var start_x, var start_y, var end_x, var end_y) = TickLine(dimension);
-				canvas.DrawLine(start_x, start_y, end_x, end_y, MajorPaint);
+		public void Draw ( SKCanvas canvas, SKSize dimension, SKSize view )
+        {
+            (var scalex, var scaley) = SmartDPI.GetScale(canvas, dimension, view);
+            if (ShowTick)
+            {
+                (var start_x, var start_y, var end_x, var end_y) = TickLine(dimension);
+                var temp_paint = MajorPaint(scaley);
+                canvas.DrawLine(start_x, start_y, end_x, end_y, temp_paint);
 
 				if (IsMajorTick)
 				{
 					if (ShowMajorLabel)
 					{
                         //Handles different DPI
-                        (var scalex, var scaley) = SmartDPI.GetScale(canvas, dimension, view);
-                        var temp_paint = MajorPaint.Clone();
-                        temp_paint.TextSize *= scaley;
-
 						(var txt, var pth) = LabelPath(scaley, dimension);
                         canvas.DrawTextOnPath(txt, pth, 0, 0, temp_paint);
 					}
@@ -111,7 +107,7 @@ namespace rMultiplatform
 			if (ShowGridline)
 			{
 				(var x1, var y1, var x2, var y2) = GridLine(dimension);
-				canvas.DrawLine(x1, y1, x2, y2, GridPaint);
+				canvas.DrawLine(x1, y1, x2, y2, GridPaint(scaley));
 			}
 		}
 
@@ -127,24 +123,27 @@ namespace rMultiplatform
 		protected override (float x, float y)   TickEnd	    (SKSize dimension) => (Position(dimension.Width), Parent.Position + TickLength);
 		protected override (float x, float y)   TickCentre  (SKSize dimension) => (Position(dimension.Width), Parent.Position);
 
-		protected override (float x1, float y1, float x2, float y2) GridLine	(SKSize dimension) => Padding.GetVerticalLine(dimension.Height, Position(dimension.Width));
-		protected override (SKPoint x, SKPoint y)				   LabelLine    (float scale, SKSize dimension, string Text)
+		protected override (float x1, float y1, float x2, float y2) GridLine(SKSize dimension) => Padding.GetVerticalLine(dimension.Height, Position(dimension.Width));
+
+        protected override (SKPoint x, SKPoint y) LabelLine(float scale, SKSize dimension, string Text)
 		{
-			(var wid,   var hei)    = MeasureMajorText(scale, Text);
+            var temp_paint = MajorPaint(scale);
+            var space_width = SpaceWidth(temp_paint);
+			(var wid,   var hei)    = MeasureText(Text, temp_paint);
 			(var tx,	var ty)	    = TickEnd(dimension);
 
 			if (LabelSide == TickLabelSide.Inside)
 			{
-				ty -= SpaceWidth(scale) * 3;
-				tx -= SpaceWidth(scale);
+				ty -= space_width * 3;
+				tx -= space_width;
 				var pt1 = new SKPoint(tx, ty);
 				var pt2 = new SKPoint(tx, ty - wid * scale);
 				return (pt1, pt2);
 			}
 			else
 			{
-				var pt1 = new SKPoint(tx, ty + SpaceWidth(scale) + wid * scale);
-				var pt2 = new SKPoint(tx, ty + SpaceWidth(scale));
+				var pt1 = new SKPoint(tx, ty + space_width + wid * scale);
+				var pt2 = new SKPoint(tx, ty + space_width);
 				return (pt1, pt2);
 			}
 		}
@@ -160,13 +159,14 @@ namespace rMultiplatform
 		protected override (float x1, float y1, float x2, float y2) GridLine(SKSize dimension) => Padding.GetHorizontalLine(dimension.Width, Position(dimension.Height));
 		protected override (SKPoint x, SKPoint y) LabelLine(float scale, SKSize dimension, string Text)
 		{
-			(var wid,   var hei)	= MeasureMajorText(scale, Text);
-            hei *= scale;
+            var temp_paint = MajorPaint(scale);
+			(var wid,   var hei) = MeasureText(Text, temp_paint);
+            var space = SpaceWidth(temp_paint);
 
             (var tx,	var ty)	 = TickStart(dimension);
 			if (LabelSide == TickLabelSide.Inside)
 			{
-				tx += SpaceWidth(scale);
+				tx += space;
 
                 var pt1 = new SKPoint(tx , ty);
 				var pt2 = new SKPoint(tx + wid, ty);
@@ -175,8 +175,8 @@ namespace rMultiplatform
 			}
 			else
 			{
-				var pt1 = new SKPoint(tx - SpaceWidth(scale) - wid * scale, ty);
-				var pt2 = new SKPoint(tx - SpaceWidth(scale), ty);
+				var pt1 = new SKPoint(tx - space - wid * scale, ty);
+				var pt2 = new SKPoint(tx - space, ty);
 
 				return (pt1, pt2);
 			}

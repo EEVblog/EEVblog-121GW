@@ -32,12 +32,8 @@ namespace rMultiplatform
 
 			public void SetupEvent(IObservableList<T> pData)
 			{
-				if (pData == null)
-					return;
-
-				if (Data != null)
-					if (AddedEvent)
-						Data.CollectionChanged -= Data_Changed;
+				if (pData == null)              return;
+				if (Data != null && AddedEvent) Data.CollectionChanged -= Data_Changed;
 
 				Data = pData;
 				Data.CollectionChanged += Data_Changed;
@@ -50,8 +46,6 @@ namespace rMultiplatform
 				AddedEvent = false;
 			}
 		}
-
-
 		public string VerticalLabel
 		{
 			set
@@ -252,7 +246,7 @@ namespace rMultiplatform
 			output.VerticalOptions = LayoutOptions.StartAndExpand;
 			output.HorizontalOptions = ColumnLayout;
 			output.SelectedIndexChanged += SelectedHandler;
-			output.ItemDisplayBinding = new Binding(BindText);
+			output.ItemDisplayBinding = new Binding(BindText, BindingMode.OneWay);
 
 			//TODO : This is a bug in xamarin, row height need to be made automatic
 			return output;
@@ -268,9 +262,19 @@ namespace rMultiplatform
 			Menu = new SmartChartMenu(true, false);
 			Menu.SaveClicked += (o, e) => { Chart.SaveCSV(); };
 
-			//
-			A_List		  = MakePicker((o, e) => { List_ItemSelected(ref DeviceA, o, e); }, "Device A", "ShortId");
-			B_List		  = MakePicker((o, e) => { List_ItemSelected(ref DeviceB, o, e); }, "Device B", "ShortId");
+            //
+            A_List = MakePicker((o, e) => 
+            {
+                List_ItemSelected(ref DeviceA, o, e);
+            }, 
+            "Device A", "Id");
+
+			B_List = MakePicker((o, e) => 
+            {
+                List_ItemSelected(ref DeviceB, o, e);
+            }, 
+            "Device B", "Id");
+
 			Operation_List  = MakePicker(Operation_List_ItemSelected, "Operation", "Label");
 			Operation_List.ItemsSource = Operations;
 
