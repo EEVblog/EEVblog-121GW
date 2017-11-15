@@ -30,10 +30,10 @@ namespace rMultiplatform
             return output;
         }
 
-        static private SKPaint _MajorPaint  = MakeDefaultPaint(Globals.TextColor, 1, Globals.MajorFontSize, Globals.Typeface);
-        static private SKPaint _MinorPaint  = MakeDefaultPaint(Globals.TextColor, 1, Globals.MinorFontSize, Globals.Typeface);
-        static private SKPaint _MaskPaint   = MakeDefaultPaint(Globals.BackgroundColor, 1, Globals.MinorFontSize, Globals.Typeface);
-        static private SKPaint _GridPaint   = MakeDefaultPaint(Globals.TextColor, 1, Globals.MinorFontSize, Globals.Typeface, Dotted: true);
+        static private SKPaint _MajorPaint  = MakeDefaultPaint(Globals.TextColor,       1,  Globals.MajorFontSize,  Globals.Typeface);
+        static private SKPaint _MinorPaint  = MakeDefaultPaint(Globals.TextColor,       1,  Globals.MinorFontSize,  Globals.Typeface);
+        static private SKPaint _GridPaint   = MakeDefaultPaint(Globals.TextColor,       1,  Globals.MinorFontSize,  Globals.Typeface, Dotted: true);
+        static private SKPaint _MaskPaint   = MakeDefaultPaint(Globals.BackgroundColor, 1,  Globals.MinorFontSize,  Globals.Typeface);
 
         static public SKPaint ScaledPaint   (float scale, SKPaint paint)
         {

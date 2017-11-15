@@ -68,7 +68,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Image\SVGLayer\SVGLayer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Peripherals\Touch.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)General\VariableMonitor.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Packet\Packet121GW.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Controls\Multimeter\Packet121GW.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Packet\PacketProcessor.cs" />
   </ItemGroup>
   <ItemGroup>

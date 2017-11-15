@@ -1,7 +1,8 @@
-﻿
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 
 using Xamarin.Forms;
 using rMultiplatform;
@@ -9,6 +10,8 @@ using SkiaSharp;
 using SkiaSharp.Views.Forms;
 using System.Runtime.CompilerServices;
 using App_112GW;
+using System.Diagnostics;
+
 namespace rMultiplatform
 {
 	public class AutoGrid : Grid
@@ -102,6 +105,21 @@ namespace rMultiplatform
 		}
 
 		private List<ItemState> RestoreList  = null;
+
+        Task temp;
+        async private void DelayedInvalidateLayout()
+        {
+            await Task.Delay(100);
+            Globals.RunMainThread(() => {
+                var count = Children.Count;
+                if (count > 0)
+                {
+                    Children[count - 1].IsVisible = false;
+                    Children[count - 1].IsVisible = true;
+                }
+            });
+        }
+
 		public void MaximiseItem(View pItem)
 		{
 			if (RestoreList == null)
@@ -120,20 +138,24 @@ namespace rMultiplatform
 				Grid.SetRowSpan(pItem, RowDefinitions.Count);
 				Grid.SetColumnSpan(pItem, ColumnDefinitions.Count);
                 base.BatchCommit();
+                DelayedInvalidateLayout();
             }
 		}
-		public void RestoreItems()
-		{
-			if (RestoreList != null)
-			{
+        public void RestoreItems()
+        {
+            if (RestoreList != null)
+            {
                 base.BatchBegin();
+
                 foreach (var item in RestoreList) item.Restore();
-				RestoreList = null;
+                RestoreList = null;
+
                 base.BatchCommit();
+                DelayedInvalidateLayout();
             }
 		}
 
-		public void DefineGrid(int Width, int Height)
+        public void DefineGrid(int Width, int Height)
 		{
 			DefineColumns(Width);
 			DefineRows(Height);
@@ -151,6 +173,6 @@ namespace rMultiplatform
 			HorizontalOptions = LayoutOptions.Fill;
 			VerticalOptions = LayoutOptions.Fill;
 			Padding = Globals.Padding;
-		}
+        }
 	}
 }
