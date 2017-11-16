@@ -82,7 +82,7 @@ namespace rMultiplatform
 	public class SmartChart : GeneralView
 	{
 		private SmartData   Data;
-		private SmartTitle  _Title = new SmartTitle() { Title = "Untitled" };
+		private SmartTitle  _Title = new SmartTitle() { Title = "" };
 
 		#region EVENTS
 		public event EventHandler Clicked;
@@ -97,15 +97,27 @@ namespace rMultiplatform
 		{
 			//Add the gesture recognizer 
 			mTouch = new Touch();
-			mTouch.Tap	  += MTouch_Tap;
+			mTouch.Tap	    += MTouch_Tap;
 			mTouch.Pressed  += MTouch_Press;
 			mTouch.Hover	+= MTouch_Hover;
 			mTouch.Released += MTouch_Release;
 			mTouch.Pinch	+= MTouch_Pinch;
-			mTouch.Pan	  += MTouch_Pan;
+			mTouch.Pan	    += MTouch_Pan;
+            mTouch.Scroll   += MTouch_Scroll;
 			Effects.Add(mTouch);
 		}
-		private void MTouch_Tap(object sender, Touch.TouchTapEventArgs args)
+
+        private void MTouch_Scroll(object sender, ScrollActionEventArgs args)
+        {
+            var dist = 1f + (float)args.Steps / (720f);
+
+            var zoomX = dist;
+            var zoomY = 0;
+            var Center = args.About;
+
+            Data.Axis.Zoom(zoomX, zoomY, (float)Center.X, (float)Center.Y);
+        }
+        private void MTouch_Tap(object sender, Touch.TouchTapEventArgs args)
 		{
 			Clicked?.Invoke(sender, EventArgs.Empty);
 		}
@@ -118,8 +130,6 @@ namespace rMultiplatform
 			var zoomX = (float)args.Pinch.ZoomX;
 			var zoomY = (float)args.Pinch.ZoomY;
 			var Center = args.Pinch.Center;
-
-			Debug.WriteLine(zoomX.ToString() + " " + zoomY.ToString());
 			Data.Axis.Zoom(zoomX, zoomY, (float)Center.X, (float)Center.Y);
 		}
 		#endregion
@@ -156,7 +166,6 @@ namespace rMultiplatform
 		{
 			Files.SaveFile(Data.GetCSV());
 		}
-
 		public string Title
 		{
 			get
@@ -172,7 +181,9 @@ namespace rMultiplatform
         private void Draw(SKCanvas canvas, SKSize dimension, SKSize viewsize)
         {
             canvas.Clear(BackgroundColor.ToSKColor());
-            (var x1, var y1, var x2, var y2) = ASmartElement.Padding.GetHorizontalLine(dimension.Width, 10);
+            (var x1, var y1, var x2, var y2) = 
+                ASmartElement.Padding.GetHorizontalLine(dimension.Width, 10);
+
             _Title.Draw(canvas, dimension, viewsize);
             Data.Draw(canvas, dimension, viewsize);
         }

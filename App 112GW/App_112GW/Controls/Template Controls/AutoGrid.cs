@@ -14,7 +14,7 @@ using System.Diagnostics;
 
 namespace rMultiplatform
 {
-	public class AutoGrid : Grid
+	abstract public class AutoGrid : Grid
 	{
 		private void AddView(View pInput, int pX, int pY, int pXSpan = 1, int pYSpan = 1)
 		{
@@ -106,7 +106,6 @@ namespace rMultiplatform
 
 		private List<ItemState> RestoreList  = null;
 
-        Task temp;
         async private void DelayedInvalidateLayout()
         {
             await Task.Delay(100);
@@ -114,8 +113,9 @@ namespace rMultiplatform
                 var count = Children.Count;
                 if (count > 0)
                 {
-                    Children[count - 1].IsVisible = false;
-                    Children[count - 1].IsVisible = true;
+                    bool val = Children[count - 1].IsVisible;
+                    Children[count - 1].IsVisible = !val;
+                    Children[count - 1].IsVisible = val;
                 }
             });
         }
@@ -133,6 +133,7 @@ namespace rMultiplatform
 					RestoreList.Add(restoreitem);
 					if (!child.Equals(pItem)) restoreitem.SetVisibility(child, false);
 				}
+
 				Grid.SetRow(pItem, 0);
 				Grid.SetColumn(pItem, 0);
 				Grid.SetRowSpan(pItem, RowDefinitions.Count);
@@ -141,6 +142,7 @@ namespace rMultiplatform
                 DelayedInvalidateLayout();
             }
 		}
+
         public void RestoreItems()
         {
             if (RestoreList != null)
@@ -167,7 +169,31 @@ namespace rMultiplatform
 			return view;
 		}
 
-		public AutoGrid()
+        public enum Orientation
+        {
+            Landscape,
+            Portrait
+        };
+
+        private double width = 0;
+        private double height = 0;
+        protected override void OnSizeAllocated(double width, double height)
+        {
+            base.OnSizeAllocated(width, height); //must be called
+            if (this.width != width || this.height != height)
+            {
+                this.width = width;
+                this.height = height;
+
+                OrientationChanged((width > height) ? Orientation.Landscape: Orientation.Portrait);
+            }
+        }
+
+        public virtual void OrientationChanged(Orientation New)
+        {
+        }
+
+        public AutoGrid()
         {
             BackgroundColor = Globals.BackgroundColor;
 			HorizontalOptions = LayoutOptions.Fill;

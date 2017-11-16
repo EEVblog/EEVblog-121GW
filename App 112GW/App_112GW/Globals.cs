@@ -175,7 +175,7 @@ namespace rMultiplatform
 			}
 		}
 
-		static private double   _Padding = 1.0f;
+		static private double   _Padding = 3.0f;
 		static public double    Padding
 		{
 			get

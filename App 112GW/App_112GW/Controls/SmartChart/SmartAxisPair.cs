@@ -49,10 +49,25 @@ namespace rMultiplatform
 		{
 			Pan(Amount.X, Amount.Y);
 		}
+
+        public float VerticalPadding
+        {
+            get; set;
+        } = 0.1f;
+        public float MinimumPadding
+        {
+            get; set;
+        } = 0.000001f;
+
 		public void Set(SKRect Boundary)
 		{
-			Horizontal.Range.SetBoundary(Boundary.Left, Boundary.Right);
-			Vertical.Range.SetBoundary(Boundary.Top, Boundary.Bottom);
+            //Prevents zero size axis and padds by a ratio defined by Vertical Padding
+            var padding_vert = Boundary.Height * VerticalPadding;
+            if (padding_vert <= MinimumPadding)
+                padding_vert = MinimumPadding;
+
+            Horizontal.Range.SetBoundary(Boundary.Left, Boundary.Right);
+			Vertical.Range.SetBoundary(Boundary.Top - padding_vert, Boundary.Bottom + padding_vert);
 		}
 
 		public abstract void Draw(SKCanvas canvas, SKSize dimension, SKSize view);

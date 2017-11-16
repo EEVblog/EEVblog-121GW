@@ -99,9 +99,11 @@ namespace rMultiplatform
 		public SmartData(ASmartAxisPair pAxis, IObservableList<SKPoint> pData) : base(pAxis)
 		{
 			DataPaint.IsStroke  = true;
-			DataPaint.Color	 = Globals.UniqueColor().ToSKColor();
-			Axis.Parent		 = this;
-			Points = pData;
+            DataPaint.StrokeWidth = 3;
+
+            DataPaint.Color = Globals.UniqueColor().ToSKColor();
+			Axis.Parent	    = this;
+			Points          = pData;
 			Points.CollectionChanged += Points_CollectionChanged;
 		}
 		private void Points_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)

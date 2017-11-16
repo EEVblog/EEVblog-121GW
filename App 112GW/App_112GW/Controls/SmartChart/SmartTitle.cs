@@ -15,7 +15,7 @@ namespace rMultiplatform
 		}
 		#endregion
 
-		public string Title = "";
+		public string Title { get; set; } = "";
 		public SKPaint TitlePaint = MakeDefaultPaint(Globals.TextColor, 2, Globals.TitleFontSize, Globals.Typeface);
 		public enum LabelPosition
 		{
@@ -26,7 +26,6 @@ namespace rMultiplatform
 		}
 		public LabelPosition Position = LabelPosition.TopRight;
 
-        bool once = true;
         public void Draw(SKCanvas canvas, SKSize dimension, SKSize view)
         {
             float x = 0, y = 0;

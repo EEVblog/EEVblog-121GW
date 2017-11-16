@@ -497,9 +497,6 @@ namespace rMultiplatform
 			var change = type != PreviousType;
 			switch (type)
 			{
-                case TouchPoint.eTouchType.eScroll:
-                    Scroll.Invoke(e, new ScrollActionEventArgs(a.Location.Position, a.ScrollDelta));
-                    break;
 				case TouchPoint.eTouchType.eMoved:
 					switch (PreviousType)
 					{
@@ -536,7 +533,9 @@ namespace rMultiplatform
         }
         public void ScrollHandler(object sender, Point pt, int delta, uint ID)
         {
-            RaiseAction(new TouchActionEventArgs(TouchPointFactory.Released(pt), ID, delta));
+            Device.BeginInvokeOnMainThread(() => {
+                Scroll?.Invoke(sender, new ScrollActionEventArgs(TouchPointFactory.Released(pt).Position, delta));
+            });
         }
         public void ReleasedHandler(object sender, Point pt, uint ID)
 		{

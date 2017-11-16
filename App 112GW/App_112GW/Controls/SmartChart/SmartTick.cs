@@ -7,7 +7,7 @@ namespace rMultiplatform
 {
 	public abstract class ASmartTick : ASmartElement
 	{
-		public ASmartAxis Parent		{ get; private set; }
+		public ASmartAxis Parent { get; private set; }
 		public float Value;
 		public enum SmartTickType
 		{
@@ -22,10 +22,9 @@ namespace rMultiplatform
 		public static bool  ShowMajorGridline	{ get; set; } = true;
 		public static bool  ShowMinorGridline	{ get; set; } = false;
 
-		public bool ShowGridline => (TickType == SmartTickType.Major) ? ShowMajorGridline : ShowMinorGridline;
-
-		public bool IsMajorTick => TickType == SmartTickType.Major;
-		public bool IsMinorTick => TickType == SmartTickType.Minor;
+		public bool ShowGridline    => (TickType == SmartTickType.Major) ? ShowMajorGridline : ShowMinorGridline;
+		public bool IsMajorTick     => (TickType == SmartTickType.Major);
+		public bool IsMinorTick     => (TickType == SmartTickType.Minor);
 
 		private static float _MajorTickLength = 5.0f;
 		private static float MajorTickLength
@@ -62,8 +61,8 @@ namespace rMultiplatform
 		}
 		public TickLabelSide LabelSide { get; set; } = TickLabelSide.Inside;
 
-		protected abstract (float x, float y) TickStart(SKSize dimensoin);
-		protected abstract (float x, float y) TickEnd(SKSize dimensoin);
+		protected abstract (float x, float y) TickStart (SKSize dimensoin);
+		protected abstract (float x, float y) TickEnd   (SKSize dimensoin);
 		protected abstract (float x, float y) TickCentre(SKSize dimension);
 		private (float x1, float y1, float x2, float y2) TickLine(SKSize dimension)
 		{
@@ -124,7 +123,6 @@ namespace rMultiplatform
 		protected override (float x, float y)   TickCentre  (SKSize dimension) => (Position(dimension.Width), Parent.Position);
 
 		protected override (float x1, float y1, float x2, float y2) GridLine(SKSize dimension) => Padding.GetVerticalLine(dimension.Height, Position(dimension.Width));
-
         protected override (SKPoint x, SKPoint y) LabelLine(float scale, SKSize dimension, string Text)
 		{
             var temp_paint = MajorPaint(scale);

@@ -46,12 +46,11 @@ namespace rMultiplatform
 		private PacketProcessor MyProcessor = new PacketProcessor(0xF2, 52);
 		public MultimeterScreen Screen;
 		public MultimeterMenu Menu;
-		private string _VerticalLabel = "";
 
+        Packet121GW processor = new Packet121GW();
         public new string Id { get; set; } = "";
         void ProcessPacket(byte[] pInput)
 		{
-			var processor = new Packet121GW();
 			try
 			{
 				processor.ProcessPacket(pInput);
@@ -60,8 +59,9 @@ namespace rMultiplatform
 
                 Logger.Sample(processor.MainValue);
 
-				VerticalLabel = processor.MainRangeLabel;
-				Screen.Update(processor);
+                var temp = processor.MainRangeLabel;
+                ChartTitle = temp;
+                Screen.Update(processor);
 				Screen.InvalidateSurface();
 			}
 			catch
@@ -72,14 +72,15 @@ namespace rMultiplatform
 
 		public void		 Reset() => Logger.Reset();
 
-		public string VerticalLabel
+        private string _ChartTitle = "NOT_A_TITLE";
+		public string ChartTitle
 		{
 			set
 			{
-				if (value != _VerticalLabel)
+				if (value != _ChartTitle)
 				{
-					_VerticalLabel = value;
-					Chart.Title = value;
+                    Chart.Title = value;
+                    _ChartTitle = value;
 					Reset();
 				}
 			}
@@ -132,6 +133,16 @@ namespace rMultiplatform
 
 			Item = ActiveItem.Screen;
 		}
+
+        public override void OrientationChanged(Orientation New)
+        {
+            BatchBegin();
+            RestoreItems();
+            if (New == Orientation.Landscape)
+                MaximiseItem(Screen);
+            BatchCommit();
+        }
+
 		private void Plot_FullScreenClicked(object sender, EventArgs e)
 		{
 			Item = (Item == ActiveItem.FullscreenPlot) ? ActiveItem.Screen : ActiveItem.FullscreenPlot;
