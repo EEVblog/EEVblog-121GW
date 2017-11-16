@@ -84,19 +84,22 @@ namespace rMultiplatform
 				var draw_value_minor_start  = Ticker.Value + MinorTickDistance;
 				var value = Ticker.Value;
 
+                float last = 0;
 				if (draw_value_minor_end < draw_value_major_end)
 					for (Ticker.Value = draw_value_minor_start; 
 						Ticker.Value <= draw_value_minor_end; 
 						Ticker.Value += MinorTickDistance)
+                    {
 						Ticker.Draw(canvas, dimension, view);
+
+                        //Anti-lock, floating point issue work around
+                        if (last == Ticker.Value) return;
+                        last = Ticker.Value;
+                    }
 
 				Ticker.Value = value;
 			}
 		}
-
-
-
-
 
 		public ASmartAxis(string pLabel, float pMinimum, float pMaximum)
 		{

@@ -34,6 +34,10 @@ namespace rMultiplatform
 					base.IsVisible = value;
 				}
 			}
+            get
+            {
+                return base.IsVisible;
+            }
 		}
 		public SKSize CanvasSize
 		{

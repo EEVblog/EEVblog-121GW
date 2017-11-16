@@ -19,7 +19,8 @@ namespace rMultiplatform
 
 		public void Reset()
 		{
-			Points.Clear();
+            Axis.Reset();
+            Points.Clear();
 		}
 
 		private List<SKPoint> PointsList

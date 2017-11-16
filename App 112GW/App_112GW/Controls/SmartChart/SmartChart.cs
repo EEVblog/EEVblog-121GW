@@ -134,35 +134,7 @@ namespace rMultiplatform
 			Data.Axis.Zoom(zoomX, zoomY, (float)Center.X, (float)Center.Y);
 		}
 		#endregion
-		
-		//#region RENDERER
-		//GeneralRenderer mRenderer;
-		//public void Disable()
-		//{
-		//	mRenderer = null;
-		//	Content = null;
-		//}
-		//public void Enable()
-		//{
-		//	mRenderer = new GeneralRenderer(Draw);
-		//	Content = mRenderer;
-		//}
-		//public new bool IsVisible
-		//{
-		//	set
-		//	{
-		//		if (value) Enable();
-		//		else Disable();
-		//		base.IsVisible = value;
-		//	}
-		//}
-		//public void InvalidateSurface()
-		//{
-		//	mRenderer?.InvalidateSurface();
-		//}
-		//#endregion
-
-		//Told you it'd be easy
+        
 		public void SaveCSV()
 		{
 			Files.SaveFile(Data.GetCSV());

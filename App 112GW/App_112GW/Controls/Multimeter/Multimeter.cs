@@ -137,9 +137,12 @@ namespace rMultiplatform
         public override void OrientationChanged(Orientation New)
         {
             BatchBegin();
-            RestoreItems();
-            if (New == Orientation.Landscape)
-                MaximiseItem(Screen);
+            if (Screen.IsVisible == true)
+            {
+                RestoreItems();
+                if (New == Orientation.Landscape)
+                    MaximiseItem(Screen);
+            }
             BatchCommit();
         }
 

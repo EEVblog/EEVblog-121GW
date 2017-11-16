@@ -16,14 +16,7 @@ namespace rMultiplatform
 		public bool EnableTouchVertical = false;
 		public bool EnableTouchHorizontal = true;
 
-		public void Reset()
-		{
-			Horizontal.Range.Reset();
-			Vertical.Range.Reset();
-		}
-
         Mutex mutex = new Mutex();
-
         public void Wait()
         {
             mutex.WaitOne();
@@ -32,6 +25,14 @@ namespace rMultiplatform
         {
             mutex.ReleaseMutex();
         }
+        public void Reset()
+        {
+            Wait();
+            Horizontal.Range.Reset();
+			Vertical.Range.Reset();
+            Release();
+        }
+
 
         public void Zoom(float dx, float dy, float cx, float cy)
 		{
