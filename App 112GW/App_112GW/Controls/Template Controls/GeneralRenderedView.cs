@@ -17,6 +17,7 @@ namespace rMultiplatform
 		}
 		public void Enable()
 		{
+            mRenderer = null;
             mRenderer = new GeneralRenderer(PaintSurface);
             Content = mRenderer;
             mRenderer.InvalidateSurface();
@@ -29,6 +30,7 @@ namespace rMultiplatform
 				{
 					if (value)  Enable();
 					else		Disable();
+
 					base.IsVisible = value;
 				}
 			}
@@ -37,15 +39,13 @@ namespace rMultiplatform
 		{
 			get
 			{
-				if (mRenderer != null)
-					return mRenderer.CanvasSize;
+				if (mRenderer != null)  return mRenderer.CanvasSize;
 				return new SKSize(0, 0);
 			}
 		}
 		public void InvalidateSurface()
 		{
-			if (mRenderer != null)
-				mRenderer?.InvalidateSurface();
+			if (mRenderer != null)   mRenderer?.InvalidateSurface();
 		}
 		private float ConvertWidthToPixel(float value)
 		{

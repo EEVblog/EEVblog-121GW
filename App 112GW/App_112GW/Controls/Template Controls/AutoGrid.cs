@@ -91,7 +91,9 @@ namespace rMultiplatform
 
 				if (item_type == typeof(MultimeterScreen))
 					(pItem as MultimeterScreen).IsVisible = state;
-				else
+                else if (item_type == typeof(SmartChart))
+                    (pItem as SmartChart).IsVisible = state;
+                else
 					pItem.IsVisible = state;
 			}
 			public void Restore()
@@ -131,7 +133,8 @@ namespace rMultiplatform
 				{
 					var restoreitem = new ItemState(child);
 					RestoreList.Add(restoreitem);
-					if (!child.Equals(pItem)) restoreitem.SetVisibility(child, false);
+					if (!child.Equals(pItem))
+                        restoreitem.SetVisibility(child, false);
 				}
 
 				Grid.SetRow(pItem, 0);

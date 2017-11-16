@@ -79,8 +79,8 @@ namespace rMultiplatform
 		public ASmartElement(){}
 	}
 
-	public class SmartChart : GeneralView
-	{
+	public class SmartChart : GeneralRenderedView
+    {
 		private SmartData   Data;
 		private SmartTitle  _Title = new SmartTitle() { Title = "" };
 
@@ -135,32 +135,32 @@ namespace rMultiplatform
 		}
 		#endregion
 		
-		#region RENDERER
-		GeneralRenderer mRenderer;
-		public void Disable()
-		{
-			mRenderer = null;
-			Content = null;
-		}
-		public void Enable()
-		{
-			mRenderer = new GeneralRenderer(Draw);
-			Content = mRenderer;
-		}
-		public new bool IsVisible
-		{
-			set
-			{
-				if (value) Enable();
-				else Disable();
-				base.IsVisible = value;
-			}
-		}
-		public void InvalidateSurface()
-		{
-			mRenderer?.InvalidateSurface();
-		}
-		#endregion
+		//#region RENDERER
+		//GeneralRenderer mRenderer;
+		//public void Disable()
+		//{
+		//	mRenderer = null;
+		//	Content = null;
+		//}
+		//public void Enable()
+		//{
+		//	mRenderer = new GeneralRenderer(Draw);
+		//	Content = mRenderer;
+		//}
+		//public new bool IsVisible
+		//{
+		//	set
+		//	{
+		//		if (value) Enable();
+		//		else Disable();
+		//		base.IsVisible = value;
+		//	}
+		//}
+		//public void InvalidateSurface()
+		//{
+		//	mRenderer?.InvalidateSurface();
+		//}
+		//#endregion
 
 		//Told you it'd be easy
 		public void SaveCSV()
@@ -179,7 +179,7 @@ namespace rMultiplatform
 			}
 		}
 
-        private void Draw(SKCanvas canvas, SKSize dimension, SKSize viewsize)
+        public override void PaintSurface(SKCanvas canvas, SKSize dimension, SKSize viewsize)
         {
             canvas.Clear(BackgroundColor.ToSKColor());
             (var x1, var y1, var x2, var y2) = 

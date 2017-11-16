@@ -25,7 +25,7 @@ namespace rMultiplatform
 		public event PaintCanvas Paint;
 		public GeneralRenderer(PaintCanvas PaintEvent)
 		{
-			Paint			   +=   PaintEvent;
+            Paint			   +=   PaintEvent;
 			HorizontalOptions   =   LayoutOptions.Fill;
 			VerticalOptions	    =   LayoutOptions.Fill;
 			BackgroundColor	    =   Globals.BackgroundColor;
