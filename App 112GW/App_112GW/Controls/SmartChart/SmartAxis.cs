@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading;
 
 namespace rMultiplatform
 {
@@ -46,8 +47,7 @@ namespace rMultiplatform
 		}
 		public void Zoom(float Amount, float About)
 		{
-			if (Amount <= 0)
-				return;
+			if (Amount <= 0) return;
 
 			var dimension   = Dimension(LastDimension);
 			var map		    = ValueFromCoordinate(dimension);
@@ -56,8 +56,7 @@ namespace rMultiplatform
 		}
 		public void Pan(float Amount)
 		{
-			if (Amount == 0)
-				return;
+			if (Amount == 0) return;
 
 			var dimension   = Dimension(LastDimension);
 			var map		    = ScaleFromCoordinate(dimension);
@@ -65,10 +64,10 @@ namespace rMultiplatform
 			Range.Pan(-amount);
 		}
 
-		//
+        //
 		public void Draw(SKCanvas canvas, SKSize dimension, SKSize view)
 		{
-			LastDimension = dimension;
+            LastDimension = dimension;
 			if (MajorTickDistance == 0.0)
 				return;
 

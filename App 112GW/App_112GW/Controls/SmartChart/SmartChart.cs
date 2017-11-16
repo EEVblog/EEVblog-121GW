@@ -107,6 +107,7 @@ namespace rMultiplatform
 			Effects.Add(mTouch);
 		}
 
+
         private void MTouch_Scroll(object sender, ScrollActionEventArgs args)
         {
             var dist = 1f + (float)args.Steps / (720f);

@@ -1,4 +1,5 @@
 ﻿using SkiaSharp;
+using System.Threading;
 
 namespace rMultiplatform
 {
@@ -21,29 +22,38 @@ namespace rMultiplatform
 			Vertical.Range.Reset();
 		}
 
-		public void Zoom(float dx, float dy, float cx, float cy)
-		{
-			if (EnableTouchHorizontal)
-				Horizontal.Zoom(dx, cx);
+        Mutex mutex = new Mutex();
 
-			if (EnableTouchVertical)
-				Vertical.Zoom(dy, cy);
+        public void Wait()
+        {
+            mutex.WaitOne();
+        }
+        public void Release()
+        {
+            mutex.ReleaseMutex();
+        }
+
+        public void Zoom(float dx, float dy, float cx, float cy)
+		{
+            Wait();
+            if (EnableTouchHorizontal)  Horizontal.Zoom(dx, cx);
+			if (EnableTouchVertical)    Vertical.Zoom(dy, cy);
 
 			Parent.Parent.InvalidateSurface();
-		}
+            Release();
+        }
 		public void Zoom(SKPoint Amount, SKPoint About)
-		{
-			Zoom(Amount.X, Amount.Y, About.X, About.Y);
+        {
+            Zoom(Amount.X, Amount.Y, About.X, About.Y);
 		}
 		public void Pan(float dx, float dy)
-		{
-			if (EnableTouchHorizontal)
-				Horizontal.Pan(dx);
-
-			if (EnableTouchVertical)
-				Vertical.Pan(dy);
+        {
+            Wait();
+            if (EnableTouchHorizontal)  Horizontal.Pan(dx);
+			if (EnableTouchVertical)    Vertical.Pan(dy);
 
 			Parent.Parent.InvalidateSurface();
+            Release();
 		}
 		public void Pan(SKPoint Amount)
 		{
@@ -89,10 +99,14 @@ namespace rMultiplatform
 		}
 		public override void Draw(SKCanvas canvas, SKSize dimension, SKSize view)
 		{
-			Horizontal.Position = Padding.BottomPosition(dimension.Height);
+            Wait();
+
+            Horizontal.Position = Padding.BottomPosition(dimension.Height);
 			Vertical.Position   = Padding.LeftPosition  (dimension.Width);
 			Horizontal.Draw(canvas, dimension, view);
 			Vertical.Draw(canvas, dimension, view);
-		}
+
+            Release();
+        }
 	}
 }
