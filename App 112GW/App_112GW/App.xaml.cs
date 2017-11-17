@@ -4,15 +4,14 @@ using System.Linq;
 using System.Text;
 
 using Xamarin.Forms;
-
 namespace App_112GW
 {
 	public partial class App : Application
 	{
 		public App ()
 		{
-			InitializeComponent();
 
+			InitializeComponent();
 			MainPage = new App_112GW.MainPage();
 		}
 

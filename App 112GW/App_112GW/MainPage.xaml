@@ -1,7 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:local="clr-namespace:App_112GW"
-			 xmlns:views="clr-namespace:SkiaSharp.Views.Forms;assembly=SkiaSharp.Views.Forms"
-             x:Class="App_112GW.MainPage">
-</ContentPage>
+<TabbedPage	 xmlns	   =   "http://xamarin.com/schemas/2014/forms"
+				xmlns:x	 =   "http://schemas.microsoft.com/winfx/2009/xaml"
+				x:Class	 =   "TabbedPageWithNavigationPage.MainPage"
+				xmlns:dark  =   "clr-namespace:Xamarin.Forms.Themes;assembly=Xamarin.Forms.Theme.Dark">
+	<Application.Resources>
+		<ResourceDictionary MergedWith="dark:DarkThemeResources" />
+	</Application.Resources>
+</TabbedPage>
