@@ -10,54 +10,35 @@ namespace App_112GW
 {
 	public partial class MainPage : Xamarin.Forms.TabbedPage
 	{
-		private ObservableCollection<Multimeter> Devices = new ObservableCollection<Multimeter>();
-		private Settings SettingsView;
-		private MathChart MathChart;
+		private Settings SettingsView = new Settings();
+        private MathChart MathChart = new MathChart();
 
-		private void AddDevice(Multimeter Device)
+        private void AddPage(string Title, View Content)
+        {
+            Children.Add(new GeneralPage(Title, Content));
+        }
+        private void AddDevice(MultimeterPage Device)
 		{
-			Devices.Add(Device);
-			if (Devices.Count == 1)
+            MathChart.AddDevice(Device);
+			if (MathChart.Devices.Count == 1)
 				AddPage("< Maths >", MathChart);
-		}
-		private void AddPage(string Title, View Content)
-		{
-			Children.Add(new GeneralPage(Title, Content));
-		}
+        }
 		private void Button_AddDevice(IDeviceBLE pDevice)
 		{
-			var dev = new Multimeter(pDevice);
-            dev.IdChanged += (o, e) => 
-            {
-                foreach (var cld in Children)
-                {
-                    var pg = cld as GeneralPage;
-                    if (pg.Content.GetType() == typeof(Multimeter))
-                    {
-                        var mul = pg.Content as Multimeter;
-                        Globals.RunMainThread(() => { pg.Title = "[ " + mul.Id + " ]"; });
-                    }
-                }
-            };
+			var dev = new MultimeterPage(pDevice);
 
-			AddDevice(dev);
-			AddPage("[ " + dev.Id + " ]", dev);
-			CurrentPage = Children[Children.Count - 1];
-		}
+            AddDevice(dev);
+            Children.Add(dev);
+            CurrentPage = Children[Children.Count - 1];
+        }
 
 		public MainPage()
 		{
 			BackgroundColor = Globals.BackgroundColor;
 			On<Xamarin.Forms.PlatformConfiguration.Android>().SetIsSwipePagingEnabled(false);
-
-			MathChart = new MathChart();
-			MathChart.SourceA = Devices;
-			MathChart.SourceB = Devices;
-
-			SettingsView = new Settings();
 			SettingsView.AddDevice += Button_AddDevice;
 
-			AddPage("< Settings >", SettingsView);
+            AddPage("< Settings >", SettingsView);
 		}
-	}
+    }
 }

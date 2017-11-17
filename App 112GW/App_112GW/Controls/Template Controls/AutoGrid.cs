@@ -192,8 +192,10 @@ namespace rMultiplatform
             }
         }
 
+        public Orientation CurrentOrientation { get; private set; } = Orientation.Portrait;
         public virtual void OrientationChanged(Orientation New)
         {
+            CurrentOrientation = New;
         }
 
         public AutoGrid()

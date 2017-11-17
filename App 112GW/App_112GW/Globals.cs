@@ -19,7 +19,7 @@ namespace rMultiplatform
 				{
 					input?.Invoke();
 				}
-				catch
+				catch (Exception e)
 				{
 					Debug.WriteLine("Error Caught :  public void RunMainThread(Action input)");
 				}

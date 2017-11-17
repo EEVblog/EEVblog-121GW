@@ -85,16 +85,28 @@ namespace rMultiplatform
 		Picker B_List		 = new Picker();
 		Picker Operation_List = new Picker();
 
-		public IList SourceA
-		{
-			set		 {   A_List.ItemsSource = value; }
-			private get {   return A_List.ItemsSource;  }
-		}
-		public IList SourceB
-		{
-			set		 {   B_List.ItemsSource = value;}
-			private get {   return B_List.ItemsSource; }
-		}
+        public ObservableCollection<MultimeterPage> Devices { get; set; } = new ObservableCollection<MultimeterPage>();
+       
+        void DeviceIdChanged(MultimeterPage Device)
+        {
+            Globals.RunMainThread(() => 
+            {
+                //Stupid work around for dynamic itesm in pickers.
+                A_List.ItemsSource = Devices;
+                A_List.ItemDisplayBinding = new Binding("Title");
+                B_List.ItemsSource = Devices;
+                B_List.ItemDisplayBinding = new Binding("Title");
+            });
+        }
+        public void AddDevice(MultimeterPage Device)
+        {
+            Device.PropertyChanged += (o, e) => 
+            {
+                if (e.PropertyName == "Title")
+                    DeviceIdChanged(o as MultimeterPage);
+            };
+            Devices.Add(Device);
+        }
 
 		SKPoint Interpolate(SKPoint A, SKPoint B, float X)
 		{
@@ -183,7 +195,6 @@ namespace rMultiplatform
 			}
 		}
 
-		Mutex mutex = new Mutex();
 		TriggerList<SKPoint> Data = new TriggerList<SKPoint>();
 		private void Data_Changed(object sender, NotifyCollectionChangedEventArgs e)
 		{
@@ -194,13 +205,11 @@ namespace rMultiplatform
 		
 		//Returns true only when nothing is null
 		private bool RenderReady() => ((DeviceA != null) && (DeviceB != null) && (Current_Operation != null));
-
 		private void AddEvents()
 		{
 			if (DeviceA != null) DeviceAEvent.SetupEvent(DeviceA.Logger.Data);
 			if (DeviceB != null) DeviceBEvent.SetupEvent(DeviceB.Logger.Data);
 		}
-
 		private bool PreparePlot()
 		{
 			if (RenderReady())
@@ -213,23 +222,21 @@ namespace rMultiplatform
 			return false;
 		}
 
-		Operation Current_Operation = null;
-
-		EventMonitor<SKPoint> DeviceAEvent = new EventMonitor<SKPoint>();
-		EventMonitor<SKPoint> DeviceBEvent = new EventMonitor<SKPoint>();
-		Multimeter DeviceA = null;
-		Multimeter DeviceB = null;
+		Operation               Current_Operation = null;
+		EventMonitor<SKPoint>   DeviceAEvent        = new EventMonitor<SKPoint>();
+		EventMonitor<SKPoint>   DeviceBEvent        = new EventMonitor<SKPoint>();
+		Multimeter              DeviceA             = null;
+		Multimeter              DeviceB             = null;
 
 		private void List_ItemSelected(ref Multimeter Device, object sender, EventArgs e)
 		{
 			var item = (sender as Picker).SelectedItem;
 			if (item != null)
 			{
-				Device = item as Multimeter;
+				Device = (item as MultimeterPage).Device;
 				PreparePlot();
 			}
 		}
-		
 		private void Operation_List_ItemSelected(object sender, EventArgs e)
 		{
 			var sel_item = (sender as Picker).SelectedItem as OperationItem;
@@ -239,14 +246,13 @@ namespace rMultiplatform
 		}
 
 		static LayoutOptions ColumnLayout = LayoutOptions.Fill;
-		static Picker MakePicker( EventHandler SelectedHandler, string Title, string BindText)
+		static Picker MakePicker( EventHandler SelectedHandler, string Title)
 		{
 			var output = new Picker();
 			output.Title = Title;
 			output.VerticalOptions = LayoutOptions.StartAndExpand;
 			output.HorizontalOptions = ColumnLayout;
 			output.SelectedIndexChanged += SelectedHandler;
-			output.ItemDisplayBinding = new Binding(BindText, BindingMode.OneWay);
 
 			//TODO : This is a bug in xamarin, row height need to be made automatic
 			return output;
@@ -264,17 +270,19 @@ namespace rMultiplatform
             Menu.ResetClicked   += (o, e) => { InvalidateLayout();};
 
             //
-            A_List = MakePicker((o, e) => { List_ItemSelected(ref DeviceA, o, e); }, 
-            "Device A", "Id");
+            A_List = MakePicker((o, e) => { List_ItemSelected(ref DeviceA, o, e); }, "Device A");
+			B_List = MakePicker((o, e) => { List_ItemSelected(ref DeviceB, o, e); }, "Device B");
 
-			B_List = MakePicker((o, e) => { List_ItemSelected(ref DeviceB, o, e); }, 
-            "Device B", "Id");
+            A_List.ItemsSource = Devices;
+            A_List.ItemDisplayBinding = new Binding("Title");
+            B_List.ItemsSource = Devices;
+            B_List.ItemDisplayBinding = new Binding("Title");
 
-			Operation_List = MakePicker(Operation_List_ItemSelected, "Operation", "Label");
-			Operation_List.ItemsSource = Operations;
-
-			//
-			Chart = new SmartChart(
+            Operation_List = MakePicker(Operation_List_ItemSelected, "Operation");
+            Operation_List.ItemDisplayBinding = new Binding("Label");
+            Operation_List.ItemsSource = Operations;
+            //
+            Chart = new SmartChart(
 								new SmartData(
 									new SmartAxisPair(
 										new SmartAxisHorizontal ("Horizontal",  +0, 1),

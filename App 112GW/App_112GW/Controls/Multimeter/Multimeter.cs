@@ -4,13 +4,12 @@ using App_112GW;
 using Xamarin.Forms;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using System.ComponentModel;
 
 namespace rMultiplatform
 {
-	public partial class Multimeter : AutoGrid
+	public class Multimeter : AutoGrid
 	{
-        public event EventHandler   IdChanged;
-
 		public BLE.IDeviceBLE	    mDevice;
 		public SmartChart		    Chart;
 		public SmartChartMenu	    ChartMenu;
@@ -21,7 +20,6 @@ namespace rMultiplatform
 			Screen,
 			FullscreenPlot
 		}
-
 		private ActiveItem _Item = ActiveItem.Screen;
 		public ActiveItem Item
 		{
@@ -44,23 +42,53 @@ namespace rMultiplatform
 		}
 
 		private PacketProcessor MyProcessor = new PacketProcessor(0xF2, 52);
+        Packet121GW processor = new Packet121GW();
 		public MultimeterScreen Screen;
 		public MultimeterMenu Menu;
 
-        Packet121GW processor = new Packet121GW();
-        public new string Id { get; set; } = "";
+        private string _Id = "Device";
+        public new string Id
+        {
+            get
+            {
+                return _Id;
+            }
+            set
+            {
+                if (_Id != value)
+                {
+                    _Id = value;
+                    base.OnPropertyChanged("Id");
+                }
+            }
+        }
+        private string _ChartTitle = "NOT_A_TITLE";
+        public string ChartTitle
+        {
+            set
+            {
+                if (value != _ChartTitle)
+                {
+
+                    Chart.Title = value;
+                    _ChartTitle = value;
+                    base.OnPropertyChanged("ChartTitle");
+                    Reset();
+                }
+            }
+        }
+
         void ProcessPacket(byte[] pInput)
 		{
 			try
 			{
 				processor.ProcessPacket(pInput);
                 Id = processor.Serial.ToString();
-                IdChanged?.Invoke(this, EventArgs.Empty);
 
                 Logger.Sample(processor.MainValue);
 
-                var temp = processor.MainRangeLabel;
-                ChartTitle = temp;
+                ChartTitle = processor.MainRangeLabel;
+
                 Screen.Update(processor);
 				Screen.InvalidateSurface();
 			}
@@ -69,23 +97,7 @@ namespace rMultiplatform
 				MyProcessor.Reset();
 			}
 		}
-
-		public void		 Reset() => Logger.Reset();
-
-        private string _ChartTitle = "NOT_A_TITLE";
-		public string ChartTitle
-		{
-			set
-			{
-				if (value != _ChartTitle)
-				{
-                    Chart.Title = value;
-                    _ChartTitle = value;
-					Reset();
-				}
-			}
-		}
-
+		public void Reset() => Logger.Reset();
 		public Multimeter ( BLE.IDeviceBLE pDevice )
 		{
 			mDevice = pDevice ?? throw new Exception("Multimeter must connect to a BLE device, not null.");
@@ -136,19 +148,35 @@ namespace rMultiplatform
 
         public override void OrientationChanged(Orientation New)
         {
-            BatchBegin();
-            if (Screen.IsVisible == true)
+            if (CurrentOrientation != New)
             {
-                RestoreItems();
-                if (New == Orientation.Landscape)
-                    MaximiseItem(Screen);
+                BatchBegin();
+                if (Screen.IsVisible == true)
+                {
+                    RestoreItems();
+                    if (New == Orientation.Landscape)
+                        MaximiseItem(Screen);
+                }
+                BatchCommit();
             }
-            BatchCommit();
-        }
 
+            //Must be called at end.
+            base.OrientationChanged(New);
+        }
 		private void Plot_FullScreenClicked(object sender, EventArgs e)
 		{
 			Item = (Item == ActiveItem.FullscreenPlot) ? ActiveItem.Screen : ActiveItem.FullscreenPlot;
+
+            if (CurrentOrientation == Orientation.Landscape)
+            {
+                BatchBegin();
+                if (Screen.IsVisible == true)
+                {
+                    RestoreItems();
+                    MaximiseItem(Screen);
+                }
+                BatchCommit();
+            }
 		}
 		private void SendData   (byte[] pData)
 		{

@@ -26,7 +26,7 @@ namespace rMultiplatform.BLE
 				return;
 
 
-            Block(() =>
+            MutexBlock(() =>
 			{
 				mVisibleDevices.Clear();
 				var devices = mAdapter.DiscoveredDevices;
