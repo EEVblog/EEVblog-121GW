@@ -19,7 +19,7 @@ namespace rMultiplatform.BLE
 		}
 
 		private ChangeEvent				 mEvent;
-		volatile private IService		   mService;
+		private volatile IService		   mService;
 		private List<ICharacteristicBLE>	mCharacteristics;
 		public  List<ICharacteristicBLE>	Characteristics
 		{
