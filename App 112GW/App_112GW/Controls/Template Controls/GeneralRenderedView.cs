@@ -49,7 +49,7 @@ namespace rMultiplatform
 		}
 		public void InvalidateSurface()
 		{
-			if (mRenderer != null)   mRenderer?.InvalidateSurface();
+		    mRenderer?.InvalidateSurface();
 		}
 		private float ConvertWidthToPixel(float value)
 		{

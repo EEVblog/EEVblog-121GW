@@ -397,8 +397,7 @@ namespace rMultiplatform
 			LastCurve.CanvasSize = Imag.ViewBox.Size;
 			LastCurve.Update();
 
-			if (LastCurve != null)
-				mImageFunction(Name, LastCurve);
+            mImageFunction(Name, LastCurve);
 
 			ms1.Dispose();
 			ms2.Dispose();
