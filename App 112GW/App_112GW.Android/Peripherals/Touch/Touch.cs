@@ -21,7 +21,7 @@ namespace rMultiplatform.Droid
 		protected override void OnAttached()
 		{
 			// Get the Android View corresponding to the Element that the effect is attached to
-			view = Control == null ? Container : Control;
+			view = Control ?? Container;
 
 			// Get access to the Touch class in the PCL
 			effect = (rMultiplatform.Touch)Element.Effects.FirstOrDefault(e => e is rMultiplatform.Touch);
