@@ -108,7 +108,7 @@ namespace rMultiplatform
 		{
 			for (int i = 0; i < mSegments.Count; i++)
 				mSegments[i].DrawColor = pInput;
-			for (int i = 0; i < mSegments.Count; i++)
+			for (int i = 0; i < mSubSegments.Count; i++)
 				mSubSegments[i].DrawColor = pInput;
 			mBargraph.DrawColor = pInput;
 			mOther.DrawColor = pInput;
@@ -117,7 +117,7 @@ namespace rMultiplatform
 		{
 			for (int i = 0; i < mSegments.Count; i++)
 				mSegments[i].BackgroundColor = pInput;
-			for (int i = 0; i < mSegments.Count; i++)
+			for (int i = 0; i < mSubSegments.Count; i++)
 				mSubSegments[i].BackgroundColor = pInput;
 			mBargraph.BackgroundColor = pInput;
 			mOther.BackgroundColor = pInput;
@@ -935,7 +935,7 @@ namespace rMultiplatform
 			//Add render on change
 			for (int i = 0; i < mSegments.Count; i++)
 				mSegments[i].Redraw();
-			for (int i = 0; i < mSegments.Count; i++)
+			for (int i = 0; i < mSubSegments.Count; i++)
 				mSubSegments[i].Redraw();
 			mBargraph.Redraw();
 			mOther.Redraw();
@@ -1039,7 +1039,7 @@ namespace rMultiplatform
 			//Add render on change
 			for (int i = 0; i < mSegments.Count; i++)
 				mSegments[i].Render(ref mCanvas, mDrawRectangle);
-			for (int i = 0; i < mSegments.Count; i++)
+			for (int i = 0; i < mSubSegments.Count; i++)
 				mSubSegments[i].Render(ref mCanvas, mDrawRectangle);
 			mBargraph.Render(ref mCanvas, mDrawRectangle);
 			mOther.Render(ref mCanvas, mDrawRectangle);
