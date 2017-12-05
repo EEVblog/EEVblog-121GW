@@ -127,9 +127,6 @@ namespace rMultiplatform.BLE
 			Rescan();
 		}
 
-
-
-
 		async private void DeviceConnection_Lost (object sender, DeviceErrorEventArgs e)
 		{
 			string disconnect_Id = e.Device.Id.ToString();
