@@ -4,9 +4,9 @@ using System.Text;
 
 namespace rMultiplatform
 {
-	static public class SIPrefix
+	public static class SIPrefix
 	{
-		static private List<Tuple<double, string>> Units = new List<Tuple<double, string>>()
+		private static List<Tuple<double, string>> Units = new List<Tuple<double, string>>()
 		{
 			new Tuple<double, string>( 1e-12 ,"p"),
 			new Tuple<double, string>( 1e-9  ,"n"),
@@ -19,7 +19,7 @@ namespace rMultiplatform
 			new Tuple<double, string>( 1e12  ,"T")
 		};
 
-		static public string SignificantFigure(double Value, int Figures)
+		public static string SignificantFigure(double Value, int Figures)
 		{
 			int sign = (Value > 0) ? 1: -1;
 			Value = Math.Abs(Value);
@@ -34,7 +34,7 @@ namespace rMultiplatform
 			return (sign * int_value).ToString() + "." + decimals.ToString().PadLeft(Figures, '0');
 		}
 
-		static public string ToString(double Value)
+		public static string ToString(double Value)
 		{
 			if (Value == 0.0)
 				return "0.0";
