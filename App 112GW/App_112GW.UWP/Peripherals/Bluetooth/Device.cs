@@ -11,7 +11,7 @@ namespace rMultiplatform.BLE
 {
 	public class UnPairedDeviceBLE : IDeviceBLE
 	{
-		volatile public DeviceInformation Information;
+		public volatile DeviceInformation Information;
 		public event DeviceSetupComplete Ready;
 		public event ChangeEvent Change;
 
@@ -128,7 +128,7 @@ namespace rMultiplatform.BLE
 			if (Uninitialised == 0)
 				TriggerReady();
 		}
-		async private void Build()
+		private async void Build()
 		{
 			await mDevice.GetGattServicesAsync().AsTask().ContinueWith((obj) =>
 			{

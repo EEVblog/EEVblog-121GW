@@ -9,14 +9,14 @@ namespace rMultiplatform
 {
 	static class Files
 	{
-		static public string UniqueFilename()
+		public static string UniqueFilename()
 		{
 			string output = "";
 			while (File.Exists(output = Path.GetRandomFileName())) ;
 			return output;
 		}
 
-		static public void SaveFile(string content)
+		public static void SaveFile(string content)
 		{
 #if __ANDROID__
 			//Email or cloud
@@ -41,7 +41,7 @@ namespace rMultiplatform
 			});
 #endif
 		}
-		static public string LoadFile(string filename)
+		public static string LoadFile(string filename)
 		{
 #if __ANDROID__
 			var documentsPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);

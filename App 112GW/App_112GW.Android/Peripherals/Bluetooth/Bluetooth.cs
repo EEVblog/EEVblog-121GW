@@ -15,8 +15,8 @@ namespace rMultiplatform.BLE
 {
 	public class ClientBLE : AClientBLE, IClientBLE
 	{
-		volatile private IBluetoothLE mDevice;
-		volatile private IAdapter mAdapter;
+		private volatile IBluetoothLE mDevice;
+		private volatile IAdapter mAdapter;
 
 		private static int index = 0;
 		private void DeviceWatcher_Added(object sender, Plugin.BLE.Abstractions.EventArgs.DeviceEventArgs args)
@@ -130,7 +130,7 @@ namespace rMultiplatform.BLE
 
 
 
-		async private void DeviceConnection_Lost (object sender, DeviceErrorEventArgs e)
+		private async void DeviceConnection_Lost (object sender, DeviceErrorEventArgs e)
 		{
 			string disconnect_Id = e.Device.Id.ToString();
 			Debug.WriteLine( "DeviceConnection_Lost." );

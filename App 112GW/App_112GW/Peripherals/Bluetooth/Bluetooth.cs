@@ -87,8 +87,8 @@ namespace rMultiplatform.BLE
 
 	public abstract class AClientBLE
 	{
-		volatile public ObservableCollection<IDeviceBLE> mVisibleDevices = new ObservableCollection<IDeviceBLE>();
-		volatile public ObservableCollection<IDeviceBLE> mConnectedDevices = null;
+		public volatile ObservableCollection<IDeviceBLE> mVisibleDevices = new ObservableCollection<IDeviceBLE>();
+		public volatile ObservableCollection<IDeviceBLE> mConnectedDevices = null;
 
 		private Mutex mut = new Mutex();
 		public event ConnectedEvent DeviceConnected;

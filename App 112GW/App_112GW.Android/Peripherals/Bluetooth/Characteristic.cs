@@ -14,7 +14,7 @@ namespace rMultiplatform.BLEs
 	{
 		public event SetupComplete Ready;
 		public event ChangeEvent ValueChanged;
-		volatile public ICharacteristic mCharacteristic;
+		public volatile ICharacteristic mCharacteristic;
 
 		public string Id
 		{

@@ -154,7 +154,7 @@ namespace rMultiplatform
 		}
 
 		SevenSegment() { }
-		static public void SetSegment(char pInput, bool dp, ref Layers pImages)
+		public static void SetSegment(char pInput, bool dp, ref Layers pImages)
 		{
 			//Make len a member 
 			int len = pImages.mLayers.Count;
@@ -173,11 +173,11 @@ namespace rMultiplatform
 				pValue >>= 1;
 			}
 		}
-		static public void Blank(Layers pImages)
+		public static void Blank(Layers pImages)
 		{
 			SetSegment(' ', false, ref pImages);
 		}
-		static public void Blank(ref Layers pImages)
+		public static void Blank(ref Layers pImages)
 		{
 			SetSegment(' ', false, ref pImages);
 		}
