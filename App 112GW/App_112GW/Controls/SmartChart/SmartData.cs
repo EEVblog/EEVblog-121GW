@@ -50,7 +50,11 @@ namespace rMultiplatform
 
 		public string GetCSV()
 		{
-			var points = PointsList;
+            //This prevents list from being updated during a copy
+            List<SKPoint> points; 
+            lock (PointsList)
+			    points = new List<SKPoint>(PointsList);
+
 			if (points.Count > 1)
 			{
 				//The fallback values of axis labels are X, Y
@@ -61,8 +65,7 @@ namespace rMultiplatform
 				string output = horozontal_label + ", " + vertical_label + "\r\n";
 
 				//Print the rows of the CSV to the string.
-				foreach (var item in points)
-					output += item.X.ToString() + ", " + item.Y.ToString() + "\r\n";
+				foreach (var item in points) output += item.X.ToString() + ", " + item.Y.ToString() + "\r\n";
 
 				//Return output ;) troll comment
 				return output;

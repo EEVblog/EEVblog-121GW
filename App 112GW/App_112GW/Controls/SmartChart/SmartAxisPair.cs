@@ -89,7 +89,6 @@ namespace rMultiplatform
 		public SmartAxisPair(ASmartAxis pHorizontal, ASmartAxis pVertical)
 		{
 			Horizontal = pHorizontal;
-
 			Vertical = pVertical;
 		}
 		public override SKMatrix Transform(SKSize dimension)

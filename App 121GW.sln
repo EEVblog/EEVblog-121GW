@@ -1,11 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26430.15
+VisualStudioVersion = 15.0.27004.2006
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "App_112GW", "App 112GW\App_112GW\App_112GW.shproj", "{42703B07-6599-410F-AF0D-7097E5A63B1C}"
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "121GW", "App 112GW\App_112GW\121GW.shproj", "{42703B07-6599-410F-AF0D-7097E5A63B1C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "App_112GW.Android", "App 112GW\App_112GW.Android\App_112GW.Android.csproj", "{DE4A4122-66AF-455D-A666-F9236AA3DB89}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "121GW.Android", "App 112GW\App_112GW.Android\121GW.Android.csproj", "{DE4A4122-66AF-455D-A666-F9236AA3DB89}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "App_112GW.iOS", "App 112GW\App_112GW.iOS\App_112GW.iOS.csproj", "{D3849BFD-7F63-4FBB-AFB2-24104381649E}"
 EndProject
@@ -212,5 +212,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {12C3AD99-F567-489C-AB4B-D63CD40A0B8F}
 	EndGlobalSection
 EndGlobal

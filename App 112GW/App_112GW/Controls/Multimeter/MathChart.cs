@@ -126,11 +126,13 @@ namespace rMultiplatform
 		private bool Fullscreen = true;
 		private int i1 = 1, i2 = 1;
 		private float x_val, y_val1, y_val2;
+        bool Oneshot = true;
 		void Resample(List<SKPoint> L1, List<SKPoint> L2)
 		{
-			if (RenderReady())
+			if (Oneshot & RenderReady())
 			{
-				var modified = false;
+                Oneshot = false;
+                var modified = false;
 				var l1_count = L1.Count;
 				var l2_count = L2.Count;
 
@@ -193,7 +195,8 @@ namespace rMultiplatform
 					if (modified)   Data.Trigger();
 				}
 			}
-		}
+            Oneshot = false;
+        }
 
 		TriggerList<SKPoint> Data = new TriggerList<SKPoint>();
 		private void Data_Changed(object sender, NotifyCollectionChangedEventArgs e)
@@ -202,8 +205,9 @@ namespace rMultiplatform
 			var amp = DeviceB.Logger.Data.ToList();
 			Resample(emp, amp);
 		}
-		
-		//Returns true only when nothing is null
+
+        //Returns true only when nothing is null
+        private bool Rendering = true;
 		private bool RenderReady() => ((DeviceA != null) && (DeviceB != null) && (Current_Operation != null));
 		private void AddEvents()
 		{
@@ -258,7 +262,6 @@ namespace rMultiplatform
 			return output;
 		}
 
-
 		public MathChart()
 		{
 			DeviceAEvent.CollectionChanged += Data_Changed;
@@ -283,10 +286,10 @@ namespace rMultiplatform
             Operation_List.ItemsSource = Operations;
             //
             Chart = new SmartChart(
-								new SmartData(
-									new SmartAxisPair(
-										new SmartAxisHorizontal ("Horizontal",  +0, 1),
-										new SmartAxisVertical   ("Vertical",	-1, 1)), Data));
+						new SmartData(
+							new SmartAxisPair(
+								new SmartAxisHorizontal ("Horizontal",  +0, 1),
+								new SmartAxisVertical   ("Vertical",	-1, 1)), Data));
 			Chart.Clicked += Plot_FullscreenClicked;
 
 			//
