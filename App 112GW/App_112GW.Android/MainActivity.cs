@@ -8,14 +8,16 @@ using Android.Widget;
 using Android.OS;
 
 using Xamarin.Forms;
-[assembly: Application(Debuggable = true)]
+[assembly: Application(Debuggable = false)]
 namespace App_112GW.Droid
 {
-   
-	[Activity (Label = "App_112GW", Icon = "@drawable/icon", Theme="@style/MainTheme", MainLauncher = true, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation)]
+    [Activity (Label = "121GW", 
+        Icon = "@mipmap/ic_launcher", 
+        Theme="@style/MainTheme", 
+        MainLauncher = true, 
+        ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation)]
 	public class MainActivity : global::Xamarin.Forms.Platform.Android.FormsAppCompatActivity
 	{
-
 		void HandleAndroidException(object sender, RaiseThrowableEventArgs e)
 		{
 			e.Handled = true;
@@ -39,11 +41,6 @@ namespace App_112GW.Droid
 
 			global::Xamarin.Forms.Forms.Init (this, bundle);
 			LoadApplication (new App_112GW.App ());
-
-			//var x = typeof(Xamarin.Forms.Themes.DarkThemeResources);
-			//x = typeof(Xamarin.Forms.Themes.LightThemeResources);
-			//x = typeof(Xamarin.Forms.Themes.Android.UnderlineEffect);
 		}
 	}
 }
-
