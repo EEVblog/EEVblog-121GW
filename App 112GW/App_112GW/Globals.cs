@@ -62,7 +62,7 @@ namespace rMultiplatform
 		}
 		public static double    RandomBetween(double min, double max)
 		{
-			var output = (double)random.NextDouble() * (max - min) + min;
+			var output = random.NextDouble() * (max - min) + min;
 			return output;
 		}
 		public static float     RandomBetween(float min, float max) => (float)RandomBetween((double)min, (double)max);

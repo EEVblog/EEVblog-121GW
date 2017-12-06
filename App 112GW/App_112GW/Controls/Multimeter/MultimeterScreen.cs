@@ -657,7 +657,7 @@ namespace rMultiplatform
 					SetLayer(Sub_Minus, (Sign == Packet121GW.eSign.eNegative));
 
 					//Calculate the position of the decimal point
-					mDecimalPosition = (int)Range / 10 + 1;
+					mDecimalPosition = Range / 10 + 1;
 
 					var DisplayString = value.SubValue.ToString();
 

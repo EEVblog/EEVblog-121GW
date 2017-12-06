@@ -22,11 +22,11 @@ namespace rMultiplatform
 			base.OnSizeAllocated(width, height);
 		}
 		public BackButton () :base(new SKPoint[] {
-			new SKPoint((float)(0.5), (float)(0)),
-			new SKPoint((float)(0), (float)(0.5)),
-			new SKPoint((float)(1), (float)(0.5)),
-			new SKPoint((float)(0), (float)(0.5)),
-			new SKPoint((float)(0.5), (float)(1))})
+			new SKPoint(0.5f, 0),
+			new SKPoint(0, 0.5f),
+			new SKPoint(1, 0.5f),
+			new SKPoint(0, 0.5f),
+			new SKPoint(0.5f, 1)})
 		{
 			ShowPoints();
 		}

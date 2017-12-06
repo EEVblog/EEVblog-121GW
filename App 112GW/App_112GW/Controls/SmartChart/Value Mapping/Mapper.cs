@@ -34,15 +34,15 @@ namespace rMultiplatform
 		}
 		public static Map1D Create1D(Range A, Range B)
 		{
-			return Create1D((float)A.Minimum, (float)A.Maximum, (float)B.Minimum, (float)B.Maximum);
+			return Create1D(A.Minimum, A.Maximum, B.Minimum, B.Maximum);
 		}
 		public static Map1D Create1D(float MinA, float MaxA, Range B)
 		{
-			return Create1D(MinA, MaxA, (float)B.Minimum, (float)B.Maximum);
+			return Create1D(MinA, MaxA, B.Minimum, B.Maximum);
 		}
 		public static Map1D Create1D(Range A, float MinB, float MaxB)
 		{
-			return Create1D((float)A.Minimum, (float)A.Maximum, MinB, MaxB);
+			return Create1D(A.Minimum, A.Maximum, MinB, MaxB);
 		}
 
 		public static SkiaSharp.SKMatrix CreateMatrix(Map1D Horizontal, Map1D Vertical)
