@@ -141,7 +141,7 @@ namespace rMultiplatform
 				pInput += "0";
 
 			if (pInput.Length > mSegments.Count)
-				pInput.Substring(0, mSegments.Count);
+			    pInput = pInput.Substring(0, mSegments.Count);
 
 			SetSegments(pInput.PadLeft(mSegments.Count, ' '), ref mSegments);
 		}
