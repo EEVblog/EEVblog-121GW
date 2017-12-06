@@ -989,7 +989,7 @@ namespace rMultiplatform
 
 			mDrawRectangle = new SKRect(0, 0, imageWidth, imageHeight);
 		}
-		static private void SetSegment(char pInput, bool dp, Layers pSegment)
+		private static void SetSegment(char pInput, bool dp, Layers pSegment)
 		{
 			SevenSegment.SetSegment(pInput, dp, ref pSegment);
 		}

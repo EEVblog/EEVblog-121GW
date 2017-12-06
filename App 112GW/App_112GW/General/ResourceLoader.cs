@@ -74,7 +74,7 @@ namespace rMultiplatform
 		private List<string>	mExtensions;
 		protected ProcessItem   mGeneralFunction;
 
-		virtual protected bool  HasExtension(string source)
+		protected virtual bool  HasExtension(string source)
 		{
 			foreach (var ext in mExtensions)
 				if (source.EndsWith(ext))

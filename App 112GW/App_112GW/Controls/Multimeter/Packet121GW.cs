@@ -313,7 +313,7 @@ namespace rMultiplatform
 			LONG_MEM,
 			LONG_SETUP
 		}
-		static public byte[] GetKeycode(Keycode Input)
+		public static byte[] GetKeycode(Keycode Input)
 		{
 			switch (Input)
 			{

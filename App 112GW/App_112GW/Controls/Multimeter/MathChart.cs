@@ -195,7 +195,7 @@ namespace rMultiplatform
 					if (modified)   Data.Trigger();
 				}
 			}
-            Oneshot = false;
+            Oneshot = true;
         }
 
 		TriggerList<SKPoint> Data = new TriggerList<SKPoint>();
