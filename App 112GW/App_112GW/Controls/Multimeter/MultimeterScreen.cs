@@ -126,14 +126,14 @@ namespace rMultiplatform
 		public event EventHandler Clicked;
 		protected virtual void  OnClicked(EventArgs e) => Clicked?.Invoke(this, e);
 
-		private Layers		  mOther;
-		public  SKBitmap		mLayer;
-		public  SKCanvas		mCanvas;
-		private Layers		  mBargraph;
-		private List<Layers>	mSegments;
-		private List<Layers>	mSubSegments;
-		private int			 mDecimalPosition;
-		private SKRect		  mDrawRectangle;
+		private Layers	        mOther;
+		public  SKBitmap        mLayer;
+		public  SKCanvas        mCanvas;
+		private Layers	        mBargraph;
+		private List<Layers>    mSegments;
+		private List<Layers>    mSubSegments;
+		private int             mDecimalPosition;
+		private SKRect          mDrawRectangle;
 
 		private void	SetLargeSegments(string pInput)
 		{
