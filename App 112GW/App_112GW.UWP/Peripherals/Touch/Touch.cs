@@ -20,7 +20,7 @@ namespace rMultiplatform.UWP
 		protected override void OnAttached()
 		{
 			// Get the Windows FrameworkElement corresponding to the Element that the effect is attached to
-			view = Control == null ? Container : Control;
+			view = Control ?? Container;
 
 			// Get access to the TouchEffect class in the PCL
 			effect = (rMultiplatform.Touch)Element.Effects.FirstOrDefault(e => e is rMultiplatform.Touch);
