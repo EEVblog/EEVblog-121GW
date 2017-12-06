@@ -14,7 +14,7 @@ using System.Diagnostics;
 
 namespace rMultiplatform
 {
-	abstract public class AutoGrid : Grid
+	public abstract class AutoGrid : Grid
 	{
 		private void AddView(View pInput, int pX, int pY, int pXSpan = 1, int pYSpan = 1)
 		{
@@ -108,7 +108,7 @@ namespace rMultiplatform
 
 		private List<ItemState> RestoreList  = null;
 
-        async private void DelayedInvalidateLayout()
+        private async void DelayedInvalidateLayout()
         {
             await Task.Delay(100);
             Globals.RunMainThread(() => {

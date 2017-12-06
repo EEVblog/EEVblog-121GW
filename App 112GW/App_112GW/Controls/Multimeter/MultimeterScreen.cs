@@ -108,7 +108,7 @@ namespace rMultiplatform
 		{
 			for (int i = 0; i < mSegments.Count; i++)
 				mSegments[i].DrawColor = pInput;
-			for (int i = 0; i < mSegments.Count; i++)
+			for (int i = 0; i < mSubSegments.Count; i++)
 				mSubSegments[i].DrawColor = pInput;
 			mBargraph.DrawColor = pInput;
 			mOther.DrawColor = pInput;
@@ -117,7 +117,7 @@ namespace rMultiplatform
 		{
 			for (int i = 0; i < mSegments.Count; i++)
 				mSegments[i].BackgroundColor = pInput;
-			for (int i = 0; i < mSegments.Count; i++)
+			for (int i = 0; i < mSubSegments.Count; i++)
 				mSubSegments[i].BackgroundColor = pInput;
 			mBargraph.BackgroundColor = pInput;
 			mOther.BackgroundColor = pInput;
@@ -140,8 +140,8 @@ namespace rMultiplatform
 			if (pInput.EndsWith("."))
 				pInput += "0";
 
-			if (pInput.Length > mSegments.Count)
-				pInput.Substring(0, mSegments.Count);
+			if ((pInput.Length - ((pInput.Contains(".")) ? 1 : 0)) > mSegments.Count)
+			    pInput = pInput.Substring(0, mSegments.Count);
 
 			SetSegments(pInput.PadLeft(mSegments.Count, ' '), ref mSegments);
 		}
@@ -657,7 +657,7 @@ namespace rMultiplatform
 					SetLayer(Sub_Minus, (Sign == Packet121GW.eSign.eNegative));
 
 					//Calculate the position of the decimal point
-					mDecimalPosition = (int)Range / 10 + 1;
+					mDecimalPosition = Range / 10 + 1;
 
 					var DisplayString = value.SubValue.ToString();
 
@@ -935,7 +935,7 @@ namespace rMultiplatform
 			//Add render on change
 			for (int i = 0; i < mSegments.Count; i++)
 				mSegments[i].Redraw();
-			for (int i = 0; i < mSegments.Count; i++)
+			for (int i = 0; i < mSubSegments.Count; i++)
 				mSubSegments[i].Redraw();
 			mBargraph.Redraw();
 			mOther.Redraw();
@@ -989,7 +989,7 @@ namespace rMultiplatform
 
 			mDrawRectangle = new SKRect(0, 0, imageWidth, imageHeight);
 		}
-		static private void SetSegment(char pInput, bool dp, Layers pSegment)
+		private static void SetSegment(char pInput, bool dp, Layers pSegment)
 		{
 			SevenSegment.SetSegment(pInput, dp, ref pSegment);
 		}
@@ -1039,7 +1039,7 @@ namespace rMultiplatform
 			//Add render on change
 			for (int i = 0; i < mSegments.Count; i++)
 				mSegments[i].Render(ref mCanvas, mDrawRectangle);
-			for (int i = 0; i < mSegments.Count; i++)
+			for (int i = 0; i < mSubSegments.Count; i++)
 				mSubSegments[i].Render(ref mCanvas, mDrawRectangle);
 			mBargraph.Render(ref mCanvas, mDrawRectangle);
 			mOther.Render(ref mCanvas, mDrawRectangle);

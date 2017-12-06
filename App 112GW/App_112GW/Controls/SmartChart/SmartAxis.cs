@@ -12,7 +12,7 @@ namespace rMultiplatform
 		public CappedRange Range { get; set; }
 		public string Label { get; set; }
 
-		public float Distance => (float)Range.Distance;
+		public float Distance => Range.Distance;
 
 		public ASmartTick Ticker;
 		public float Position { get; set; }
@@ -39,7 +39,7 @@ namespace rMultiplatform
 		}
 		public Map.Map1D ScaleFromCoordinate(float dimension)
 		{
-			return Map.Create1D(0, AxisSize(dimension), 0, (float)Range.Distance);
+			return Map.Create1D(0, AxisSize(dimension), 0, Range.Distance);
 		}
 		public Map.Map1D CoordinateFromValue(float dimension)
 		{
